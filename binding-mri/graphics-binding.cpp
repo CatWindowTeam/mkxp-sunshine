@@ -228,5 +228,5 @@ void graphicsBindingInit(){
 	INIT_GRA_PROP_BIND( Fullscreen, "fullscreen"  );
 	INIT_GRA_PROP_BIND( ShowCursor, "show_cursor" );
 	INIT_GRA_PROP_BIND( Smooth,     "smooth"      );
-	INIT_GRA_PROP_BIND( Frameskip,     "frameskip"      );
+	INIT_GRA_PROP_BIND( Frameskip,  "frameskip"      );
 }

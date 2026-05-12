@@ -20,7 +20,7 @@ class Window_SaveFile < Window_Base
     self.contents = Bitmap.new(width - 32, height - 32)
     @file_index = file_index
     @filename = "Save#{@file_index + 1}.rxdata"
-    @time_stamp = Time.at(0)
+    @time_stamp = CTime.at(0)
     @file_exist = FileTest.exist?(@filename)
     if @file_exist
       file = File.open(@filename, "r")

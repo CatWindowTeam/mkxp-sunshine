@@ -17,7 +17,13 @@ class Scene_Map
     @in_game_timer.bitmap.fill_rect(0, 0, 140, 30, Color.new(0, 0, 0))
     @in_game_timer.z = 10001
     @in_game_timer.visible = $game_temp.igt_timer_visible
-  
+
+	@debug_info = Sprite.new
+	#@debug_info.x = 0;
+	#@debug_info.y = 670;
+	@debug_info.bitmap = Bitmap.new(100, 30)
+	@debug_info.z = 10001
+    
     # Make sprite set
     @spriteset = Spriteset_Map.new
     # Make message window
@@ -112,7 +118,11 @@ class Scene_Map
                             total_sec * 1000 % 1000)
 
       @in_game_timer.bitmap.fill_rect(0, 0, 140, 30, Color.new(0, 0, 0, 128))
-      #@in_game_timer.bitmap.draw_text(8, 0, 132, 30, time_string)
+      @in_game_timer.bitmap.draw_text(8, 0, 132, 30, time_string)
+	  if Window_Settings.DebugIsEnabled == true
+	  	#@debug_info.bitmap.draw_text(0, 0, 132, 30, Graphics.frame_count.to_s)
+      	@debug_info.bitmap.draw_text(0, 0, 132, 30, Graphics.frame_rate.to_s)
+      end
     end
   
     if Input.quit?

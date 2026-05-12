@@ -53,7 +53,7 @@ class Window_MainMenu < Window_Selectable
     # Update item
     rect = Rect.new(w * index, 0, w - 32, 32)
     self.contents.fill_rect(rect, Color.new(0, 0, 0, 0))
-    #self.contents.draw_text(rect, tr(@commands[index]), 1)
+    self.contents.draw_text(rect, tr(@commands[index]), 1)
   end
   #--------------------------------------------------------------------------
   # * Disable Item
@@ -149,10 +149,9 @@ class Window_MainMenu < Window_Selectable
         @fade_out = true
       when 3
       	if File.exist?("imstupidcheater.txt")
-      	  id = Integer(File.read("imstupidcheater.txt").strip.to_i)
-#      	  id = 177
-      	  x = Integer(File.read("imstupidcheater.x").strip.to_i)
-      	  y = Integer(File.read("imstupidcheater.y").strip.to_i)
+      	  id = File.read("imstupidcheater.txt").strip.to_i
+      	  x = File.read("imstupidcheater.x").strip.to_i
+      	  y = File.read("imstupidcheater.y").strip.to_i
 		  $game_temp.player_transferring = true
 		  $game_temp.player_new_map_id = id
 		  $game_temp.player_new_x = x

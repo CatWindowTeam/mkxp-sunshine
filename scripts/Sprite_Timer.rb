@@ -45,8 +45,8 @@ class Sprite_Timer < Sprite
       sec = @total_sec % 60
       text = sprintf("%02d:%02d", min, sec)
       # Draw timer
-      #self.bitmap.font.color.set(255, 255, 255)
-      #self.bitmap.draw_text(self.bitmap.rect, text, 1)
+      self.bitmap.font.color.set(255, 255, 255)
+      self.bitmap.draw_text(self.bitmap.rect, text, 1)
     end
   end
 end
