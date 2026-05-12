@@ -131,5 +131,4 @@ void spriteBindingInit(){
 	INIT_PROP_BIND( Sprite, WaveSpeed,  "wave_speed"  );
 	INIT_PROP_BIND( Sprite, WavePhase,  "wave_phase"  );
 	}
-	printf("[spriteBindingInit] Done\n");
 }

@@ -32,8 +32,7 @@ static int num2TableSize(VALUE v){
 static void parseArgsTableSizes(int argc, VALUE *argv, int *x, int *y, int *z){
 	*y = *z = 1;
 
-	switch (argc)
-	{
+	switch (argc){
 	case 3:
 		*z = num2TableSize(argv[2]);
 		/* fall through */
@@ -102,8 +101,7 @@ RB_METHOD(tableGetAt){
 
 	if (x < 0 || x >= t->xSize()
 	||  y < 0 || y >= t->ySize()
-	||  z < 0 || z >= t->zSize())
-	{
+	||  z < 0 || z >= t->zSize()){
 		return Qnil;
 	}
 
@@ -121,8 +119,7 @@ RB_METHOD(tableSetAt){
 	if (argc < 2)
 		rb_raise(rb_eArgError, "wrong number of arguments");
 
-	switch (argc)
-	{
+	switch (argc){
 	default:
 	case 2 :
 		x = NUM2INT(argv[0]);
@@ -169,5 +166,4 @@ void tableBindingInit(){
 	_rb_define_method(klass, "zsize", tableZSize);
 	_rb_define_method(klass, "[]", tableGetAt);
 	_rb_define_method(klass, "[]=", tableSetAt);
-	printf("[tableBindingInit] Done\n");
 }

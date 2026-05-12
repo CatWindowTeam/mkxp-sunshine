@@ -421,5 +421,4 @@ void bitmapBindingInit(){
 	}
 
 	INIT_PROP_BIND(Bitmap, Font, "font");
-	printf("[bitmapBindingInit] Done\n");
 }

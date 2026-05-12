@@ -51,16 +51,13 @@ typedef void (ALC_APIENTRY *LPALCDEVICERESUMESOFT) (ALCdevice *device);
 	AL_FUN(DevicePause, LPALCDEVICEPAUSESOFT) \
 	AL_FUN(DeviceResume, LPALCDEVICERESUMESOFT)
 
-struct ALCFunctions
-{
+struct ALCFunctions{
 #define AL_FUN(name, type) type name;
 	AL_DEVICE_PAUSE_FUN
 #undef AL_FUN
 } static alc;
 
-static void
-initALCFunctions(ALCdevice *alcDev)
-{
+static void initALCFunctions(ALCdevice *alcDev){
 	if (!strstr(alcGetString(alcDev, ALC_EXTENSIONS), "ALC_SOFT_pause_device"))
 		return;
 
@@ -80,8 +77,7 @@ EventThread::MouseState EventThread::mouseState;
 EventThread::TouchState EventThread::touchState;
 
 /* User event codes */
-enum
-{
+enum{
 	REQUEST_SETFULLSCREEN = 0,
 	REQUEST_WINRESIZE,
 	REQUEST_MESSAGEBOX,
@@ -95,8 +91,7 @@ enum
 
 static uint32_t usrIdStart;
 
-bool EventThread::allocUserEvents()
-{
+bool EventThread::allocUserEvents(){
 	usrIdStart = SDL_RegisterEvents(EVENT_COUNT);
 	// SDL_RegisterEvents() now returns 0 if it couldn't allocate any user events.
 	if (usrIdStart == (uint32_t) 0)
@@ -110,8 +105,7 @@ EventThread::EventThread()
       showCursor(true)
 {}
 
-void EventThread::process(RGSSThreadData &rtData)
-{
+void EventThread::process(RGSSThreadData &rtData){
 	SDL_Event event;
 	SDL_Window *win = rtData.window;
 	UnidirMessage<Vec2i> &windowSizeMsg = rtData.windowSizeMsg;
@@ -182,18 +176,14 @@ void EventThread::process(RGSSThreadData &rtData)
 
 	SettingsMenu *sMenu = 0;
 
-	while (true)
-	{
-		if (!SDL_WaitEvent(&event))
-		{
+	while (true){
+		if (!SDL_WaitEvent(&event)){
 			Debug() << "EventThread: Event error";
 			break;
 		}
 
-		if (sMenu && sMenu->onEvent(event, joysticks))
-		{
-			if (sMenu->destroyReq())
-			{
+		if (sMenu && sMenu->onEvent(event, joysticks)){
+			if (sMenu->destroyReq()){
 				delete sMenu;
 				sMenu = 0;
 
@@ -204,8 +194,7 @@ void EventThread::process(RGSSThreadData &rtData)
 		}
 
 		/* Preselect and discard unwanted events here */
-		switch (event.type)
-		{
+		switch (event.type){
 		case SDL_EVENT_MOUSE_BUTTON_DOWN :
 		case SDL_EVENT_MOUSE_BUTTON_UP :
 		case SDL_EVENT_MOUSE_MOTION :
@@ -280,8 +269,7 @@ void EventThread::process(RGSSThreadData &rtData)
 
 
 		/* Now process the rest */
-		switch (event.type)
-		{
+		switch (event.type){
 		case SDL_EVENT_QUIT :
 			if (rtData.allowExit) {
 				terminate = true;
@@ -297,10 +285,8 @@ void EventThread::process(RGSSThreadData &rtData)
 			break;
 
 		case SDL_EVENT_KEY_DOWN :
-			if (event.key.scancode == SDL_SCANCODE_F1)
-			{
-				if (!sMenu)
-				{
+			if (event.key.scancode == SDL_SCANCODE_F1){
+				if (!sMenu){
 					sMenu = new SettingsMenu(rtData);
 					updateCursorState(false, gameScreen);
 				}
@@ -308,23 +294,18 @@ void EventThread::process(RGSSThreadData &rtData)
 				sMenu->raise();
 			}
 
-			if (event.key.scancode == SDL_SCANCODE_F2)
-			{
-				if (!displayingFPS)
-				{
+			if (event.key.scancode == SDL_SCANCODE_F2){
+				if (!displayingFPS){
 					fps.immInitFlag.set();
 					fps.sendUpdates.set();
 					displayingFPS = true;
-				}
-				else
-				{
+				}else{
 					displayingFPS = false;
 
 					if (!rtData.config.printFPS)
 						fps.sendUpdates.clear();
 
-					if (fullscreen)
-					{
+					if (fullscreen){
 						/* Prevent fullscreen flicker */
 						strncpy(pendingTitle, rtData.config.windowTitle.c_str(),
 						        sizeof(pendingTitle));
@@ -337,8 +318,7 @@ void EventThread::process(RGSSThreadData &rtData)
 				break;
 			}
 
-			if (event.key.scancode == SDL_SCANCODE_F12)
-			{
+			if (event.key.scancode == SDL_SCANCODE_F12){
 				if (!rtData.config.debugMode)
 					break;
 
@@ -364,8 +344,7 @@ void EventThread::process(RGSSThreadData &rtData)
 			break;
 
 		case SDL_EVENT_KEY_UP :
-			if (event.key.scancode == SDL_SCANCODE_F12)
-			{
+			if (event.key.scancode == SDL_SCANCODE_F12){
 				if (!rtData.config.debugMode)
 					break;
 
@@ -504,8 +483,7 @@ void EventThread::process(RGSSThreadData &rtData)
 
 				/* Updating the window title in fullscreen
 				 * mode seems to cause flickering */
-				if (fullscreen)
-				{
+				if (fullscreen){
 					strncpy(pendingTitle, buffer, sizeof(pendingTitle));
 					break;
 				}
@@ -539,12 +517,10 @@ void EventThread::process(RGSSThreadData &rtData)
 	delete sMenu;
 }
 
-bool EventThread::eventFilter(void *data, SDL_Event *event)
-{
+bool EventThread::eventFilter(void *data, SDL_Event *event){
 	RGSSThreadData &rtData = *static_cast<RGSSThreadData*>(data);
 
-	switch (event->type)
-	{
+	switch (event->type){
 	case SDL_EVENT_WILL_ENTER_BACKGROUND :
 		Debug() << "SDL_EVENT_WILL_ENTER_BACKGROUND";
 
@@ -583,10 +559,8 @@ bool EventThread::eventFilter(void *data, SDL_Event *event)
 
 	/* Workaround for Windows pausing on drag */
 	default:
-		if (event->window.type == SDL_EVENT_WINDOW_MOVED)
-		{
-			if (shState != NULL && shState->rgssVersion > 0)
-			{
+		if (event->window.type == SDL_EVENT_WINDOW_MOVED){
+			if (shState != NULL && shState->rgssVersion > 0){
 				shState->oneshot().setWindowPos(event->window.data1, event->window.data2);
 				shState->graphics().update(false);
 			}
@@ -629,15 +603,13 @@ void EventThread::updateCursorState(bool inWindow, const SDL_Rect &screen){
 		SDL_HideCursor();
 }
 
-void EventThread::requestTerminate()
-{
+void EventThread::requestTerminate(){
 	SDL_Event event;
 	event.type = SDL_EVENT_QUIT;
 	SDL_PushEvent(&event);
 }
 
-void EventThread::requestFullscreenMode(bool mode)
-{
+void EventThread::requestFullscreenMode(bool mode){
 	if (mode == fullscreen)
 		return;
 
@@ -647,8 +619,7 @@ void EventThread::requestFullscreenMode(bool mode)
 	SDL_PushEvent(&event);
 }
 
-void EventThread::requestWindowResize(int width, int height)
-{
+void EventThread::requestWindowResize(int width, int height){
 	SDL_Event event;
 	event.type = usrIdStart + REQUEST_WINRESIZE;
 	event.window.data1 = width;
@@ -656,16 +627,14 @@ void EventThread::requestWindowResize(int width, int height)
 	SDL_PushEvent(&event);
 }
 
-void EventThread::requestShowCursor(bool mode)
-{
+void EventThread::requestShowCursor(bool mode){
 	SDL_Event event;
 	event.type = usrIdStart + REQUEST_SETCURSORVISIBLE;
 	event.user.code = mode;
 	SDL_PushEvent(&event);
 }
 
-void EventThread::showMessageBox(const char *body, int flags)
-{
+void EventThread::showMessageBox(const char *body, int flags){
 	msgBoxDone.clear();
 
 	SDL_Event event;
@@ -680,18 +649,15 @@ void EventThread::showMessageBox(const char *body, int flags)
 	resetInputStates();
 }
 
-bool EventThread::getFullscreen() const
-{
+bool EventThread::getFullscreen() const{
 	return fullscreen;
 }
 
-bool EventThread::getShowCursor() const
-{
+bool EventThread::getShowCursor() const{
 	return showCursor;
 }
 
-void EventThread::notifyFrame()
-{
+void EventThread::notifyFrame(){
 	if (!fps.sendUpdates)
 		return;
 
@@ -699,8 +665,7 @@ void EventThread::notifyFrame()
 	uint64_t diff = current - fps.lastFrame;
 	fps.lastFrame = current;
 
-	if (fps.immInitFlag)
-	{
+	if (fps.immInitFlag){
 		fps.immInitFlag.clear();
 		fps.immFiniFlag.set();
 
@@ -729,8 +694,7 @@ void EventThread::notifyFrame()
 	SDL_PushEvent(&event);
 }
 
-void EventThread::notifyGameScreenChange(const SDL_Rect &screen)
-{
+void EventThread::notifyGameScreenChange(const SDL_Rect &screen){
 	/* We have to get a bit hacky here to fit the rectangle
 	 * data into the user event struct */
 	SDL_Event event;
@@ -742,8 +706,7 @@ void EventThread::notifyGameScreenChange(const SDL_Rect &screen)
 	SDL_PushEvent(&event);
 }
 
-void SyncPoint::haltThreads()
-{
+void SyncPoint::haltThreads(){
 	if (mainSync.locked)
 		return;
 
@@ -761,8 +724,7 @@ void SyncPoint::haltThreads()
 	secondSync.lock();
 }
 
-void SyncPoint::resumeThreads()
-{
+void SyncPoint::resumeThreads(){
 	if (!mainSync.locked)
 		return;
 
@@ -770,44 +732,37 @@ void SyncPoint::resumeThreads()
 	secondSync.unlock(true);
 }
 
-bool SyncPoint::mainSyncLocked()
-{
+bool SyncPoint::mainSyncLocked(){
 	return mainSync.locked;
 }
 
-void SyncPoint::waitMainSync()
-{
+void SyncPoint::waitMainSync(){
 	reply.unlock(false);
 	mainSync.waitForUnlock();
 }
 
-void SyncPoint::passSecondarySync()
-{
+void SyncPoint::passSecondarySync(){
 	if (!secondSync.locked)
 		return;
 
 	secondSync.waitForUnlock();
 }
 
-SyncPoint::Util::Util()
-{
+SyncPoint::Util::Util(){
 	mut = SDL_CreateMutex();
 	cond = SDL_CreateCondition();
 }
 
-SyncPoint::Util::~Util()
-{
+SyncPoint::Util::~Util(){
 	SDL_DestroyCondition(cond);
 	SDL_DestroyMutex(mut);
 }
 
-void SyncPoint::Util::lock()
-{
+void SyncPoint::Util::lock(){
 	locked.set();
 }
 
-void SyncPoint::Util::unlock(bool multi)
-{
+void SyncPoint::Util::unlock(bool multi){
 	locked.clear();
 
 	if (multi)
@@ -816,8 +771,7 @@ void SyncPoint::Util::unlock(bool multi)
 		SDL_SignalCondition(cond);
 }
 
-void SyncPoint::Util::waitForUnlock()
-{
+void SyncPoint::Util::waitForUnlock(){
 	SDL_LockMutex(mut);
 
 	while (locked)

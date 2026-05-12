@@ -28,8 +28,7 @@
 
 template<class C>
 static VALUE
-serializableDump(int, VALUE *, VALUE self)
-{
+serializableDump(int, VALUE *, VALUE self){
 	Serializable *s = getPrivateData<C>(self);
 
 	int dataSize = s->serialSize();
@@ -43,8 +42,7 @@ serializableDump(int, VALUE *, VALUE self)
 
 template<class C>
 void
-serializableBindingInit(VALUE klass)
-{
+serializableBindingInit(VALUE klass){
 	_rb_define_method(klass, "_dump", serializableDump<C>);
 }
 

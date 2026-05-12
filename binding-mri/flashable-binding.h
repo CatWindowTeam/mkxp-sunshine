@@ -27,8 +27,7 @@
 #include "binding-types.h"
 
 template<class C>
-RB_METHOD(flashableFlash)
-{
+RB_METHOD(flashableFlash){
 	Flashable *f = getPrivateData<C>(self);
 
 	VALUE colorObj;
@@ -38,8 +37,7 @@ RB_METHOD(flashableFlash)
 
 	rb_get_args(argc, argv, "oi", &colorObj, &duration RB_ARG_END);
 
-	if (NIL_P(colorObj))
-	{
+	if (NIL_P(colorObj)){
 		f->flash(0, duration);
 		return Qnil;
 	}
@@ -52,8 +50,7 @@ RB_METHOD(flashableFlash)
 }
 
 template<class C>
-RB_METHOD(flashableUpdate)
-{
+RB_METHOD(flashableUpdate){
 	RB_UNUSED_PARAM;
 
 	Flashable *f = getPrivateData<C>(self);
@@ -64,10 +61,10 @@ RB_METHOD(flashableUpdate)
 }
 
 template<class C>
-static void flashableBindingInit(VALUE klass)
-{
+static void flashableBindingInit(VALUE klass){
 	_rb_define_method(klass, "flash", flashableFlash<C>);
 	_rb_define_method(klass, "update", flashableUpdate<C>);
 }
 
 #endif // FLASHABLEBINDING_H
+

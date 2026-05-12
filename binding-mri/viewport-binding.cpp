@@ -95,6 +95,5 @@ void viewportBindingInit(){
 	INIT_PROP_BIND( Viewport, OY,    "oy"    );
 	INIT_PROP_BIND( Viewport, Color, "color" );
 	INIT_PROP_BIND( Viewport, Tone,  "tone"  );
-	printf("[viewportBindingInit] Done\n");
 }
 

@@ -75,5 +75,4 @@ void steamBindingInit(){
     _rb_define_module_function(module, "unlock", steamUnlock);
 	_rb_define_module_function(module, "lock", steamLock);
 	_rb_define_module_function(module, "unlocked?", steamUnlocked);
-	printf("[steamBindingInit] Done\n");
 }

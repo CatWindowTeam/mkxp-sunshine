@@ -174,5 +174,4 @@ void journalBindingInit(){
 	_rb_define_module_function(module, "set", journalSet);
 	_rb_define_module_function(module, "active?", journalActive);
 	_rb_define_module_function(module, "setLang", journalSetLang);
-	printf("[inputBindingInit] Done\n");
 }

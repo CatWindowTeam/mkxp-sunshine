@@ -54,8 +54,7 @@ static std::string prefPath(const char *org, const char *app){
 }
 
 template<typename T>
-std::set<T> setFromVec(const std::vector<T> &vec)
-{
+std::set<T> setFromVec(const std::vector<T> &vec){
 	return std::set<T>(vec.begin(), vec.end());
 }
 
@@ -74,7 +73,7 @@ void Config::read(int argc, char *argv[]){
 	PO_DESC(printFPS, bool, false) \
 	PO_DESC(fullscreen, bool, false) \
 	PO_DESC(fixedAspectRatio, bool, true) \
-	PO_DESC(smoothScaling, bool, true) \
+	PO_DESC(smoothScaling, bool, false) \
 	PO_DESC(vsync, bool, true) \
 	PO_DESC(defScreenW, int, 0) \
 	PO_DESC(defScreenH, int, 0) \

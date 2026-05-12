@@ -26,8 +26,7 @@
 #include <vector>
 #include <set>
 
-struct Config
-{
+struct Config{
 	int rgssVersion;
 
 	bool debugMode;
@@ -59,8 +58,7 @@ struct Config
 
 	std::string iconPath;
 
-	struct
-	{
+	struct{
 		int sourceCount;
 	} SE;
 

@@ -220,5 +220,4 @@ void fileIntBindingInit(){
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
 	rb_define_alias(rb_singleton_class(marsh), "_mkxp_load_alias", "load");
 	rb_define_module_function(marsh, "load", RUBY_METHOD_FUNC(_marshalLoad), -1);
-	printf("[fileIntBindingInit] Done\n");
 }

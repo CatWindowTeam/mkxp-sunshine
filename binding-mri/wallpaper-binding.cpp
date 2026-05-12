@@ -53,7 +53,7 @@
 		static std::map<std::string, bool> defBlurs;
 		// Fallback settings
 		static std::string fallbackPath;
-		//meow
+		//For Standalone Window managwrs desktops
 		bool IsNitrogen = false;
 		bool IsFeh = false;
 	#endif

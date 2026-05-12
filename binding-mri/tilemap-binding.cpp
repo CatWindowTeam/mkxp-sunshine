@@ -162,5 +162,4 @@ void tilemapBindingInit(){
 	INIT_PROP_BIND( Tilemap, Wrapping,   "wrapping"   );
 	INIT_PROP_BIND( Tilemap, OX,         "ox"         );
 	INIT_PROP_BIND( Tilemap, OY,         "oy"         );
-	printf("[tilemapBindingInit] Done\n");
 }

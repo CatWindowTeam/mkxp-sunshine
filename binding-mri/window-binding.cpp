@@ -94,5 +94,4 @@ void windowBindingInit(){
 	INIT_PROP_BIND( Window, Opacity,         "opacity"          );
 	INIT_PROP_BIND( Window, BackOpacity,     "back_opacity"     );
 	INIT_PROP_BIND( Window, ContentsOpacity, "contents_opacity" );
-	printf("[windowBindingInit] Done\n");
 }

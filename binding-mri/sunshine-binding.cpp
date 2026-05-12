@@ -20,6 +20,5 @@ void SunshineBindingInit(){
 	}
 	if (!rb_respond_to(rb_cString, rb_intern("clone"))) {
 	        rb_define_method(rb_cString, "clone", RUBY_METHOD_FUNC(string_clone), 0);
-	}        
-    printf("[SunshineBindingInit] Done\n");
+	}
 }

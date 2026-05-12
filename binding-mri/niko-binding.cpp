@@ -79,11 +79,9 @@ int niko_server_thread(void *data){
 		out_pipe = open(NIKO_PIPE_PATH.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 		SDL_LockMutex(mutex);
 		active = true;
-		if (message_len > 0)
-		{
-			if (write(out_pipe, (char*)message_buffer, message_len) == -1)
-			{
-				Debug() << "[niko_server_thread]Failed to write to pipe!";
+		if (message_len > 0){
+			if (write(out_pipe, (char*)message_buffer, message_len) == -1){
+				Debug() << "[niko_server_thread] Failed to write to pipe!";
 			}
 		}
 		SDL_UnlockMutex(mutex);
@@ -210,5 +208,4 @@ void nikoBindingInit(){
 	//Functions
 	_rb_define_module_function(module, "get_ready", nikoPrepare);
 	_rb_define_module_function(module, "do_your_thing", nikoStart);
-	printf("[nikoBindingInit] Done\n");
 }

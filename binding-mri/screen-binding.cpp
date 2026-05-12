@@ -76,5 +76,4 @@ void screenBindingInit(){
     _rb_define_module_function(module, "start", screenStart);
     _rb_define_module_function(module, "finish", screenFinish);
 	_rb_define_module_function(module, "set", screenSet);
-	printf("[screenBindingInit] Done\n");
 }

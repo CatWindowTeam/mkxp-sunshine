@@ -75,5 +75,4 @@ void planeBindingInit(){
 	INIT_PROP_BIND( Plane, BlendType, "blend_type" );
 	INIT_PROP_BIND( Plane, Color,     "color"      );
 	INIT_PROP_BIND( Plane, Tone,      "tone"       );
-	printf("[planeBindingInit] Done\n");	
 }

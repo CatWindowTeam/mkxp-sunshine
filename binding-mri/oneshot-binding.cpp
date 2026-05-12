@@ -123,5 +123,4 @@ void oneshotBindingInit(){
 	_rb_define_module_function(module, "exiting", oneshotExiting);
 	_rb_define_module_function(module, "shake", oneshotShake);
 	_rb_define_module_function(module, "crc32", oneshotCRC32);
-	printf("[oneshotBindingInit] Done\n");
 }

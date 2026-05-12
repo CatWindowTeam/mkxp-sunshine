@@ -159,12 +159,10 @@ void inputBindingInit(){
 
 	_rb_define_module_function(module, "quit?", inputQuit);
 
-	if (rgssVer >= 3)
-	{
+	if (rgssVer >= 3){
 		VALUE symHash = rb_hash_new();
 
-		for (size_t i = 0; i < buttonCodesN; ++i)
-		{
+		for (size_t i = 0; i < buttonCodesN; ++i){
 			ID sym = rb_intern(buttonCodes[i].str);
 			VALUE val = INT2FIX(buttonCodes[i].val);
 
@@ -176,16 +174,12 @@ void inputBindingInit(){
 
 		rb_iv_set(module, "buttoncodes", symHash);
 		getRbData()->buttoncodeHash = symHash;
-	}
-	else
-	{
-		for (size_t i = 0; i < buttonCodesN; ++i)
-		{
+	}else{
+		for (size_t i = 0; i < buttonCodesN; ++i){
 			ID sym = rb_intern(buttonCodes[i].str);
 			VALUE val = INT2FIX(buttonCodes[i].val);
 
 			rb_const_set(module, sym, val);
 		}
 	}
-	printf("[inputBindingInit] Done\n");
 }

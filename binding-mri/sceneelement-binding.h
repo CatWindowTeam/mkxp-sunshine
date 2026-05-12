@@ -26,8 +26,7 @@
 #include "binding-util.h"
 
 template<class C>
-RB_METHOD(sceneElementGetZ)
-{
+RB_METHOD(sceneElementGetZ){
 	RB_UNUSED_PARAM;
 
 	SceneElement *se = getPrivateData<C>(self);
@@ -39,8 +38,7 @@ RB_METHOD(sceneElementGetZ)
 }
 
 template<class C>
-RB_METHOD(sceneElementSetZ)
-{
+RB_METHOD(sceneElementSetZ){
 	SceneElement *se = getPrivateData<C>(self);
 
 	int z;
@@ -52,8 +50,7 @@ RB_METHOD(sceneElementSetZ)
 }
 
 template<class C>
-RB_METHOD(sceneElementGetVisible)
-{
+RB_METHOD(sceneElementGetVisible){
 	RB_UNUSED_PARAM;
 
 	SceneElement *se = getPrivateData<C>(self);
@@ -65,8 +62,7 @@ RB_METHOD(sceneElementGetVisible)
 }
 
 template<class C>
-RB_METHOD(sceneElementSetVisible)
-{
+RB_METHOD(sceneElementSetVisible){
 	SceneElement *se = getPrivateData<C>(self);
 
 	bool visible;
@@ -79,8 +75,7 @@ RB_METHOD(sceneElementSetVisible)
 
 template<class C>
 void
-sceneElementBindingInit(VALUE klass)
-{
+sceneElementBindingInit(VALUE klass){
 	_rb_define_method(klass, "z",        sceneElementGetZ<C>);
 	_rb_define_method(klass, "z=",       sceneElementSetZ<C>);
 	_rb_define_method(klass, "visible",  sceneElementGetVisible<C>);

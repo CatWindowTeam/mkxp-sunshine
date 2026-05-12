@@ -71,13 +71,11 @@ RB_METHOD(fontInitialize){
 
 	Font *f;
 
-	if (NIL_P(namesObj))
-	{
+	if (NIL_P(namesObj)){
 		namesObj = rb_iv_get(rb_obj_class(self), "default_name");
 		f = new Font(0, size);
 	}
-	else
-	{
+	else{
 		std::vector<std::string> names;
 		collectStrings(namesObj, names);
 
@@ -302,5 +300,4 @@ void fontBindingInit(){
 	INIT_PROP_BIND(Font, Outline, "outline");
 	INIT_PROP_BIND(Font, OutColor, "out_color");
 	}
-	printf("[fontBindingInit] Done\n");
 }

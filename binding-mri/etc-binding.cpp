@@ -217,5 +217,4 @@ void etcBindingInit(){
 	RB_ATTR_RW(Rect, Width, width);
 	RB_ATTR_RW(Rect, Height, height);
 	_rb_define_method(klass, "empty", rectEmpty);
-	printf("[bitmapBindingInit] Done\n");
 }
