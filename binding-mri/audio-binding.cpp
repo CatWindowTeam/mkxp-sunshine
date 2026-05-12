@@ -162,5 +162,5 @@ void audioBindingInit(){
 	_rb_define_module_function(module, "__reset__", audioReset);
 
 	INIT_AUD_PROP_BIND( BGM_Volume, "bgm_volume" );
-	INIT_AUD_PROP_BIND( SFX_Volume, "sfx_volume" );es
+	INIT_AUD_PROP_BIND( SFX_Volume, "sfx_volume" );
 }
