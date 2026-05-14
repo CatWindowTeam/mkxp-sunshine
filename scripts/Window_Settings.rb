@@ -162,7 +162,7 @@ class Window_Settings
              tr('In-Game Timer'),
 			 tr('Language'),
              tr('Debug mode(!)'),
-             tr('One Shot Mode(!)'),
+             tr('Freeware Mode(!)'),
 			]
 
     @index = 0

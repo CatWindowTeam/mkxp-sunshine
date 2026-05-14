@@ -78,10 +78,10 @@ class Window_Message < Window_Selectable
     @choice_start = -1
     @number_start = -1
     @skip_message_proc = false
-    $game_system.windowskin_name = "normal"
     self.active = false
     self.pause = false
     self.index = -1
+    $game_system.windowskin_name = "normal"
   end
   #--------------------------------------------------------------------------
   # * Refresh: Load new message text and pre-process it
