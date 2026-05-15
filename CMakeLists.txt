@@ -15,8 +15,18 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Debug stuff
 # i want die
 if(DEBUG)
-	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3 -O0 -fno-omit-frame-pointer -ggdb")
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3 -O0 -fno-omit-frame-pointer -ggdb")
+	if (MSVC)
+    		add_compile_options(/W4 /dynamicdeopt /Od /fsanitize /GS /guard /validate-charset)
+	else()
+    		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -Wall)
+	endif()
+else()
+	# Optimization stuff
+	if (MSVC)
+		add_compile_options(/O2 /fp:fast /GA /GL /Gw Qpar /RTCu)
+	else()
+		add_compile_options(-0fast -ffast-math -fdevirtualize-speculatively -fspeculatively-call-stored-functions -fipa-pta -fdelete-null-pointer-checks -flimit-function-alignment)
+	endif()
 endif()
 ## Setup main source ##
 

@@ -258,8 +258,7 @@ public:
 			screenQuad.draw();
 		}
 
-		if (flashEffect)
-		{
+		if (flashEffect){
 			shader.setColor(f);
 			screenQuad.draw();
 		}
@@ -373,8 +372,7 @@ struct FPSLimiter{
 		 * relative to the ideal timestep */
 		adj.idealDiff = diff - tpf + adj.idealDiff;
 
-		if (adj.resetFlag)
-		{
+		if (adj.resetFlag){
 			adj.idealDiff = 0;
 			adj.resetFlag = false;
 		}
@@ -388,8 +386,7 @@ struct FPSLimiter{
 	 * of ticks behind the ideal timestep,
 	 * there's no choice but to skip frame(s)
 	 * to catch up */
-	bool frameSkipRequired() const
-	{
+	bool frameSkipRequired() const{
 		if (disabled)
 			return false;
 
@@ -405,15 +402,14 @@ private:
 		req.tv_nsec = nsec % NS_PER_S;
 		errno = 0;
 
-		while (nanosleep(&req, &req) == -1)
-		{
+		while (nanosleep(&req, &req) == -1){
 			int err = errno;
 			errno = 0;
 
 			if (err == EINTR)
 				continue;
 
-			Debug() << "nanosleep failed. errno:" << err;
+			Debug() << "[delayTicks] nanosleep failed. errno:" << err;
 			SDL_Delay(ticks / tickFreqMS);
 			break;
 		}
@@ -577,8 +573,7 @@ struct GraphicsPrivate{
 	}
 
 	void redrawScreen(){
-		if (shState->oneshot().obscuredDirty)
-		{
+		if (shState->oneshot().obscuredDirty){
 			TEX::bind(obscuredTex);
 			TEX::uploadSubImage(0, 0, 640, 480, shState->oneshot().obscuredMap().data(), GL_LUMINANCE);
 			shState->oneshot().obscuredDirty = false;
@@ -638,19 +633,15 @@ void Graphics::update(bool limitFps){
 		return;
 
 	if (limitFps){
-		if (p->fpsLimiter.frameSkipRequired())
-		{
-			if (p->threadData->config.frameSkip)
-			{
+		if (p->fpsLimiter.frameSkipRequired()){
+			if (p->threadData->config.frameSkip){
 				/* Skip frame */
 				p->fpsLimiter.delay();
 				++p->frameCount;
 				p->threadData->ethread->notifyFrame();
 
 				return;
-			}
-			else
-			{
+			}else{
 				/* Just reset frame adjust counter */
 				p->fpsLimiter.resetFrameAdjust();
 			}
@@ -676,10 +667,7 @@ void Graphics::freeze(){
 	p->compositeToBuffer(p->frozenScene);
 }
 
-void Graphics::transition(int duration,
-                          const char *filename,
-                          int vague)
-{
+void Graphics::transition(int duration, const char *filename, int vague){
 	p->checkSyncLock();
 
 	if (!p->frozen)
@@ -824,8 +812,7 @@ void Graphics::fadeout(int duration){
 	for (int i = duration-1; i > -1; --i){
 		setBrightness(diff + (curr / duration) * i);
 
-		if (p->frozen)
-		{
+		if (p->frozen){
 			GLMeta::blitBeginScreen(p->scSize);
 			GLMeta::blitSource(p->frozenScene);
 
@@ -836,8 +823,7 @@ void Graphics::fadeout(int duration){
 
 			p->swapGLBuffer();
 		}
-		else
-		{
+		else{
 			update();
 		}
 	}
@@ -852,8 +838,7 @@ void Graphics::fadein(int duration){
 	for (int i = 1; i <= duration; ++i){
 		setBrightness(curr + (diff / duration) * i);
 
-		if (p->frozen)
-		{
+		if (p->frozen){
 			GLMeta::blitBeginScreen(p->scSize);
 			GLMeta::blitSource(p->frozenScene);
 
@@ -864,8 +849,7 @@ void Graphics::fadein(int duration){
 
 			p->swapGLBuffer();
 		}
-		else
-		{
+		else{
 			update();
 		}
 	}
@@ -912,7 +896,7 @@ void Graphics::resizeScreen(int width, int height){
 }
 
 void Graphics::playMovie(const char *filename){
-	Debug() << "Graphics.playMovie(" << filename << ") not implemented";
+	Debug() << "[playMovie] Graphics.playMovie(" << filename << ") not implemented";
 }
 
 DEF_ATTR_RD_SIMPLE(Graphics, Brightness, int, p->brightness)
@@ -1022,3 +1006,4 @@ void Graphics::remDisposable(Disposable *d){
 const TEX::ID &Graphics::obscuredTex() const{
 	return p->obscuredTex;
 }
+

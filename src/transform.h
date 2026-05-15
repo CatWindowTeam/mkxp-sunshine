@@ -52,8 +52,7 @@
 #include <math.h>
 #include <string.h>
 
-class Transform
-{
+class Transform{
 public:
 	Transform()
 	    : scale(1, 1),

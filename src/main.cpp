@@ -280,19 +280,8 @@ int main(int argc, char *argv[]){
 	if (conf.windowTitle.empty())
 		conf.windowTitle = conf.game.title;
 
-	//IMG_Init() and IMG_Quit() are no longer necessary. If an image format requires dynamically loading a support library, that will be done automatically.
-	//int imgFlags = IMG_INIT_PNG;
-	//if (IMG_Init(imgFlags) != imgFlags)
-	//{
-	//	showInitError(std::string("Error initializing SDL_image: ") + SDL_GetError());
-	//	SDL_Quit();
-    //
-	//	return 0;
-	//}
-
 	if (TTF_Init() < 0){
 		showInitError(std::string("Error initializing SDL_ttf: ") + SDL_GetError());
-		//IMG_Quit();
 		SDL_Quit();
 
 		return 0;
@@ -301,24 +290,22 @@ int main(int argc, char *argv[]){
 	if (Sound_Init() == 0){
 		showInitError(std::string("Error initializing SDL_sound: ") + Sound_GetError());
 		TTF_Quit();
-		//IMG_Quit();
 		SDL_Quit();
 
 		return 0;
 	}
 
 	SDL_Window *win;
-	Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS; //| SDL_WINDOW_ALLOW_HIGHDPI;
+	Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS;
 
 	// #ifdef __APPLE__
 	// 	winFlags |= SDL_WINDOW_RESIZABLE;
 	// #endif
 
-	//SDL_CreateWindow() has been simplified and no longer takes a window position.
+
 	win = SDL_CreateWindow(conf.windowTitle.c_str(), conf.defScreenW, conf.defScreenH, winFlags);
 	if (conf.fullscreen)
 		SDL_SetWindowFullscreen(win, true);
-
 
 	if (!win){
 		showInitError(std::string("Error creating window: ") + SDL_GetError());
@@ -415,8 +402,6 @@ int main(int argc, char *argv[]){
 
 	Sound_Quit();
 	TTF_Quit();
-	//IMG_Init() and IMG_Quit() are no longer necessary. If an image format requires dynamically loading a support library, that will be done automatically.
-	//IMG_Quit();
 	SDL_Quit();
 
 #ifdef STEAM
