@@ -76,7 +76,9 @@ int server_thread(void *data){
 		active = true;
 		if (message_len > 0){
 			if (write(out_pipe, (char*)message_buffer, message_len) == -1){
-				Debug() << "[journal-binding>server_thread()]Failure writing to journal's pipe!";
+				#ifdef DEBUG
+					Debug() << "[journal-binding>server_thread()]Failure writing to journal's pipe!";
+				#endif
 			}
 		}
 		SDL_UnlockMutex(mutex);
@@ -85,8 +87,7 @@ int server_thread(void *data){
 #endif
 }
 
-RB_METHOD(journalSet)
-{
+RB_METHOD(journalSet){
 	RB_UNUSED_PARAM;
 	const char *name;
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);
@@ -144,8 +145,7 @@ RB_METHOD(journalSet)
 	return Qnil;
 }
 
-RB_METHOD(journalSetLang)
-{
+RB_METHOD(journalSetLang){
 	RB_UNUSED_PARAM;
 	const char *lang;
 	rb_get_args(argc, argv, "z", &lang RB_ARG_END);
@@ -154,8 +154,7 @@ RB_METHOD(journalSetLang)
 	return Qnil;
 }
 
-RB_METHOD(journalActive)
-{
+RB_METHOD(journalActive){
 	RB_UNUSED_PARAM;
 	return active ? Qtrue : Qfalse;
 }

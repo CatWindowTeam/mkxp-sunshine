@@ -87,6 +87,7 @@ RB_METHOD(disposableIsDisposed){
 
 template<class C>
 static void disposableBindingInit(VALUE klass){
+	printf("[disposableBindingInit] Initialing disposable binding\n");
 	_rb_define_method(klass, "dispose", disposableDispose<C>);
 	_rb_define_method(klass, "disposed?", disposableIsDisposed<C>);
 

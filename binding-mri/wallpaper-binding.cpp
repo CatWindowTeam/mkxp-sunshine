@@ -63,16 +63,22 @@
 	void desktopEnvironmentInit(){
 		printf("[desktopEnvironmentInit] desktopEnvironmentInit()\n");
 		if (desktop != "uninitialized") {
+			#ifdef DEBUG
 			printf("[desktopEnvironmentInit] Running on standalone Window Manager?Trying identify configuration...\n");
+			#endif
 			// If Nitrogen wallpaper manager and feh is aviable we can just use nitrogen --restore command and feh --bg-scale:P
 			if (FILE *file = fopen("/usr/bin/nitrogen", "r")){
         		IsNitrogen = true;
-				printf("[desktopEnvironmentInit] Nitrogen wallpaper manager detected!I will try to use it...\n");
+        		#ifdef DEBUG
+					printf("[desktopEnvironmentInit] Nitrogen wallpaper manager detected!I will try to use it...\n");
+				#endif
 				fclose(file);
     		}else{ fclose(file); }
     		if (FILE *file = fopen("/usr/bin/feh", "r")) {
         		IsFeh = true;
-    			printf("[desktopEnvironmentInit] Feh detected!I will try to use it...\n");
+        		#ifdef DEBUG
+    				printf("[desktopEnvironmentInit] Feh detected!I will try to use it...\n");
+    			#endif
     			fclose(file);
     		} else{ fclose(file); }
     		if(!IsNitrogen && !IsFeh){
@@ -192,7 +198,9 @@ RB_METHOD(wallpaperSet){
 	std::string path;
 #ifdef _WIN32
 	path = shState->config().gameFolder + "\\Wallpaper\\" + name + ".bmp";
-	Debug() << "[wallpaperSet] Setting wallpaper to " << path;
+	#ifdef DEBUG
+		Debug() << "[wallpaperSet] Setting wallpaper to " << path;
+	#endif
 	// Crapify the slashes
 	size_t index = 0;
 	for (;;) {
@@ -266,8 +274,9 @@ end:
 		nameFix.replace(nameFix.end()-3, nameFix.end(), "unix");
 	}
 	path = "/Wallpaper/" + nameFix + ".png";
-
-	Debug() << "[wallpaperSet] Setting wallpaper to " << path;
+	#ifdef DEBUG
+		Debug() << "[wallpaperSet] Setting wallpaper to " << path;
+	#endif
 
 	#ifdef __APPLE__
 		if (!isCached) {
@@ -363,9 +372,11 @@ end:
 					"\"]);" <<
 				"}" <<
 			"'";
-			Debug() << "[wallpaperSet] Wallpaper command:" << command.str();
 			int result = system(command.str().c_str());
-			Debug() << "[wallpaperSet ] Result:" << result;
+			#ifdef DEBUG
+				Debug() << "[wallpaperSet] Wallpaper command:" << command.str();
+				Debug() << "[wallpaperSet ] Result:" << result;
+			#endif
 		} else if (IsFeh == true) {
 			//path
 			printf("[wallpaperSet] Trying set wallpapers via feh\n");
@@ -492,14 +503,18 @@ RB_METHOD(wallpaperReset){
 					"}" <<
 				"}" <<
 			"'";
-			Debug() << "[wallpaperReset] Reset wallpaper command:" << command.str();
 			int result = system(command.str().c_str());
-			Debug() << "[wallpaperReset] Reset result:" << result;
+			#ifdef DEBUG
+				Debug() << "[wallpaperReset] Reset wallpaper command:" << command.str();
+				Debug() << "[wallpaperReset] Reset result:" << result;
+			#endif
 		} else if (IsNitrogen == true){
 			system("nitrogen --restore");
 		} else {
 			if (remove(fallbackPath.c_str()) != 0) {
-				Debug() << "[wallpaperReset] Failed to delete:" << fallbackPath;
+				#ifdef DEBUG
+					Debug() << "[wallpaperReset] Failed to delete:" << fallbackPath;
+				#endif
 			}
 		}
 	#endif
@@ -508,6 +523,7 @@ RB_METHOD(wallpaperReset){
 }
 
 void wallpaperBindingInit(){
+	printf("[wallpaperBindingInit] Initialing Wallpaper binding\n");
 	VALUE module = rb_define_module("Wallpaper");
 
 	// Functions

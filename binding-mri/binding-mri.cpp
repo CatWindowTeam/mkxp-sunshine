@@ -122,8 +122,10 @@ static void mriBindingInit(){
     SunshineBindingInit();
 	steamBindingInit();
 	chromaBindingInit();
-	printf("[mriBindingInit] Done\n");
-	printf("[mriBindingInit] RGSS version: %i\n", rgssVer);
+	#ifdef DEBUG
+		printf("[mriBindingInit] Done\n");
+		printf("[mriBindingInit] RGSS version: %i\n", rgssVer);
+	#endif
 	if (rgssVer >= 3){
 		_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
 		_rb_define_module_function(rb_mKernel, "rgss_stop", mriRgssStop);
@@ -151,13 +153,15 @@ static void mriBindingInit(){
 	/* Load global constants */
 	rb_gv_set("MKXP", Qtrue);
 
-	VALUE debug = rb_bool_new(shState->config().editor.debug);
-	if (rgssVer == 1)
-		rb_gv_set("DEBUG", debug);
-	else if (rgssVer >= 2)
-		rb_gv_set("TEST", debug);
+	#ifdef DEBUG
+		VALUE debug = rb_bool_new(shState->config().editor.debug);
+		if (rgssVer == 1)
+			rb_gv_set("DEBUG", debug);
+		else if (rgssVer >= 2)
+			rb_gv_set("TEST", debug);
 
-	rb_gv_set("BTEST", rb_bool_new(shState->config().editor.battleTest));
+		rb_gv_set("BTEST", rb_bool_new(shState->config().editor.battleTest));
+	#endif
 }
 
 static void showMsg(const std::string &msg){
@@ -248,7 +252,9 @@ static VALUE rgssMainRescue(VALUE arg, VALUE exc){
 }
 
 static void processReset(){
-	printf("[processReset] reset!\n");
+	#ifdef DEBUG
+		printf("[processReset] reset!\n");
+	#endif
 	shState->graphics().reset();
 	shState->audio().reset();
 
@@ -273,7 +279,9 @@ RB_METHOD(mriRgssMain){
 			break;
 
 		if (rb_obj_class(exc) == getRbData()->exc[Reset]){
-			printf("[mriRgssMain] Reset\n");
+			#ifdef DEBUG
+				printf("[mriRgssMain] Reset\n");
+			#endif
 			processReset();
 		}else{
 			rb_exc_raise(exc);
@@ -285,7 +293,9 @@ RB_METHOD(mriRgssMain){
 
 RB_METHOD(mriRgssStop){
 	RB_UNUSED_PARAM;
-	printf("[mriRgssStop] Stop\n");
+	#ifdef DEBUG
+		printf("[mriRgssStop] Stop\n");
+	#endif
 	while (true)
 		shState->graphics().update();
 
@@ -396,12 +406,18 @@ static void runRMXPScripts(BacktraceData &btData){
 	}
 
 	/* Set the debug flag */
-	rb_gv_set("$debug", conf.debugMode ? Qtrue : Qfalse);
+	#ifdef DEBUG
+		rb_gv_set("$debug", conf.debugMode ? Qtrue : Qfalse);
+	#else
+		rb_gv_set("$debug", Qfalse);
+	#endif
 
 	rb_gv_set("$RGSS_SCRIPTS", scriptArray);
 
 	long scriptCount = RARRAY_LEN(scriptArray);
-	printf("[runRMXPScripts] Scripts count: %ld\n", scriptCount);
+	#ifdef DEBUG
+		printf("[runRMXPScripts] Scripts count: %ld\n", scriptCount);
+	#endif
 	std::string decodeBuffer;
 	decodeBuffer.resize(0x1000);
 
@@ -413,8 +429,11 @@ static void runRMXPScripts(BacktraceData &btData){
 
 		VALUE scriptName = rb_ary_entry(script, 1);
 		VALUE scriptString = rb_ary_entry(script, 2);
-		//printf("[runRMXPScripts] Script Name: %s\n", RSTRING_PTR(scriptName));
-		
+
+		#ifdef DEBUG
+			printf("[runRMXPScripts] Script Name: %s\n", RSTRING_PTR(scriptName));
+		#endif
+
 		int result = Z_OK;
 		unsigned long bufferLen;
 
@@ -575,14 +594,17 @@ static void mriBindingExecute(){
 	BacktraceData btData;
 
 	mriBindingInit();
-	printf("[mriBindingExecute] run RMXP Scripts\n");
+	#ifdef DEBUG
+		printf("[mriBindingExecute] run RMXP Scripts\n");
+	#endif
 	runRMXPScripts(btData);
 
 	VALUE exc = rb_errinfo();
 	if (!NIL_P(exc) && !rb_obj_is_kind_of(exc, rb_eSystemExit))
 		showExc(exc, btData);
-
-	printf("[mirBindingExecure] Ruby cleanup\n");
+	#ifdef DEBUG
+		printf("[mirBindingExecure] Ruby cleanup\n");
+	#endif
 	ruby_cleanup(0);
 
 	shState->rtData().rqTermAck.set();
@@ -597,7 +619,9 @@ static void mriBindingTerminate(){
 }
 
 static void mriBindingReset(){
-	printf("[mriBindingReset] Binding reset...\n");
+	#ifdef DEBUG
+		printf("[mriBindingReset] Binding reset...\n");
+	#endif
 	rb_raise(getRbData()->exc[Reset], " ");
 }
 

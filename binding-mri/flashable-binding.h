@@ -62,6 +62,7 @@ RB_METHOD(flashableUpdate){
 
 template<class C>
 static void flashableBindingInit(VALUE klass){
+	printf("[flashableBindingInit] Initializing Flashable binding\n");
 	_rb_define_method(klass, "flash", flashableFlash<C>);
 	_rb_define_method(klass, "update", flashableUpdate<C>);
 }

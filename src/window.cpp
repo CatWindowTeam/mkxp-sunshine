@@ -120,8 +120,7 @@ struct QuadChunk {
 	    : vert(0), count(0)
 	{}
 
-	void setAlpha(float value)
-	{
+	void setAlpha(float value){
 		for (int i = 0; i < count*4; ++i)
 			vert[i].color.w = value;
 	}
@@ -614,8 +613,7 @@ struct WindowPrivate {
 	void updateControls(){
 		bool updateArray = false;
 
-		if (active && cursorVert.vert)
-		{
+		if (active && cursorVert.vert){
 			float alpha = cursorAniAlpha[cursorAniAlphaIdx] / 255.0f;
 
 			cursorVert.setAlpha(alpha);
@@ -623,8 +621,7 @@ struct WindowPrivate {
 			updateArray = true;
 		}
 
-		if (pause && pauseAniVert.vert)
-		{
+		if (pause && pauseAniVert.vert){
 			float alpha = pauseAniAlpha[pauseAniAlphaIdx] / 255.0f;
 			FloatRect frameRect = pauseAniSrc[pauseAniQuad[pauseAniQuadIdx]];
 

@@ -68,8 +68,8 @@ RB_METHOD(chromaPlayAnimation) {
   rb_get_args(argc, argv, "zb", &animfile, &loop RB_ARG_END);
 
   if (INIT_SUCCESS) {
-    Debug() << "[chromaPlayAnimation] Opening animation:" << animfile;
     lastAnimId = _openAnimation(animfile);
+    Debug() << "[chromaPlayAnimation] Opening animation:" << animfile;
     Debug() << "[chromaPlayAnimation] ID:" << lastAnimId;
     _playAnimation(lastAnimId);
   }

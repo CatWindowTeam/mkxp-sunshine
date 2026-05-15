@@ -812,16 +812,14 @@ struct TilemapPrivate {
 	void prepareZLayerBatches(){
 		ZLayer *const *zlayers = elem.zlayers;
 
-		for (size_t i = 0; i < elem.activeLayers; ++i)
-		{
+		for (size_t i = 0; i < elem.activeLayers; ++i){
 			ZLayer *batchHead = zlayers[i];
 			batchHead->batchedFlag = false;
 
 			GLsizei vboBatchCount = batchHead->vboCount;
 			IntruListLink<SceneElement> *iter = &batchHead->link;
 
-			for (i = i+1; i < elem.activeLayers; ++i)
-			{
+			for (i = i+1; i < elem.activeLayers; ++i){
 				iter = iter->next;
 				ZLayer *layer = zlayers[i];
 
@@ -844,8 +842,7 @@ struct TilemapPrivate {
 		const Vec2i combOrigin = origin + elem.sceneGeo.orig;
 		const Vec2i mvpPos = getTilePos(combOrigin);
 
-		if (mvpPos != viewpPos)
-		{
+		if (mvpPos != viewpPos){
 			viewpPos = mvpPos;
 			buffersDirty = true;
 			updateFlashMapViewport();

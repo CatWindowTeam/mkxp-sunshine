@@ -86,6 +86,7 @@ static C *viewportElementInitialize(int argc, VALUE *argv, VALUE self){
 
 template<class C>
 void viewportElementBindingInit(VALUE klass){
+	printf("[viewportElementBindingInit] Initialing Viewport Element binding\n");
 	sceneElementBindingInit<C>(klass);
 
 	_rb_define_method(klass, "viewport", viewportElementGetViewport<C>);
