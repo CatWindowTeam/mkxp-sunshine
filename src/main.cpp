@@ -392,7 +392,7 @@ int main(int argc, char *argv[]){
 	/* Clean up any remainin events */
 	eventThread.cleanup();
 
-	Debug() << "[main]Shutting down.";
+	Debug() << "[main] Shutting down.";
 
 	unloadLocale();
 	unloadLanguageMetadata();

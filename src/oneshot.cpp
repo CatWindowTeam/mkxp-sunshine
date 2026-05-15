@@ -265,8 +265,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	#endif
 #endif
 
-	Debug() << "Game path    :" << p->gamePath;
-	Debug() << "Docs path    :" << p->docsPath;
+	Debug() << "[oneshot] Game path    :" << p->gamePath;
+	Debug() << "[oneshot] Docs path    :" << p->docsPath;
 
 #ifdef OS_LINUX
 	char const* xdg_current_desktop = getenv("XDG_CURRENT_DESKTOP");
@@ -299,7 +299,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 		}
 	}
 
-	Debug() << "Desktop env  :" << desktopEnv;
+	Debug() << "[oneshot] Desktop env  :" << desktopEnv;
 #endif
 
 	/********
