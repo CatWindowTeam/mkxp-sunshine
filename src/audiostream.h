@@ -28,10 +28,8 @@
 
 #include <string>
 
-struct AudioStream
-{
-	struct
-	{
+struct AudioStream{
+	struct{
 		std::string filename;
 		float volume;
 		float pitch;
@@ -43,8 +41,7 @@ struct AudioStream
 	 * playback volume. Used with setVolume().
 	 * Base is set by play().
 	 * External is used by MeWatch */
-	enum VolumeType
-	{
+	enum VolumeType{
 		Base = 0,
 		FadeOut,
 		FadeIn,
@@ -82,8 +79,7 @@ struct AudioStream
 	SDL_Mutex *streamMut;
 
 	/* Fade out */
-	struct
-	{
+	struct{
 		/* Fade out is in progress */
 		AtomicFlag active;
 
@@ -107,8 +103,7 @@ struct AudioStream
 	} fade;
 
 	/* Fade in */
-	struct
-	{
+	struct{
 		AtomicFlag rqFini;
 		AtomicFlag rqTerm;
 

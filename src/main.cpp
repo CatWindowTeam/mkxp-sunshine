@@ -117,6 +117,7 @@ int rgssThreadFun(void *userdata){
 
 	bool vsync = conf.vsync || conf.syncToRefreshrate;
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
+	SDL_SetHint(SDL_HINT_RENDER_VSYNC, vsync ? 1 : 0);
 
 #ifndef NDEBUG
 	GLDebugLogger dLogger;
@@ -160,7 +161,7 @@ int rgssThreadFun(void *userdata){
 
 static void showInitError(const std::string &msg){
 	Debug() << msg;
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Sun is not shining:(", msg.c_str(), 0);
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error :(", msg.c_str(), 0);
 }
 
 static void setupWindowIcon(const Config &conf, SDL_Window *win){
@@ -173,8 +174,7 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 
 	SDL_Surface *iconImg = IMG_Load_IO(iconSrc, true);
 
-	if (iconImg)
-	{
+	if (iconImg){
 		SDL_SetWindowIcon(win, iconImg);
 		SDL_DestroySurface(iconImg);
 	}
@@ -220,6 +220,9 @@ int main(int argc, char *argv[]){
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
 	SDL_SetHint(SDL_HINT_APP_ID, "OneshotSunshine");
 	SDL_SetHint(SDL_HINT_APP_NAME, "Oneshot: Sunshine");
+	SDL_SetHint(SDL_HINT_AUDIO_DEVICE_STREAM_NAME, "Oneshot: sunshine");
+	SDL_SetHint(SDL_HINT_AUDIO_DEVICE_STREAM_ROLE, "Game");
+	SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
 	//X11 work on *BSD,Solaris too!
 #if defined(__linux__) || defined(BSD) || defined(__sun) 
 	SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");

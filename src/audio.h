@@ -37,8 +37,7 @@
 struct AudioPrivate;
 struct RGSSThreadData;
 
-class Audio
-{
+class Audio{
 public:
 	void bgmPlay(const char *filename,
 	             int volume = 100,
@@ -84,3 +83,4 @@ private:
 };
 
 #endif // AUDIO_H
+

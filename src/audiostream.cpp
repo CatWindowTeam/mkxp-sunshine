@@ -49,16 +49,13 @@ AudioStream::AudioStream(ALStream::LoopMode loopMode,
 	streamMut = SDL_CreateMutex();
 }
 
-AudioStream::~AudioStream()
-{
-	if (fade.thread)
-	{
+AudioStream::~AudioStream(){
+	if (fade.thread){
 		fade.reqTerm.set();
 		SDL_WaitThread(fade.thread, 0);
 	}
 
-	if (fadeIn.thread)
-	{
+	if (fadeIn.thread){
 		fadeIn.rqTerm.set();
 		SDL_WaitThread(fadeIn.thread, 0);
 	}
@@ -73,11 +70,7 @@ AudioStream::~AudioStream()
 	SDL_DestroyMutex(streamMut);
 }
 
-void AudioStream::play(const std::string &filename,
-                       int volume,
-                       int pitch,
-                       float offset)
-{
+void AudioStream::play(const std::string &filename, int volume, int pitch, float offset){
 	finiFadeOutInt();
 
 	lockStream();
@@ -92,8 +85,7 @@ void AudioStream::play(const std::string &filename,
 	if (filename == current.filename
 	&&  _volume  == current.volume
 	&&  _pitch   == current.pitch
-	&&  (sState == ALStream::Playing || sState == ALStream::Paused))
-	{
+	&&  (sState == ALStream::Playing || sState == ALStream::Paused)){
 		unlockStream();
 		return;
 	}
@@ -101,8 +93,7 @@ void AudioStream::play(const std::string &filename,
 	/* If the filenames are equal,
 	 * we update the volume and pitch and continue streaming */
 	if (filename == current.filename
-	&&  (sState == ALStream::Playing || sState == ALStream::Paused))
-	{
+	&&  (sState == ALStream::Playing || sState == ALStream::Paused)){
 		setVolume(Base, _volume);
 		stream.setPitch(_pitch);
 		current.volume = _volume;
@@ -114,8 +105,7 @@ void AudioStream::play(const std::string &filename,
 	/* Requested audio file is different from current one */
 	bool diffFile = (filename != current.filename);
 
-	switch (sState)
-	{
+	switch (sState){
 	case ALStream::Paused :
 	case ALStream::Playing :
 		stream.stop();
@@ -125,16 +115,13 @@ void AudioStream::play(const std::string &filename,
 			stream.close();
 		/* falls through */
 	case ALStream::Closed :
-		if (diffFile)
-		{
-			try
-			{
+		if (diffFile){
+			try{
 				/* This will throw on errors while
 				 * opening the data source */
 				stream.open(filename);
 			}
-			catch (const Exception &e)
-			{
+			catch (const Exception &e){
 				unlockStream();
 				throw e;
 			}
@@ -146,8 +133,7 @@ void AudioStream::play(const std::string &filename,
 	setVolume(Base, _volume);
 	stream.setPitch(_pitch);
 
-	if (offset > 0)
-	{
+	if (offset > 0){
 		setVolume(FadeIn, 0);
 		startFadeIn();
 	}
@@ -164,8 +150,7 @@ void AudioStream::play(const std::string &filename,
 	unlockStream();
 }
 
-void AudioStream::stop()
-{
+void AudioStream::stop(){
 	finiFadeOutInt();
 
 	lockStream();
@@ -177,37 +162,32 @@ void AudioStream::stop()
 	unlockStream();
 }
 
-void AudioStream::fadeOut(int duration)
-{
+void AudioStream::fadeOut(int duration){
 	lockStream();
 
 	ALStream::State sState = stream.queryState();
 	noResumeStop = true;
 
-	if (fade.active)
-	{
+	if (fade.active){
 		unlockStream();
 
 		return;
 	}
 
-	if (sState == ALStream::Paused)
-	{
+	if (sState == ALStream::Paused){
 		stream.stop();
 		unlockStream();
 
 		return;
 	}
 
-	if (sState != ALStream::Playing)
-	{
+	if (sState != ALStream::Playing){
 		unlockStream();
 
 		return;
 	}
 
-	if (fade.thread)
-	{
+	if (fade.thread){
 		fade.reqFini.set();
 		SDL_WaitThread(fade.thread, 0);
 		fade.thread = 0;
@@ -228,34 +208,28 @@ void AudioStream::fadeOut(int duration)
 /* Any access to this classes 'stream' member,
  * whether state query or modification, must be
  * protected by a 'lock'/'unlock' pair */
-void AudioStream::lockStream()
-{
+void AudioStream::lockStream(){
 	SDL_LockMutex(streamMut);
 }
 
-void AudioStream::unlockStream()
-{
+void AudioStream::unlockStream(){
 	SDL_UnlockMutex(streamMut);
 }
 
-void AudioStream::setVolume(VolumeType type, float value)
-{
+void AudioStream::setVolume(VolumeType type, float value){
 	volumes[type] = value;
 	updateVolume();
 }
 
-float AudioStream::getVolume(VolumeType type)
-{
+float AudioStream::getVolume(VolumeType type){
 	return volumes[type];
 }
 
-float AudioStream::playingOffset()
-{
+float AudioStream::playingOffset(){
 	return stream.queryOffset();
 }
 
-void AudioStream::updateVolume()
-{
+void AudioStream::updateVolume(){
 	float vol = GLOBAL_VOLUME;
 
 	for (size_t i = 0; i < VolumeTypeCount; ++i)
@@ -264,25 +238,21 @@ void AudioStream::updateVolume()
 	stream.setVolume(vol);
 }
 
-void AudioStream::finiFadeOutInt()
-{
-	if (fade.thread)
-	{
+void AudioStream::finiFadeOutInt(){
+	if (fade.thread){
 		fade.reqFini.set();
 		SDL_WaitThread(fade.thread, 0);
 		fade.thread = 0;
 	}
 
-	if (fadeIn.thread)
-	{
+	if (fadeIn.thread){
 		fadeIn.rqFini.set();
 		SDL_WaitThread(fadeIn.thread, 0);
 		fadeIn.thread = 0;
 	}
 }
 
-void AudioStream::startFadeIn()
-{
+void AudioStream::startFadeIn(){
 	/* Previous fadein should always be terminated in play() */
 	assert(!fadeIn.thread);
 
@@ -294,10 +264,8 @@ void AudioStream::startFadeIn()
 		<AudioStream, &AudioStream::fadeInThread>(this, fadeIn.threadName);
 }
 
-void AudioStream::fadeOutThread()
-{
-	while (true)
-	{
+void AudioStream::fadeOutThread(){
+	while (true){
 		/* Just immediately terminate on request */
 		if (fade.reqTerm)
 			break;
@@ -332,10 +300,8 @@ void AudioStream::fadeOutThread()
 	fade.active.clear();
 }
 
-void AudioStream::fadeInThread()
-{
-	while (true)
-	{
+void AudioStream::fadeInThread(){
+	while (true){
 		if (fadeIn.rqTerm)
 			break;
 
@@ -349,8 +315,7 @@ void AudioStream::fadeInThread()
 
 		if (state != ALStream::Playing
 		||  prog >= 1.0f
-		||  fadeIn.rqFini)
-		{
+		||  fadeIn.rqFini){
 			setVolume(FadeIn, 1.0f);
 			unlockStream();
 
