@@ -11,12 +11,12 @@ class Spriteset_Map
   #--------------------------------------------------------------------------
   def initialize(spriteset = nil)
     # Make viewports
-    @viewport = Viewport.new(0, 0, 640, 480)
-    @viewport_bg = Viewport.new(0, 0, 640, 480)
-    @viewport_pics = Viewport.new(0, 0, 640, 480)
-    @viewport_particles = Viewport.new(0, 0, 640, 480)
-    @viewport_lights = Viewport.new(0, 0, 640, 480)
-    @viewport_flash = Viewport.new(0, 0, 640, 480)
+    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @viewport_bg = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @viewport_pics = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @viewport_particles = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @viewport_lights = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @viewport_flash = Viewport.new(0, 0, Graphics.width, Graphics.height)
 
     @viewport_bg.z = -500
     @viewport_lights.z = 200
@@ -80,7 +80,11 @@ class Spriteset_Map
     # Make lightbulb sprite
     @bulb = Sprite.new(@viewport_lights)
 	@bulb.x = -80
-    @bulb.bitmap = RPG::Cache.light('bulb')
+	if Graphics.width == 1280
+		@bulb.bitmap = RPG::Cache.light('bulb_16')
+	else
+		@bulb.bitmap = RPG::Cache.light('bulb')
+	end
     @bulb.opacity = has_lightbulb? ? 255 : 0
     # Panorama animation timer
     @pan_animate_timer = 0
@@ -176,10 +180,11 @@ class Spriteset_Map
             @panorama2.opacity = 0
             @pan_frame_index = 0
           end
-          @panorama.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
-          @panorama2.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
+		  @panorama.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
+		  @panorama2.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
+
         else
-          @panorama.bitmap = RPG::Cache.panorama(@panorama_name, @panorama_hue)
+		  @panorama.bitmap = RPG::Cache.panorama(@panorama_name, @panorama_hue)
         end
       end
       Graphics.frame_reset
@@ -247,13 +252,13 @@ class Spriteset_Map
 	  $game_map.pan_move_offset += 1
 	end
     if $game_map.clamped_x
-      x = ($game_player.real_x.to_f / (($game_map.width  - 1) * 128)) * (@panorama.bitmap.width * $game_map.pan_zoom - 640) 
+      x = ($game_player.real_x.to_f / (($game_map.width  - 1) * 128)) * (@panorama.bitmap.width * $game_map.pan_zoom - Graphics.width) 
       @panorama.ox = x < 0.0 ? 0.0 : x
     else
       @panorama.ox = $game_map.display_x / ($game_map.pan_onetoone ? 4 : 8)
     end
     if $game_map.clamped_y
-      y = ($game_player.real_y.to_f / (($game_map.height - 1) * 128)) * (@panorama.bitmap.height * $game_map.pan_zoom  - 480) 
+      y = ($game_player.real_y.to_f / (($game_map.height - 1) * 128)) * (@panorama.bitmap.height * $game_map.pan_zoom  - Graphics.height) 
       @panorama.oy = y < 0.0 ? 0.0 : y
     else
       @panorama.oy = $game_map.pan_offset_y + $game_map.display_y / ($game_map.pan_onetoone ? 4 : 8)
@@ -304,10 +309,10 @@ class Spriteset_Map
       # no point in updating the sprite if offscreen
       # this greatly increases performance on larger maps
 
-        ((sprite.character.real_x + (sprite.ox*4) > $game_map.display_x - 128) &&
-        (sprite.character.real_x - (sprite.ox*4) < $game_map.display_x + (21 * 128)) &&
-        (sprite.character.real_y + (sprite.oy*4) > ($game_map.display_y) - 128) &&
-        (sprite.character.real_y - (sprite.oy*4) < ($game_map.display_y) + (17 * 128)))
+        ((sprite.character.real_x + (sprite.ox*4) > Graphics.width - 128) &&
+        (sprite.character.real_x - (sprite.ox*4) < Graphics.width + (21 * 128)) &&
+        (sprite.character.real_y + (sprite.oy*4) > (Graphics.height) - 128) &&
+        (sprite.character.real_y - (sprite.oy*4) < (Graphics.height) + (17 * 128)))
             sprite.update
       else
         sprite.update_fast

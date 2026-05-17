@@ -305,7 +305,6 @@ int main(int argc, char *argv[]){
 	// 	winFlags |= SDL_WINDOW_RESIZABLE;
 	// #endif
 
-
 	win = SDL_CreateWindow(conf.windowTitle.c_str(), conf.defScreenW, conf.defScreenH, winFlags);
 	if (conf.fullscreen)
 		SDL_SetWindowFullscreen(win, true);

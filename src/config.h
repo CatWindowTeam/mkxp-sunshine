@@ -32,12 +32,12 @@ struct Config{
 	bool debugMode;
 	bool screenMode;
 	bool printFPS;
-
+	
 	bool fullscreen;
 	bool fixedAspectRatio;
 	bool smoothScaling;
 	bool vsync;
-
+	bool EnableSixteenByNine;
 	int defScreenW;
 	int defScreenH;
 	std::string windowTitle;

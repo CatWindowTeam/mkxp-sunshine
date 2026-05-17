@@ -5,8 +5,8 @@ class Particle
     @sprite.bitmap = bitmap
     @sprite.ox = bitmap.width / 2
     @sprite.oy = bitmap.height / 2
-    self.x = rand(640)
-    self.y = rand(480)
+    self.x = rand(Graphics.width)
+    self.y = rand(Graphics.height)
   end
 
   # Link various things to the sprite
@@ -17,8 +17,8 @@ class Particle
     @x = val
     width = @sprite.bitmap.width * @sprite.zoom_x
     if @x < -width
-      @x = 640 + width
-    elsif @x > 640 + width
+      @x = Graphics.width + width
+    elsif @x > Graphics.width + width
       @x = -width
     end
     @sprite.x = @x
@@ -30,8 +30,8 @@ class Particle
     @y = val
     height = @sprite.bitmap.height * @sprite.zoom_y
     if @y < -height
-      @y = 480 + height
-    elsif @y > 480 + height
+      @y = Graphics.height + height
+    elsif @y > Graphics.height + height
       @y = -height
     end
     @sprite.y = @y

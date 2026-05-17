@@ -8,15 +8,15 @@ class Desktop_Message
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
-    @viewport = Viewport.new(0, 0, 640, 480)
+    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @sprite_bg = Sprite.new(@viewport)
     @sprite_bg.bitmap = RPG::Cache.picture('cg_desktop_messagebox') #Bitmap.new(640, 480)
     @sprite_bg.zoom_x = @sprite_bg.zoom_y = 2
     @sprite_text = Sprite.new(@viewport)
-    @contents = Bitmap.new(640, HEIGHT)
+    @contents = Bitmap.new(Graphics.width, HEIGHT)
     Language.register_text_sprite(self.class.name + "_contents", @contents)
     @sprite_text.bitmap = @contents
-    @sprite_text.y = (480 - HEIGHT) / 2
+    @sprite_text.y = (Graphics.height - HEIGHT) / 2
     @sprite_bg.z = 0
     @sprite_text.z = 1
     @sprite_text.zoom_x = @sprite_text.zoom_y = 1
@@ -119,7 +119,7 @@ class Desktop_Message
     @contents.clear
     @contents.font.color = Color.new(44, 37, 54, 255)
     y_top = (HEIGHT - widths.length * 24) / 2
-    x = (640 - widths[0]) / 2
+    x = (Graphics.width - widths[0]) / 2
     y = 0
 
     # Get 1 text character in c (loop until unable to get text)
@@ -127,7 +127,7 @@ class Desktop_Message
       # \n
       if c == "\n"
         y += 1
-        x = (640 - widths[y]) / 2
+        x = (Graphics.width - widths[y]) / 2
         next
       end
       # \c[n]

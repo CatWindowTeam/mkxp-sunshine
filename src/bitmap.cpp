@@ -55,18 +55,15 @@
 
 /* Normalize (= ensure width and
  * height are positive) */
-static IntRect normalizedRect(const IntRect &rect)
-{
+static IntRect normalizedRect(const IntRect &rect){
 	IntRect norm = rect;
 
-	if (norm.w < 0)
-	{
+	if (norm.w < 0){
 		norm.w = -norm.w;
 		norm.x -= norm.w;
 	}
 
-	if (norm.h < 0)
-	{
+	if (norm.h < 0){
 		norm.h = -norm.h;
 		norm.y -= norm.h;
 	}
@@ -74,8 +71,7 @@ static IntRect normalizedRect(const IntRect &rect)
 	return norm;
 }
 
-struct BitmapPrivate
-{
+struct BitmapPrivate{
 	Bitmap *self;
 
 	TEXFBO gl;
@@ -981,8 +977,7 @@ static void applyShadow(SDL_Surface *&in, const SDL_PixelFormatDetails* fm, cons
 	in = out;
 }
 
-void Bitmap::drawText(const IntRect &rect, const char *str, int align)
-{
+void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 	guardDisposed();
 
 	GUARD_MEGA;
@@ -1021,8 +1016,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align)
 
 	/* outline using TTF_Outline and blending it together with SDL_BlitSurface
 	 * FIXME: outline is forced to have the same opacity as the font color */
-	if (p->font->getOutline())
-	{
+	if (p->font->getOutline()){
 		SDL_Color co = outColor.toSDLColor();
 		co.a = 255;
 		SDL_Surface *outline;
@@ -1046,8 +1040,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align)
 
 	int alignX = rect.x;
 
-	switch (align)
-	{
+	switch (align){
 	default:
 	case Left :
 		break;
@@ -1078,10 +1071,8 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align)
 
 	bool fastBlit = false; //!p->touchesTaintedArea(posRect) && txtAlpha == 1.0f;
 
-	if (fastBlit)
-	{
-		if (squeeze == 1.0f && !shState->config().subImageFix)
-		{
+	if (fastBlit){
+		if (squeeze == 1.0f && !shState->config().subImageFix){
 			/* Even faster: upload directly to bitmap texture.
 			 * We have to make sure the posRect lies within the texture
 			 * boundaries or texSubImage will generate errors.
@@ -1102,13 +1093,11 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align)
 
 			/* If we have no intersection at all,
 			 * there's nothing to upload to begin with */
-			if (SDL_GetRectIntersection(&btmRect, &txtRect, &inters))
-			{
+			if (SDL_GetRectIntersection(&btmRect, &txtRect, &inters)){
 				bool subImage = false;
 				int subSrcX = 0, subSrcY = 0;
 
-				if (inters.w != txtRect.w || inters.h != txtRect.h)
-				{
+				if (inters.w != txtRect.w || inters.h != txtRect.h){
 					/* Clip the text surface */
 					subSrcX = inters.x - txtRect.x;
 					subSrcY = inters.y - txtRect.y;
@@ -1122,14 +1111,12 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align)
 
 				TEX::bind(p->gl.tex);
 
-				if (!subImage)
-				{
+				if (!subImage){
 					TEX::uploadSubImage(posRect.x, posRect.y,
 					                    posRect.w, posRect.h,
 					                    txtSurf->pixels, GL_RGBA);
 				}
-				else
-				{
+				else{
 					GLMeta::subRectImageUpload(txtSurf->w, subSrcX, subSrcY,
 					                           posRect.x, posRect.y,
 					                           posRect.w, posRect.h,
@@ -1138,8 +1125,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align)
 				}
 			}
 		}
-		else
-		{
+		else{
 			/* Squeezing involved: need to use intermediary TexFBO */
 			TEXFBO &gpTF = shState->gpTexFBO(txtSurf->w, txtSurf->h);
 
@@ -1153,8 +1139,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align)
 			GLMeta::blitEnd();
 		}
 	}
-	else
-	{
+	else{
 		/* Aquire a partial copy of the destination
 		 * buffer we're about to render to */
 		TEXFBO &gpTex2 = shState->gpTexFBO(posRect.w, posRect.h);
@@ -1199,9 +1184,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align)
 }
 
 /* http://www.lemoda.net/c/utf8-to-ucs2/index.html */
-static uint16_t utf8_to_ucs2(const char *_input,
-                             const char **end_ptr)
-{
+static uint16_t utf8_to_ucs2(const char *_input, const char **end_ptr){
 	const unsigned char *input =
 	        reinterpret_cast<const unsigned char*>(_input);
 	*end_ptr = _input;
@@ -1209,15 +1192,13 @@ static uint16_t utf8_to_ucs2(const char *_input,
 	if (input[0] == 0)
 		return -1;
 
-	if (input[0] < 0x80)
-	{
+	if (input[0] < 0x80){
 		*end_ptr = _input + 1;
 
 		return input[0];
 	}
 
-	if ((input[0] & 0xE0) == 0xE0)
-	{
+	if ((input[0] & 0xE0) == 0xE0){
 		if (input[1] == 0 || input[2] == 0)
 			return -1;
 
@@ -1228,8 +1209,7 @@ static uint16_t utf8_to_ucs2(const char *_input,
 		       (input[2] & 0x3F);
 	}
 
-	if ((input[0] & 0xC0) == 0xC0)
-	{
+	if ((input[0] & 0xC0) == 0xC0){
 		if (input[1] == 0)
 			return -1;
 
@@ -1242,8 +1222,7 @@ static uint16_t utf8_to_ucs2(const char *_input,
 	return -1;
 }
 
-IntRect Bitmap::textSize(const char *str)
-{
+IntRect Bitmap::textSize(const char *str){
 	guardDisposed();
 
 	GUARD_MEGA;
@@ -1275,46 +1254,38 @@ IntRect Bitmap::textSize(const char *str)
 
 DEF_ATTR_RD_SIMPLE(Bitmap, Font, Font&, *p->font)
 
-void Bitmap::setFont(Font &value)
-{
+void Bitmap::setFont(Font &value){
 	*p->font = value;
 }
 
-void Bitmap::setInitFont(Font *value)
-{
+void Bitmap::setInitFont(Font *value){
 	p->font = value;
 }
 
-TEXFBO &Bitmap::getGLTypes()
-{
+TEXFBO &Bitmap::getGLTypes(){
 	return p->gl;
 }
 
-SDL_Surface *Bitmap::megaSurface() const
-{
+SDL_Surface *Bitmap::megaSurface() const{
 	return p->megaSurface;
 }
 
-void Bitmap::ensureNonMega() const
-{
+void Bitmap::ensureNonMega() const{
 	if (isDisposed())
 		return;
 
 	GUARD_MEGA;
 }
 
-void Bitmap::bindTex(ShaderBase &shader)
-{
+void Bitmap::bindTex(ShaderBase &shader){
 	p->bindTexture(shader);
 }
 
-void Bitmap::taintArea(const IntRect &rect)
-{
+void Bitmap::taintArea(const IntRect &rect){
 	p->addTaintedArea(rect);
 }
 
-void Bitmap::releaseResources()
-{
+void Bitmap::releaseResources(){
 	if (p->megaSurface)
 		SDL_DestroySurface(p->megaSurface);
 	else

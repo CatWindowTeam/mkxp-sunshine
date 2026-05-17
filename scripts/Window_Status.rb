@@ -10,7 +10,7 @@ class Window_Status < Window_Base
   #     actor : actor
   #--------------------------------------------------------------------------
   def initialize(actor)
-    super(0, 0, 640, 480)
+    super(0, 0, Graphics.width, Graphics.height)
     self.contents = Bitmap.new(width - 32, height - 32)
     @actor = actor
     refresh

@@ -50,9 +50,9 @@
 #include <errno.h>
 #include <algorithm>
 
-#define DEF_SCREEN_W  (rgssVer == 1 ? 640 : 544)
-#define DEF_SCREEN_H  (rgssVer == 1 ? 480 : 416)
-#define DEF_FRAMERATE (rgssVer == 1 ?  40 :  60)
+#define DEF_SCREEN_W  (EnableSixteenByNine == 1 ? 640 : 544)
+#define DEF_SCREEN_H  (EnableSixteenByNine == 1 ? 480 : 416)
+#define DEF_FRAMERATE (60)
 
 #if defined _WIN32
 	#define OS_W32
@@ -129,8 +129,7 @@ private:
 	}
 };
 
-class ScreenScene : public Scene
-{
+class ScreenScene : public Scene{
 public:
 	ScreenScene(int width, int height)
 	    : pp(width, height)
@@ -459,7 +458,7 @@ struct GraphicsPrivate{
 	TEX::ID obscuredTex;
 
 	GraphicsPrivate(RGSSThreadData *rtData)
-	    : scRes(DEF_SCREEN_W, DEF_SCREEN_H),
+	    : scRes(rtData->config.defScreenW, rtData->config.defScreenH),
 	      scSize(scRes),
 	      winSize(rtData->config.defScreenW, rtData->config.defScreenH),
 	      screen(scRes.x, scRes.y),
@@ -487,7 +486,7 @@ struct GraphicsPrivate{
 		TEX::bind(obscuredTex);
 		TEX::setRepeat(false);
 		TEX::setSmooth(false);
-		gl.TexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, 640, 480, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
+		gl.TexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, scRes.x, scRes.y, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
 	}
 
 	~GraphicsPrivate(){
@@ -575,7 +574,7 @@ struct GraphicsPrivate{
 	void redrawScreen(){
 		if (shState->oneshot().obscuredDirty){
 			TEX::bind(obscuredTex);
-			TEX::uploadSubImage(0, 0, 640, 480, shState->oneshot().obscuredMap().data(), GL_LUMINANCE);
+			TEX::uploadSubImage(0, 0, scRes.x, scRes.y, shState->oneshot().obscuredMap().data(), GL_LUMINANCE);
 			shState->oneshot().obscuredDirty = false;
 		}
 		screen.composite();
@@ -875,8 +874,8 @@ int Graphics::height() const{
 }
 
 void Graphics::resizeScreen(int width, int height){
-	width = clamp(width, 1, 640);
-	height = clamp(height, 1, 480);
+	width = clamp(width, 1, p->scRes.x);
+	height = clamp(height, 1, p->scRes.y);
 
 	Vec2i size(width, height);
 

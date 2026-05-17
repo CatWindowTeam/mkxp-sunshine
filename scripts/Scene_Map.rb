@@ -32,16 +32,16 @@ class Scene_Map
     @item_menu_refresh = false
     # Make item icon
     @item_icon = Sprite.new
-    @item_icon.x = 640 - 64
-    @item_icon.y = 480 - 64
+    @item_icon.x = Graphics.width - 64
+    @item_icon.y = Graphics.height - 64
     @item_icon.z = 9000
     @item_icon.zoom_x = 2.0
     @item_icon.zoom_y = 2.0
     @item_id = 0
     # Make item flash (for clover)
     @item_icon_flash = Sprite.new
-    @item_icon_flash.x = 640 - 64
-    @item_icon_flash.y = 480 - 64
+    @item_icon_flash.x = Graphics.width - 64
+    @item_icon_flash.y = Graphics.height - 64
     @item_icon_flash.z = 10000
     @item_icon_flash.zoom_x = 2.0
     @item_icon_flash.zoom_y = 2.0
@@ -53,8 +53,8 @@ class Scene_Map
     @window_settings = Window_Settings.new
     # Fade to black transition
     @blackfade = Sprite.new
-    @blackfade.bitmap = Bitmap.new(640, 480)
-    @blackfade.bitmap.fill_rect(0, 0, 640, 480, Color.new(0, 0, 0))
+    @blackfade.bitmap = Bitmap.new(Graphics.width, Graphics.height)
+    @blackfade.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0))
     @blackfade.visible = false
     @blackfade.z = 9999
     # Transition run

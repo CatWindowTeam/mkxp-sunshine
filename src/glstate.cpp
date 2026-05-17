@@ -27,23 +27,19 @@
 
 #include <SDL3/SDL_rect.h>
 
-static void applyBool(GLenum state, bool mode)
-{
+static void applyBool(GLenum state, bool mode){
 	mode ? gl.Enable(state) : gl.Disable(state);
 }
 
-void GLClearColor::apply(const Vec4 &value)
-{
+void GLClearColor::apply(const Vec4 &value){
 	gl.ClearColor(value.x, value.y, value.z, value.w);
 }
 
-void GLScissorBox::apply(const IntRect &value)
-{
+void GLScissorBox::apply(const IntRect &value){
 	gl.Scissor(value.x, value.y, value.w, value.h);
 }
 
-void GLScissorBox::setIntersect(const IntRect &value)
-{
+void GLScissorBox::setIntersect(const IntRect &value){
 	const IntRect &current = get();
 
 	SDL_Rect r1 = { current.x, current.y, current.w, current.h };
@@ -56,13 +52,11 @@ void GLScissorBox::setIntersect(const IntRect &value)
 	set(IntRect(result.x, result.y, result.w, result.h));
 }
 
-void GLScissorTest::apply(const bool &value)
-{
+void GLScissorTest::apply(const bool &value){
 	applyBool(GL_SCISSOR_TEST, value);
 }
 
-void GLBlendMode::apply(const BlendType &value)
-{
+void GLBlendMode::apply(const BlendType &value){
 	switch (value)
 	{
 	case BlendKeepDestAlpha :
@@ -92,28 +86,23 @@ void GLBlendMode::apply(const BlendType &value)
 	}
 }
 
-void GLBlend::apply(const bool &value)
-{
+void GLBlend::apply(const bool &value){
 	applyBool(GL_BLEND, value);
 }
 
-void GLViewport::apply(const IntRect &value)
-{
+void GLViewport::apply(const IntRect &value){
 	gl.Viewport(value.x, value.y, value.w, value.h);
 }
 
-void GLProgram::apply(const unsigned int &value)
-{
+void GLProgram::apply(const unsigned int &value){
 	gl.UseProgram(value);
 }
 
-GLState::Caps::Caps()
-{
+GLState::Caps::Caps(){
 	gl.GetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
 }
 
-GLState::GLState(const Config &conf)
-{
+GLState::GLState(const Config &conf){
 	gl.Disable(GL_DEPTH_TEST);
 
 	clearColor.init(Vec4(0, 0, 0, 1));

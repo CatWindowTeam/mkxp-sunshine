@@ -12,9 +12,14 @@ class Game_Player < Game_Character
   #--------------------------------------------------------------------------
   # * Invariables
   #--------------------------------------------------------------------------
-  CENTER_X = (320 - 16) * 4   # Center screen x-coordinate * 4
-  CENTER_Y = (240 - 16) * 4   # Center screen y-coordinate * 4
-  #--------------------------------------------------------------------------
+  if Graphics.width == 1280
+	CENTER_X = 2560 - 16   # Center screen x-coordinate * 2
+	CENTER_Y = 2880 - 16   # Center screen y-coordinate * 2
+  else
+	CENTER_X = (320 - 16) * 4   # Center screen x-coordinate * 4
+	CENTER_Y = (240 - 16) * 4   # Center screen y-coordinate * 4
+  end
+    #--------------------------------------------------------------------------
   # * Passable Determinants
   #     x : x-coordinate
   #     y : y-coordinate

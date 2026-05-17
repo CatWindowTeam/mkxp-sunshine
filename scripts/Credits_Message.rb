@@ -7,13 +7,13 @@ class Credits_Message
   def initialize
     @timer = 0
 
-    @viewport = Viewport.new(0, 0, 640, 480)
+    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @sprite_bg = Sprite.new(@viewport)
-    @sprite_bg.bitmap = Bitmap.new(640, 480)
+    @sprite_bg.bitmap = Bitmap.new(Graphics.width, Graphics.height)
     if $game_switches[104]
-      @sprite_bg.bitmap.fill_rect(0, 0, 640, 480, Color.new(0, 0, 0, 255))
+      @sprite_bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0, 255))
     else
-      @sprite_bg.bitmap.fill_rect(0, 0, 640, 480, Color.new(255, 255, 255, 255))
+      @sprite_bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(255, 255, 255, 255))
     end
     @sprite_text = Sprite.new(@viewport)
     @contents = Bitmap.new(320, 240)
@@ -61,9 +61,9 @@ class Credits_Message
   def refresh
 
     if $game_switches[104]
-      @sprite_bg.bitmap.fill_rect(0, 0, 640, 480, Color.new(0, 0, 0, 255))
+      @sprite_bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0, 255))
     else
-      @sprite_bg.bitmap.fill_rect(0, 0, 640, 480, Color.new(255, 255, 255, 255))
+      @sprite_bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(255, 255, 255, 255))
     end
 
     # Initialize

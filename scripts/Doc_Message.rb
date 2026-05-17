@@ -7,7 +7,7 @@ class Doc_Message
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
-    @viewport = Viewport.new(0, 0, 640, 480)
+    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @sprite_bg = Sprite.new(@viewport)
     @sprite_scroll_up = Sprite.new(@viewport)
     @sprite_scroll_down = Sprite.new(@viewport)

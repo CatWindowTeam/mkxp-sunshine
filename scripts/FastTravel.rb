@@ -6,10 +6,10 @@ class FastTravel
   ACTIVE_MARGIN = MARGIN * 2 + 20
 
   def initialize
-    @viewport = Viewport.new(0, 0, 640, 480)
+    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @bg = Sprite.new(@viewport)
-    @bg.bitmap = Bitmap.new(640, 480)
-    @bg.bitmap.fill_rect(0, 0, 640, 480, Color.new(0, 0, 0, 128))
+    @bg.bitmap = Bitmap.new(Graphics.width, Graphics.height)
+    @bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0, 128))
     @title = Sprite.new(@viewport)
     Language.register_text_sprite(self.class.name + "_title", @title)
     @title.bitmap = Bitmap.new(320, TITLE_MARGIN)

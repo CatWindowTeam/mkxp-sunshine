@@ -5,8 +5,8 @@
 #==============================================================================
 
 class Scene_Title
-  MENU_X = 640 - 150
-  MENU_Y = 480 - 100
+  MENU_X = Graphics.width - 150
+  MENU_Y = Graphics.height - 100
   SDLVer = "#{Sunshine::SDLVersion_major}.#{Sunshine::SDLVersion_minor}.#{Sunshine::SDLVersion_micro}"
   #--------------------------------------------------------------------------
   # * Main Processing
@@ -47,9 +47,17 @@ class Scene_Title
        @sprite.bitmap = RPG::Cache.title(translation_name)
  	else
     	if File.exist?("badend.lock")
-			@sprite.bitmap = RPG::Cache.title("badend")
+    		if Graphics.width == 1280
+				@sprite.bitmap = RPG::Cache.title("badend_16")
+			else
+				@sprite.bitmap = RPG::Cache.title("badend")
+			end
         else
-            @sprite.bitmap = RPG::Cache.title($data_system.title_name)
+        	if Graphics.width == 1280
+				@sprite.bitmap = RPG::Cache.title("normal_16")
+        	else
+				@sprite.bitmap = RPG::Cache.title($data_system.title_name)
+        	end
         end
 	end
 	# check for debug file to add debug items
@@ -67,7 +75,7 @@ class Scene_Title
     # Create/render menu options
     @menu = Sprite.new
     @menu.z += 1
-    @menu.bitmap = Bitmap.new(640, 480)
+    @menu.bitmap = Bitmap.new(Graphics.width, Graphics.height)
     @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))

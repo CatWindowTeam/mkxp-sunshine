@@ -28,8 +28,7 @@
 
 #include <SDL3/SDL_surface.h>
 
-namespace GLMeta
-{
+namespace GLMeta{
 
 /* EXT_unpack_subimage */
 void subRectImageUpload(GLint srcW, GLint srcX, GLint srcY,
@@ -38,8 +37,7 @@ void subRectImageUpload(GLint srcW, GLint srcX, GLint srcY,
 void subRectImageEnd();
 
 /* ARB_vertex_array_object */
-struct VAO
-{
+struct VAO{
 	/* Set manually, then call vaoInit() */
 	const VertexAttribute *attr;
 	size_t attrCount;
@@ -52,8 +50,7 @@ struct VAO
 };
 
 template<class VertexType>
-inline void vaoFillInVertexData(VAO &vao)
-{
+inline void vaoFillInVertexData(VAO &vao){
 	vao.attr      = VertexTraits<VertexType>::attr;
 	vao.attrCount = VertexTraits<VertexType>::attrCount;
 	vao.vertSize  = sizeof(VertexType);
