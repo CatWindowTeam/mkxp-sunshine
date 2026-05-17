@@ -185,7 +185,7 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 static void setGamePathInRegistry() {
 #if defined WIN32
 	// this logic is currently windows specific
-	char* dataDir = SDL_GetBasePath();
+	const char* dataDir = SDL_GetBasePath();
 	if (dataDir){
 		HKEY key;
 		long keyOpenError = RegOpenKey(HKEY_CURRENT_USER, TEXT("Software\\OneShot\\"), &key);
@@ -212,12 +212,14 @@ static void setGamePathInRegistry() {
 			}
 			RegCloseKey(key);
 		}
-		SDL_free(dataDir);
+		//SDL_free(dataDir); // not needed in sdl3
 	}
 #endif
 	//TODO handle this for Linux/Mac
 }
 int main(int argc, char *argv[]){
+	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
+
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
 	SDL_SetHint(SDL_HINT_APP_ID, "OneshotSunshine");
 	SDL_SetHint(SDL_HINT_APP_NAME, "Oneshot: Sunshine");
@@ -263,8 +265,6 @@ int main(int argc, char *argv[]){
 
 	/* Initialize physfs here so that config can call PHYSFS_getPrefDir */
 	PHYSFS_init(argv[0]);
-
-	loadLanguageMetadata();
 
 	/* now we load the config */
 	Config conf;
@@ -405,7 +405,7 @@ int main(int argc, char *argv[]){
 
 	Sound_Quit();
 	TTF_Quit();
-	SDL_Quit();
+	SDL_Quit(); // i got "Thread 1 received signal ?, Unknown signal" here on windows after closing game
 
 #ifdef STEAM
 	STEAMSHIM_deinit();
