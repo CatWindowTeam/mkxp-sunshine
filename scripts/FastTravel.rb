@@ -12,7 +12,7 @@ class FastTravel
     @bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0, 128))
     @title = Sprite.new(@viewport)
     Language.register_text_sprite(self.class.name + "_title", @title)
-    @title.bitmap = Bitmap.new(320, TITLE_MARGIN)
+    @title.bitmap = Bitmap.new(Graphics.width / 2, TITLE_MARGIN)
     @title.bitmap.font.size = 40
     @title.y = TITLE_TOP_MARGIN
     @title.x = MARGIN

@@ -14,8 +14,8 @@ class Scene_End
     s2 = "Shutdown"
     s3 = "Cancel"
     @command_window = Window_Command.new(192, [s1, s2, s3])
-    @command_window.x = 320 - @command_window.width / 2
-    @command_window.y = 240 - @command_window.height / 2
+    @command_window.x = (Graphica.width / 2) - @command_window.width / 2
+    @command_window.y = (Graphica.height / 2) - @command_window.height / 2
     # Execute transition
     Graphics.transition
     # Main loop

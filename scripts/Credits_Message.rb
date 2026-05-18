@@ -16,7 +16,7 @@ class Credits_Message
       @sprite_bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(255, 255, 255, 255))
     end
     @sprite_text = Sprite.new(@viewport)
-    @contents = Bitmap.new((Graphics.width / 2), (Graphics.height / 2))
+    @contents = Bitmap.new(Graphics.width / 2, Graphics.height / 2)
     Language.register_text_sprite(self.class.name + "_contents", @contents)
     @contents.font.size = 16
     @sprite_text.bitmap = @contents
