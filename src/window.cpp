@@ -303,8 +303,7 @@ struct WindowPrivate {
 		if (bgStretch)
 			backgroundVert.count = 1;
 		else
-			backgroundVert.count =
-			        TileQuads::twoDimCount(128, 128, bgRect.w, bgRect.h);
+			backgroundVert.count = TileQuads::twoDimCount(128, 128, bgRect.w, bgRect.h);
 
 		count += backgroundVert.count;
 
@@ -358,9 +357,7 @@ struct WindowPrivate {
 	void updateBaseAlpha(){
 		/* This is always applied unconditionally */
 		backgroundVert.setAlpha(backOpacity.norm);
-
 		baseTexQuad.setColor(Vec4(1, 1, 1, opacity.norm));
-
 		baseTexDirty = true;
 	}
 
@@ -436,8 +433,7 @@ struct WindowPrivate {
 		/* Cursor */
 		if (!cursorRect->isEmpty()){
 			/* Effective cursor rect has 16 xy offset to window */
-			IntRect effectRect(cursorRect->x+16, cursorRect->y+16,
-			                   cursorRect->width, cursorRect->height);
+			IntRect effectRect(cursorRect->x+16, cursorRect->y+16, cursorRect->width, cursorRect->height);
 			cursorVert.vert = &vert[i*4];
 			TileQuads::buildFrameSource(cursorSrc, cursorVert.vert);
 			i += TileQuads::buildFrame(effectRect, cursorVert.vert);
@@ -527,15 +523,12 @@ struct WindowPrivate {
 
 		if (useBaseTex){
 			shader.setTexSize(Vec2i(baseTex.width, baseTex.height));
-
 			TEX::bind(baseTex.tex);
 			baseTexQuad.draw();
 		}else{
 			windowskin->bindTex(shader);
 			TEX::setSmooth(true);
-
 			baseQuadArray.draw();
-
 			TEX::setSmooth(false);
 		}
 	}
@@ -573,18 +566,14 @@ struct WindowPrivate {
 			/* Draw arrows / cursors */
 			windowskin->bindTex(shader);
 			TEX::setSmooth(true);
-
 			controlsQuadArray.draw(0, controlsQuadCount);
-
 			TEX::setSmooth(false);
 		}
 
 		if (!nullOrDisposed(contents)){
 			/* Draw contents bitmap */
 			glState.scissorBox.setIntersect(contentsRect);
-
 			shader.setTranslation(efPos + (Vec2i(16) - contentsOffset));
-
 			contents->bindTex(shader);
 			contentsQuad.draw();
 		}
@@ -598,19 +587,15 @@ struct WindowPrivate {
 
 		if (active && cursorVert.vert){
 			float alpha = cursorAniAlpha[cursorAniAlphaIdx] / 255.0f;
-
 			cursorVert.setAlpha(alpha);
-
 			updateArray = true;
 		}
 
 		if (pause && pauseAniVert.vert){
 			float alpha = pauseAniAlpha[pauseAniAlphaIdx] / 255.0f;
 			FloatRect frameRect = pauseAniSrc[pauseAniQuad[pauseAniQuadIdx]];
-
 			pauseAniVert.setAlpha(alpha);
 			Quad::setTexRect(pauseAniVert.vert, frameRect);
-
 			updateArray = true;
 		}
 
@@ -642,7 +627,6 @@ Window::~Window(){
 
 void Window::update(){
 	guardDisposed();
-
 	p->updateControls();
 	p->stepAnimations();
 }
@@ -650,7 +634,6 @@ void Window::update(){
 DEF_ATTR_SIMPLE(Window, X,          int,     p->position.x)
 DEF_ATTR_SIMPLE(Window, Y,          int,     p->position.y)
 DEF_ATTR_SIMPLE(Window, CursorRect, Rect&,  *p->cursorRect)
-
 DEF_ATTR_RD_SIMPLE(Window, Windowskin,      Bitmap*, p->windowskin)
 DEF_ATTR_RD_SIMPLE(Window, Contents,        Bitmap*, p->contents)
 DEF_ATTR_RD_SIMPLE(Window, Stretch,         bool,    p->bgStretch)
@@ -666,9 +649,7 @@ DEF_ATTR_RD_SIMPLE(Window, ContentsOpacity, int,     p->contentsOpacity)
 
 void Window::setWindowskin(Bitmap *value){
 	guardDisposed();
-
 	p->windowskin = value;
-
 	if (nullOrDisposed(value))
 		return;
 
@@ -795,7 +776,6 @@ void Window::setContentsOpacity(int value){
 
 void Window::initDynAttribs(){
 	p->cursorRect = new Rect;
-
 	p->refreshCursorRectCon();
 }
 
@@ -809,13 +789,11 @@ void Window::onGeometryChange(const Scene::Geometry &geo){
 
 void Window::setZ(int value){
 	ViewportElement::setZ(value);
-
 	p->controlsElement.setZ(value + 2);
 }
 
 void Window::setVisible(bool value){
 	ViewportElement::setVisible(value);
-
 	p->controlsElement.setVisible(value);
 }
 
@@ -825,8 +803,6 @@ void Window::onViewportChange(){
 
 void Window::releaseResources(){
 	p->controlsElement.release();
-
 	unlink();
-
 	delete p;
 }

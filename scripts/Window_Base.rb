@@ -16,7 +16,6 @@ class Window_Base < Window
     super()
     @windowskin_name = $game_system.windowskin_name
     self.windowskin = RPG::Cache.windowskin(@windowskin_name)
-    #self.windowskin_en = RPG::Cache.windowskin("en_normal")
     self.x = x
     self.y = y
     self.width = width

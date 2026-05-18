@@ -12,8 +12,8 @@ class Game_Player < Game_Character
   #--------------------------------------------------------------------------
   # * Invariables
   #--------------------------------------------------------------------------
-  CENTER_X = (Graphics.width / 2) - 16
-  CENTER_Y = (Graphics.height / 2) - 16
+  CENTER_X = ((Graphics.width / 4) - 16) * 4   # Center screen x-coordinate * 4
+  CENTER_Y = ((Graphics.height / 4) - 16) * 4   # Center screen y-coordinate * 4
   #--------------------------------------------------------------------------
   # * Passable Determinants
   #     x : x-coordinate
@@ -31,10 +31,10 @@ class Game_Player < Game_Character
       return false
     end
     # If debug mode is ON and ctrl key was pressed
-    if Window_Settings.DebugIsEnabled and Input.press?(Input::LCTRL)
-      # Passable
-      return true
-    end
+    #if Window_Settings.DebugIsEnabled and Input.press?(Input::LCTRL)
+    #   Passable
+    #  return true
+    #end
     super
   end
   #--------------------------------------------------------------------------
@@ -42,8 +42,8 @@ class Game_Player < Game_Character
   #--------------------------------------------------------------------------
   def center(x, y)
 	if $game_switches[98] == true
-      max_x = ($game_map.width - 20) * 128
-      max_y = ($game_map.height - 15) * 128
+      max_x = ($game_map.width - (Graphics.width / 32)) * 128
+      max_y = ($game_map.height - (Graphics.height / 28)) * 128
       $game_map.display_x = [0, [x * 128 - CENTER_X, max_x].min].max
       $game_map.display_y = [0, [y * 128 - CENTER_Y, max_y].min].max
 	else

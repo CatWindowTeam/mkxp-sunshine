@@ -169,17 +169,6 @@ RB_METHOD(graphicsReset){
 	return Qnil;
 }
 
-RB_METHOD(graphicsPlayMovie){
-	RB_UNUSED_PARAM;
-
-	const char *filename;
-	rb_get_args(argc, argv, "z", &filename RB_ARG_END);
-
-	shState->graphics().playMovie(filename);
-
-	return Qnil;
-}
-
 DEF_GRA_PROP_I(FrameRate)
 DEF_GRA_PROP_I(FrameCount)
 DEF_GRA_PROP_I(Brightness)

@@ -117,7 +117,7 @@ class Window_Settings
     @version = Sprite.new(@viewport)
     @version.bitmap = Bitmap.new(60, 20)
     @version.x = 10
-    @version.y = Graphics.width - 190
+    @version.y = Graphics.width / 1.9
     @version.opacity = 128
     Language.register_text_sprite(self.class.name + "_title", @title)
     Language.register_text_sprite(self.class.name + "_ver", @version)

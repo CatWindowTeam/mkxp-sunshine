@@ -268,7 +268,7 @@ class Game_Map
   #--------------------------------------------------------------------------
   def scroll_down(distance)
     if $game_switches[98] == true
-      @display_y = [@display_y + distance, (self.height - 15) * 128].min
+      @display_y = [@display_y + distance, (Graphics.height / 28) * 128].min
     else
       @display_y += distance
     end
@@ -290,7 +290,7 @@ class Game_Map
   #--------------------------------------------------------------------------
   def scroll_right(distance)
     if $game_switches[98] == true
-      @display_x = [@display_x + distance, (self.width - 20) * 128].min
+      @display_x = [@display_x + distance, (self.width - (Graphics.width / 32)) * 128].min
     else
       @display_x += distance
     end

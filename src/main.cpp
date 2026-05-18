@@ -221,17 +221,18 @@ int main(int argc, char *argv[]){
 	SDL_SetHint(SDL_HINT_APP_NAME, "Oneshot: Sunshine");
 	SDL_SetHint(SDL_HINT_AUDIO_DEVICE_STREAM_NAME, "Oneshot: sunshine");
 	SDL_SetHint(SDL_HINT_AUDIO_DEVICE_STREAM_ROLE, "Game");
-	#if defined(__linux__ || BSD || __sun) && SDL_VERSION_ATLEAST(3, 4, 10)
-		SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
-	#endif
 	//X11 work on *BSD,Solaris too!
-#if defined(__linux__ || BSD || __sun)
+	#if defined(__linux__) || defined(BSD) || defined(__sun)
 	SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
-#endif
+		#if SDL_VERSION_ATLEAST(3, 4, 10)
+			SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
+		#endif
+	#endif
+	
 
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
-		showInitError(std::string("Error initializing SDL: ") + SDL_GetError())
+		showInitError(std::string("Error initializing SDL: ") + SDL_GetError());
 		return 0;
 	}
 
@@ -279,14 +280,14 @@ int main(int argc, char *argv[]){
 	if (conf.windowTitle.empty())
 		conf.windowTitle = conf.game.title;
 
-	if (TTF_Init() < 0){
+	if (TTF_Init() == false){
 		showInitError(std::string("Error initializing SDL_ttf: ") + SDL_GetError());
 		SDL_Quit();
 
 		return 0;
 	}
 
-	if (Sound_Init() == 0){
+	if (Sound_Init() == false){
 		showInitError(std::string("Error initializing SDL_sound: ") + Sound_GetError());
 		TTF_Quit();
 		SDL_Quit();

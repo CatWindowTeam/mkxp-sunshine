@@ -153,10 +153,10 @@ class Credits_Message
     else
       @contents.font.color = Color.new(0, 0, 0, 255)
     end
-
-    x = (320 - widths[0]) / 2
+	
+    x = ((Graphics.width / 2 ) - widths[0]) / 2
     y = 0
-    y_top = (240 - widths.length * 24) / 2
+    y_top = ((Graphics.height / 2) - widths.length * 24) / 2
 
     @contents.font.size = 16
 

@@ -53,16 +53,6 @@ int screenMain(Config &conf){
 		return 0;
 	}
 
-	// SDL_WindowShapeMode shapeMode;
-	// shapeMode.mode = ShapeModeColorKey;
-	// shapeMode.parameters.colorKey = colorKey;
-
-	//SDL_Surface *surface = SDL_CreateSurface(32, 32, SDL_PIXELFORMAT_INDEX8);
-	//SDL_PIXELFORMAT_UNKNOWN - 0,0,0,0 ....maybe?
-
-	//SDL_Surface *surface = SDL_CreateSurface(32, 32, SDL_PIXELFORMAT_INDEX8);
-	//SDL_Surface *shape = SDL_CreateSurface(DEFAULT_WIDTH, DEFAULT_HEIGHT, SDL_PIXELFORMAT_UNKNOWN);
-
 	// i have no idea if it works.
 	//SDL_Surface *shape = SDL_CreateRGBSurface(0, DEFAULT_WIDTH, DEFAULT_HEIGHT, 8, 0, 0, 0, 0);
 	SDL_Surface *shape = SDL_CreateSurface(DEFAULT_WIDTH, DEFAULT_HEIGHT, SDL_PixelFormat::SDL_PIXELFORMAT_RGBA32);

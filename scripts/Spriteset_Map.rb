@@ -72,8 +72,7 @@ class Spriteset_Map
     # Make picture sprites
     @picture_sprites = []
     for i in 1..50
-      @picture_sprites.push(Sprite_Picture.new(@viewport_pics,
-        $game_screen.pictures[i]))
+      @picture_sprites.push(Sprite_Picture.new(@viewport_pics, $game_screen.pictures[i]))
     end
     # Make timer sprite
     @timer_sprite = Sprite_Timer.new

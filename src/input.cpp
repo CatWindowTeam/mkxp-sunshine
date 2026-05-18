@@ -234,9 +234,7 @@ static const KbBindingData staticKbBindings[] ={
 	{ SDL_SCANCODE_F6,     Input::F6    },
 	{ SDL_SCANCODE_F7,     Input::F7    },
 	{ SDL_SCANCODE_F8,     Input::F8    },
-	{ SDL_SCANCODE_F9,     Input::F9    },
-	{ SDL_SCANCODE_LCTRL,  Input:LCTRL  },
-	{ SDL_SCANCODE_RCTRL,  Input:RCTRL  }
+	{ SDL_SCANCODE_F9,     Input::F9    }
 };
 
 static elementsN(staticKbBindings);

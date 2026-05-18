@@ -32,8 +32,7 @@ struct Rect;
 
 struct WindowPrivate;
 
-class Window : public ViewportElement, public Disposable
-{
+class Window : public ViewportElement, public Disposable{
 public:
 	Window(Viewport *viewport = 0);
 	~Window();

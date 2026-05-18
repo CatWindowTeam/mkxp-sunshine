@@ -75,6 +75,9 @@ void fileIntBindingInit();
 
 void journalBindingInit();
 void wallpaperBindingInit();
+#ifdef __linux__
+void wallpaperBindingTerminate();
+#endif
 void nikoBindingInit();
 void oneshotBindingInit();
 void SunshineBindingInit();

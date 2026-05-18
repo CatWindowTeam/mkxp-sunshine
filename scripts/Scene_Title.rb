@@ -83,7 +83,7 @@ class Scene_Title
 	#Debug info like in minecraft Forge :P
     @menu.bitmap.draw_text(5, 5, 150, 20, tr("Ruby #{RUBY_VERSION}"))
     @menu.bitmap.draw_text(5, 25, 150, 20, tr("SDL #{SDLVer}"))
-    @menu.bitmap.draw_text(5, 45, 150, 20 tr("Sunshine #{SunshineVer}"))
+    @menu.bitmap.draw_text(5, 45, 150, 20, tr("Sunshine #{SunshineVer}"))
 	if $game_switches[160] && $game_switches[152]
       @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
 	end
@@ -100,7 +100,7 @@ class Scene_Title
     @cursor_pos = 0
     # Play title BGM
     if File.exist?("badend.lock")
-      #TODO: fix
+      #TODO: fix audio values
       Audio.bgm_play("Audio/BGM/MyBurdenIsDead.ogg", 100, 100)
     else
       $game_system.bgm_play($data_system.title_bgm)
@@ -149,7 +149,7 @@ class Scene_Title
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
     @menu.bitmap.draw_text(5, 5, 150, 20, tr("Ruby #{RUBY_VERSION}"))
     @menu.bitmap.draw_text(5, 25, 150, 20, tr("SDL #{SDLVer}"))
-    @menu.bitmap.draw_text(5, 45, 150, 20 tr("Sunshine #{SunshineVer}"))
+    @menu.bitmap.draw_text(5, 45, 150, 20, tr("Sunshine #{SunshineVer}"))
 	if $game_switches[160] && $game_switches[152]
       @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
 	end
@@ -196,7 +196,7 @@ class Scene_Title
         if File.exist?("badend.lock")
           case @cursor_pos
           when 0  # Continue
-            EdText.info(tr("You killed niko."))
+            print("You killed niko.")
           when 1  # Settings
             command_settings
           when 2  # Shutdown

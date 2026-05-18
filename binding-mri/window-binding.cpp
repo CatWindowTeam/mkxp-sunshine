@@ -43,7 +43,6 @@ RB_METHOD(windowInitialize){
 
 RB_METHOD(windowUpdate){
 	RB_UNUSED_PARAM;
-
 	Window *w = getPrivateData<Window>(self);
 
 	w->update();
@@ -80,7 +79,6 @@ void windowBindingInit(){
 
 	_rb_define_method(klass, "initialize", windowInitialize);
 	_rb_define_method(klass, "update",     windowUpdate);
-
 	INIT_PROP_BIND( Window, Windowskin,      "windowskin"       );
 	INIT_PROP_BIND( Window, Contents,        "contents"         );
 	INIT_PROP_BIND( Window, Stretch,         "stretch"          );
