@@ -109,32 +109,27 @@ struct BitmapPrivate{
 		pixman_region_init(&tainted);
 	}
 
-	~BitmapPrivate()
-	{
+	~BitmapPrivate(){
 		//SDL_DeleteFormat(format);
 		pixman_region_fini(&tainted);
 	}
 
-	void allocSurface()
-	{
+	void allocSurface(){
 		surface = SDL_CreateSurface(gl.width, gl.height, format->format);
 	}
 
-	void clearTaintedArea()
-	{
+	void clearTaintedArea(){
 		pixman_region_fini(&tainted);
 		pixman_region_init(&tainted);
 	}
 
-	void addTaintedArea(const IntRect &rect)
-	{	
+	void addTaintedArea(const IntRect &rect){
 		IntRect norm = normalizedRect(rect);
 		pixman_region_union_rect
 		        (&tainted, &tainted, norm.x, norm.y, norm.w, norm.h);
 	}
 
-	void substractTaintedArea(const IntRect &rect)
-	{
+	void substractTaintedArea(const IntRect &rect){
 		if (!touchesTaintedArea(rect))
 			return;
 
@@ -146,8 +141,7 @@ struct BitmapPrivate{
 		pixman_region_fini(&m_reg);
 	}
 
-	bool touchesTaintedArea(const IntRect &rect)
-	{
+	bool touchesTaintedArea(const IntRect &rect){
 		pixman_box16_t box;
 		box.x1 = rect.x;
 		box.y1 = rect.y;
@@ -160,38 +154,29 @@ struct BitmapPrivate{
 		return result != PIXMAN_REGION_OUT;
 	}
 
-	void bindTexture(ShaderBase &shader)
-	{
+	void bindTexture(ShaderBase &shader){
 		TEX::bind(gl.tex);
 		shader.setTexSize(Vec2i(gl.width, gl.height));
 	}
 
-	void bindFBO()
-	{
-		FBO::bind(gl.fbo);
-	}
+	void bindFBO(){ FBO::bind(gl.fbo); }
 
-	void pushSetViewport(ShaderBase &shader) const
-	{
+	void pushSetViewport(ShaderBase &shader) const{
 		glState.viewport.pushSet(IntRect(0, 0, gl.width, gl.height));
 		shader.applyViewportProj();
 	}
 
-	void popViewport() const
-	{
+	void popViewport() const{
 		glState.viewport.pop();
 	}
 
-	void blitQuad(Quad &quad)
-	{
+	void blitQuad(Quad &quad){
 		glState.blend.pushSet(false);
 		quad.draw();
 		glState.blend.pop();
 	}
 
-	void fillRect(const IntRect &rect,
-	              const Vec4 &color)
-	{
+	void fillRect(const IntRect &rect, const Vec4 &color) {
 		bindFBO();
 
 		glState.scissorTest.pushSet(true);
@@ -205,8 +190,7 @@ struct BitmapPrivate{
 		glState.scissorTest.pop();
 	}
 
-	static void ensureFormat(SDL_Surface *&surf, SDL_PixelFormat format)
-	{
+	static void ensureFormat(SDL_Surface *&surf, SDL_PixelFormat format){
 		if (surf->format == format)
 			return;
 
@@ -215,10 +199,8 @@ struct BitmapPrivate{
 		surf = surfConv;
 	}
 
-	void onModified(bool freeSurface = true)
-	{
-		if (surface && freeSurface)
-		{
+	void onModified(bool freeSurface = true){
+		if (surface && freeSurface){
 			SDL_DestroySurface(surface);
 			surface = 0;
 		}
@@ -227,23 +209,20 @@ struct BitmapPrivate{
 	}
 };
 
-struct BitmapOpenHandler : FileSystem::OpenHandler
-{
+struct BitmapOpenHandler : FileSystem::OpenHandler{
 	SDL_Surface *surf;
 
 	BitmapOpenHandler()
 	    : surf(0)
 	{}
 
-	bool tryRead(SDL_IOStream* &ops, const char *ext)
-	{
+	bool tryRead(SDL_IOStream* &ops, const char *ext){
 		surf = IMG_LoadTyped_IO(ops, 1, ext);
 		return surf != 0;
 	}
 };
 
-Bitmap::Bitmap(const char *filename)
-{
+Bitmap::Bitmap(const char *filename){
 	BitmapOpenHandler handler;
 	shState->fileSystem().openRead(handler, filename);
 	SDL_Surface *imgSurf = handler.surf;
@@ -254,24 +233,20 @@ Bitmap::Bitmap(const char *filename)
 
 	p->ensureFormat(imgSurf, SDL_PIXELFORMAT_ABGR8888);
 
-	if (imgSurf->w > glState.caps.maxTexSize || imgSurf->h > glState.caps.maxTexSize)
-	{
+	if (imgSurf->w > glState.caps.maxTexSize || imgSurf->h > glState.caps.maxTexSize){
 		/* Mega surface */
 		p = new BitmapPrivate(this);
 		p->megaSurface = imgSurf;
 		SDL_SetSurfaceBlendMode(p->megaSurface, SDL_BLENDMODE_NONE);
 	}
-	else
-	{
+	else{
 		/* Regular surface */
 		TEXFBO tex;
 
-		try
-		{
+		try{
 			tex = shState->texPool().request(imgSurf->w, imgSurf->h);
 		}
-		catch (const Exception &e)
-		{
+		catch (const Exception &e){
 			SDL_DestroySurface(imgSurf);
 			throw e;
 		}
@@ -288,8 +263,7 @@ Bitmap::Bitmap(const char *filename)
 	p->addTaintedArea(rect());
 }
 
-Bitmap::Bitmap(int width, int height)
-{
+Bitmap::Bitmap(int width, int height){
 	if (width <= 0 || height <= 0)
 		throw Exception(Exception::RGSSError, "failed to create bitmap");
 
@@ -301,8 +275,7 @@ Bitmap::Bitmap(int width, int height)
 	clear();
 }
 
-Bitmap::Bitmap(const Bitmap &other)
-{
+Bitmap::Bitmap(const Bitmap &other){
 	other.ensureNonMega();
 
 	p = new BitmapPrivate(this);
@@ -312,13 +285,11 @@ Bitmap::Bitmap(const Bitmap &other)
 	blt(0, 0, other, rect());
 }
 
-Bitmap::~Bitmap()
-{
+Bitmap::~Bitmap(){
 	dispose();
 }
 
-int Bitmap::width() const
-{
+int Bitmap::width() const{
 	guardDisposed();
 
 	if (p->megaSurface)
@@ -327,8 +298,7 @@ int Bitmap::width() const
 	return p->gl.width;
 }
 
-int Bitmap::height() const
-{
+int Bitmap::height() const{
 	guardDisposed();
 
 	if (p->megaSurface)
@@ -337,17 +307,13 @@ int Bitmap::height() const
 	return p->gl.height;
 }
 
-IntRect Bitmap::rect() const
-{
+IntRect Bitmap::rect() const{
 	guardDisposed();
 
 	return IntRect(0, 0, width(), height());
 }
 
-void Bitmap::blt(int x, int y,
-                  const Bitmap &source, IntRect rect,
-                  int opacity)
-{
+void Bitmap::blt(int x, int y, const Bitmap &source, IntRect rect, int opacity){
 	if (source.isDisposed())
 		return;
 
@@ -367,10 +333,7 @@ void Bitmap::blt(int x, int y,
 	           source, rect, opacity);
 }
 
-void Bitmap::stretchBlt(const IntRect &destRect,
-                        const Bitmap &source, const IntRect &sourceRect,
-                        int opacity)
-{
+void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const IntRect &sourceRect, int opacity) {
 	guardDisposed();
 
 	GUARD_MEGA;
@@ -385,15 +348,13 @@ void Bitmap::stretchBlt(const IntRect &destRect,
 
 	SDL_Surface *srcSurf = source.megaSurface();
 
-	if (srcSurf && shState->config().subImageFix)
-	{
+	if (srcSurf && shState->config().subImageFix){
 		/* Blit from software surface, for broken GL drivers */
 		Vec2i gpTexSize;
 		shState->ensureTexSize(sourceRect.w, sourceRect.h, gpTexSize);
 		shState->bindTex();
 
-		GLMeta::subRectImageUpload(srcSurf->w, sourceRect.x, sourceRect.y, 0, 0,
-		                           sourceRect.w, sourceRect.h, srcSurf, GL_RGBA);
+		GLMeta::subRectImageUpload(srcSurf->w, sourceRect.x, sourceRect.y, 0, 0, sourceRect.w, sourceRect.h, srcSurf, GL_RGBA);
 		GLMeta::subRectImageEnd();
 
 		SimpleShader &shader = shState->shaders().simple;
@@ -416,8 +377,7 @@ void Bitmap::stretchBlt(const IntRect &destRect,
 
 		return;
 	}
-	else if (srcSurf)
-	{
+	else if (srcSurf){
 		/* Blit from software surface */
 		/* Don't do transparent blits for now */
 		if (opacity < 255)
@@ -435,22 +395,19 @@ void Bitmap::stretchBlt(const IntRect &destRect,
 		Uint32 rMask, gMask, bMask, aMask;
 		SDL_GetMasksForPixelFormat(SDL_PIXELFORMAT_ABGR8888,
 		                           &bpp, &rMask, &gMask, &bMask, &aMask);
-		SDL_Surface *blitTemp =
-			SDL_CreateSurface(destRect.w, destRect.h, SDL_GetPixelFormatForMasks(bpp, rMask, gMask, bMask, aMask));
+		SDL_Surface *blitTemp = SDL_CreateSurface(destRect.w, destRect.h, SDL_GetPixelFormatForMasks(bpp, rMask, gMask, bMask, aMask));
 
 		SDL_BlitSurfaceScaled(srcSurf, &srcRect, blitTemp, NULL, SDL_ScaleMode::SDL_SCALEMODE_NEAREST);
 
 		TEX::bind(p->gl.tex);
 
-		if (bltRect.w == dstRect.w && bltRect.h == dstRect.h)
-		{
+		if (bltRect.w == dstRect.w && bltRect.h == dstRect.h){
 			/* Dest rectangle lies within bounding box */
 			TEX::uploadSubImage(destRect.x, destRect.y,
 			                    destRect.w, destRect.h,
 			                    blitTemp->pixels, GL_RGBA);
 		}
-		else
-		{
+		else{
 			/* Clipped blit */
 			GLMeta::subRectImageUpload(blitTemp->w, bltRect.x - dstRect.x, bltRect.y - dstRect.y,
 			                           bltRect.x, bltRect.y, bltRect.w, bltRect.h, blitTemp, GL_RGBA);
@@ -463,16 +420,14 @@ void Bitmap::stretchBlt(const IntRect &destRect,
 		return;
 	}
 
-	if (opacity == 255 && !p->touchesTaintedArea(destRect))
-	{
+	if (opacity == 255 && !p->touchesTaintedArea(destRect)){
 		/* Fast blit */
 		GLMeta::blitBegin(p->gl);
 		GLMeta::blitSource(source.p->gl);
 		GLMeta::blitRectangle(sourceRect, destRect);
 		GLMeta::blitEnd();
 	}
-	else
-	{
+	else{
 		/* Fragment pipeline */
 		float normOpacity = (float) opacity / 255.0f;
 
@@ -511,15 +466,11 @@ void Bitmap::stretchBlt(const IntRect &destRect,
 	p->onModified();
 }
 
-void Bitmap::fillRect(int x, int y,
-                      int width, int height,
-                      const Vec4 &color)
-{
+void Bitmap::fillRect(int x, int y, int width, int height, const Vec4 &color) {
 	fillRect(IntRect(x, y, width, height), color);
 }
 
-void Bitmap::fillRect(const IntRect &rect, const Vec4 &color)
-{
+void Bitmap::fillRect(const IntRect &rect, const Vec4 &color){
 	guardDisposed();
 
 	GUARD_MEGA;
@@ -536,18 +487,11 @@ void Bitmap::fillRect(const IntRect &rect, const Vec4 &color)
 	p->onModified();
 }
 
-void Bitmap::gradientFillRect(int x, int y,
-                              int width, int height,
-                              const Vec4 &color1, const Vec4 &color2,
-                              bool vertical)
-{
+void Bitmap::gradientFillRect(int x, int y, int width, int height, const Vec4 &color1, const Vec4 &color2, bool vertical) {
 	gradientFillRect(IntRect(x, y, width, height), color1, color2, vertical);
 }
 
-void Bitmap::gradientFillRect(const IntRect &rect,
-                              const Vec4 &color1, const Vec4 &color2,
-                              bool vertical)
-{
+void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec4 &color2, bool vertical) {
 	guardDisposed();
 
 	GUARD_MEGA;
@@ -558,15 +502,13 @@ void Bitmap::gradientFillRect(const IntRect &rect,
 
 	Quad &quad = shState->gpQuad();
 
-	if (vertical)
-	{
+	if (vertical){
 		quad.vert[0].color = color1;
 		quad.vert[1].color = color1;
 		quad.vert[2].color = color2;
 		quad.vert[3].color = color2;
 	}
-	else
-	{
+	else{
 		quad.vert[0].color = color1;
 		quad.vert[3].color = color1;
 		quad.vert[1].color = color2;
@@ -587,13 +529,11 @@ void Bitmap::gradientFillRect(const IntRect &rect,
 	p->onModified();
 }
 
-void Bitmap::clearRect(int x, int y, int width, int height)
-{
+void Bitmap::clearRect(int x, int y, int width, int height){
 	clearRect(IntRect(x, y, width, height));
 }
 
-void Bitmap::clearRect(const IntRect &rect)
-{
+void Bitmap::clearRect(const IntRect &rect){
 	guardDisposed();
 
 	GUARD_MEGA;
@@ -603,8 +543,7 @@ void Bitmap::clearRect(const IntRect &rect)
 	p->onModified();
 }
 
-void Bitmap::blur()
-{
+void Bitmap::blur(){
 	guardDisposed();
 
 	GUARD_MEGA;
@@ -648,8 +587,7 @@ void Bitmap::blur()
 	p->onModified();
 }
 
-void Bitmap::radialBlur(int angle, int divisions)
-{
+void Bitmap::radialBlur(int angle, int divisions){
 	guardDisposed();
 
 	GUARD_MEGA;
@@ -723,8 +661,7 @@ void Bitmap::radialBlur(int angle, int divisions)
 
 	p->pushSetViewport(shader);
 
-	for (int i = 0; i < divisions; ++i)
-	{
+	for (int i = 0; i < divisions; ++i){
 		trans.setRotation(baseAngle + i*angleStep);
 		shader.setMatrix(trans.getMatrix());
 		qArray.draw();
@@ -743,8 +680,7 @@ void Bitmap::radialBlur(int angle, int divisions)
 	p->onModified();
 }
 
-void Bitmap::clear()
-{
+void Bitmap::clear(){
 	guardDisposed();
 
 	GUARD_MEGA;
@@ -762,16 +698,14 @@ void Bitmap::clear()
 	p->onModified();
 }
 
-static uint32_t &getPixelAt(SDL_Surface *surf, SDL_PixelFormatDetails *form, int x, int y)
-{
+static uint32_t &getPixelAt(SDL_Surface *surf, SDL_PixelFormatDetails *form, int x, int y){
 	size_t offset = x * form->bytes_per_pixel + y * surf->pitch;
 	uint8_t *bytes = (uint8_t*) surf->pixels + offset;
 
 	return *((uint32_t*) bytes);
 }
 
-Color Bitmap::getPixel(int x, int y) const
-{
+Color Bitmap::getPixel(int x, int y) const{
 	guardDisposed();
 
 	GUARD_MEGA;
@@ -779,8 +713,7 @@ Color Bitmap::getPixel(int x, int y) const
 	if (x < 0 || y < 0 || x >= width() || y >= height())
 		return Vec4();
 
-	if (!p->surface)
-	{
+	if (!p->surface){
 		p->allocSurface();
 
 		FBO::bind(p->gl.fbo);
@@ -800,14 +733,12 @@ Color Bitmap::getPixel(int x, int y) const
 	             (pixel >> p->format->Ashift) & 0xFF);
 }
 
-void Bitmap::setPixel(int x, int y, const Color &color)
-{
+void Bitmap::setPixel(int x, int y, const Color &color){
 	guardDisposed();
 
 	GUARD_MEGA;
 
-	uint8_t pixel[] =
-	{
+	uint8_t pixel[] = {
 		(uint8_t) clamp<double>(color.red,   0, 255),
 		(uint8_t) clamp<double>(color.green, 0, 255),
 		(uint8_t) clamp<double>(color.blue,  0, 255),
@@ -822,8 +753,7 @@ void Bitmap::setPixel(int x, int y, const Color &color)
 	/* Setting just a single pixel is no reason to throw away the
 	 * whole cached surface; we can just apply the same change */
 
-	if (p->surface)
-	{
+	if (p->surface){
 		uint32_t &surfPixel = getPixelAt(p->surface, p->format, x, y);
 		//  pixel = SDL_MapSurfaceRGBA(surface, r, g, b, a);
 		surfPixel = SDL_MapSurfaceRGBA(p->surface, pixel[0], pixel[1], pixel[2], pixel[3]);
@@ -832,8 +762,7 @@ void Bitmap::setPixel(int x, int y, const Color &color)
 	p->onModified(false);
 }
 
-void Bitmap::hueChange(int hue)
-{
+void Bitmap::hueChange(int hue){
 	guardDisposed();
 
 	GUARD_MEGA;
@@ -870,15 +799,11 @@ void Bitmap::hueChange(int hue)
 	p->onModified();
 }
 
-void Bitmap::drawText(int x, int y,
-                      int width, int height,
-                      const char *str, int align)
-{
+void Bitmap::drawText(int x, int y, int width, int height, const char *str, int align) {
 	drawText(IntRect(x, y, width, height), str, align);
 }
 
-static std::string fixupString(const char *str)
-{
+static std::string fixupString(const char *str){
 	std::string s(str);
 
 	/* RMXP actually draws LF as a "missing gylph" box,
@@ -905,8 +830,7 @@ static void applyShadow(SDL_Surface *&in, const SDL_PixelFormatDetails* fm, cons
 	 * (0,0) using the bitmap blit equation (see shader/bitmapBlit.frag) */
 
 	for (int y = 0; y < in->h+1; ++y)
-		for (int x = 0; x < in->w+1; ++x)
-		{
+		for (int x = 0; x < in->w+1; ++x){
 			/* src: input pixel, shd: shadow pixel */
 			uint32_t src = 0, shd = 0;
 
@@ -922,14 +846,12 @@ static void applyShadow(SDL_Surface *&in, const SDL_PixelFormatDetails* fm, cons
 			/* Set shadow pixel RGB values to 0 (black) */
 			shd &= (uint32_t)fm->Amask;
 
-			if (x == 0 || y == 0)
-			{
+			if (x == 0 || y == 0){
 				*outP = src;
 				continue;
 			}
 
-			if (x == in->w || y == in->h)
-			{
+			if (x == in->w || y == in->h){
 				*outP = shd;
 				continue;
 			}
@@ -939,14 +861,12 @@ static void applyShadow(SDL_Surface *&in, const SDL_PixelFormatDetails* fm, cons
 			srcA = (src & fm->Amask) >> fm->Ashift;
 			shdA = (shd & fm->Amask) >> fm->Ashift;
 
-			if (srcA == 255 || shdA == 0)
-			{
+			if (srcA == 255 || shdA == 0){
 				*outP = src;
 				continue;
 			}
 
-			if (srcA == 0 && shdA == 0)
-			{
+			if (srcA == 0 && shdA == 0){
 				*outP = 0;
 				continue;
 			}

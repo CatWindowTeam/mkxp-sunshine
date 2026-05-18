@@ -79,8 +79,7 @@ struct AudioPrivate{
 		current_bgs_volume = 100;
 		current_me_volume = 100;
 		meWatch.state = MeNotPlaying;
-		meWatch.thread = createSDLThread
-			<AudioPrivate, &AudioPrivate::meWatchFun>(this, "audio_mewatch");
+		meWatch.thread = createSDLThread<AudioPrivate, &AudioPrivate::meWatchFun>(this, "audio_mewatch");
 	}
 
 	~AudioPrivate(){

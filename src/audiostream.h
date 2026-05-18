@@ -117,10 +117,7 @@ struct AudioStream{
 	            const std::string &threadId);
 	~AudioStream();
 
-	void play(const std::string &filename,
-	          int volume,
-	          int pitch,
-	          float offset = 0);
+	void play(const std::string &filename, int volume, int pitch, float offset = 0);
 	void stop();
 	void fadeOut(int duration);
 

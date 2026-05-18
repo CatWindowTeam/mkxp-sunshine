@@ -267,8 +267,7 @@ void ALStream::startStream(float offset){
 	startOffset = offset;
 	procFrames = offset * source->sampleRate();
 
-	thread = createSDLThread
-		<ALStream, &ALStream::streamData>(this, threadName);
+	thread = createSDLThread<ALStream, &ALStream::streamData>(this, threadName);
 }
 
 void ALStream::pauseStream(){
@@ -328,9 +327,8 @@ void ALStream::streamData(){
 	if (threadTermReq)
 		return;
 
-	if (needsRewind){
+	if (needsRewind)
 		source->seekToOffset(startOffset);
-	}
 
 	for (int i = 0; i < STREAM_BUFS; ++i){
 		if (threadTermReq)

@@ -1,7 +1,6 @@
 struct StaticRect { float x, y, w, h; };
 
-extern const StaticRect autotileRects[] =
-{
+extern const StaticRect autotileRects[] = {
 	{ 32.5, 64.5, 15, 15 },
 	{ 48.5, 64.5, 15, 15 },
 	{ 32.5, 80.5, 15, 15 },
