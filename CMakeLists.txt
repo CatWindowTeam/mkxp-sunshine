@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28.3)
 project(oneshot)
 ## Setup options ##
-
+set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
 include(FindPackageHandleStandardArgs)
 
 option(STEAM "Build for Steam" OFF)
