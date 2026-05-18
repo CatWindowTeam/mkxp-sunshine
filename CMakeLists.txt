@@ -25,7 +25,7 @@ else()
 	if (MSVC)
 		add_compile_options(/O2 /fp:fast /GA /GL /Gw Qpar /RTCu)
 	else()
-		add_compile_options(-s -0fast -ffast-math -fdevirtualize-speculatively -fspeculatively-call-stored-functions -fipa-pta -fdelete-null-pointer-checks -flimit-function-alignment -faggressive-loop-optimizations)
+		add_compile_options(-s -03 -ffast-math -fdevirtualize-speculatively -fspeculatively-call-stored-functions -fipa-pta -fdelete-null-pointer-checks -flimit-function-alignment -faggressive-loop-optimizations)
 	endif()
 endif()
 ## Setup main source ##
