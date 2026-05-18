@@ -308,12 +308,19 @@ class Spriteset_Map
       # based on its current width and height
       # no point in updating the sprite if offscreen
       # this greatly increases performance on larger maps
-
-        ((sprite.character.real_x + (sprite.ox*4) > Graphics.width - 128) &&
-        (sprite.character.real_x - (sprite.ox*4) < Graphics.width + (21 * 128)) &&
-        (sprite.character.real_y + (sprite.oy*4) > (Graphics.height) - 128) &&
-        (sprite.character.real_y - (sprite.oy*4) < (Graphics.height) + (17 * 128)))
+		if Graphics.width == 1280
+			((sprite.character.real_x + (sprite.ox*4) > Graphics.width - 128) &&
+        		(sprite.character.real_x - (sprite.ox*4) < Graphics.width + (21 * 128)) &&
+        		(sprite.character.real_y + (sprite.oy*4) > (Graphics.height) - 128) &&
+        		(sprite.character.real_y - (sprite.oy*4) < (Graphics.height) + (17 * 128)))
             sprite.update
+		else
+			((sprite.character.real_x + (sprite.ox*4) > Graphics.width - 128) &&
+        		(sprite.character.real_x - (sprite.ox*4) < Graphics.width + (10 * 128)) &&
+        		(sprite.character.real_y + (sprite.oy*4) > (Graphics.height) - 128) &&
+        		(sprite.character.real_y - (sprite.oy*4) < (Graphics.height) + (6 * 128)))
+            sprite.update
+		end
       else
         sprite.update_fast
       end
@@ -378,3 +385,4 @@ class Spriteset_Map
     end
   end
 end
+

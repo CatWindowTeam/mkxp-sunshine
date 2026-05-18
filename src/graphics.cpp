@@ -50,8 +50,6 @@
 #include <errno.h>
 #include <algorithm>
 
-#define DEF_SCREEN_W  (EnableSixteenByNine == 1 ? 640 : 544)
-#define DEF_SCREEN_H  (EnableSixteenByNine == 1 ? 480 : 416)
 #define DEF_FRAMERATE (60)
 
 #if defined _WIN32

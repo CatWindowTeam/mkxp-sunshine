@@ -43,9 +43,10 @@
 	#error "Operating system not detected or unsupported."
 #endif
 
+const Config conf;
+#define DEF_SCREEN_W conf.defScreenW
+#define DEF_SCREEN_H conf.defScreenH
 
-#define DEF_SCREEN_W 640
-#define DEF_SCREEN_H 480
 
 struct OneshotPrivate{
 	// Main SDL window
@@ -338,8 +339,8 @@ void Oneshot::update(){
 		screenRect.x = p->winX;
 		screenRect.y = p->winY;
 		SDL_UnlockMutex(p->winMutex);
-		screenRect.w = 640;
-		screenRect.h = 480;
+		screenRect.w = conf.defScreenW;
+		screenRect.h = conf.defScreenH;
 
 		//костыль ебучий
 		int num_displays;
@@ -359,7 +360,7 @@ void Oneshot::update(){
 
 			//If it's entirely within the bounds of the screen, we don't need to check out
 			//any other monitors
-			if (intersect.x == 0 && intersect.y == 0 && intersect.w == 640 && intersect.h == 480)
+			if (intersect.x == 0 && intersect.y == 0 && intersect.w == conf.defScreenW && intersect.h == conf.defScreenH)
 				return;
 
 			for (int y = intersect.y; y < intersect.y + intersect.h; ++y){

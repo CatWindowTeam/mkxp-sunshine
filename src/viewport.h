@@ -29,8 +29,7 @@
 
 struct ViewportPrivate;
 
-class Viewport : public Scene, public SceneElement, public Flashable, public Disposable
-{
+class Viewport : public Scene, public SceneElement, public Flashable, public Disposable{
 public:
 	Viewport(int x, int y, int width, int height);
 	Viewport(Rect *rect);

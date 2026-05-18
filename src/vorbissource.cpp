@@ -145,8 +145,7 @@ struct VorbisSource : ALDataSource{
 	}
 
 	void seekToOffset(float seconds){
-		if (seconds <= 0)
-		{
+		if (seconds <= 0){
 			ov_raw_seek(&vf, 0);
 			currentFrame = 0;
 		}
@@ -178,29 +177,24 @@ struct VorbisSource : ALDataSource{
 			canRead = std::min(availBuf, tilLoopEnd);
 		}
 
-		while (canRead > 16)
-		{
+		while (canRead > 16){
 			long res = ov_read(&vf, static_cast<char*>(bufPtr),
 			                   canRead, 0, sizeof(int16_t), 1, 0);
 
-			if (res < 0)
-			{
+			if (res < 0){
 				/* Read error */
 				retStatus = ALDataSource::Error;
 
 				break;
 			}
 
-			if (res == 0)
-			{
+			if (res == 0){
 				/* EOF */
-				if (loop.requested)
-				{
+				if (loop.requested){
 					retStatus = ALDataSource::WrapAround;
 					seekToOffset(0);
 				}
-				else
-				{
+				else{
 					retStatus = ALDataSource::EndOfStream;
 				}
 
@@ -211,8 +205,7 @@ struct VorbisSource : ALDataSource{
 				if (bufUsed > 0)
 					break;
 
-				if (readAgain)
-				{
+				if (readAgain){
 					/* We're still not getting data though.
 					 * Just error out to prevent an endless loop */
 					retStatus = ALDataSource::Error;
@@ -226,8 +219,7 @@ struct VorbisSource : ALDataSource{
 			bufPtr = &sampleBuf[bufUsed];
 			currentFrame += (res / info.frameSize);
 
-			if (loop.valid && currentFrame >= loop.end)
-			{
+			if (loop.valid && currentFrame >= loop.end){
 				/* Determine how many frames we're
 				 * over the loop end */
 				int discardFrames = currentFrame - loop.end;
