@@ -25,8 +25,7 @@ struct AtomicFlag{
 		SDL_SetAtomicInt(&atom, 0);
 	}
 
-	operator bool() const
-	{
+	operator bool() const{
 		return SDL_GetAtomicInt(&atom);
 	}
 

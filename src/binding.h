@@ -22,8 +22,7 @@
 #ifndef BINDING_H
 #define BINDING_H
 
-struct ScriptBinding
-{
+struct ScriptBinding{
 	/* Starts the part where the binding takes over,
 	 * loading the compressed scripts and executing them.
 	 * This function returns as soon as the scripts finish
