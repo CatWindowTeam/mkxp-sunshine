@@ -10,7 +10,7 @@ class Window_MainMenu < Window_Selectable
     @commands << 'Settings'
 	
 	if Window_Settings.DebugIsEnabled == true
-		@commands << 'TPtLOC'
+		@commands << 'TPtL'
 	end
 	
     @item_max = @commands.size

@@ -9,7 +9,7 @@ class Window_DebugLeft < Window_Selectable
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
-    super(0, 0, 192, 480)
+    super(0, 0, 192, Graphics.height)
     self.index = 0
     refresh
   end
