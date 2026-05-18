@@ -27,8 +27,7 @@
 #include "exception.h"
 
 template<class C>
-static VALUE
-serializableDump(int, VALUE *, VALUE self){
+static VALUE serializableDump(int, VALUE *, VALUE self){
 	Serializable *s = getPrivateData<C>(self);
 
 	int dataSize = s->serialSize();

@@ -154,10 +154,8 @@ void audioBindingInit(){
 	BIND_PLAY_STOP_FADE( bgs );
 	BIND_PLAY_STOP_FADE( me  );
 
-	if (rgssVer >= 3){
-		BIND_POS( bgm );
-		BIND_POS( bgs );
-	}
+	BIND_POS( bgm );
+	BIND_POS( bgs );
 
 	BIND_PLAY_STOP( se )
 

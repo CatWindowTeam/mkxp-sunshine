@@ -120,7 +120,6 @@ void spriteBindingInit(){
 	INIT_PROP_BIND( Sprite, Tone,      "tone"       );
 	INIT_PROP_BIND( Sprite, Obscured,  "obscured"   );
 
-	if (rgssVer >= 2){
 	_rb_define_method(klass, "width", spriteWidth);
 	_rb_define_method(klass, "height", spriteHeight);
 
@@ -130,5 +129,4 @@ void spriteBindingInit(){
 	INIT_PROP_BIND( Sprite, WaveLength, "wave_length" );
 	INIT_PROP_BIND( Sprite, WaveSpeed,  "wave_speed"  );
 	INIT_PROP_BIND( Sprite, WavePhase,  "wave_phase"  );
-	}
 }

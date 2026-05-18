@@ -97,7 +97,6 @@ RB_NA_METHOD(fileIntClose){
     #endif
     SDL_CloseIO(ops);
     setPrivateData(self, nullptr);
-    
     return Qnil;
 }
 RB_NA_METHOD(fileIntGetByte){

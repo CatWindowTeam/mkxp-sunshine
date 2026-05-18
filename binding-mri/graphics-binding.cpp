@@ -219,9 +219,7 @@ void graphicsBindingInit(){
 
 	INIT_GRA_PROP_BIND( Brightness, "brightness" );
 
-	if (rgssVer >= 3){
 	_rb_define_module_function(module, "play_movie", graphicsPlayMovie);
-	}
 
 	INIT_GRA_PROP_BIND( Fullscreen, "fullscreen"  );
 	INIT_GRA_PROP_BIND( ShowCursor, "show_cursor" );

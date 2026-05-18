@@ -93,8 +93,7 @@ static void disposableBindingInit(VALUE klass){
 
 	/* Make sure we always have access to the original method, even
 	 * if it is overridden by user scripts */
-	if (rgssVer == 1)
-		rb_define_alias(klass, "_mkxp_dispose_alias", "dispose");
+	rb_define_alias(klass, "_mkxp_dispose_alias", "dispose");
 }
 
 template<class C>

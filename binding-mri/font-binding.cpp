@@ -263,23 +263,16 @@ void fontBindingInit(){
 
 	rb_iv_set(klass, "default_name", defNamesObj);
 
-	if (rgssVer >= 3)
-		wrapProperty(klass, &Font::getDefaultOutColor(), "default_out_color", ColorType);
+	wrapProperty(klass, &Font::getDefaultOutColor(), "default_out_color", ColorType);
 
 	INIT_KLASS_PROP_BIND(Font, DefaultName, "default_name");
 	INIT_KLASS_PROP_BIND(Font, DefaultSize, "default_size");
 	INIT_KLASS_PROP_BIND(Font, DefaultBold, "default_bold");
 	INIT_KLASS_PROP_BIND(Font, DefaultItalic, "default_italic");
 	INIT_KLASS_PROP_BIND(Font, DefaultColor, "default_color");
-
-	if (rgssVer >= 2){
 	INIT_KLASS_PROP_BIND(Font, DefaultShadow, "default_shadow");
-	}
-
-	if (rgssVer >= 3){
 	INIT_KLASS_PROP_BIND(Font, DefaultOutline, "default_outline");
 	INIT_KLASS_PROP_BIND(Font, DefaultOutColor, "default_out_color");
-	}
 
 	rb_define_class_method(klass, "exist?", fontDoesExist);
 
@@ -292,12 +285,8 @@ void fontBindingInit(){
 	INIT_PROP_BIND(Font, Italic, "italic");
 	INIT_PROP_BIND(Font, Color, "color");
 
-	if (rgssVer >= 2){
 	INIT_PROP_BIND(Font, Shadow, "shadow");
-	}
 
-	if (rgssVer >= 3){
 	INIT_PROP_BIND(Font, Outline, "outline");
 	INIT_PROP_BIND(Font, OutColor, "out_color");
-	}
 }

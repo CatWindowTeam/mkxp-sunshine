@@ -75,9 +75,6 @@ void fileIntBindingInit();
 
 void journalBindingInit();
 void wallpaperBindingInit();
-#ifdef __linux__
-void wallpaperBindingTerminate();
-#endif
 void nikoBindingInit();
 void oneshotBindingInit();
 void SunshineBindingInit();
@@ -104,43 +101,34 @@ static void mriBindingInit(){
 	spriteBindingInit();
 	viewportBindingInit();
 	planeBindingInit();
-
 	windowBindingInit();
 	tilemapBindingInit();
-
 	TimeBindingInit();
-	
 	inputBindingInit();
 	audioBindingInit();
 	graphicsBindingInit();
-
 	fileIntBindingInit();
 	journalBindingInit();
 	wallpaperBindingInit();
 	nikoBindingInit();
 	oneshotBindingInit();
-    SunshineBindingInit();
+    	SunshineBindingInit();
 	steamBindingInit();
 	chromaBindingInit();
 	#ifdef DEBUG
 		printf("[mriBindingInit] Done\n");
 		printf("[mriBindingInit] RGSS version: %i\n", rgssVer);
 	#endif
-	if (rgssVer >= 3){
-		_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
-		_rb_define_module_function(rb_mKernel, "rgss_stop", mriRgssStop);
 
-		_rb_define_module_function(rb_mKernel, "msgbox",    mriPrint);
-		_rb_define_module_function(rb_mKernel, "msgbox_p",  mriP);
-
-		rb_define_global_const("RGSS_VERSION", rb_str_new_cstr("3.0.1"));
-	}else{
-		_rb_define_module_function(rb_mKernel, "print", mriPrint);
-		_rb_define_module_function(rb_mKernel, "p",     mriP);
-
-		rb_define_alias(rb_singleton_class(rb_mKernel), "_mkxp_kernel_caller_alias", "caller");
-		_rb_define_module_function(rb_mKernel, "caller", _kernelCaller);
-	}
+	_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
+	_rb_define_module_function(rb_mKernel, "rgss_stop", mriRgssStop);
+	_rb_define_module_function(rb_mKernel, "msgbox",    mriPrint);
+	_rb_define_module_function(rb_mKernel, "msgbox_p",  mriP);
+	rb_define_global_const("RGSS_VERSION", rb_str_new_cstr("3.0.1"));
+	_rb_define_module_function(rb_mKernel, "print", mriPrint);
+	_rb_define_module_function(rb_mKernel, "p",     mriP);
+	rb_define_alias(rb_singleton_class(rb_mKernel), "_mkxp_kernel_caller_alias", "caller");
+	_rb_define_module_function(rb_mKernel, "caller", _kernelCaller);
 
 	rb_eval_string(module_rpg1);
 
@@ -153,23 +141,17 @@ static void mriBindingInit(){
 	/* Load global constants */
 	rb_gv_set("MKXP", Qtrue);
 
-	#ifdef DEBUG
-		VALUE debug = rb_bool_new(shState->config().editor.debug);
-		if (rgssVer == 1)
-			rb_gv_set("DEBUG", debug);
-		else if (rgssVer >= 2)
-			rb_gv_set("TEST", debug);
+	VALUE debug = rb_bool_new(shState->config().editor.debug);
+	if (rgssVer == 1)
+		rb_gv_set("DEBUG", debug);
+	else if (rgssVer >= 2)
+		rb_gv_set("TEST", debug);
 
-		rb_gv_set("BTEST", rb_bool_new(shState->config().editor.battleTest));
-	#endif
+	rb_gv_set("BTEST", rb_bool_new(shState->config().editor.battleTest));
 }
 
 static void showMsg(const std::string &msg){
-#ifdef NDEBUG
 	shState->eThread().showMessageBox(msg.c_str());
-#else
-	Debug() << "[DEBUG] " + msg.c_str();
-#endif
 }
 
 static void printP(int argc, VALUE *argv, const char *convMethod, const char *sep){
@@ -205,7 +187,6 @@ RB_METHOD(mriP){
 
 RB_METHOD(mkxpDataDirectory){
 	RB_UNUSED_PARAM;
-
 	const std::string &path = shState->config().customDataPath;
 	const char *s = path.empty() ? "." : path.c_str();
 
@@ -214,7 +195,6 @@ RB_METHOD(mkxpDataDirectory){
 
 RB_METHOD(mkxpPuts){
 	RB_UNUSED_PARAM;
-
 	const char *str;
 	rb_get_args(argc, argv, "z", &str RB_ARG_END);
 
@@ -234,7 +214,6 @@ RB_METHOD(mkxpRawKeyStates){
 
 RB_METHOD(mkxpMouseInWindow){
 	RB_UNUSED_PARAM;
-	
 	return rb_bool_new(EventThread::mouseState.inWindow);
 }
 
@@ -245,7 +224,6 @@ static VALUE rgssMainCb(VALUE block){
 
 static VALUE rgssMainRescue(VALUE arg, VALUE exc){
 	VALUE *excRet = (VALUE*) arg;
-	
 	*excRet = exc;
 
 	return Qnil;
@@ -406,11 +384,7 @@ static void runRMXPScripts(BacktraceData &btData){
 	}
 
 	/* Set the debug flag */
-	#ifdef DEBUG
-		rb_gv_set("$debug", conf.debugMode ? Qtrue : Qfalse);
-	#else
-		rb_gv_set("$debug", Qfalse);
-	#endif
+	rb_gv_set("$debug", conf.debugMode ? Qtrue : Qfalse);
 
 	rb_gv_set("$RGSS_SCRIPTS", scriptArray);
 
@@ -460,7 +434,6 @@ static void runRMXPScripts(BacktraceData &btData){
 
 			break;
 		}
-		
 		rb_ary_store(script, 3, rb_str_new_cstr(decodeBuffer.c_str()));
 	}
 
@@ -510,7 +483,6 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	VALUE msg = rb_funcall2(exc, rb_intern("message"), 0, NULL);
 	VALUE bt0 = rb_ary_entry(bt, 0);
 	VALUE name = rb_class_path(rb_obj_class(exc));
-	
 	VALUE ds = rb_sprintf("%" PRIsVALUE ": %" PRIsVALUE " (%" PRIsVALUE ")",
 	                      bt0, exc, name);
 	/* omit "useless" last entry (from ruby:1:in `eval') */
@@ -589,7 +561,6 @@ static void mriBindingExecute(){
 			rb_ary_push(lpaths, pathv);
 		}
 	}
-	
 	RbData rbData;
 	shState->setBindingData(&rbData);
 	BacktraceData btData;
@@ -625,4 +596,3 @@ static void mriBindingReset(){
 	#endif
 	rb_raise(getRbData()->exc[Reset], " ");
 }
-

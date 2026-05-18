@@ -56,56 +56,45 @@ static int getButtonArg(int argc, VALUE *argv){
 
 RB_METHOD(inputPress){
 	RB_UNUSED_PARAM;
-
 	int num = getButtonArg(argc, argv);
-
 	return rb_bool_new(shState->input().isPressed(num));
 }
 
 RB_METHOD(inputTrigger){
 	RB_UNUSED_PARAM;
-
 	int num = getButtonArg(argc, argv);
-
 	return rb_bool_new(shState->input().isTriggered(num));
 }
 
 RB_METHOD(inputRepeat){
 	RB_UNUSED_PARAM;
-
 	int num = getButtonArg(argc, argv);
-
 	return rb_bool_new(shState->input().isRepeated(num));
 }
 
 RB_METHOD(inputDir4){
 	RB_UNUSED_PARAM;
-
 	return rb_fix_new(shState->input().dir4Value());
 }
 
 RB_METHOD(inputDir8){
 	RB_UNUSED_PARAM;
-
 	return rb_fix_new(shState->input().dir8Value());
 }
 
 /* Non-standard extensions */
 RB_METHOD(inputMouseX){
 	RB_UNUSED_PARAM;
-
 	return rb_fix_new(shState->input().mouseX());
 }
 
 RB_METHOD(inputMouseY){
 	RB_UNUSED_PARAM;
-
 	return rb_fix_new(shState->input().mouseY());
 }
 
 RB_METHOD(inputQuit){
 	RB_UNUSED_PARAM;
-
 	return rb_bool_new(shState->input().hasQuit());
 }
 
