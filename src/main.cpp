@@ -69,13 +69,6 @@ static inline const char* glGetStringInt(GLenum name){
 	return (const char*) gl.GetString(name);
 }
 
-static void printGLInfo(){
-	Debug() << "[main.cpp] GL Vendor    :" << glGetStringInt(GL_VENDOR);
-	Debug() << "[main.cpp] GL Renderer  :" << glGetStringInt(GL_RENDERER);
-	Debug() << "[main.cpp] GL Version   :" << glGetStringInt(GL_VERSION);
-	Debug() << "[main.cpp] GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
-}
-
 int rgssThreadFun(void *userdata){
 	RGSSThreadData *threadData = static_cast<RGSSThreadData*>(userdata);
 	const Config &conf = threadData->config;
@@ -113,7 +106,10 @@ int rgssThreadFun(void *userdata){
 	gl.Clear(GL_COLOR_BUFFER_BIT);
 	SDL_GL_SwapWindow(win);
 
-	printGLInfo();
+	Debug() << "[main.cpp] GL Vendor    :" << glGetStringInt(GL_VENDOR);
+        Debug() << "[main.cpp] GL Renderer  :" << glGetStringInt(GL_RENDERER);
+        Debug() << "[main.cpp] GL Version   :" << glGetStringInt(GL_VERSION);
+    	Debug() << "[main.cpp] GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
 
 	bool vsync = conf.vsync || conf.syncToRefreshrate;
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
