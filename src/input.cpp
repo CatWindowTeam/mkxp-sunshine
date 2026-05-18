@@ -234,7 +234,9 @@ static const KbBindingData staticKbBindings[] ={
 	{ SDL_SCANCODE_F6,     Input::F6    },
 	{ SDL_SCANCODE_F7,     Input::F7    },
 	{ SDL_SCANCODE_F8,     Input::F8    },
-	{ SDL_SCANCODE_F9,     Input::F9    }
+	{ SDL_SCANCODE_F9,     Input::F9    },
+	{ SDL_SCANCODE_LCTRL,  Input:LCTRL  },
+	{ SDL_SCANCODE_RCTRL,  Input:RCTRL  }
 };
 
 static elementsN(staticKbBindings);
@@ -302,20 +304,17 @@ struct InputPrivate {
 
 	bool triedExit;
 
-	struct
-	{
+	struct{
 		int active;
 		Input::ButtonCode previous;
 	} dir4Data;
 
-	struct
-	{
+	struct{
 		int active;
 	} dir8Data;
 
 
-	InputPrivate(const RGSSThreadData &rtData)
-	{
+	InputPrivate(const RGSSThreadData &rtData){
 		initStaticKbBindings();
 		initMsBindings();
 
@@ -548,10 +547,8 @@ struct InputPrivate {
 
 		if (dir4Data.previous != Input::None){
 			/* Check if prev still pressed */
-			if (getState(dir4Data.previous).pressed)
-			{
-				for (size_t i = 0; i < 3; ++i)
-				{
+			if (getState(dir4Data.previous).pressed){
+				for (size_t i = 0; i < 3; ++i){
 					Input::ButtonCode other =
 							otherDirs[(dir4Data.previous/2)-1][i];
 
@@ -577,8 +574,7 @@ struct InputPrivate {
 		dir4Data.previous = Input::None;
 	}
 
-	void updateDir8()
-	{
+	void updateDir8(){
 		static const int combos[4][4] = {
 			{ 2, 1, 3, 0 },
 			{ 1, 4, 0, 7 },
