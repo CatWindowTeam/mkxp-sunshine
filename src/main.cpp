@@ -234,8 +234,8 @@ int main(int argc, char *argv[]){
 #endif
 
 	/* initialize SDL first */
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) < 0){
-		showInitError(std::string("Error initializing SDL: ") + SDL_GetError());
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
+		showInitError(std::string("Error initializing SDL: ") + SDL_GetError())
 		return 0;
 	}
 
@@ -328,7 +328,6 @@ int main(int argc, char *argv[]){
 		showInitError("Error opening OpenAL device");
 		SDL_DestroyWindow(win);
 		TTF_Quit();
-		//IMG_Quit();
 		SDL_Quit();
 
 		return 0;
@@ -357,8 +356,7 @@ int main(int argc, char *argv[]){
 	rtData.bindingUpdateMsg.post(loadBindings(conf));
 
 	/* Start RGSS thread */
-	SDL_Thread *rgssThread =
-	        SDL_CreateThread(rgssThreadFun, "rgss", &rtData);
+	SDL_Thread *rgssThread = SDL_CreateThread(rgssThreadFun, "rgss", &rtData);
 
 	/* Start event processing */
 	eventThread.process(rtData);
