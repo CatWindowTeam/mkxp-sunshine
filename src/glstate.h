@@ -30,15 +30,12 @@
 struct Config;
 
 template<typename T>
-struct GLProperty
-{
-	~GLProperty()
-	{
+struct GLProperty{
+	~GLProperty(){
 		assert(stack.size() == 0);
 	}
 
-	void init(const T &value)
-	{
+	void init(const T &value){
 		current = value;
 		apply(value);
 	}
@@ -46,22 +43,19 @@ struct GLProperty
 	void push() { stack.push(current); }
 	void pop()  { if (!stack.empty()) { set(stack.top()); stack.pop(); } }
 	const T &get()    { return current; }
-	void set(const T &value)
-	{
+	void set(const T &value){
 		if (value == current)
 			return;
 
 		init(value);
 	}
 
-	void pushSet(const T &value)
-	{
+	void pushSet(const T &value){
 		push();
 		set(value);
 	}
 
-	void refresh()
-	{
+	void refresh(){
 		apply(current);
 	}
 private:
@@ -72,13 +66,11 @@ private:
 };
 
 
-class GLClearColor : public GLProperty<Vec4>
-{
+class GLClearColor : public GLProperty<Vec4>{
 	void apply(const Vec4 &);
 };
 
-class GLScissorBox : public GLProperty<IntRect>
-{
+class GLScissorBox : public GLProperty<IntRect>{
 public:
 	/* Sets the intersection of the current box with value */
 	void setIntersect(const IntRect &value);
@@ -87,13 +79,11 @@ private:
 	void apply(const IntRect &value);
 };
 
-class GLScissorTest : public GLProperty<bool>
-{
+class GLScissorTest : public GLProperty<bool>{
 	void apply(const bool &value);
 };
 
-class GLBlendMode : public GLProperty<BlendType>
-{
+class GLBlendMode : public GLProperty<BlendType>{
 	void apply(const BlendType &value);
 };
 
@@ -102,19 +92,16 @@ class GLBlend : public GLProperty<bool>
 	void apply(const bool &value);
 };
 
-class GLViewport : public GLProperty<IntRect>
-{
+class GLViewport : public GLProperty<IntRect>{
 	void apply(const IntRect &value);
 };
 
-class GLProgram : public GLProperty<unsigned int> /* GLuint */
-{
+class GLProgram : public GLProperty<unsigned int> /* GLuint */{
 	void apply(const unsigned int &value);
 };
 
 
-class GLState
-{
+class GLState{
 public:
 	GLClearColor clearColor;
 	GLScissorBox scissorBox;
@@ -124,8 +111,7 @@ public:
 	GLViewport viewport;
 	GLProgram program;
 
-	struct Caps
-	{
+	struct Caps{
 		int maxTexSize;
 
 		Caps();

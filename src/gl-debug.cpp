@@ -26,28 +26,23 @@
 
 #include "gl-fun.h"
 
-struct GLDebugLoggerPrivate
-{
+struct GLDebugLoggerPrivate{
 	std::ostream *stream;
 	time_t timestamp;
-	GLDebugLoggerPrivate(const char *logFilename)
-	{
+	GLDebugLoggerPrivate(const char *logFilename){
 		(void) logFilename;
 
 		stream = &std::clog;
 	}
 
-	~GLDebugLoggerPrivate()
-	{
-	}
+	~GLDebugLoggerPrivate(){}
 
 	void writeTimestamp(){
 		time(&timestamp);
 		*stream << "[GLDEBUG " << ctime(&timestamp) << "]";
 	}
 
-	void writeLine(const char *line)
-	{
+	void writeLine(const char *line){
 		*stream << line << "\n";
 		stream->flush();
 	}
@@ -76,8 +71,7 @@ static void APIENTRY arbDebugFunc(GLenum source,
 	p->writeLine(message);
 }
 
-GLDebugLogger::GLDebugLogger(const char *filename)
-{
+GLDebugLogger::GLDebugLogger(const char *filename){
 	p = new GLDebugLoggerPrivate(filename);
 
 	if (gl.DebugMessageCallback)
@@ -86,7 +80,6 @@ GLDebugLogger::GLDebugLogger(const char *filename)
 		Debug() << "DebugLogger: no debug extensions found";
 }
 
-GLDebugLogger::~GLDebugLogger()
-{
+GLDebugLogger::~GLDebugLogger(){
 	delete p;
 }

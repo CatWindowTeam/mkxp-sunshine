@@ -21,13 +21,11 @@
 
 #include "tileatlas.h"
 
-namespace TileAtlas
-{
+namespace TileAtlas{
 
 /* A Column represents a Rect
  * with undefined width */
-struct Column
-{
+struct Column{
 	int x, y, h;
 
 	Column(int x, int y, int h)

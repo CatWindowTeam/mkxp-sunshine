@@ -54,7 +54,6 @@ public:
 	int width() const;
 	int height() const;
 	void resizeScreen(int width, int height);
-	void playMovie(const char *filename);
 
 	void reset();
 

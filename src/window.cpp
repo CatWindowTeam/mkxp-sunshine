@@ -323,14 +323,12 @@ struct WindowPrivate {
 		backgroundVert.vert = &vert[i];
 
 		/* Background */
-		if (bgStretch)
-		{
+		if (bgStretch){
 			Quad::setTexRect(&vert[i*4], backgroundSrc);
 			Quad::setPosRect(&vert[i*4], bgRect);
 			i += 1;
 		}
-		else
-		{
+		else{
 			i += TileQuads::build(backgroundSrc, bgRect, &vert[i*4]);
 		}
 
@@ -372,13 +370,11 @@ struct WindowPrivate {
 		int newH = baseTex.height;
 		bool resizeNeeded = false;
 
-		if (size.x > baseTex.width)
-		{
+		if (size.x > baseTex.width){
 			newW = findNextPow2(size.x);
 			resizeNeeded = true;
 		}
-		if (size.y > baseTex.height)
-		{
+		if (size.y > baseTex.height){
 			newH = findNextPow2(size.y);
 			resizeNeeded = true;
 		}
@@ -438,8 +434,7 @@ struct WindowPrivate {
 		Vertex *vert = controlsQuadArray.vertices.data();
 
 		/* Cursor */
-		if (!cursorRect->isEmpty())
-		{
+		if (!cursorRect->isEmpty()){
 			/* Effective cursor rect has 16 xy offset to window */
 			IntRect effectRect(cursorRect->x+16, cursorRect->y+16,
 			                   cursorRect->width, cursorRect->height);
@@ -458,8 +453,7 @@ struct WindowPrivate {
 		scrollArrows.t = IntRect(scroll.x, 4, 16, 8);
 		scrollArrows.b = IntRect(scroll.x, size.y - 12, 16, 8);
 
-		if (contents)
-		{
+		if (contents){
 			if (contentsOffset.x > 0)
 				i += Quad::setTexPosRect(&vert[i*4], scrollArrowSrc.l, scrollArrows.l);
 
@@ -474,8 +468,7 @@ struct WindowPrivate {
 		}
 
 		/* Pause animation */
-		if (pause)
-		{
+		if (pause){
 			pauseAniVert.vert = &vert[i*4];
 			i += Quad::setTexPosRect(&vert[i*4], pauseAniSrc[pauseAniQuad[pauseAniQuadIdx]],
 			                         FloatRect((size.x - 16) / 2, size.y - 16, 16, 16));
@@ -491,15 +484,13 @@ struct WindowPrivate {
 
 		bool updateBaseQuadArray = false;
 
-		if (baseVertDirty)
-		{
+		if (baseVertDirty){
 			buildBaseVert();
 			baseVertDirty = false;
 			updateBaseQuadArray = true;
 		}
 
-		if (opacityDirty)
-		{
+		if (opacityDirty){
 			updateBaseAlpha();
 			opacityDirty = false;
 			updateBaseQuadArray = true;
@@ -512,12 +503,10 @@ struct WindowPrivate {
 		 * and then draw this texture instead of the quad array */
 		useBaseTex = opacity < 255;
 
-		if (useBaseTex)
-		{
+		if (useBaseTex){
 			ensureBaseTexReady();
 
-			if (baseTexDirty)
-			{
+			if (baseTexDirty){
 				redrawBaseTex();
 				baseTexDirty = false;
 			}
@@ -536,15 +525,12 @@ struct WindowPrivate {
 		shader.applyViewportProj();
 		shader.setTranslation(position + sceneOffset);
 
-		if (useBaseTex)
-		{
+		if (useBaseTex){
 			shader.setTexSize(Vec2i(baseTex.width, baseTex.height));
 
 			TEX::bind(baseTex.tex);
 			baseTexQuad.draw();
-		}
-		else
-		{
+		}else{
 			windowskin->bindTex(shader);
 			TEX::setSmooth(true);
 
@@ -561,8 +547,7 @@ struct WindowPrivate {
 		if (size == Vec2i(0, 0))
 			return;
 
-		if (controlsVertDirty)
-		{
+		if (controlsVertDirty){
 			buildControlsVert();
 			updateControls();
 			controlsVertDirty = false;
@@ -582,8 +567,7 @@ struct WindowPrivate {
 		shader.bind();
 		shader.applyViewportProj();
 
-		if (!nullOrDisposed(windowskin))
-		{
+		if (!nullOrDisposed(windowskin)){
 			shader.setTranslation(efPos);
 
 			/* Draw arrows / cursors */
@@ -595,8 +579,7 @@ struct WindowPrivate {
 			TEX::setSmooth(false);
 		}
 
-		if (!nullOrDisposed(contents))
-		{
+		if (!nullOrDisposed(contents)){
 			/* Draw contents bitmap */
 			glState.scissorBox.setIntersect(contentsRect);
 

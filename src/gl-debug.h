@@ -29,8 +29,7 @@
 
 struct GLDebugLoggerPrivate;
 
-class GLDebugLogger
-{
+class GLDebugLogger{
 public:
 	GLDebugLogger(const char *filename = 0);
 	~GLDebugLogger();

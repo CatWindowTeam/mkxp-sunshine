@@ -31,8 +31,7 @@ GLFunctions gl;
 
 typedef const GLubyte* (APIENTRYP _PFNGLGETSTRINGIPROC) (GLenum, GLuint);
 
-static void parseExtensionsCore(_PFNGLGETINTEGERVPROC GetIntegerv, BoostSet<std::string> &out)
-{
+static void parseExtensionsCore(_PFNGLGETINTEGERVPROC GetIntegerv, BoostSet<std::string> &out){
 	_PFNGLGETSTRINGIPROC GetStringi =
 		(_PFNGLGETSTRINGIPROC) SDL_GL_GetProcAddress("glGetStringi");
 
@@ -43,8 +42,7 @@ static void parseExtensionsCore(_PFNGLGETINTEGERVPROC GetIntegerv, BoostSet<std:
 		out.insert((const char*) GetStringi(GL_EXTENSIONS, i));
 }
 
-static void parseExtensionsCompat(_PFNGLGETSTRINGPROC GetString, BoostSet<std::string> &out)
-{
+static void parseExtensionsCompat(_PFNGLGETSTRINGPROC GetString, BoostSet<std::string> &out){
 	const char *ext = (const char*) GetString(GL_EXTENSIONS);
 
 	if (!ext)
@@ -53,8 +51,7 @@ static void parseExtensionsCompat(_PFNGLGETSTRINGPROC GetString, BoostSet<std::s
 	char buffer[0x100];
 	size_t bufferI;
 
-	while (*ext)
-	{
+	while (*ext){
 		bufferI = 0;
 		while (*ext && *ext != ' ')
 			buffer[bufferI++] = *ext++;
@@ -74,8 +71,7 @@ static void parseExtensionsCompat(_PFNGLGETSTRINGPROC GetString, BoostSet<std::s
 #define EXC(msg) \
 	Exception(Exception::MKXPError, "%s", msg)
 
-void initGLFunctions()
-{
+void initGLFunctions(){
 #define EXT_SUFFIX ""
 	GL_20_FUN;
 
@@ -87,8 +83,7 @@ void initGLFunctions()
 
 	bool gles = false;
 
-	if (!strncmp(ver, glesPrefix, glesPrefixN))
-	{
+	if (!strncmp(ver, glesPrefix, glesPrefixN)){
 		gles = true;
 		gl.glsles = true;
 
@@ -101,8 +96,7 @@ void initGLFunctions()
 	if (glMajor < 2)
 		throw EXC("At least OpenGL (ES) 2.0 is required");
 
-	if (gles)
-	{
+	if (gles){
 		GL_ES_FUN;
 	}
 
@@ -116,69 +110,58 @@ void initGLFunctions()
 #define HAVE_EXT(_ext) ext.contains("GL_" #_ext)
 
 	/* FBO entrypoints */
-	if (glMajor >= 3 || HAVE_EXT(ARB_framebuffer_object))
-	{
+	if (glMajor >= 3 || HAVE_EXT(ARB_framebuffer_object)){
 #undef EXT_SUFFIX
 #define EXT_SUFFIX ""
 		GL_FBO_FUN;
 		GL_FBO_BLIT_FUN;
 	}
-	else if (gles && glMajor == 2)
-	{
+	else if (gles && glMajor == 2){
 		GL_FBO_FUN;
 	}
-	else if (HAVE_EXT(EXT_framebuffer_object))
-	{
+	else if (HAVE_EXT(EXT_framebuffer_object)){
 #undef EXT_SUFFIX
 #define EXT_SUFFIX "EXT"
 		GL_FBO_FUN;
 
-		if (HAVE_EXT(EXT_framebuffer_blit))
-		{
+		if (HAVE_EXT(EXT_framebuffer_blit)){
 			GL_FBO_BLIT_FUN;
 		}
 	}
-	else
-	{
+	else{
 		throw EXC("No FBO support available");
 	}
 
 	/* VAO entrypoints */
-	if (HAVE_EXT(ARB_vertex_array_object) || glMajor >= 3)
-	{
+	if (HAVE_EXT(ARB_vertex_array_object) || glMajor >= 3){
 #undef EXT_SUFFIX
 #define EXT_SUFFIX ""
 		GL_VAO_FUN;
 	}
-	else if (HAVE_EXT(APPLE_vertex_array_object))
-	{
+	else if (HAVE_EXT(APPLE_vertex_array_object)){
 #undef EXT_SUFFIX
 #define EXT_SUFFIX "APPLE"
 		GL_VAO_FUN;
 	}
-	else if (HAVE_EXT(OES_vertex_array_object))
-	{
+	else if (HAVE_EXT(OES_vertex_array_object)){
 #undef EXT_SUFFIX
 #define EXT_SUFFIX "OES"
 		GL_VAO_FUN;
 	}
 
 	/* Debug callback entrypoints */
-	if (HAVE_EXT(KHR_debug))
-	{
+	if (HAVE_EXT(KHR_debug)){
 #undef EXT_SUFFIX
 #define EXT_SUFFIX ""
 		GL_DEBUG_KHR_FUN;
 	}
-	else if (HAVE_EXT(ARB_debug_output))
-	{
+	else if (HAVE_EXT(ARB_debug_output)){
 #undef EXT_SUFFIX
 #define EXT_SUFFIX "ARB"
 		GL_DEBUG_KHR_FUN;
 	}
 
-	if (HAVE_EXT(GREMEDY_string_marker))
-	{
+	if (HAVE_EXT(GREMEDY_string_marker)){
 #undef EXT_SUFFIX
 #define EXT_SUFFIX "GREMEDY"
 		GL_GREMEMDY_FUN;

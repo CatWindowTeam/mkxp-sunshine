@@ -207,8 +207,7 @@ typedef void (APIENTRYP _PFNGLRELEASESHADERCOMPILERPROC) (void);
 	GL_FUN(StringMarker, _PFNGLSTRINGMARKERPROC)
 
 
-struct GLFunctions
-{
+struct GLFunctions{
 #define GL_FUN(name, type) type name;
 
 	GL_20_FUN

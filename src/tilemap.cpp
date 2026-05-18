@@ -1171,3 +1171,4 @@ void Tilemap::releaseResources(){
 	delete p;
 	atProxy.p = 0;
 }
+

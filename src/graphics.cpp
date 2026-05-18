@@ -894,10 +894,6 @@ void Graphics::resizeScreen(int width, int height){
 	shState->eThread().requestWindowResize(width, height);
 }
 
-void Graphics::playMovie(const char *filename){
-	Debug() << "[playMovie] Graphics.playMovie(" << filename << ") not implemented";
-}
-
 DEF_ATTR_RD_SIMPLE(Graphics, Brightness, int, p->brightness)
 
 void Graphics::setBrightness(int value){

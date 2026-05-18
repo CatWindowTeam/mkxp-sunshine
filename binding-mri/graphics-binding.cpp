@@ -219,8 +219,6 @@ void graphicsBindingInit(){
 
 	INIT_GRA_PROP_BIND( Brightness, "brightness" );
 
-	_rb_define_module_function(module, "play_movie", graphicsPlayMovie);
-
 	INIT_GRA_PROP_BIND( Fullscreen, "fullscreen"  );
 	INIT_GRA_PROP_BIND( ShowCursor, "show_cursor" );
 	INIT_GRA_PROP_BIND( Smooth,     "smooth"      );

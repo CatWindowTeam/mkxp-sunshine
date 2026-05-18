@@ -44,8 +44,7 @@
 	#include <iconv.h>
 #endif
 
-struct SDLRWIoContext
-{
+struct SDLRWIoContext{
 	SDL_IOStream *ops;
 	std::string filename;
 
@@ -58,8 +57,7 @@ struct SDLRWIoContext
 			                "Failed to open file: %s", SDL_GetError());
 	}
 
-	~SDLRWIoContext()
-	{
+	~SDLRWIoContext(){
 		SDL_CloseIO(ops);
 	}
 };
@@ -233,10 +231,7 @@ static int SDL_RWopsCloseFree(void *userdata)
  * or the full string if srcN == -1. Never writes more
  * than dstMax, and guarantees dst to be null terminated.
  * Returns copied bytes (minus terminating null) */
-static size_t
-strcpySafe(char *dst, const char *src,
-           size_t dstMax, int srcN)
-{
+static size_t strcpySafe(char *dst, const char *src, size_t dstMax, int srcN){
 	if (srcN < 0)
 		srcN = strlen(src);
 
@@ -265,11 +260,7 @@ static const char *findExt(const char *filename){
 	return 0;
 }
 
-static void
-initReadOps(PHYSFS_File *handle,
-            SDL_IOStream* &ops)
-            //bool freeOnClose)
-{
+static void initReadOps(PHYSFS_File *handle, SDL_IOStream* &ops){
 	SDL_IOStreamInterface iface;
 	SDL_INIT_INTERFACE(&iface);
 
@@ -309,8 +300,7 @@ struct FileSystemPrivate{
 	bool havePathCache;
 };
 
-FileSystem::FileSystem(bool allowSymlinks)
-{
+FileSystem::FileSystem(bool allowSymlinks){
 	p = new FileSystemPrivate;
 	p->havePathCache = false;
 
@@ -331,8 +321,7 @@ FileSystem::~FileSystem(){
 
 void FileSystem::addPath(const char *path){
 	/* Try the normal mount first */
-	if (!PHYSFS_mount(path, 0, 1))
-	{
+	if (!PHYSFS_mount(path, 0, 1)){
 		/* If it didn't work, try mounting via a wrapped
 		 * SDL_IOStream */
 		PHYSFS_Io *io = createSDLRWIo(path);
@@ -359,8 +348,7 @@ struct CacheEnumData{
 #endif
 	}
 
-	~CacheEnumData()
-	{
+	~CacheEnumData(){
 #ifdef OS_OSX
 		iconv_close(nfd2nfc);
 #endif
@@ -622,10 +610,7 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 		throw Exception(Exception::NoFileError, "%s", filename);
 }
 
-void FileSystem::openReadRaw(SDL_IOStream* &stream,
-                             const char *filename)
-                             //bool freeOnClose)
-{
+void FileSystem::openReadRaw(SDL_IOStream* &stream, const char *filename){
 	PHYSFS_File *handle = PHYSFS_openRead(filename);
 	if (!handle)
 		throw Exception(Exception::NoFileError, "%s", filename);
