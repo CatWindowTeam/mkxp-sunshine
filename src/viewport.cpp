@@ -75,11 +75,9 @@ struct ViewportPrivate{
 	}
 
 	void recomputeOnScreen(){
-		SDL_Rect r1 = { screenRect.x, screenRect.y,
-		                screenRect.w, screenRect.h };
+		SDL_Rect r1 = { screenRect.x, screenRect.y, screenRect.w, screenRect.h };
 
-		SDL_Rect r2 = { rect->x,     rect->y,
-		                rect->width, rect->height };
+		SDL_Rect r2 = { rect->x, rect->y, rect->width, rect->height };
 
 		SDL_Rect result;
 		isOnScreen = SDL_GetRectIntersection(&r1, &r2, &result);

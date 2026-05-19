@@ -56,7 +56,7 @@ static const int tilesetW  = 8 * 32;
 static const int autotileW = 3 * 32;
 static const int autotileH = 4 * 32;
 
-static const int autotileCount = 7;
+static const unsigned char autotileCount = 7;
 
 static const int atAreaW = autotileW * 4;
 static const int atAreaH = autotileH * autotileCount;
@@ -64,8 +64,8 @@ static const int atAreaH = autotileH * autotileCount;
 static const int tsLaneW = tilesetW / 2;
 /* Map viewport size */
 //TODO: разные значения под разные разрешения экрана для оптимизации
-static const int viewpW = 42;
-static const int viewpH = 26;
+static const char viewpW = 42;
+static const char viewpH = 26;
 
 static const size_t zlayersMax = viewpH + 5;
 
@@ -973,7 +973,7 @@ void ZLayer::drawInt(){
 }
 
 int ZLayer::calculateZ(TilemapPrivate *p, int index){
-	return 32 * (index + p->viewpPos.y + 1) - p->origin.y;
+	return 32 * (index + p->viewpPos.y + 1) - p->origin.y; 
 }
 
 void ZLayer::initUpdateZ(){

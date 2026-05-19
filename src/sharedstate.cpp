@@ -222,8 +222,7 @@ GlobalIBO &SharedState::globalIBO(){
 void SharedState::bindTex(){
 	TEX::bind(p->globalTex);
 
-	if (p->globalTexDirty)
-	{
+	if (p->globalTexDirty){
 		TEX::allocEmpty(p->globalTexW, p->globalTexH);
 		p->globalTexDirty = false;
 	}

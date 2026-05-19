@@ -57,7 +57,6 @@ struct SoundBuffer{
 
 	static SoundBuffer *ref(SoundBuffer *buffer){
 		++buffer->refCount;
-
 		return buffer;
 	}
 

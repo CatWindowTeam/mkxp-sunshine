@@ -27,8 +27,7 @@
 #include <algorithm>
 #include <vector>
 
-static inline int
-wrapRange(int value, int min, int max){
+static inline int wrapRange(int value, int min, int max){
 	if (value >= min && value <= max)
 		return value;
 

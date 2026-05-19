@@ -37,8 +37,7 @@ int oneDimCount(int tileDimension, int destDimension){
 }
 
 int twoDimCount(int tileW, int tileH, int destW, int destH) {
-	return oneDimCount(tileW, destW) *
-	       oneDimCount(tileH, destH);
+	return oneDimCount(tileW, destW) * oneDimCount(tileH, destH);
 }
 
 int buildH(const IntRect &sourceRect, int width, int x, int y, Vertex *verts){
@@ -52,8 +51,7 @@ int buildH(const IntRect &sourceRect, int width, int x, int y, Vertex *verts){
 	FloatRect destRect(x, y, sourceRect.w, sourceRect.h);
 
 	/* Full size quads */
-	for (int x = 0; x < fullCount; ++x)
-	{
+	for (int x = 0; x < fullCount; ++x){
 		Vertex *vert = &verts[x*4];
 
 		Quad::setTexRect(vert, _sourceRect);
@@ -62,8 +60,7 @@ int buildH(const IntRect &sourceRect, int width, int x, int y, Vertex *verts){
 		destRect.x += sourceRect.w;
 	}
 
-	if (partSize)
-	{
+	if (partSize){
 		Vertex *vert = &verts[fullCount*4];
 
 		_sourceRect.w = partSize;
@@ -87,8 +84,7 @@ int buildV(const IntRect &sourceRect, int height, int ox, int oy, Vertex *verts)
 	FloatRect destRect(ox, oy, sourceRect.w, sourceRect.h);
 
 	/* Full size quads */
-	for (int y = 0; y < fullCount; ++y)
-	{
+	for (int y = 0; y < fullCount; ++y){
 		Vertex *vert = &verts[y*4];
 
 		Quad::setTexRect(vert, _sourceRect);
@@ -97,8 +93,7 @@ int buildV(const IntRect &sourceRect, int height, int ox, int oy, Vertex *verts)
 		destRect.y += sourceRect.h;
 	}
 
-	if (partSize)
-	{
+	if (partSize){
 		Vertex *vert = &verts[fullCount*4];
 
 		_sourceRect.h = partSize;
@@ -128,16 +123,14 @@ int build(const IntRect &sourceRect, const IntRect &destRect, Vertex *verts) {
 	int qCount = 0;
 
 	int v = 0;
-	for (int i = 0; i < fullCount; ++i)
-	{
+	for (int i = 0; i < fullCount; ++i){
 		qCount += buildH(sourceRect, width, ox, oy, &verts[v]);
 
 		v += rowTileCount*4;
 		oy += sourceRect.h;
 	}
 
-	if (partSize)
-	{
+	if (partSize){
 		IntRect partSourceRect = sourceRect;
 		partSourceRect.h = partSize;
 

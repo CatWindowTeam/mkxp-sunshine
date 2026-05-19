@@ -44,8 +44,8 @@ static const int atAreaH = 128*7 + atBuffer;
 /* Autotile area */
 static const int atArea = atAreaW * atAreaH;
 
-static const int tilesetW = 256;
-static const int tsLaneW = tilesetW / 2;
+static const unsigned short tilesetW = 256;
+static const unsigned short tsLaneW = tilesetW / 2;
 
 static int freeArea(int width, int height){
 	return width * height - atArea;

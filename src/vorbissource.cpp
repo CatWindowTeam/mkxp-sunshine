@@ -28,7 +28,6 @@
 #include <algorithm>
 
 static size_t vfRead(void *ptr, size_t size, size_t nmemb, void *datasource) {
-	//size_t SDL_ReadIO(SDL_IOStream *context, void *ptr, size_t size);
 	return SDL_ReadIO(static_cast<SDL_IOStream*>(datasource), ptr, size);
 }
 
@@ -44,7 +43,7 @@ static ov_callbacks OvCallbacks ={
     vfRead,
     vfSeek,
     0,
-    vfTell 
+    vfTell
 };
 
 struct VorbisSource : ALDataSource{
@@ -63,7 +62,7 @@ struct VorbisSource : ALDataSource{
 	} loop;
 
 	struct{
-		int channels;
+		unsigned short channels;
 		int rate;
 		int frameSize;
 		ALenum alFormat;
@@ -176,8 +175,7 @@ struct VorbisSource : ALDataSource{
 		}
 
 		while (canRead > 16){
-			long res = ov_read(&vf, static_cast<char*>(bufPtr),
-			                   canRead, 0, sizeof(int16_t), 1, 0);
+			long res = ov_read(&vf, static_cast<char*>(bufPtr), canRead, 0, sizeof(int16_t), 1, 0);
 
 			if (res < 0){
 				/* Read error */
