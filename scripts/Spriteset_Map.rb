@@ -78,7 +78,7 @@ class Spriteset_Map
     @timer_sprite = Sprite_Timer.new
     # Make lightbulb sprite
     @bulb = Sprite.new(@viewport_lights)
-	@bulb.x = -80
+	@bulb.x = 0
 	if Graphics.width == 1280
 		@bulb.bitmap = RPG::Cache.light('bulb_16')
 	else

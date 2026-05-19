@@ -134,7 +134,7 @@ void AudioStream::play(const std::string &filename, int volume, int pitch, float
 	stream.setPitch(_pitch);
 
 	if (offset > 0){
-0		setVolume(FadeIn, 0);
+		setVolume(FadeIn, 0);
 		startFadeIn();
 	}
 

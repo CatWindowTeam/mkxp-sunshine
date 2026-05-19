@@ -301,7 +301,7 @@ int Audio::getBGM_Volume() const{
 	return p->bgm_volume;
 }
 
-void Audio::setBGM_Volume(short value){
+void Audio::setBGM_Volume(int value){
 	if(value > 100){
 		value = 100;
 	}else if(value < 0){
@@ -320,7 +320,7 @@ int Audio::getSFX_Volume() const{
 	return p->sfx_volume;
 }
 
-void Audio::setSFX_Volume(short value){
+void Audio::setSFX_Volume(int value){
 	if(value > 100){
 		value = 100;
 	}else if(value < 0){
