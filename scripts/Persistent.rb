@@ -104,7 +104,7 @@ class Persistent
         Language.set(@lang)
       end
     rescue => e
-      print("[Scripts>Persistence] error: " + e.message)
+      print("error: " + e.message)
     end
   end
   

@@ -325,3 +325,4 @@ class Window_Base < Window
     self.contents.draw_text(x + 28, y, 212, 32, item.name)
   end
 end
+
