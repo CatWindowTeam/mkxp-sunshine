@@ -45,14 +45,11 @@ static inline int wrap(int value, int range){
 }
 
 static inline Vec2i wrap(const Vec2i &value, int range){
-	return Vec2i(wrap(value.x, range),
-	             wrap(value.y, range));
+	return Vec2i(wrap(value.x, range), wrap(value.y, range));
 }
 
 static inline int16_t tableGetWrapped(const Table &t, int x, int y, int z = 0){
-	return t.get(wrap(x, t.xSize()),
-	             wrap(y, t.ySize()),
-	             z);
+	return t.get(wrap(x, t.xSize()), wrap(y, t.ySize()), z);
 }
 
 /* Calculate the tile x/y on which this pixel x/y lies */

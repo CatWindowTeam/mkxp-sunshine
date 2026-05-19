@@ -34,8 +34,7 @@
 #include <sigc++/connection.h>
 // #include <sigc++2.0/sigc++/connection.h>
 
-class Disposable
-{
+class Disposable{
 public:
 	Disposable()
 	    : disposed(false),
@@ -44,13 +43,11 @@ public:
 		shState->graphics().addDisposable(this);
 	}
 
-	virtual ~Disposable()
-	{
+	virtual ~Disposable(){
 		shState->graphics().remDisposable(this);
 	}
 
-	void dispose()
-	{
+	void dispose(){
 		if (disposed)
 			return;
 
@@ -59,16 +56,14 @@ public:
 		wasDisposed();
 	}
 
-	bool isDisposed() const
-	{
+	bool isDisposed() const{
 		return disposed;
 	}
 
 	sigc::signal<void> wasDisposed;
 
 protected:
-	void guardDisposed() const
-	{
+	void guardDisposed() const{
 		if (isDisposed())
 			throw Exception(Exception::RGSSError,
 		                    "disposed %s", klassName());
@@ -85,9 +80,7 @@ private:
 };
 
 template<class C>
-inline bool
-nullOrDisposed(const C *d)
-{
+inline bool nullOrDisposed(const C *d){
 	if (!d)
 		return true;
 

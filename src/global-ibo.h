@@ -33,23 +33,19 @@ typedef uint16_t index_t;
 #define INDEX_T_MAX std::numeric_limits<index_t>::max()
 #define _GL_INDEX_TYPE GL_UNSIGNED_SHORT
 
-struct GlobalIBO
-{
+struct GlobalIBO{
 	IBO::ID ibo;
 	std::vector<index_t> buffer;
 
-	GlobalIBO()
-	{
+	GlobalIBO(){
 		ibo = IBO::gen();
 	}
 
-	~GlobalIBO()
-	{
+	~GlobalIBO(){
 		IBO::del(ibo);
 	}
 
-	void ensureSize(size_t quadCount)
-	{
+	void ensureSize(size_t quadCount){
 		assert(quadCount*6 < INDEX_T_MAX);
 
 		if (buffer.size() >= quadCount*6)
@@ -58,8 +54,7 @@ struct GlobalIBO
 		size_t startInd = buffer.size() / 6;
 		buffer.reserve(quadCount*6);
 
-		for (size_t i = startInd; i < quadCount; ++i)
-		{
+		for (size_t i = startInd; i < quadCount; ++i){
 			static const index_t indTemp[] = { 0, 1, 2, 2, 3, 0 };
 
 			for (size_t j = 0; j < 6; ++j)

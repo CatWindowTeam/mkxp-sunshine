@@ -17,8 +17,7 @@ public:
 		Read,
 	} Mode;
 
-	Pipe()
-	{
+	Pipe(){
 #ifdef _WIN32
 		handle = NULL;
 #else
@@ -46,8 +45,7 @@ public:
 		filename = std::string(P_tmpdir) + "/" + name;
 #endif
 
-		if (mode == Read)
-		{
+		if (mode == Read){
 #ifdef _WIN32
 			handle = CreateFileA(
 				filename.c_str(),
@@ -98,8 +96,7 @@ public:
 #ifdef _WIN32
 	OVERLAPPED overlapped;
 	memset(&overlapped, 0, sizeof(overlapped));
-	if (!ReadFile(handle, buf, 1, NULL, &overlapped))
-	{
+	if (!ReadFile(handle, buf, 1, NULL, &overlapped)){
 		if (GetLastError() == ERROR_IO_PENDING)
 			CancelIo(handle);
 		return false;
@@ -118,8 +115,7 @@ public:
 #endif
 	}
 
-	bool isOpen()
-	{
+	bool isOpen(){
 #ifdef _WIN32
 		return handle != NULL;
 #else

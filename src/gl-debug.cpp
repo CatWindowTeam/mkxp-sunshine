@@ -48,16 +48,8 @@ struct GLDebugLoggerPrivate{
 	}
 };
 
-static void APIENTRY arbDebugFunc(GLenum source,
-                                  GLenum type,
-                                  GLuint id,
-                                  GLenum severity,
-                                  GLsizei length,
-                                  const GLchar* message,
-                                  const void* userParam)
-{
-	GLDebugLoggerPrivate *p =
-		static_cast<GLDebugLoggerPrivate*>(const_cast<void*>(userParam));
+static void APIENTRY arbDebugFunc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+	GLDebugLoggerPrivate *p = static_cast<GLDebugLoggerPrivate*>(const_cast<void*>(userParam));
 
 	(void) source;
 	(void) type;

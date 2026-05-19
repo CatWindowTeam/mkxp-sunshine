@@ -49,8 +49,7 @@ static inline T clamp(T value, T min, T max){
 	return value;
 }
 
-static inline int
-findNextPow2(int start){
+static inline int findNextPow2(int start){
 	int i = 1;
 	while (i < start)
 		i <<= 1;

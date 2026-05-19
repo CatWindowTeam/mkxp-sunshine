@@ -67,8 +67,7 @@ struct SoundBuffer{
 	}
 
 private:
-	~SoundBuffer()
-	{
+	~SoundBuffer(){
 		AL::Buffer::del(alBuffer);
 	}
 };
@@ -112,10 +111,7 @@ SoundEmitter::~SoundEmitter(){
 		SoundBuffer::deref(iter->second);
 }
 
-void SoundEmitter::play(const std::string &filename,
-                        int volume,
-                        int pitch)
-{
+void SoundEmitter::play(const std::string &filename, int volume, int pitch) {
 	float _volume = clamp<int>(volume, 0, 100) / 100.0f;
 	float _pitch  = clamp<int>(pitch, 50, 150) / 100.0f;
 

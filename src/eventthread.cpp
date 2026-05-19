@@ -472,14 +472,10 @@ void EventThread::process(RGSSThreadData &rtData){
 				break;
 
 			case UPDATE_FPS :
-				if (rtData.config.printFPS)
-					Debug() << "FPS:" << event.user.code;
-
 				if (!fps.sendUpdates)
 					break;
 
-				snprintf(buffer, sizeof(buffer), "%s - %d FPS",
-				         rtData.config.windowTitle.c_str(), event.user.code);
+				snprintf(buffer, sizeof(buffer), "%s - %d FPS", rtData.config.windowTitle.c_str(), event.user.code);
 
 				/* Updating the window title in fullscreen
 				 * mode seems to cause flickering */

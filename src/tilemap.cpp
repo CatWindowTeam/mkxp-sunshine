@@ -400,8 +400,7 @@ struct TilemapPrivate {
 		atlas.size = TileAtlas::minSize(atlas.efTilesetH, glState.caps.maxTexSize);
 
 		if (atlas.size.x < 0)
-			throw Exception(Exception::MKXPError,
-		                    "Cannot allocate big enough texture for tileset atlas");
+			throw Exception(Exception::MKXPError, "Cannot allocate big enough texture for tileset atlas");
 	}
 
 	void updateAutotileInfo(){
@@ -792,8 +791,7 @@ struct TilemapPrivate {
 		ZLayer *prev = elem.zlayers[0];
 		prev->finiUpdateZ(0);
 
-		for (size_t i = 1; i < elem.activeLayers; ++i)
-		{
+		for (size_t i = 1; i < elem.activeLayers; ++i){
 			ZLayer *layer = elem.zlayers[i];
 			layer->finiUpdateZ(prev);
 			prev = layer;
@@ -1006,12 +1004,10 @@ void Tilemap::Autotiles::set(int i, Bitmap *bitmap){
 	p->invalidateAtlasContents();
 
 	p->autotilesCon[i].disconnect();
-	p->autotilesCon[i] = bitmap->modified.connect
-	        (sigc::mem_fun(p, &TilemapPrivate::invalidateAtlasContents));
+	p->autotilesCon[i] = bitmap->modified.connect(sigc::mem_fun(p, &TilemapPrivate::invalidateAtlasContents));
 
 	p->autotilesDispCon[i].disconnect();
-	p->autotilesDispCon[i] = bitmap->wasDisposed.connect
-	        (sigc::mem_fun(p, &TilemapPrivate::invalidateAtlasContents));
+	p->autotilesDispCon[i] = bitmap->wasDisposed.connect(sigc::mem_fun(p, &TilemapPrivate::invalidateAtlasContents));
 
 	p->updateAutotileInfo();
 }

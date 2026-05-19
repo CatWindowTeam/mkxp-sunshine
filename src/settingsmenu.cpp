@@ -388,9 +388,7 @@ struct SettingsMenuPrivate{
 		SDL_FillSurfaceRect(surf, 0, SDL_MapSurfaceRGBA(surf, grey, grey, grey, 255));
 	}
 
-	void fillRect(SDL_Surface *surf,
-	              int x, int y, int w, int h,
-	              uint8_t r, uint8_t g, uint8_t b){
+	void fillRect(SDL_Surface *surf, int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b){
 		SDL_Rect rect = { drawOff.x+x, drawOff.y+y, w, h };
 		SDL_FillSurfaceRect(surf, &rect, SDL_MapSurfaceRGB(surf, r, g, b));
 	}
@@ -415,9 +413,7 @@ struct SettingsMenuPrivate{
 		fillRect(surf, r, g, b, x-width/2, y, width, length);
 	}
 
-	void strokeRect(SDL_Surface *surf, uint8_t grey,
-	                int x, int y, int w, int h,
-	                int lineW){
+	void strokeRect(SDL_Surface *surf, uint8_t grey, int x, int y, int w, int h, int lineW){
 		strokeLineH(surf, grey, x, y, w, lineW);
 		strokeLineH(surf, grey, x, y+h, w, lineW);
 
@@ -425,18 +421,14 @@ struct SettingsMenuPrivate{
 		strokeLineV(surf, grey, x+w, y, h, lineW);
 	}
 
-	void strokeRectInner(SDL_Surface *surf,
-	                     int x, int y, int w, int h, int lineW,
-	                     uint8_t r, uint8_t g, uint8_t b){
+	void strokeRectInner(SDL_Surface *surf, int x, int y, int w, int h, int lineW, uint8_t r, uint8_t g, uint8_t b){
 		fillRect(surf, x, y, w, lineW, r, g, b);
 		fillRect(surf, x, y+h-lineW, w, lineW, r, g, b);
 		fillRect(surf, x, y, lineW, h, r, g, b);
 		fillRect(surf, x+w-lineW, y, lineW, h, r, g ,b);
 	}
 
-	void strokeRectInner(SDL_Surface *surf, uint8_t grey,
-	                     int x, int y, int w, int h,
-	                     int lineW){
+	void strokeRectInner(SDL_Surface *surf, uint8_t grey, int x, int y, int w, int h, int lineW){
 		strokeRectInner(surf, x, y, w, h, lineW, grey, grey, grey);
 	}
 
@@ -460,10 +452,7 @@ struct SettingsMenuPrivate{
 	}
 
 	/* Horizontally centered */
-	void blitTextSurf(SDL_Surface *surf, int x, int y,
-	                  int alignW, SDL_Surface *txtSurf,
-	                  Justification just)
-	{
+	void blitTextSurf(SDL_Surface *surf, int x, int y, int alignW, SDL_Surface *txtSurf, Justification just){
 		SDL_Rect dstRect;
 		dstRect.x = drawOff.x;
 		dstRect.y = drawOff.y + y - txtSurf->h / 2;
@@ -581,9 +570,7 @@ struct SettingsMenuPrivate{
 
 		if (state == AwaitingInput){
 			char buf[64];
-			snprintf(buf, sizeof(buf), findtext(TRSTR_KEYBIND_KEYPROMPT,
-								"Press key or joystick button for \"%s\""),
-							captureName);
+			snprintf(buf, sizeof(buf), findtext(TRSTR_KEYBIND_KEYPROMPT, "Press key or joystick button for \"%s\""), captureName);
 
 			drawOff = Vec2i();
 
@@ -622,8 +609,7 @@ struct SettingsMenuPrivate{
 		Widget *w = 0;
 
 		for (size_t i = 0; i < widgets.size(); ++i)
-			if (widgets[i]->hit(x, y))
-			{
+			if (widgets[i]->hit(x, y)){
 				w = widgets[i];
 				break;
 			}
@@ -653,8 +639,7 @@ struct SettingsMenuPrivate{
 
 		Widget *w = findWidget(e.x, e.y);
 
-		if (w != hovered)
-		{
+		if (w != hovered){
 			if (hovered)
 				hovered->leave();
 			hovered = w;
@@ -1002,8 +987,7 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData){
 	const int bWidgetY = winSize.y - layoutH*bWidgetH - 48;
 
 	for (int y = 0; y < (int)(layoutH); ++y)
-		for (int x = 0; x < (int)(layoutW); ++x)
-		{
+		for (int x = 0; x < (int)(layoutW); ++x){
 			int i = x*layoutH+y;
 			BindingWidget w(i, p, IntRect(x*bWidgetW, bWidgetY+y*bWidgetH,
 			                              bWidgetW, bWidgetH));

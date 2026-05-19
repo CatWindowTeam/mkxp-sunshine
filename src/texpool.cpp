@@ -82,10 +82,7 @@ TexPool::TexPool(uint32_t maxMemSize){
 TexPool::~TexPool(){
 	std::list<TEXFBO>::iterator iter;
 
-	for (iter = p->priorityQueue.begin();
-	     iter != p->priorityQueue.end();
-	     ++iter)
-	{
+	for (iter = p->priorityQueue.begin(); iter != p->priorityQueue.end(); ++iter) {
 		TEXFBO obj = *iter;
 		TEXFBO::fini(obj);
 		--p->objCount;
@@ -120,9 +117,7 @@ TEXFBO TexPool::request(int width, int height){
 
 	int maxSize = glState.caps.maxTexSize;
 	if (width > maxSize || height > maxSize)
-		throw Exception(Exception::MKXPError,
-		                "Texture dimensions [%d, %d] exceed hardware capabilities",
-		                width, height);
+		throw Exception(Exception::MKXPError, "Texture dimensions [%d, %d] exceed hardware capabilities", width, height);
 
 	/* Nope, create it instead */
 	TEXFBO::init(cnode.obj);

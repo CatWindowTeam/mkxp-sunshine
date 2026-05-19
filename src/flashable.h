@@ -25,8 +25,7 @@
 #include "etc.h"
 #include "etc-internal.h"
 
-class Flashable
-{
+class Flashable{
 public:
 	Flashable()
 	    : flashColor(0, 0, 0, 0),
@@ -36,8 +35,7 @@ public:
 
 	virtual ~Flashable() {}
 
-	void flash(const Vec4 *color, int duration)
-	{
+	void flash(const Vec4 *color, int duration){
 		if (duration < 1)
 			return;
 
@@ -45,8 +43,7 @@ public:
 		this->duration = duration;
 		counter = 0;
 
-		if (!color)
-		{
+		if (!color){
 			emptyFlashFlag = true;
 			return;
 		}
@@ -55,13 +52,11 @@ public:
 		flashAlpha = flashColor.w;
 	}
 
-	virtual void update()
-	{
+	virtual void update(){
 		if (!flashing)
 			return;
 
-		if (++counter > duration)
-		{
+		if (++counter > duration){
 			/* Flash finished. Cleanup */
 			flashColor = Vec4(0, 0, 0, 0);
 			flashing = false;

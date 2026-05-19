@@ -26,10 +26,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-struct Exception
-{
-	enum Type
-	{
+struct Exception{
+	enum Type{
 		RGSSError,
 		NoFileError,
 		IOError,

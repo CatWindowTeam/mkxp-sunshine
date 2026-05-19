@@ -46,8 +46,7 @@ int16_t Table::get(int x, int y, int z) const{
 void Table::set(int16_t value, int x, int y, int z){
 	if (x < 0 || x >= xs
 	||  y < 0 || y >= ys
-	||  z < 0 || z >= zs)
-	{
+	||  z < 0 || z >= zs){
 		return;
 	}
 

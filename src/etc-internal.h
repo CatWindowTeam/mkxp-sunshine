@@ -26,8 +26,7 @@
 
 #include <SDL3/SDL_rect.h>
 
-struct Vec2
-{
+struct Vec2{
 	float x, y;
 
 	Vec2()
@@ -38,14 +37,12 @@ struct Vec2
 	    : x(x), y(y)
 	{}
 
-	bool operator==(const Vec2 &other) const
-	{
+	bool operator==(const Vec2 &other) const{
 		return (x == other.x && y == other.y);
 	}
 };
 
-struct Vec4
-{
+struct Vec4{
 	float x, y, z, w;
 
 	Vec4()
@@ -56,19 +53,16 @@ struct Vec4
 	    : x(x), y(y), z(z), w(w)
 	{}
 
-	bool operator==(const Vec4 &other) const
-	{
+	bool operator==(const Vec4 &other) const{
 		return (x == other.x && y == other.y && z == other.z && w == other.w);
 	}
 
-	bool xyzNotNull() const
-	{
+	bool xyzNotNull() const{
 		return (x != 0.0f || y != 0.0f || z != 0.0f);
 	}
 };
 
-struct Vec2i
-{
+struct Vec2i{
 	int x, y;
 
 	Vec2i()
@@ -83,138 +77,114 @@ struct Vec2i
 	    : x(xy), y(xy)
 	{}
 
-	bool operator==(const Vec2i &other) const
-	{
+	bool operator==(const Vec2i &other) const{
 		return x == other.x && y == other.y;
 	}
 
-	bool operator!=(const Vec2i &other) const
-	{
+	bool operator!=(const Vec2i &other) const{
 		return !(*this == other);
 	}
 
-	Vec2i &operator+=(const Vec2i &value)
-	{
+	Vec2i &operator+=(const Vec2i &value){
 		x += value.x;
 		y += value.y;
 
 		return *this;
 	}
 
-	Vec2i &operator-=(const Vec2i &value)
-	{
+	Vec2i &operator-=(const Vec2i &value){
 		x -= value.x;
 		y -= value.y;
 
 		return *this;
 	}
 
-	Vec2i operator+(const Vec2i &value) const
-	{
+	Vec2i operator+(const Vec2i &value) const{
 		return Vec2i(x + value.x, y + value.y);
 	}
 
-	Vec2i operator-(const Vec2i &value) const
-	{
+	Vec2i operator-(const Vec2i &value) const{
 		return Vec2i(x - value.x, y - value.y);
 	}
 
 	template<typename T>
-	Vec2i operator*(T value) const
-	{
+	Vec2i operator*(T value) const{
 		return Vec2i(x * value, y * value);
 	}
 
 	template<typename T>
-	Vec2i operator/(T value) const
-	{
+	Vec2i operator/(T value) const{
 		return Vec2i(x / value, y / value);
 	}
 
-	Vec2i operator%(int value) const
-	{
+	Vec2i operator%(int value) const{
 		return Vec2i(x % value, y % value);
 	}
 
-	Vec2i operator&(unsigned value) const
-	{
+	Vec2i operator&(unsigned value) const{
 		return Vec2i(x & value, y & value);
 	}
 
-	Vec2i operator-() const
-	{
+	Vec2i operator-() const{
 		return Vec2i(-x, -y);
 	}
 
-	Vec2i operator!() const
-	{
+	Vec2i operator!() const{
 		return Vec2i(!x, !y);
 	}
 
-	operator Vec2() const
-	{
+	operator Vec2() const{
 		return Vec2(x, y);
 	}
 };
 
-struct IntRect : SDL_Rect
-{
-	IntRect()
-	{
+struct IntRect : SDL_Rect{
+	IntRect(){
 		x = y = w = h = 0;
 	}
 
-	IntRect(int x, int y, int w, int h)
-	{
+	IntRect(int x, int y, int w, int h){
 		this->x = x;
 		this->y = y;
 		this->w = w;
 		this->h = h;
 	}
 
-	IntRect(const Vec2i &pos, const Vec2i &size)
-	{
+	IntRect(const Vec2i &pos, const Vec2i &size){
 		x = pos.x;
 		y = pos.y;
 		w = size.x;
 		h = size.y;
 	}
 
-	bool operator==(const IntRect &other) const
-	{
+	bool operator==(const IntRect &other) const{
 		return (x == other.x && y == other.y &&
 		        w == other.w && h == other.h);
 	}
 
-	bool operator!=(const IntRect &other) const
-	{
+	bool operator!=(const IntRect &other) const{
 		return !(*this == other);
 	}
 
-	Vec2i pos() const
-	{
+	Vec2i pos() const{
 		return Vec2i(x, y);
 	}
 
-	Vec2i size() const
-	{
+	Vec2i size() const{
 		return Vec2i(w, h);
 	}
 
-	void setPos(const Vec2i &value)
-	{
+	void setPos(const Vec2i &value){
 		x = value.x;
 		y = value.y;
 	}
 
-	void setSize(const Vec2i &value)
-	{
+	void setSize(const Vec2i &value){
 		w = value.x;
 		h = value.y;
 	}
 
-	bool encloses(const IntRect &o) const
-	{
+	bool encloses(const IntRect &o) const{
 		return (x   <= o.x &&
 		        y   <= o.y &&
 		        x+w >= o.x+o.w &&
@@ -224,8 +194,7 @@ struct IntRect : SDL_Rect
 
 struct StaticRect { float x, y, w, h; };
 
-struct FloatRect
-{
+struct FloatRect{
 	float x, y, w, h;
 
 	FloatRect()
@@ -244,8 +213,7 @@ struct FloatRect
 	    : x(r.x), y(r.y), w(r.w), h(r.h)
 	{}
 
-	operator IntRect() const
-	{
+	operator IntRect() const{
 		return IntRect(x, y, w, h);
 	}
 
@@ -254,16 +222,14 @@ struct FloatRect
 	Vec2 topRight() const { return Vec2(x+w, y); }
 	Vec2 bottomRight() const { return Vec2(x+w, y+h); }
 
-	FloatRect hFlipped() const
-	{
+	FloatRect hFlipped() const{
 		return FloatRect(x+w, y, -w, h);
 	}
 };
 
 /* Value between 0 and 255 with internal
  * normalized representation */
-struct NormValue
-{
+struct NormValue{
 	int unNorm;
 	float norm;
 
@@ -277,19 +243,16 @@ struct NormValue
 	      norm(unNorm / 255.0f)
 	{}
 
-	void operator =(int value)
-	{
+	void operator =(int value){
 		unNorm = clamp(value, 0, 255);
 		norm = unNorm / 255.0f;
 	}
 
-	bool operator ==(int value) const
-	{
+	bool operator ==(int value) const{
 		return unNorm == clamp(value, 0, 255);
 	}
 
-	operator int() const
-	{
+	operator int() const{
 		return unNorm;
 	}
 };

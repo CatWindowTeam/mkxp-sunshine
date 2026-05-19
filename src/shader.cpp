@@ -137,11 +137,7 @@ static void setupShaderSource(GLuint shader, GLenum type,
 	gl.ShaderSource(shader, i, shaderSrc, shaderSrcSize);
 }
 
-void Shader::init(const unsigned char *vert, int vertSize,
-                  const unsigned char *frag, int fragSize,
-                  const char *vertName, const char *fragName,
-                  const char *programName)
-{
+void Shader::init(const unsigned char *vert, int vertSize, const unsigned char *frag, int fragSize, const char *vertName, const char *fragName, const char *programName) {
 	GLint success;
 
 	/* Compile vertex shader */
@@ -152,9 +148,7 @@ void Shader::init(const unsigned char *vert, int vertSize,
 
 	if (!success){
 		printShaderLog(vertShader);
-		throw Exception(Exception::MKXPError,
-	                    "GLSL: An error occured while compiling vertex shader '%s' in program '%s'",
-	                    vertName, programName);
+		throw Exception(Exception::MKXPError, "GLSL: An error occured while compiling vertex shader '%s' in program '%s'", vertName, programName);
 	}
 
 	/* Compile fragment shader */
@@ -165,9 +159,7 @@ void Shader::init(const unsigned char *vert, int vertSize,
 
 	if (!success){
 		printShaderLog(fragShader);
-		throw Exception(Exception::MKXPError,
-	                    "GLSL: An error occured while compiling fragment shader '%s' in program '%s'",
-	                    fragName, programName);
+		throw Exception(Exception::MKXPError, "GLSL: An error occured while compiling fragment shader '%s' in program '%s'", fragName, programName);
 	}
 
 	/* Link shader program */
@@ -184,9 +176,7 @@ void Shader::init(const unsigned char *vert, int vertSize,
 
 	if (!success){
 		printProgramLog(program);
-		throw Exception(Exception::MKXPError,
-	                    "GLSL: An error occured while linking program '%s' (vertex '%s', fragment '%s')",
-	                    programName, vertName, fragName);
+		throw Exception(Exception::MKXPError, "GLSL: An error occured while linking program '%s' (vertex '%s', fragment '%s')", programName, vertName, fragName);
 	}
 }
 
@@ -219,8 +209,7 @@ void ShaderBase::GLProjMat::apply(const Vec2i &value) {
 	const float b = 2.f / value.y;
 	const float c = -2.f;
 
-	GLfloat mat[16] =
-	{
+	GLfloat mat[16] = {
 		 a,  0,  0,  0,
 		 0,  b,  0,  0,
 		 0,  0,  c,  0,

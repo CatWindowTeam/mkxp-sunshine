@@ -14,7 +14,7 @@
 
 static void showInitError(const std::string &msg){
 	Debug() << msg;
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "OneShot: sunshine", msg.c_str(), 0);
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Sunshine Error", msg.c_str(), 0);
 }
 
 static bool readMessage(Pipe &ipc, char *buf, size_t size){

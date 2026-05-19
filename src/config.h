@@ -32,7 +32,6 @@ struct Config{
 	bool debugMode;
 	bool screenMode;
 	bool printFPS;
-	
 	bool fullscreen;
 	bool fixedAspectRatio;
 	bool smoothScaling;

@@ -33,17 +33,14 @@
 
 /* A cheap replacement for qDebug() */
 
-class Debug
-{
+class Debug{
 public:
-	Debug()
-	{
+	Debug(){
 		buf << std::boolalpha;
 	}
 
 	template<typename T>
-	Debug &operator<<(const T &t)
-	{
+	Debug &operator<<(const T &t){
 		buf << t;
 		buf << " ";
 
@@ -51,16 +48,14 @@ public:
 	}
 
 	template<typename T>
-	Debug &operator<<(const std::vector<T> &v)
-	{
+	Debug &operator<<(const std::vector<T> &v){
 		for (size_t i = 0; i < v.size(); ++i)
 			buf << v[i] << " ";
 
 		return *this;
 	}
 
-	~Debug()
-	{
+	~Debug(){
 #ifdef __ANDROID__
 		__android_log_write(ANDROID_LOG_DEBUG, "mkxp", buf.str().c_str());
 #else

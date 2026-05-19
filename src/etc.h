@@ -29,8 +29,7 @@
 
 struct SDL_Color;
 
-enum BlendType
-{
+enum BlendType{
 	BlendKeepDestAlpha = -1,
 
 	BlendNormal = 0,
@@ -38,8 +37,7 @@ enum BlendType
 	BlendSubstraction = 2
 };
 
-struct Color : public Serializable
-{
+struct Color : public Serializable{
 	Color()
 	    : red(0), green(0), blue(0), alpha(0)
 	{}
@@ -74,8 +72,7 @@ struct Color : public Serializable
 	void updateInternal();
 	void updateExternal();
 
-	bool hasEffect() const
-	{
+	bool hasEffect() const{
 		return (alpha != 0);
 	}
 
@@ -91,8 +88,7 @@ struct Color : public Serializable
 	Vec4 norm;
 };
 
-struct Tone : public Serializable
-{
+struct Tone : public Serializable{
 	Tone()
 	    : red(0), green(0), blue(0), gray(0)
 	{}
@@ -125,8 +121,7 @@ struct Tone : public Serializable
 	/* Internal */
 	void updateInternal();
 
-	bool hasEffect() const
-	{
+	bool hasEffect() const{
 		return ((int)red   != 0 ||
 				(int)green != 0 ||
 				(int)blue  != 0 ||
@@ -146,8 +141,7 @@ struct Tone : public Serializable
 	sigc::signal<void> valueChanged;
 };
 
-struct Rect : public Serializable
-{
+struct Rect : public Serializable{
 	Rect()
 	    : x(0), y(0), width(0), height(0)
 	{}
@@ -182,13 +176,11 @@ struct Rect : public Serializable
 	static Rect *deserialize(const char *data, int len);
 
 	/* Internal */
-	FloatRect toFloatRect() const
-	{
+	FloatRect toFloatRect() const{
 		return FloatRect(x, y, width, height);
 	}
 
-	IntRect toIntRect()
-	{
+	IntRect toIntRect(){
 		return IntRect(x, y, width, height);
 	}
 
@@ -215,8 +207,7 @@ struct Rect : public Serializable
  * without memory leakage.
  * This can be removed at a later point when no testing directly
  * from C++ is needed anymore. */
-struct EtcTemps
-{
+struct EtcTemps{
 	Color color;
 	Tone tone;
 	Rect rect;

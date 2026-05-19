@@ -126,9 +126,7 @@ struct SpritePrivate{
 			return;
 
 		/* Calculate effective (normalized) bush depth */
-		float texBushDepth = (bushDepth / trans.getScale().y) -
-		                     (srcRect->y + srcRect->height) +
-		                     bitmap->height();
+		float texBushDepth = (bushDepth / trans.getScale().y) - (srcRect->y + srcRect->height) + bitmap->height();
 
 		efBushDepth = 1.0f - texBushDepth / bitmap->height();
 	}
@@ -157,8 +155,7 @@ struct SpritePrivate{
 		/* Cut old connection */
 		srcRectCon.disconnect();
 		/* Create new one */
-		srcRectCon = srcRect->valueChanged.connect
-				(sigc::mem_fun(this, &SpritePrivate::onSrcRectChange));
+		srcRectCon = srcRect->valueChanged.connect(sigc::mem_fun(this, &SpritePrivate::onSrcRectChange));
 	}
 
 	void updateVisibility(){
@@ -355,8 +352,7 @@ void Sprite::setY(int value){
 
 	p->trans.setPosition(Vec2(getX(), value));
 
-	if (rgssVer >= 2)
-	{
+	if (rgssVer >= 2){
 		p->wave.dirty = true;
 		setSpriteY(value);
 	}

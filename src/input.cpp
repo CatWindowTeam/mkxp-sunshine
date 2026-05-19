@@ -256,8 +256,7 @@ static const int mapToIndex[] = {
 
 static elementsN(mapToIndex);
 
-static const Input::ButtonCode dirs[] =
-{ Input::Down, Input::Left, Input::Right, Input::Up };
+static const Input::ButtonCode dirs[] = { Input::Down, Input::Left, Input::Right, Input::Up };
 
 static const int dirFlags[] = {
 	1 << Input::Down,

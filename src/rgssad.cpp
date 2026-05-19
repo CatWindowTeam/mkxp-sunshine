@@ -82,8 +82,7 @@ static bool readUint32(PHYSFS_Io *io, uint32_t &result){
 
 #define IO_READ(io, dest, size) (io->read(io, dest, size) == size)
 
-static inline uint32_t
-advanceMagic(uint32_t &magic) {
+static inline uint32_t advanceMagic(uint32_t &magic) {
 	uint32_t old = magic;
 
 	magic = magic * 7 + 3;
@@ -91,8 +90,7 @@ advanceMagic(uint32_t &magic) {
 	return old;
 }
 
-static PHYSFS_sint64
-RGSS_ioRead(PHYSFS_Io *self, void *buffer, PHYSFS_uint64 len) {
+static PHYSFS_sint64 RGSS_ioRead(PHYSFS_Io *self, void *buffer, PHYSFS_uint64 len) {
 	RGSS_entryHandle *entry = static_cast<RGSS_entryHandle*>(self->opaque);
 
 	PHYSFS_Io *io = entry->io;
@@ -183,8 +181,7 @@ RGSS_ioRead(PHYSFS_Io *self, void *buffer, PHYSFS_uint64 len) {
 	return toRead;
 }
 
-static int
-RGSS_ioSeek(PHYSFS_Io *self, PHYSFS_uint64 offset){
+static int RGSS_ioSeek(PHYSFS_Io *self, PHYSFS_uint64 offset){
 	RGSS_entryHandle *entry = static_cast<RGSS_entryHandle*>(self->opaque);
 
 	if (offset == entry->currentOffset)
@@ -213,23 +210,19 @@ RGSS_ioSeek(PHYSFS_Io *self, PHYSFS_uint64 offset){
 	return 1;
 }
 
-static PHYSFS_sint64
-RGSS_ioTell(PHYSFS_Io *self){
+static PHYSFS_sint64 RGSS_ioTell(PHYSFS_Io *self){
 	const RGSS_entryHandle *entry = static_cast<RGSS_entryHandle*>(self->opaque);
 
 	return entry->currentOffset;
 }
 
-static PHYSFS_sint64
-RGSS_ioLength(PHYSFS_Io *self)
-{
+static PHYSFS_sint64 RGSS_ioLength(PHYSFS_Io *self){
 	const RGSS_entryHandle *entry = static_cast<RGSS_entryHandle*>(self->opaque);
 
 	return entry->data.size;
 }
 
-static PHYSFS_Io*
-RGSS_ioDuplicate(PHYSFS_Io *self){
+static PHYSFS_Io* RGSS_ioDuplicate(PHYSFS_Io *self){
 	const RGSS_entryHandle *entry = static_cast<RGSS_entryHandle*>(self->opaque);
 	RGSS_entryHandle *entryDup = new RGSS_entryHandle(*entry);
 
@@ -240,8 +233,7 @@ RGSS_ioDuplicate(PHYSFS_Io *self){
 	return dup;
 }
 
-static void
-RGSS_ioDestroy(PHYSFS_Io *self){
+static void RGSS_ioDestroy(PHYSFS_Io *self){
 	RGSS_entryHandle *entry = static_cast<RGSS_entryHandle*>(self->opaque);
 
 	delete entry;
@@ -262,13 +254,9 @@ static const PHYSFS_Io RGSS_IoTemplate ={
     RGSS_ioDestroy
 };
 
-static void
-processDirectories(RGSS_archiveData *data, BoostSet<std::string> &topLevel,
-                   char *nameBuf, uint32_t nameLen)
-{
+static void processDirectories(RGSS_archiveData *data, BoostSet<std::string> &topLevel, char *nameBuf, uint32_t nameLen){
 	/* Check for top level entries */
-	for (uint32_t i = 0; i < nameLen; ++i)
-	{
+	for (uint32_t i = 0; i < nameLen; ++i){
 		bool slash = nameBuf[i] == '/';
 		if (!slash && i+1 < nameLen)
 			continue;
@@ -297,8 +285,7 @@ processDirectories(RGSS_archiveData *data, BoostSet<std::string> &topLevel,
 		}
 }
 
-static bool
-verifyHeader(PHYSFS_Io *io, char version){
+static bool verifyHeader(PHYSFS_Io *io, char version){
 	char header[8];
 
 	if (!IO_READ(io, header, sizeof(header)))
@@ -313,8 +300,7 @@ verifyHeader(PHYSFS_Io *io, char version){
 	return true;
 }
 
-static void*
-RGSS_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed){
+static void* RGSS_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed){
 	if (forWrite)
 		return NULL;
 
@@ -371,11 +357,7 @@ RGSS_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed){
 	return data;
 }
 
-static PHYSFS_EnumerateCallbackResult
-RGSS_enumerateFiles(void *opaque, const char *dirname,
-                    PHYSFS_EnumerateCallback cb,
-                    const char *origdir, void *callbackdata)
-{
+static PHYSFS_EnumerateCallbackResult RGSS_enumerateFiles(void *opaque, const char *dirname, PHYSFS_EnumerateCallback cb, const char *origdir, void *callbackdata) {
 	RGSS_archiveData *data = static_cast<RGSS_archiveData*>(opaque);
 
 	std::string _dirname(dirname);
@@ -392,8 +374,7 @@ RGSS_enumerateFiles(void *opaque, const char *dirname,
 	return PHYSFS_ENUM_OK;
 }
 
-static PHYSFS_Io*
-RGSS_openRead(void *opaque, const char *filename){
+static PHYSFS_Io* RGSS_openRead(void *opaque, const char *filename){
 	RGSS_archiveData *data = static_cast<RGSS_archiveData*>(opaque);
 
 	if (!data->entryHash.contains(filename))
@@ -410,8 +391,7 @@ RGSS_openRead(void *opaque, const char *filename){
 	return io;
 }
 
-static int
-RGSS_stat(void *opaque, const char *filename, PHYSFS_Stat *stat){
+static int RGSS_stat(void *opaque, const char *filename, PHYSFS_Stat *stat){
 	RGSS_archiveData *data = static_cast<RGSS_archiveData*>(opaque);
 
 	bool hasFile = data->entryHash.contains(filename);
@@ -440,20 +420,17 @@ RGSS_stat(void *opaque, const char *filename, PHYSFS_Stat *stat){
 	return 1;
 }
 
-static void
-RGSS_closeArchive(void *opaque){
+static void RGSS_closeArchive(void *opaque){
 	RGSS_archiveData *data = static_cast<RGSS_archiveData*>(opaque);
 
 	delete data;
 }
 
-static PHYSFS_Io*
-RGSS_noop1(void*, const char*){
+static PHYSFS_Io* RGSS_noop1(void*, const char*){
 	return 0;
 }
 
-static int
-RGSS_noop2(void*, const char*){
+static int RGSS_noop2(void*, const char*){
 	return 0;
 }
 
@@ -497,8 +474,7 @@ const PHYSFS_Archiver RGSS2_Archiver = {
 	RGSS_closeArchive
 };
 
-static bool
-readUint32AndXor(PHYSFS_Io *io, uint32_t &result, uint32_t key){
+static bool readUint32AndXor(PHYSFS_Io *io, uint32_t &result, uint32_t key){
 	if (!readUint32(io, result))
 		return false;
 
@@ -507,8 +483,7 @@ readUint32AndXor(PHYSFS_Io *io, uint32_t &result, uint32_t key){
 	return true;
 }
 
-static void*
-RGSS3_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed){
+static void* RGSS3_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed){
 	if (forWrite)
 		return NULL;
 

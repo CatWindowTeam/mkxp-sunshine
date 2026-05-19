@@ -46,37 +46,31 @@ union SDL_Event;
 
 #define MAX_FINGERS 4
 
-class EventThread
-{
+class EventThread{
 public:
-	struct ControllerState
-	{
+	struct ControllerState{
 		int axes[SDL_GAMEPAD_AXIS_COUNT];
 		bool buttons[SDL_GAMEPAD_BUTTON_COUNT];
 	};
 
-	struct JoyState
-	{
+	struct JoyState{
 		int axes[256];
 		uint8_t hats[256];
 		bool buttons[256];
 	};
 
-	struct MouseState
-	{
+	struct MouseState{
 		int x, y;
 		bool inWindow;
 		bool buttons[32];
 	};
 
-	struct FingerState
-	{
+	struct FingerState{
 		bool down;
 		int x, y;
 	};
 
-	struct TouchState
-	{
+	struct TouchState{
 		FingerState fingers[MAX_FINGERS];
 	};
 
@@ -123,8 +117,7 @@ private:
 	bool showCursor;
 	AtomicFlag msgBoxDone;
 
-	struct
-	{
+	struct{
 		uint64_t lastFrame;
 		uint64_t displayCounter;
 		AtomicFlag sendUpdates;
@@ -138,21 +131,18 @@ private:
 /* Used to asynchronously inform the RGSS thread
  * about certain value changes */
 template<typename T>
-struct UnidirMessage
-{
+struct UnidirMessage{
 	UnidirMessage()
 	    : mutex(SDL_CreateMutex()),
 	      current(T())
 	{}
 
-	~UnidirMessage()
-	{
+	~UnidirMessage(){
 		SDL_DestroyMutex(mutex);
 	}
 
 	/* Done from the sending side */
-	void post(const T &value)
-	{
+	void post(const T &value){
 		SDL_LockMutex(mutex);
 
 		changed.set();
@@ -162,8 +152,7 @@ struct UnidirMessage
 	}
 
 	/* Done from the receiving side */
-	bool poll(T &out) const
-	{
+	bool poll(T &out) const{
 		if (!changed)
 			return false;
 
@@ -178,8 +167,7 @@ struct UnidirMessage
 	}
 
 	/* Done from either */
-	void get(T &out) const
-	{
+	void get(T &out) const{
 		SDL_LockMutex(mutex);
 		out = current;
 		SDL_UnlockMutex(mutex);
@@ -191,8 +179,7 @@ private:
 	T current;
 };
 
-struct SyncPoint
-{
+struct SyncPoint{
 	/* Used by eventFilter to control sleep/wakeup */
 	void haltThreads();
 	void resumeThreads();
@@ -205,8 +192,7 @@ struct SyncPoint
 	void passSecondarySync();
 
 private:
-	struct Util
-	{
+	struct Util{
 		Util();
 		~Util();
 
@@ -224,8 +210,7 @@ private:
 	Util secondSync;
 };
 
-struct RGSSThreadData
-{
+struct RGSSThreadData{
 	/* Main thread sets this to request RGSS thread to terminate */
 	AtomicFlag rqTerm;
 	/* In response, RGSS thread sets this to confirm

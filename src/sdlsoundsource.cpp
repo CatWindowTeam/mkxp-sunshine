@@ -108,10 +108,6 @@ struct SDLSoundSource : ALDataSource{
 	}
 };
 
-ALDataSource *createSDLSource(SDL_IOStream &ops,
-                              const char *extension,
-			                  uint32_t maxBufSize,
-			                  bool looped)
-{
+ALDataSource *createSDLSource(SDL_IOStream &ops, const char *extension, uint32_t maxBufSize, bool looped) {
 	return new SDLSoundSource(ops, extension, maxBufSize, looped);
 }

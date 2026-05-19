@@ -31,8 +31,7 @@
 #error "Non little endian systems not supported"
 #endif
 
-static inline int32_t
-readInt32(const char **dataP){
+static inline int32_t readInt32(const char **dataP){
 	int32_t result;
 
 	memcpy(&result, *dataP, 4);
@@ -41,8 +40,7 @@ readInt32(const char **dataP){
 	return result;
 }
 
-static inline double
-readDouble(const char **dataP){
+static inline double readDouble(const char **dataP){
 	double result;
 
 	memcpy(&result, *dataP, 8);
@@ -51,14 +49,12 @@ readDouble(const char **dataP){
 	return result;
 }
 
-static inline void
-writeInt32(char **dataP, int32_t value){
+static inline void writeInt32(char **dataP, int32_t value){
 	memcpy(*dataP, &value, 4);
 	*dataP += 4;
 }
 
-static inline void
-writeDouble(char **dataP, double value){
+static inline void writeDouble(char **dataP, double value){
 	memcpy(*dataP, &value, 8);
 	*dataP += 8;
 }
