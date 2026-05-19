@@ -70,7 +70,7 @@ AudioStream::~AudioStream(){
 	SDL_DestroyMutex(streamMut);
 }
 
-void AudioStream::play(const std::string &filename, int volume, int pitch, float offset){
+void AudioStream::play(const std::string &filename, int volume, int pitch, float offset) {
 	finiFadeOutInt();
 
 	lockStream();
@@ -134,7 +134,7 @@ void AudioStream::play(const std::string &filename, int volume, int pitch, float
 	stream.setPitch(_pitch);
 
 	if (offset > 0){
-		setVolume(FadeIn, 0);
+0		setVolume(FadeIn, 0);
 		startFadeIn();
 	}
 
@@ -279,8 +279,7 @@ void AudioStream::fadeOutThread(){
 
 		if (state != ALStream::Playing
 		|| resVol < 0
-		|| fade.reqFini)
-		{
+		|| fade.reqFini){
 			if (state != ALStream::Paused)
 				stream.stop();
 

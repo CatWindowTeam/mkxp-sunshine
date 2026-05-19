@@ -39,29 +39,19 @@ struct RGSSThreadData;
 
 class Audio{
 public:
-	void bgmPlay(const char *filename,
-	             int volume = 100,
-	             int pitch = 100,
-	             float pos = 0);
+	void bgmPlay(const char *filename, short volume = 100, short pitch = 100, float pos = 0);
 	void bgmStop();
 	void bgmFade(int time);
 
-	void bgsPlay(const char *filename,
-	             int volume = 100,
-	             int pitch = 100,
-	             float pos = 0);
+	void bgsPlay(const char *filename, short volume = 100, short pitch = 100, float pos = 0);
 	void bgsStop();
 	void bgsFade(int time);
 
-	void mePlay(const char *filename,
-	            int volume = 100,
-	            int pitch = 100);
+	void mePlay(const char *filename, short volume = 100, short pitch = 100);
 	void meStop();
 	void meFade(int time);
 
-	void sePlay(const char *filename,
-	            int volume = 100,
-	            int pitch = 100);
+	void sePlay(const char *filename, short volume = 100, short pitch = 100);
 	void seStop();
 
 	float bgmPos();

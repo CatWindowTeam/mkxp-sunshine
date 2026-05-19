@@ -1069,9 +1069,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 		GLMeta::blitRectangle(posRect, Vec2i());
 		GLMeta::blitEnd();
 
-		FloatRect bltRect(0, 0,
-		                  (float) (gpTexSize.x * squeeze) / gpTex2.width,
-		                  (float) gpTexSize.y / gpTex2.height);
+		FloatRect bltRect(0, 0, (float) (gpTexSize.x * squeeze) / gpTex2.width, (float) gpTexSize.y / gpTex2.height);
 
 		BltShader &shader = shState->shaders().blt;
 		shader.bind();

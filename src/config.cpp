@@ -66,7 +66,7 @@ namespace po = boost::program_options;
 Config::Config()
 {}
 
-void Config::read(int argc, char *argv[]){
+void Config::read(short argc, char *argv[]){
 #define PO_DESC_ALL \
 	PO_DESC(debugMode, bool, false) \
 	PO_DESC(screenMode, bool, false) \
@@ -179,7 +179,7 @@ void Config::read(int argc, char *argv[]){
 		defScreenW = 640;
 		defScreenH = 480;
 	}
-	
+
 #ifdef STEAM
 	/* Override fullscreen config if Big Picture */
 	if (const char *env = std::getenv("SteamTenfoot")){

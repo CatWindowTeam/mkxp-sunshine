@@ -33,16 +33,16 @@
 #include <SDL3/SDL_timer.h>
 
 struct AudioPrivate{
-	int bgm_volume;
-	int sfx_volume;
+	unsigned char bgm_volume;
+	unsigned char sfx_volume;
 
 	AudioStream bgm;
 	AudioStream bgs;
 	AudioStream me;
 
-	int current_bgm_volume;
-	int current_bgs_volume;
-	int current_me_volume;
+	unsigned char current_bgm_volume;
+	unsigned char current_bgs_volume;
+	unsigned char current_me_volume;
 
 	SoundEmitter se;
 
@@ -232,7 +232,7 @@ Audio::Audio(RGSSThreadData &rtData)
 {}
 
 
-void Audio::bgmPlay(const char *filename, int volume, int pitch, float pos){
+void Audio::bgmPlay(const char *filename, short volume, short pitch, float pos){
 	p->current_bgm_volume = volume;
 	p->bgm.play(filename, (volume*p->bgm_volume)/100, pitch, pos);
 }
@@ -246,7 +246,7 @@ void Audio::bgmFade(int time){
 }
 
 
-void Audio::bgsPlay(const char *filename, int volume, int pitch, float pos){
+void Audio::bgsPlay(const char *filename, short volume, short pitch, float pos){
 	p->current_bgs_volume = volume;
 	p->bgs.play(filename, (volume*p->sfx_volume)/100, pitch, pos);
 }
@@ -260,7 +260,7 @@ void Audio::bgsFade(int time){
 }
 
 
-void Audio::mePlay(const char *filename, int volume, int pitch){
+void Audio::mePlay(const char *filename, short volume, short pitch){
 	p->current_me_volume = volume;
 	p->me.play(filename, (volume*p->bgm_volume)/100, pitch);
 }
@@ -274,7 +274,7 @@ void Audio::meFade(int time){
 }
 
 
-void Audio::sePlay(const char *filename, int volume, int pitch){
+void Audio::sePlay(const char *filename, short volume, short pitch){
 	p->se.play(filename, (volume*p->sfx_volume)/100, pitch);
 }
 
@@ -301,7 +301,7 @@ int Audio::getBGM_Volume() const{
 	return p->bgm_volume;
 }
 
-void Audio::setBGM_Volume(int value){
+void Audio::setBGM_Volume(short value){
 	if(value > 100){
 		value = 100;
 	}else if(value < 0){
@@ -320,7 +320,7 @@ int Audio::getSFX_Volume() const{
 	return p->sfx_volume;
 }
 
-void Audio::setSFX_Volume(int value){
+void Audio::setSFX_Volume(short value){
 	if(value > 100){
 		value = 100;
 	}else if(value < 0){

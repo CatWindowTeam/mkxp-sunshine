@@ -101,7 +101,7 @@ void Color::serialize(char *buffer) const{
 	writeDouble(&buffer, alpha);
 }
 
-Color *Color::deserialize(const char *data, int len){
+Color *Color::deserialize(const char *data, short len){
 	if (len != 32)
 		throw Exception(Exception::ArgumentError, "Color: Serialized data invalid");
 

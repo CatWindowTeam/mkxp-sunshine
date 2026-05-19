@@ -65,8 +65,7 @@ public:
 protected:
 	void guardDisposed() const{
 		if (isDisposed())
-			throw Exception(Exception::RGSSError,
-		                    "disposed %s", klassName());
+			throw Exception(Exception::RGSSError, "disposed %s", klassName());
 	}
 
 private:
