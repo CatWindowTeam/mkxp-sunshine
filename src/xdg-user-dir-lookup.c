@@ -10,10 +10,10 @@
   including without limitation the rights to use, copy, modify, merge,
   publish, distribute, sublicense, and/or sell copies of the Software,
   and to permit persons to whom the Software is furnished to do so,
-  subject to the following conditions: 
+  subject to the following conditions:
 
   The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of the Software. 
+  included in all copies or substantial portions of the Software.
 
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
@@ -55,7 +55,7 @@ char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback
   char *p, *d;
   int len;
   int relative;
-  
+
   home_dir = getenv ("HOME");
 
   if (home_dir == NULL)
@@ -70,8 +70,7 @@ char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback
       strcpy (config_file, home_dir);
       strcat (config_file, "/.config/user-dirs.dirs");
     }
-  else
-    {
+  else{
       config_file = (char*) malloc (strlen (config_home) + strlen ("/user-dirs.dirs") + 1);
       if (config_file == NULL)
         goto error;
@@ -91,11 +90,11 @@ char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback
       len = strlen (buffer);
       if (len > 0 && buffer[len-1] == '\n')
 	buffer[len-1] = 0;
-      
+
       p = buffer;
       while (*p == ' ' || *p == '\t')
 	p++;
-      
+
       if (strncmp (p, "XDG_", 4) != 0)
 	continue;
       p += 4;
@@ -121,16 +120,14 @@ char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback
       p++;
       
       relative = 0;
-      if (strncmp (p, "$HOME/", 6) == 0)
-	{
+      if (strncmp (p, "$HOME/", 6) == 0){
 	  p += 6;
 	  relative = 1;
 	}
       else if (*p != '/')
 	continue;
       
-      if (relative)
-	{
+      if (relative){
 	  user_dir = (char*) malloc (strlen (home_dir) + 1 + strlen (p) + 1);
           if (user_dir == NULL)
             goto error2;
@@ -138,8 +135,7 @@ char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback
 	  strcpy (user_dir, home_dir);
 	  strcat (user_dir, "/");
 	}
-      else
-	{
+      else{
 	  user_dir = (char*) malloc (strlen (p) + 1);
           if (user_dir == NULL)
             goto error2;
@@ -148,8 +144,7 @@ char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback
 	}
       
       d = user_dir + strlen (user_dir);
-      while (*p && *p != '"')
-	{
+      while (*p && *p != '"'){
 	  if ((*p == '\\') && (*(p+1) != 0))
 	    p++;
 	  *d++ = *p++;
