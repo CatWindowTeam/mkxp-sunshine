@@ -10,7 +10,11 @@ class Window_Message < Window_Selectable
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
-    super(16, 336, 608, 128)
+  	if Graphics.width == 1280
+      super(16, 336, 1248, 128)
+  	else
+	  super(16, 336, 608, 128)
+  	end
     self.contents = Bitmap.new(width - 32, height - 32)
     Language.register_text_sprite(self.class.name + "_contents", self.contents)
     self.visible = false
