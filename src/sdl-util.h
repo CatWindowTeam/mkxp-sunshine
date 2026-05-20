@@ -120,8 +120,7 @@ private:
 
 class SDLRWStream{
 public:
-	SDLRWStream(const char *filename,
-	            const char *mode)
+	SDLRWStream(const char *filename, const char *mode)
 	    : ops(SDL_IOFromFile(filename, mode)),
 	      buf(ops),
 	      s(&buf)

@@ -382,8 +382,7 @@ int main(int argc, char *argv[]){
 
 	if (!rtData.rgssErrorMsg.empty()){
 		Debug() << rtData.rgssErrorMsg;
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(),
-		                         rtData.rgssErrorMsg.c_str(), win);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), rtData.rgssErrorMsg.c_str(), win);
 	}
 
 	/* Clean up any remainin events */

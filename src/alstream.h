@@ -85,8 +85,7 @@ struct ALStream{
 		NotLooped
 	};
 
-	ALStream(LoopMode loopMode,
-	         const std::string &threadId);
+	ALStream(LoopMode loopMode, const std::string &threadId);
 	~ALStream();
 
 	void close();

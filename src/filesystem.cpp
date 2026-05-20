@@ -377,8 +377,7 @@ struct CacheEnumData{
 	}
 };
 
-static PHYSFS_EnumerateCallbackResult
-cacheEnumCB(void *d, const char *origdir, const char *fname){
+static PHYSFS_EnumerateCallbackResult cacheEnumCB(void *d, const char *origdir, const char *fname){
 	CacheEnumData &data = *static_cast<CacheEnumData*>(d);
 	char fullPath[512];
 
@@ -433,8 +432,7 @@ struct FontSetsCBData{
 	SharedFontState *sfs;
 };
 
-static PHYSFS_EnumerateCallbackResult
-fontSetEnumCB (void *data, const char *dir, const char *fname){
+static PHYSFS_EnumerateCallbackResult fontSetEnumCB (void *data, const char *dir, const char *fname){
 	FontSetsCBData *d = static_cast<FontSetsCBData*>(data);
 
 	/* Only consider filenames with font extensions */

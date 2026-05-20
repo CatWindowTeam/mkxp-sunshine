@@ -57,7 +57,6 @@ struct ALDataSource{
 
 ALDataSource *createSDLSource(SDL_IOStream &ops, const char *extension, uint32_t maxBufSize, bool looped);
 
-ALDataSource *createVorbisSource(SDL_IOStream &ops,
-                                 bool looped);
+ALDataSource *createVorbisSource(SDL_IOStream &ops, bool looped);
 
 #endif // ALDATASOURCE_H

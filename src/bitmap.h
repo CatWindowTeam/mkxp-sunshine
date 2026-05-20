@@ -36,8 +36,7 @@ struct SDL_Surface;
 
 struct BitmapPrivate;
 // FIXME make this class use proper RGSS classes again
-class Bitmap : public Disposable
-{
+class Bitmap : public Disposable{
 public:
 	Bitmap(const char *filename);
 	Bitmap(int width, int height);
@@ -84,8 +83,7 @@ public:
 
 	void hueChange(int hue);
 
-	enum TextAlign
-	{
+	enum TextAlign{
 		Left = 0,
 		Center = 1,
 		Right = 2

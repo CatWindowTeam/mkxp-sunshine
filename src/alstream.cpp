@@ -33,8 +33,7 @@
 #include <SDL3/SDL_thread.h>
 #include <SDL3/SDL_timer.h>
 
-ALStream::ALStream(LoopMode loopMode,
-		           const std::string &threadId)
+ALStream::ALStream(LoopMode loopMode, const std::string &threadId)
 	: looped(loopMode == Looped),
 	  state(Closed),
 	  source(0),

@@ -29,8 +29,7 @@
 #endif
 
 #include <SDL3/SDL.h>
-namespace syswm {
-}
+namespace syswm {}
 
 #define NIKO_X (320 - 16)
 #define NIKO_Y ((13 * 16) * 2)
