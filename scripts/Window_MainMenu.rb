@@ -1,7 +1,7 @@
 # The main menu window
 class Window_MainMenu < Window_Selectable
   def initialize
-    super(16, 16, 608, 64)
+    super(Graphics.width / 2 - 304, 16, 608, 64)
 
     # Set up menu options
     @commands = Array.new

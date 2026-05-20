@@ -12,8 +12,8 @@ class Window_Item < Window_Selectable
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
-    super(16, 96, 608, 224)
-    @column_max = 2
+    super(Graphics.width / 2 - 304, 96, 608, 224)
+    @column_max = COLUMN_MAX
     refresh
     self.index = 0
     self.back_opacity = 230

@@ -10,6 +10,7 @@ class Window_Message < Window_Selectable
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
+    # I would make the interface width a separate constant/setting
 	  super(Graphics.width / 2 - 304, 336, 608, 128)
     self.contents = Bitmap.new(width - 32, height - 32)
     Language.register_text_sprite(self.class.name + "_contents", self.contents)
