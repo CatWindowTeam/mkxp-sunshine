@@ -73,4 +73,3 @@ void blitEnd();
 }
 
 #endif // GLMETA_H
-

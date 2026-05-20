@@ -74,7 +74,7 @@ void Config::read(int argc, char *argv[]){
 	PO_DESC(EnableSixteenByNine, bool, false) \
 	PO_DESC(fullscreen, bool, false) \
 	PO_DESC(fixedAspectRatio, bool, true) \
-	PO_DESC(smoothScaling, bool, true) \
+	PO_DESC(smoothScaling, bool, false) \
 	PO_DESC(vsync, bool, true) \
 	PO_DESC(defScreenW, int, 0) \
 	PO_DESC(defScreenH, int, 0) \
