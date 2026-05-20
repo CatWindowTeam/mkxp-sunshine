@@ -23,7 +23,6 @@ set(scripts
   Game_Event.rb
   Game_FastTravel.rb
   Game_Follower.rb
-  Game_Light.rb
   Game_Map.rb
   Game_Oneshot.rb
   Game_Party.rb

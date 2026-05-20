@@ -24,7 +24,6 @@ Game_Character_3
 Game_Event
 Game_Player
 Game_Oneshot
-Game_Light
 Game_Follower
 Game_FastTravel
 
