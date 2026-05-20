@@ -299,7 +299,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 			desktopEnv = "kde";
 		} else if (desktop.find("lxde") != std::string::npos) {
 			desktopEnv = "lxde";
-		} else if (desktop.find("lxde") != std::string::npos) {
+		} else if (desktop.find("lxqt") != std::string::npos) {
 			desktopEnv = "lxqt";
 		} else if (desktop.find("deepin") != std::string::npos) {
 			desktopEnv = "deepin";
