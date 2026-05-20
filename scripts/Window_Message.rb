@@ -10,11 +10,7 @@ class Window_Message < Window_Selectable
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
-  	if Graphics.width == 1280
-      super(16, 336, 1248, 128)
-  	else
-	  super(16, 336, 608, 128)
-  	end
+	  super(Graphics.width / 2 - 304, 336, 608, 128)
     self.contents = Bitmap.new(width - 32, height - 32)
     Language.register_text_sprite(self.class.name + "_contents", self.contents)
     self.visible = false
@@ -320,9 +316,9 @@ class Window_Message < Window_Selectable
       when 0  # up
         self.y = 16
       when 1  # middle
-        self.y = 160
+        self.y = Graphics.height / 2 - height / 2
       when 2  # down
-        self.y = 336
+        self.y = Graphics.height - height - 16
       end
     end
     if $game_system.message_frame == 0
