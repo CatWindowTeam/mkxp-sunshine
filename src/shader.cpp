@@ -105,8 +105,7 @@ void Shader::unbind(){
 	glState.program.set(0);
 }
 
-static void setupShaderSource(GLuint shader, GLenum type,
-                              const unsigned char *body, int bodySize){
+static void setupShaderSource(GLuint shader, GLenum type, const unsigned char *body, int bodySize){
 	static const char glesDefine[] = "#define GLSLES\n";
 	static const char fragDefine[] = "#define FRAGMENT_SHADER\n";
 

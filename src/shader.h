@@ -240,14 +240,12 @@ private:
 
 /* Gaussian blur */
 struct BlurShader{
-	class HPass : public ShaderBase
-	{
+	class HPass : public ShaderBase{
 	public:
 		HPass();
 	};
 
-	class VPass : public ShaderBase
-	{
+	class VPass : public ShaderBase{
 	public:
 		VPass();
 	};

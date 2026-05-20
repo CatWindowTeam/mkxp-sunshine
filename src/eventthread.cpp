@@ -178,7 +178,7 @@ void EventThread::process(RGSSThreadData &rtData){
 
 	while (true){
 		if (!SDL_WaitEvent(&event)){
-			Debug() << "EventThread: Event error";
+			Debug() << "[EventThread::process] EventThread: Event error";
 			break;
 		}
 
@@ -273,7 +273,7 @@ void EventThread::process(RGSSThreadData &rtData){
 		case SDL_EVENT_QUIT :
 			if (rtData.allowExit) {
 				terminate = true;
-				Debug() << "EventThread termination requested";
+				Debug() << "[EventThread::process] EventThread termination requested";
 			} else {
 				rtData.triedExit.set();
 			}
