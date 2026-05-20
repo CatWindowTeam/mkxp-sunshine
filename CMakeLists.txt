@@ -18,7 +18,7 @@ if(DEBUG)
 	if (MSVC)
     		add_compile_options(/EHr /fsanitize /validate-charset /DEBUG /RTCu /RTCs /RTCc /guard:cf /GS)
 	else()
-    		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -Wall -fanalyzer -fcheck-new -gbtf -ggnu-pubnames -fexceptions)
+    		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -Wall -fcheck-new -gbtf -ggnu-pubnames -fexceptions)
 	endif()
 else()
 	# Optimization stuff
