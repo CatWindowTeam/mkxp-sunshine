@@ -999,4 +999,3 @@ void Graphics::remDisposable(Disposable *d){
 const TEX::ID &Graphics::obscuredTex() const{
 	return p->obscuredTex;
 }
-
