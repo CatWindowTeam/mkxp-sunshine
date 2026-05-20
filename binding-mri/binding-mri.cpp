@@ -541,14 +541,15 @@ static void mriBindingExecute(){
 	char* options_argv[] = {options_argv1, options_argv2, options_argv3, NULL};
 	ruby_sysinit(&argc, &argv);
 	RUBY_INIT_STACK;
-	ruby_setup();
+	ruby_init();
+	ruby_init_loadpath();
 	rb_enc_set_default_external(rb_enc_from_encoding(rb_utf8_encoding()));
 
 	Config &conf = shState->rtData().config;
 
 	if (!conf.rubyLoadpaths.empty()){
 		/* Setup custom load paths */
-		VALUE lpaths = rb_gv_get(":");
+		VALUE lpaths = rb_gv_get("$:");
 
 		for (size_t i = 0; i < conf.rubyLoadpaths.size(); ++i){
 			std::string &path = conf.rubyLoadpaths[i];
@@ -557,8 +558,8 @@ static void mriBindingExecute(){
 			rb_ary_push(lpaths, pathv);
 		}
 	}
-	RbData rbData;
-	shState->setBindingData(&rbData);
+	RbData *rbData = new RbData();
+	shState->setBindingData(rbData);
 	BacktraceData btData;
 
 	mriBindingInit();
@@ -573,7 +574,7 @@ static void mriBindingExecute(){
 	#ifdef DEBUG
 		printf("[mirBindingExecure] Ruby cleanup\n");
 	#endif
-	ruby_cleanup(0);
+	//ruby_cleanup(0);
 
 	shState->rtData().rqTermAck.set();
 }
