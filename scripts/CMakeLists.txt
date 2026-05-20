@@ -97,6 +97,7 @@ set(scripts
   Window_SaveFile.rb
   Window_Selectable.rb
   Window_Settings.rb
+  Window_Settings_audio.rb
   Window_ShopBuy.rb
   Window_ShopCommand.rb
   Window_ShopNumber.rb

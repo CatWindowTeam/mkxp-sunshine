@@ -535,3 +535,4 @@ class Window_Settings
     @bg.opacity
   end
 end
+
