@@ -12,13 +12,8 @@ class Game_Player < Game_Character
   #--------------------------------------------------------------------------
   # * Invariables
   #--------------------------------------------------------------------------
-  if Graphics.width == 1280
-  	CENTER_X = (650 - 16) * 4
-  	CENTER_Y = (360 - 16) * 4
-  else
-	CENTER_X = (320 - 16) * 4   # Center screen x-coordinate * 4
-	CENTER_Y = (240 - 16) * 4   # Center screen y-coordinate * 4
-  end
+  CENTER_X = ((Graphics.width / 2) - 16) * 4   # Center screen x-coordinate * 4
+  CENTER_Y = ((Graphics.height / 2) - 16) * 4   # Center screen y-coordinate * 4
   #--------------------------------------------------------------------------
   # * Passable Determinants
   #     x : x-coordinate
@@ -47,8 +42,8 @@ class Game_Player < Game_Character
   #--------------------------------------------------------------------------
   def center(x, y)
 	if $game_switches[98] == true
-      max_x = ($game_map.width - 20) * 128
-      max_y = ($game_map.height - 15) * 128
+      max_x = ($game_map.width - (Graphics.width / 32)) * 128
+      max_y = ($game_map.height - (Graphics.height / 28)) * 128
       $game_map.display_x = [0, [x * 128 - CENTER_X, max_x].min].max
       $game_map.display_y = [0, [y * 128 - CENTER_Y, max_y].min].max
 	else
