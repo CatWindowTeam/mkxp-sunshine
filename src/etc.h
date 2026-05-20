@@ -66,7 +66,7 @@ struct Color : public Serializable{
 	/* Serializable */
 	int serialSize() const;
 	void serialize(char *buffer) const;
-	static Color *deserialize(const char *data, short len);
+	static Color *deserialize(const char *data, int len);
 
 	/* Internal */
 	void updateInternal();

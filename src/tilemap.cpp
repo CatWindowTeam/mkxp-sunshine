@@ -64,8 +64,8 @@ static const int atAreaH = autotileH * autotileCount;
 static const int tsLaneW = tilesetW / 2;
 /* Map viewport size */
 //TODO: разные значения под разные разрешения экрана для оптимизации
-static const char viewpW = 42;
-static const char viewpH = 26;
+static const int viewpW = 42;
+static const int viewpH = 26;
 
 static const size_t zlayersMax = viewpH + 5;
 

@@ -27,7 +27,7 @@
 #include <set>
 
 struct Config{
-	unsigned char rgssVersion;
+	unsigned short rgssVersion;
 
 	bool debugMode;
 	bool screenMode;
@@ -89,7 +89,7 @@ struct Config{
 
 	Config();
 
-	void read(short argc, char *argv[]);
+	void read(int argc, char *argv[]);
 };
 
 #endif // CONFIG_H

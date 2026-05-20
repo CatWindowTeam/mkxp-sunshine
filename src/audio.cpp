@@ -232,7 +232,7 @@ Audio::Audio(RGSSThreadData &rtData)
 {}
 
 
-void Audio::bgmPlay(const char *filename, short volume, short pitch, float pos){
+void Audio::bgmPlay(const char *filename, int volume, int pitch, float pos){
 	p->current_bgm_volume = volume;
 	p->bgm.play(filename, (volume*p->bgm_volume)/100, pitch, pos);
 }
@@ -246,7 +246,7 @@ void Audio::bgmFade(int time){
 }
 
 
-void Audio::bgsPlay(const char *filename, short volume, short pitch, float pos){
+void Audio::bgsPlay(const char *filename, int volume, int pitch, float pos){
 	p->current_bgs_volume = volume;
 	p->bgs.play(filename, (volume*p->sfx_volume)/100, pitch, pos);
 }
@@ -260,7 +260,7 @@ void Audio::bgsFade(int time){
 }
 
 
-void Audio::mePlay(const char *filename, short volume, short pitch){
+void Audio::mePlay(const char *filename, int volume, int pitch){
 	p->current_me_volume = volume;
 	p->me.play(filename, (volume*p->bgm_volume)/100, pitch);
 }
@@ -274,7 +274,7 @@ void Audio::meFade(int time){
 }
 
 
-void Audio::sePlay(const char *filename, short volume, short pitch){
+void Audio::sePlay(const char *filename, int volume, int pitch){
 	p->se.play(filename, (volume*p->sfx_volume)/100, pitch);
 }
 

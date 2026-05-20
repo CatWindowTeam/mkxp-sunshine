@@ -62,7 +62,7 @@ struct VorbisSource : ALDataSource{
 	} loop;
 
 	struct{
-		unsigned short channels;
+		int channels;
 		int rate;
 		int frameSize;
 		ALenum alFormat;

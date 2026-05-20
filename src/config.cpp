@@ -66,7 +66,7 @@ namespace po = boost::program_options;
 Config::Config()
 {}
 
-void Config::read(short argc, char *argv[]){
+void Config::read(int argc, char *argv[]){
 #define PO_DESC_ALL \
 	PO_DESC(debugMode, bool, false) \
 	PO_DESC(screenMode, bool, false) \

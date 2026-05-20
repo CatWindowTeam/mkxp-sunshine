@@ -25,7 +25,7 @@ else()
 	if (MSVC)
 		add_compile_options(/O2 /fp:fast /GL /GF /GA)
 	else()
-		add_compile_options(-O3 -ffast-math -flto)
+		add_compile_options()
 	endif()
 endif()
 ## Setup main source ##
