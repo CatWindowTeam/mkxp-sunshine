@@ -108,7 +108,7 @@ RB_METHOD(bitmapBlt){
 	int x, y;
 	VALUE srcObj;
 	VALUE srcRectObj;
-	int opacity = 255;
+	unsigned short opacity = 255;
 
 	Bitmap *src;
 	Rect *srcRect;
@@ -129,7 +129,7 @@ RB_METHOD(bitmapStretchBlt){
 	VALUE destRectObj;
 	VALUE srcObj;
 	VALUE srcRectObj;
-	int opacity = 255;
+	unsigned short opacity = 255;
 
 	Bitmap *src;
 	Rect *destRect, *srcRect;

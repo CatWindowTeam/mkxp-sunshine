@@ -118,10 +118,6 @@ static void mriBindingInit(){
     	SunshineBindingInit();
 	steamBindingInit();
 	chromaBindingInit();
-	#ifdef DEBUG
-		printf("[mriBindingInit] Done\n");
-		printf("[mriBindingInit] RGSS version: %i\n", rgssVer);
-	#endif
 
 	_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
 	_rb_define_module_function(rb_mKernel, "rgss_stop", mriRgssStop);
@@ -145,10 +141,7 @@ static void mriBindingInit(){
 	rb_gv_set("MKXP", Qtrue);
 
 	VALUE debug = rb_bool_new(shState->config().editor.debug);
-	if (rgssVer == 1)
-		rb_gv_set("DEBUG", debug);
-	else if (rgssVer >= 2)
-		rb_gv_set("TEST", debug);
+	rb_gv_set("DEBUG", debug);
 
 	rb_gv_set("BTEST", rb_bool_new(shState->config().editor.battleTest));
 }
