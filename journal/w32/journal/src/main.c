@@ -3,11 +3,7 @@
 extern int do_niko(int x, int y);
 extern int do_journal();
 
-int WINAPI WinMain(HINSTANCE hInstance,
-                   HINSTANCE hPrevInstance,
-                   LPSTR lpCmdLine,
-                   int nCmdShow)
-{
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     (void)hInstance;
     (void)hPrevInstance;
     (void)lpCmdLine;

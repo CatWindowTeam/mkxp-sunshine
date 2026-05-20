@@ -84,8 +84,7 @@ static void loadImage(const char *name) {
 }
 
 // Window procedure
-LRESULT CALLBACK journal_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
+LRESULT CALLBACK journal_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
     switch (msg) {
     case WM_PAINT: {
         PAINTSTRUCT ps;
@@ -206,8 +205,7 @@ boolean readGamePath() {
     return FALSE;
 }
 
-int do_journal()
-{
+int do_journal(){
   // Create
   HINSTANCE module = GetModuleHandleW(NULL);
 
@@ -234,9 +232,7 @@ int do_journal()
 	                          0,
 	                          NULL);
     if (pipe != INVALID_HANDLE_VALUE) {
-        if (ReadFile(pipe, (void*)message, IN_BUFFER_SIZE, &len, NULL)
-                && len == IN_BUFFER_SIZE)
-        {
+        if (ReadFile(pipe, (void*)message, IN_BUFFER_SIZE, &len, NULL) && len == IN_BUFFER_SIZE) {
             if (*message)
                 loadImage(message);
         }

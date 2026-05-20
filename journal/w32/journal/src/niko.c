@@ -6,8 +6,7 @@ static HBITMAP niko_bmps[3] = {NULL};
 static int niko_offset = 0;
 
 // Window procedure
-LRESULT CALLBACK niko_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
+LRESULT CALLBACK niko_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
     switch (msg) {
     case WM_CLOSE:
         return 0;
@@ -50,8 +49,7 @@ LRESULT CALLBACK niko_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-int do_niko(int x, int y)
-{
+int do_niko(int x, int y){
     // Create
     HINSTANCE module = GetModuleHandleW(NULL);
     niko_bmps[0] = LoadBitmapW(module, L"NIKO1");
