@@ -49,7 +49,11 @@ module RPG
       self.load_bitmap("Graphics/Panoramas/", filename, hue)
     end
     def self.picture(filename)
-      self.load_bitmap("Graphics/Pictures/", filename)
+      if Graphics.width == 1280
+        self.load_bitmap("Graphics/Pictures/", filename + "_16")
+      else
+		self.load_bitmap("Graphics/Pictures/", filename)
+      end
     end
     def self.tileset(filename)
       self.load_bitmap("Graphics/Tilesets/", filename)
