@@ -144,8 +144,8 @@ module Script
   end
 
   def self.countdown_over
-    equinox = Time.new(2017, 03, 27)
-    diff = equinox - Time.now
+    equinox = 0 #Time.new(2017, 03, 27)
+    diff = equinox - 0 #Time.now
     if(diff <= 0)
       return true
     end
@@ -153,8 +153,8 @@ module Script
   end
 
   def self.countdown_extend_over
-    equinox = Time.new(2017, 03, 27)
-	diff = equinox - Time.now
+    equinox = 0 #Time.new(2017, 03, 27)
+	diff = equinox - 0 #Time.now
 	if(diff <= 0)
 	  return true
 	end
@@ -162,7 +162,7 @@ module Script
   end
 
   def self.cdown_update(equinox)
-    diff = equinox - Time.now
+    diff = equinox - 0 #Time.now
 	if(diff < 0)
 	  diff = 0
 	end
@@ -226,16 +226,16 @@ module Script
   end
 
   def self.countdown_update
-    return cdown_update(Time.new(2017, 03, 27))
+    return cdown_update(0) #(Time.new(2017, 03, 27))
   end
 
   def self.countdown_extend_update
-    return cdown_update(Time.new(2017, 03, 27))
+    return cdown_update(0) #(Time.new(2017, 03, 27))
   end
 
   def self.countdown_update_rue
     if @rue_equinox == nil
-      @rue_equinox = Time.now + 6
+      @rue_equinox = 6 #Time.now + 6
     end
     return cdown_update(@rue_equinox)
   end
@@ -629,7 +629,7 @@ def loadQASave(fname)
     # Play load SE
     $game_system.se_play($data_system.load_se)
 
-	# Read save data
+    # Read save data
     file = File.open(filename, "rb")
     # Read character data for drawing save file
     characters = Marshal.load(file)
@@ -767,7 +767,7 @@ end
 
 # Misc
 def watcher_tell_time
-  hour = Time.now.hour
+  hour = 0 #Time.now.hour
   if hour >= 6 && hour < 12
     Script.tmp_v1 = 0
   elsif hour >= 12 && hour < 17
@@ -780,14 +780,14 @@ def watcher_tell_time
 end
 
 def plight_start_timer
-  $game_oneshot.plight_timer = Time.now
+  $game_oneshot.plight_timer = 0 #Time.now
 end
 
 def plight_update_timer
   if $game_oneshot.plight_timer == nil
     plight_start_timer
   end
-  Script.tmp_v1 = ((Time.now - $game_oneshot.plight_timer) / 60).to_i
+  Script.tmp_v1 = ((0 - $game_oneshot.plight_timer) / 60).to_i #((Time.now - $game_oneshot.plight_timer) / 60).to_i
 end
 
 def activate_balcony?(ypos)
