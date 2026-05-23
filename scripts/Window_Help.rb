@@ -9,7 +9,7 @@ class Window_Help < Window_Base
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
-    super(Graphics.width / 2 - 304, 16, 608, 64)
+    super(Graphics.width / 2 - 304, Graphics.height > 600 ? Graphics.height / 2 - 160 : 16, 608, 64)
     self.contents = Bitmap.new(width - 32, height - 32)
     Language.register_text_sprite(self.class.name + "_contents", self.contents)
     self.visible = false

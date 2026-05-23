@@ -12,7 +12,7 @@ class Window_Item < Window_Selectable
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
-    super(Graphics.width / 2 - 304, 96, 608, 224)
+    super(Graphics.width / 2 - 304, Graphics.height > 600 ? Graphics.height / 2 - 80 : 96, 608, 224)
     @column_max = COLUMN_MAX
     refresh
     self.index = 0
