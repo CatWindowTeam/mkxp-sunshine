@@ -49,10 +49,10 @@ module RPG
       self.load_bitmap("Graphics/Panoramas/", filename, hue)
     end
     def self.picture(filename)
-      if Graphics.width == 1280
+      if (Graphics.width == 1280 && File.exist?("Graphics/Pictures/" + filename + "_16.png"))
         self.load_bitmap("Graphics/Pictures/", filename + "_16")
       else
-		self.load_bitmap("Graphics/Pictures/", filename)
+        self.load_bitmap("Graphics/Pictures/", filename)
       end
     end
     def self.tileset(filename)

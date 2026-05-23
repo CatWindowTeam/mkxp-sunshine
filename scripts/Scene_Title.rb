@@ -35,32 +35,32 @@ class Scene_Title
     $game_system = Game_System.new
 
     load_perma_flags
-	Window_Settings.load_settings
+    Window_Settings.load_settings
     Oneshot.allow_exit true
 	
     @window_settings_title = Window_Settings.new
     # Make title graphic
     @sprite = Sprite.new
 	
-	# chinese has its own special title screen so check for it
-	translation_name = "#{$persistent.langcode}/#{$data_system.title_name}"
+    # chinese has its own special title screen so check for it
+    translation_name = "#{$persistent.langcode}/#{$data_system.title_name}"
     if File.exist?("Graphics/Titles/#{translation_name}.png")
-       @sprite.bitmap = RPG::Cache.title(translation_name)
- 	else
-    	if File.exist?("badend.lock")
-    		if Graphics.width == 1280
-				@sprite.bitmap = RPG::Cache.title("badend_16")
-			else
-				@sprite.bitmap = RPG::Cache.title("badend")
-			end
+      @sprite.bitmap = RPG::Cache.title(translation_name)
+    else
+      if File.exist?("badend.lock")
+        if Graphics.width == 1280
+          @sprite.bitmap = RPG::Cache.title("badend_16")
         else
-        	if Graphics.width == 1280
-				@sprite.bitmap = RPG::Cache.title("normal_16")
-        	else
-				@sprite.bitmap = RPG::Cache.title($data_system.title_name)
-        	end
+          @sprite.bitmap = RPG::Cache.title("badend")
         end
-	end
+      else
+        if Graphics.width == 1280
+          @sprite.bitmap = RPG::Cache.title("normal_16")
+        else
+          @sprite.bitmap = RPG::Cache.title($data_system.title_name)
+        end
+      end
+    end
 	# check for debug file to add debug items
 	if Window_Settings.DebugIsEnabled
 		# debug save
@@ -143,16 +143,16 @@ class Scene_Title
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
-	@menu.bitmap.clear
+    @menu.bitmap.clear
     @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
     @menu.bitmap.draw_text(5, 5, 150, 20, tr("Ruby #{RUBY_VERSION}"))
     @menu.bitmap.draw_text(5, 25, 150, 20, tr("SDL #{SDLVer}"))
     @menu.bitmap.draw_text(5, 45, 150, 20, tr("Sunshine #{SunshineVer}"))
-	if $game_switches[160] && $game_switches[152]
+    if $game_switches[160] && $game_switches[152]
       @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
-	end
+    end
     # Handle cursor movement
     if !@window_settings_title.visible
       update_cursor = false
@@ -162,27 +162,27 @@ class Scene_Title
           update_cursor = true
         end
       elsif Input.trigger?(Input::DOWN)
-	    
-	    if $game_switches[160] && $game_switches[152]
+      
+        if $game_switches[160] && $game_switches[152]
           if @cursor_pos < 3
             @cursor_pos += 1
             update_cursor = true
           end
-	    else
+        else
           if @cursor_pos < 2
             @cursor_pos += 1
             update_cursor = true
           end
-		end
+        end
       end
       if Input.trigger?(Input::F8)
         if Graphics.fullscreen == true
-	      Graphics.fullscreen = false
-		  $console = false
-	    else
-	      Graphics.fullscreen = true
-		  $console = true
-	    end
+          Graphics.fullscreen = false
+          $console = false
+        else
+          Graphics.fullscreen = true
+          $console = true
+        end
       end
       if update_cursor
         Audio.se_play('Audio/SE/title_cursor.wav', 40)
@@ -217,7 +217,7 @@ class Scene_Title
           end
         end
       end
-	end
+    end
   end
   #--------------------------------------------------------------------------
   # * initialize a new game
