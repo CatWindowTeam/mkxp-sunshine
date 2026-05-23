@@ -82,7 +82,6 @@ class Window_Message < Window_Selectable
     self.active = false
     self.pause = false
     self.index = -1
-    $game_system.windowskin_name = "normal"
   end
   #--------------------------------------------------------------------------
   # * Refresh: Load new message text and pre-process it
@@ -103,8 +102,8 @@ class Window_Message < Window_Selectable
       text.gsub!(/\\v\[([0-9]+)\]/) do
         $game_variables[$1.to_i]
       end
-	  #add a space to the beginning of the player name to better deal with longer names in asian languages
-	  if (Language::FONT_WESTERN == Font.default_name)
+      #add a space to the beginning of the player name to better deal with longer names in asian languages
+      if (Language::FONT_WESTERN == Font.default_name)
         text.gsub!("\\p", $game_oneshot.player_name)
       else
         text.gsub!("\\p", " " + $game_oneshot.player_name)
@@ -166,26 +165,25 @@ class Window_Message < Window_Selectable
     @text_y = @text_x = 0
 
     # Blit face graphic
+    $game_system.windowskin_name = "normal"
     if $game_temp.message_face != nil
+      if $game_temp.message_face.start_with?("en")
+        $game_system.windowskin_name = "en_normal"
+      else
+        $game_system.windowskin_name = "normal"
+      end
       if $game_player.character_name == "niko_gasmask" || $game_player.character_name == "niko_bulb_gasmask" \
-		|| $game_player.character_name == "en_gasmask" || $game_player.character_name == "en_bulb_gasmask"
+        || $game_player.character_name == "en_gasmask" || $game_player.character_name == "en_bulb_gasmask"
         if $game_temp.message_face.start_with?("niko")
           $game_temp.message_face = "niko_gasmask"
         end
-		if $game_temp.message_face.start_with?("en")
+        if $game_temp.message_face.start_with?("en")
           $game_temp.message_face = "en_gasmask"
         end
       end
       face = RPG::Cache.face($game_temp.message_face)
       self.contents.blt(self.contents.width - 96, 0, face, Rect.new(0, 0, 96, 96))
     end
-	if $game_temp.message_face != nil
-		if $game_temp.message_face.start_with?("en")
-			$game_system.windowskin_name = "en_normal"
-		else
-			$game_system.windowskin_name = "normal"
-		end
-	end
 	
     if $game_temp.choices != nil
       # Prepare choices, if they fit
