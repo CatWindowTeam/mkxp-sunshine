@@ -980,8 +980,8 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData){
 	p->rgb = p->winSurf->format;
 
 	const size_t layoutW = 2;
-	const size_t layoutH = 6;
-	assert(layoutW*layoutH == vButtonsN);
+	const size_t layoutH = 7;
+	assert(layoutW*layoutH >= vButtonsN);
 
 	const int bWidgetW = winSize.x / layoutW;
 	const int bWidgetH = 64;
@@ -989,10 +989,11 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData){
 
 	for (int y = 0; y < (int)(layoutH); ++y)
 		for (int x = 0; x < (int)(layoutW); ++x){
-			int i = x*layoutH+y;
-			BindingWidget w(i, p, IntRect(x*bWidgetW, bWidgetY+y*bWidgetH,
-			                              bWidgetW, bWidgetH));
-			p->bWidgets.push_back(w);
+			size_t i = x*layoutH+y;
+			if (i < vButtonsN) {
+				BindingWidget w(i, p, IntRect(x*bWidgetW, bWidgetY+y*bWidgetH, bWidgetW, bWidgetH));
+				p->bWidgets.push_back(w);
+			}
 		}
 
 	for (size_t i = 0; i< p->bWidgets.size(); ++i)
