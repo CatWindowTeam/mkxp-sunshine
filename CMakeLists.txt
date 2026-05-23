@@ -9,24 +9,22 @@ set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to
 option(DEBUG "Debug mode" ON)
 set(SDLTTF_VENDORED ON)
 set(ZLIB_USE_STATIC_LIBS ON)
-## Misc setup ##
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Debug stuff
-# i want die
 if(DEBUG)
+	# Debug stuff
 	if (MSVC)
     		add_compile_options(/EHr /fsanitize /validate-charset /DEBUG /RTCu /RTCs /RTCc /guard:cf /GS)
 	else()
-    		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -Wall -fcheck-new -gbtf)
+    		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -Wall -fcheck-new -gbtf -pipe)
 	endif()
 else()
 	# Optimization stuff
 	if (MSVC)
 		add_compile_options(/O2 /fp:fast /GL /GF /GA)
 	else()
-		add_compile_options()
+		add_compile_options(-O3 -ffast-math -flto -pipe -funroll-loops -falign-functions=16 -falign-jumps=8 -falign-loops=8 -fno-common)
+		add_link_options(-Wl,-O2)
 	endif()
 endif()
 ## Setup main source ##
