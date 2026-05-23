@@ -115,6 +115,8 @@ static buttonCodes[] = {
 	{ "ITEMS",      Input::Items      },
 	{ "RUN",        Input::Run        },
 	{ "DEACTIVATE", Input::Deactivate },
+	
+	{ "DEBUGACTION",Input::DebugAction},
 
 	{ "L",          Input::L          },
 	{ "R",          Input::R          },

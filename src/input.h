@@ -44,7 +44,9 @@ public:
 		F5 = 25, F6 = 26, F7 = 27, F8 = 28, F9 = 29,
 
 		/* Non-standard extensions */
-		MouseLeft = 38, MouseMiddle = 39, MouseRight = 40
+		MouseLeft = 38, MouseMiddle = 39, MouseRight = 40,
+
+		DebugAction = 41
 	};
 
 	void update();
