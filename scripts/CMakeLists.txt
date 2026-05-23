@@ -101,8 +101,6 @@ set(scripts
   Window_ShopNumber.rb
   Window_ShopSell.rb
   Window_ShopStatus.rb
-  Window_Skill.rb
-  Window_SkillStatus.rb
   Window_Status.rb
   Window_Steps.rb
   Window_Target.rb
