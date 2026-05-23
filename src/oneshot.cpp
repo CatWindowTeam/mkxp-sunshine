@@ -13,7 +13,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
-
+#include <SDL3/SDL_messagebox.h>
 
 // OS-Specific code
 #if defined _WIN32
@@ -100,7 +100,6 @@ struct linux_DialogData{
 
 static int linux_dialog(void *rawData){
 	linux_DialogData *data = reinterpret_cast<linux_DialogData*>(rawData);
-
 	// Determine correct flags
 	GtkMessageType gtktype;
 	GtkButtonsType gtkbuttons = GTK_BUTTONS_OK;
@@ -134,8 +133,6 @@ static int linux_dialog(void *rawData){
 	gtk_main_quit();
 	return 0;
 }
-
-
 
 #elif defined OS_W32
 /* Convert WCHAR pointer to std::string */
@@ -466,7 +463,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title){
 		title = "";
 #ifdef OS_LINUX
 	linux_DialogData data = {type, body, title, 0};
-	g_idle_add(linux_dialog, &data);
+	gdk_threads_add_idle(linux_dialog, &data);
 	gtk_main();
 	return data.result;
 #else

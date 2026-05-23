@@ -8,6 +8,7 @@ option(STEAM "Build for Steam" OFF)
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 option(DEBUG "Debug mode" ON)
 set(SDLTTF_VENDORED ON)
+set(ZLIB_USE_STATIC_LIBS ON)
 ## Misc setup ##
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -138,14 +139,15 @@ set(MAIN_SOURCE
 if(WIN32)
 	list(APPEND MAIN_SOURCE assets/resources.rc)
 	list(APPEND DEFINES UNICODE)
-	list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi)
+	list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi winmm z)
+	#list(APPEND PLATFORM_LIBS winmm z)
 	include_directories(
 		${CMAKE_CURRENT_BINARY_DIR}/windows
 	)
 elseif(APPLE)
 	list(APPEND MAIN_HEADERS src/mac-desktop.h)
 	list(APPEND MAIN_SOURCE src/mac-desktop.mm)
-else()
+elseif(LINUX)
 	find_package(PkgConfig REQUIRED)
 	pkg_check_modules(LINUXPKGS REQUIRED gtk+-3.0 libxfconf-0)
 	include_directories(${LINUXPKGS_INCLUDE_DIRS})
@@ -306,6 +308,7 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 	${EMBEDDED_SOURCE}
 )
 
+find_package(ZLIB REQUIRED)
 find_package(SDL3 CONFIG)
 find_package(SDL3_image CONFIG)
 find_package(SDL3_sound CONFIG)
@@ -337,11 +340,8 @@ target_include_directories(${PROJECT_NAME}
 		${SIGC2_INCLUDE_DIRS}
 		${Ruby_INCLUDE_DIRS}
 		Boost::boost ${Boost_INCLUDE_DIRS}
-		${VORBISFILE_INCLUDE_DIRS})
-
-if(WIN32)
-	list(APPEND PLATFORM_LIBS winmm z)
-endif()
+		${VORBISFILE_INCLUDE_DIRS}
+		${ZLIB_INCLUDE_DIRS})
 
 target_link_libraries(${PROJECT_NAME}
 	PRIVATE
@@ -354,7 +354,7 @@ target_link_libraries(${PROJECT_NAME}
 		${Ruby_LIBRARIES}
 		Boost::boost ${Boost_LIBRARIES}
 		${VORBISFILE_LIBRARIES}
-		
+		ZLIB::ZLIB
     	${PLATFORM_LIBS}
 	)
 
