@@ -55,3 +55,6 @@ steamworks/
 build/
 
 .vscode
+
+test.sh
+test2.sh
