@@ -9,6 +9,10 @@ static VALUE obj_clone(VALUE self){
     return rb_obj_clone(self);
 }
 
+static VALUE a_last(VALUE self){
+    return rb_ary_entry(self, -1);
+}
+
 static VALUE int_times(VALUE self) {
     long n = NUM2LONG(self);
 
@@ -49,5 +53,8 @@ void SunshineBindingInit(){
 
 	if (!rb_respond_to(rb_cInteger, rb_intern("times"))) {
 	    rb_define_method(rb_cInteger, "times", RUBY_METHOD_FUNC(int_times), 0);
+	}
+	if (!rb_respond_to(rb_cArray, rb_intern("last"))) {
+	    rb_define_method(rb_cArray, "last", RUBY_METHOD_FUNC(a_last), 0);
 	}
 }
