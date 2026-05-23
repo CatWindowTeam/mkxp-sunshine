@@ -145,11 +145,11 @@ module Script
 
   def self.countdown_over
     equinox = Time.new(2017, 03, 27)
-	diff = equinox - Time.now
-	if(diff <= 0)
-	  return true
-	end
-	return false
+    diff = equinox - Time.now
+    if(diff <= 0)
+      return true
+    end
+    return false
   end
 
   def self.countdown_extend_over
@@ -235,8 +235,8 @@ module Script
 
   def self.countdown_update_rue
     if @rue_equinox == nil
-	  @rue_equinox = Time.now + 6
-	end
+      @rue_equinox = Time.now + 6
+    end
     return cdown_update(@rue_equinox)
   end
 
@@ -283,8 +283,8 @@ module Script
         if event.x > 14
           event.x = 14
         elsif event.x < 6
-		  event.x = 6
-		end
+          event.x = 6
+        end
         if event.real_x > (14*128) - 32
           event.real_x = (14*128) - 32
         elsif event.real_x < (6*128) + 32
@@ -322,8 +322,8 @@ module Script
         if event.x > 14
           event.x = 14
         elsif event.x < 6
-		  event.x = 6
-		end
+          event.x = 6
+        end
         if event.real_x > (14*128) - 32
           event.real_x = (14*128) - 32
         elsif event.real_x < (6*128) + 32
@@ -453,25 +453,25 @@ module Script
 
   def self.clear_boxes
     for i in 1..3
-	  portal_path = Oneshot::GAME_PATH + "/Oneshot/Portal" + i.to_s
-	  case i
-	  when 1
-	    delete_if_exists(portal_path + "/blue_npc_prototype.png")
-	    delete_if_exists(portal_path + "/proto1.png")
-	    delete_if_exists(portal_path + "/keyB.txt")
-	  when 2
-	    delete_if_exists(portal_path + "/green_npc_cedric.png")
-	    delete_if_exists(portal_path + "/cedric.png")
-	    delete_if_exists(portal_path + "/keyG.txt")
-	  when 3
-	    delete_if_exists(portal_path + "/red_rue.png")
-	    delete_if_exists(portal_path + "/rue.png")
-	    delete_if_exists(portal_path + "/keyR.txt")
-	  end
-	end
-	delete_if_exists(Oneshot::GAME_PATH + "/Oneshot/BigPortal/keyB.txt")
-	delete_if_exists(Oneshot::GAME_PATH + "/Oneshot/BigPortal/keyG.txt")
-	delete_if_exists(Oneshot::GAME_PATH + "/Oneshot/BigPortal/keyR.txt")
+      portal_path = Oneshot::GAME_PATH + "/Oneshot/Portal" + i.to_s
+      case i
+      when 1
+        delete_if_exists(portal_path + "/blue_npc_prototype.png")
+        delete_if_exists(portal_path + "/proto1.png")
+        delete_if_exists(portal_path + "/keyB.txt")
+      when 2
+        delete_if_exists(portal_path + "/green_npc_cedric.png")
+        delete_if_exists(portal_path + "/cedric.png")
+        delete_if_exists(portal_path + "/keyG.txt")
+      when 3
+        delete_if_exists(portal_path + "/red_rue.png")
+        delete_if_exists(portal_path + "/rue.png")
+        delete_if_exists(portal_path + "/keyR.txt")
+      end
+    end
+    delete_if_exists(Oneshot::GAME_PATH + "/Oneshot/BigPortal/keyB.txt")
+    delete_if_exists(Oneshot::GAME_PATH + "/Oneshot/BigPortal/keyG.txt")
+    delete_if_exists(Oneshot::GAME_PATH + "/Oneshot/BigPortal/keyR.txt")
   end
 
   def self.copy_file(src, dst)
@@ -483,11 +483,11 @@ module Script
           end
         end
       end
-	rescue Errno::EACCES => e
-	  #this probably means the file already exists and is open, so no need to create it again
-  rescue Errno::EEXIST => e
-    #this probably means the file already exists, so no need to create it again
-	end
+    rescue Errno::EACCES => e
+      #this probably means the file already exists and is open, so no need to create it again
+    rescue Errno::EEXIST => e
+      #this probably means the file already exists, so no need to create it again
+    end
   end
 
   def self.write_key(dst, str)
@@ -620,7 +620,7 @@ def loadQASave(fname)
     # If file doesn't exist
     unless FileTest.exist?(filename)
       filename = "testing_saves_postgame/" + fname + ".rxdata"
-	  unless FileTest.exist?(filename)
+      unless FileTest.exist?(filename)
         # Play buzzer SE
         $game_system.se_play($data_system.buzzer_se)
         return
@@ -661,7 +661,7 @@ def loadQASave(fname)
     # Refresh party members
     $game_party.refresh
 
-	f_prev = $game_player
+	  f_prev = $game_player
     for f in $game_followers
       f.leader = f_prev
       f.moveto($game_player.x, $game_player.y)
@@ -792,7 +792,7 @@ end
 
 def activate_balcony?(ypos)
   !$scene.menu_open? &&
-    $game_player.y == ypos &&
-    $game_player.direction == 8 &&
-    Input.trigger?(Input::ACTION) && !$game_system.map_interpreter.running? && !$game_temp.menus_visible
+  $game_player.y == ypos &&
+  $game_player.direction == 8 &&
+  Input.trigger?(Input::ACTION) && !$game_system.map_interpreter.running? && !$game_temp.menus_visible
 end

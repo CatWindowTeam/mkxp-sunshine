@@ -84,7 +84,7 @@ class Game_Picture
     @tone_target = Tone.new(0, 0, 0, 0)
     @tone_duration = 0
     @angle = 0
-    @rotate_speed = 0
+    @rotate_speed = rand(1..1000) == 1 ? 10 : 0 #easteregg lol
   end
   #--------------------------------------------------------------------------
   # * Move Picture
