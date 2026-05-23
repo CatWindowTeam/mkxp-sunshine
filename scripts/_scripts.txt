@@ -48,8 +48,6 @@ Window_PlayTime
 Window_Steps
 Window_MenuStatus
 Window_Item
-Window_Skill
-Window_SkillStatus
 Window_Target
 Window_EquipLeft
 Window_EquipRight
