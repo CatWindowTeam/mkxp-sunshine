@@ -17,7 +17,7 @@ class Window_NameEdit < Window_Base
   #     max_char : maximum number of characters
   #--------------------------------------------------------------------------
   def initialize
-    super(0, 0, 640, 128)
+    super(Graphics.width / 2 - 320, Graphics.height / 2 - 240, 640, 128)
     self.contents = Bitmap.new(width - 32, height - 32)
 	if $game_switches[91]
 	  @name = ""

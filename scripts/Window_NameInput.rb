@@ -41,7 +41,7 @@ class Window_NameInput < Window_Base
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
-    super(0, 128, 640, 352)
+    super(Graphics.width / 2 - 320, Graphics.height / 2 - 112, 640, 352)
     self.contents = Bitmap.new(width - 32, height - 32)
     @index = 0
     @ok_text = "OK"
