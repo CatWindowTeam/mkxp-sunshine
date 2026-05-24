@@ -122,9 +122,9 @@ class FastTravel
     @arrow_top.x = @arrow_bottom.x = @niko_icon.x + 4 * @scale_multiplier
     
     @arrow_top.y = @niko_icon.y - (12 + @arrows_offset) * @scale_multiplier
-    @arrow_bottom.y = @niko_icon.y + @niko_icon.bitmap.height + (6 + @arrows_offset) * @scale_multiplier
+    @arrow_bottom.y = @niko_icon.y + @niko_icon.bitmap.height * @scale_multiplier / 3 + (6 + @arrows_offset) * @scale_multiplier
     @arrow_left.x = @niko_icon.x - (8 + @arrows_offset) * @scale_multiplier
-    @arrow_right.x = @niko_icon.x + @niko_icon.bitmap.width + (7 + @arrows_offset) * @scale_multiplier
+    @arrow_right.x = @niko_icon.x + @niko_icon.bitmap.width * @scale_multiplier / 3 + (7 + @arrows_offset) * @scale_multiplier
   end
 
   #Not WME
