@@ -63,6 +63,7 @@ yes | cp build/oneshot build/bandle/Sunshine
 
 cp installer/installer.sh build/bandle/
 cp -r ../SunshineAssets/* build/bandle/Sunshine
+cp assets/oneshot.png build/bandle/Sunshine
 
 cd build
 zip -r OneshotSunshine.zip bandle/*
