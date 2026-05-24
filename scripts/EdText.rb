@@ -36,15 +36,20 @@ module EdText
     # yeah.
     text = Language.tr(text.to_s.gsub(/\s*\n\s*/, " ").strip)
         .to_s.gsub(/\s*\\n\s*/, "").strip
-    thread = Thread.new do
-      result = Oneshot.msgbox(type, text
+    #thread = Thread.new do
+    #  result = Oneshot.msgbox(type, text
+    #      .gsub("\\p", $game_oneshot.player_name) +
+    #      " " * 10)
+    #      # HACK: Fuck
+    #end
+
+    # it didn't work cause second thread sooooooooo.. maybe that fix isn't occurate, but! it works at least.
+    result = Oneshot.msgbox(type, text
           .gsub("\\p", $game_oneshot.player_name) +
           " " * 10)
-          # HACK: Fuck
-    end
-    while thread.alive?
-      Graphics.update
-    end
+    #while thread.alive?
+    #  Graphics.update
+    #end
     result
   end
 end
