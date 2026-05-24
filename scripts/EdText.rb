@@ -43,7 +43,8 @@ module EdText
     #      # HACK: Fuck
     #end
 
-    # it didn't work cause second thread sooooooooo.. maybe that fix isn't occurate, but! it works at least.
+    # it didn't work cause second thread sooooooooo.. maybe that fix isn't accurate but! it works at least!
+    # (i can't fucking type in english iouydwsolgiufdsaiufdsiukhhdsiufhsdb,klfm,khjsfsmk,hjds nvdsf)
     result = Oneshot.msgbox(type, text
           .gsub("\\p", $game_oneshot.player_name) +
           " " * 10)
