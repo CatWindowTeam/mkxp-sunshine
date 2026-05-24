@@ -167,12 +167,13 @@ public:
 	void setSpriteMat(const float value[16]);
 	void setTone(const Vec4 &value);
 	void setColor(const Vec4 &value);
+	void setModulate(const Vec4 &value);
 	void setOpacity(float value);
 	void setBushDepth(float value);
 	void setBushOpacity(float value);
 
 private:
-	GLint u_spriteMat, u_tone, u_opacity, u_color, u_bushDepth, u_bushOpacity;
+	GLint u_spriteMat, u_tone, u_opacity, u_color, u_modulate, u_bushDepth, u_bushOpacity;
 };
 
 class PlaneShader : public ShaderBase{

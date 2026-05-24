@@ -5,6 +5,7 @@ uniform lowp vec4 tone;
 
 uniform lowp float opacity;
 uniform lowp vec4 color;
+uniform lowp vec4 modulate;
 
 uniform float bushDepth;
 uniform lowp float bushOpacity;
@@ -29,6 +30,9 @@ void main(){
 	
 	/* Apply color */
 	frag.rgb = mix(frag.rgb, color.rgb, color.a);
+
+	/* Apply modulation */
+	frag *= modulate;
 
 	/* Apply bush alpha by mathematical if */
 	lowp float underBush = float(v_texCoord.y < bushDepth);

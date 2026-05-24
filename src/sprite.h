@@ -60,6 +60,7 @@ public:
 	DECL_ATTR( Opacity,     int     )
 	DECL_ATTR( BlendType,   int     )
 	DECL_ATTR( Color,       Color&  )
+	DECL_ATTR( Modulate,    Color&  )
 	DECL_ATTR( Tone,        Tone&   )
 	DECL_ATTR( WaveAmp,     int     )
 	DECL_ATTR( WaveLength,  int     )

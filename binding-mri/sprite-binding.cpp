@@ -41,6 +41,7 @@ RB_METHOD(spriteInitialize){
 	wrapProperty(self, &s->getSrcRect(), "src_rect", RectType);
 	wrapProperty(self, &s->getColor(), "color", ColorType);
 	wrapProperty(self, &s->getTone(), "tone", ToneType);
+	wrapProperty(self, &s->getModulate(), "modulate", ColorType);
 
 	return self;
 }
@@ -49,6 +50,7 @@ DEF_PROP_OBJ_REF(Sprite, Bitmap, Bitmap,  "bitmap")
 DEF_PROP_OBJ_VAL(Sprite, Rect,   SrcRect, "src_rect")
 DEF_PROP_OBJ_VAL(Sprite, Color,  Color,   "color")
 DEF_PROP_OBJ_VAL(Sprite, Tone,   Tone,    "tone")
+DEF_PROP_OBJ_VAL(Sprite, Color,  Modulate,"modulate")
 
 DEF_PROP_I(Sprite, X)
 DEF_PROP_I(Sprite, Y)
@@ -118,6 +120,7 @@ void spriteBindingInit(){
 	INIT_PROP_BIND( Sprite, BlendType, "blend_type" );
 	INIT_PROP_BIND( Sprite, Color,     "color"      );
 	INIT_PROP_BIND( Sprite, Tone,      "tone"       );
+	INIT_PROP_BIND( Sprite, Modulate,  "modulate"   );
 	INIT_PROP_BIND( Sprite, Obscured,  "obscured"   );
 
 	_rb_define_method(klass, "width", spriteWidth);

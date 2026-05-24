@@ -169,6 +169,7 @@ class Window_Message < Window_Selectable
     if $game_temp.message_face != nil
       if $game_temp.message_face.start_with?("en")
         $game_system.windowskin_name = "en_normal"
+        self.y = 16;
       else
         $game_system.windowskin_name = "normal"
       end
@@ -250,12 +251,12 @@ class Window_Message < Window_Selectable
         face_name = @text.slice!(/^[^\s]+ */).strip()
         self.contents.fill_rect(self.contents.width - 96, 0, 96, 96, Color.new(0,0,0,0))
         $game_temp.message_face = face_name
-		if $game_player.character_name == "niko_gasmask" || $game_player.character_name == "niko_bulb_gasmask" \
-      	  || $game_player.character_name == "en_gasmask" || $game_player.character_name == "en_bulb_gasmask"
+        if $game_player.character_name == "niko_gasmask" || $game_player.character_name == "niko_bulb_gasmask" \
+            || $game_player.character_name == "en_gasmask" || $game_player.character_name == "en_bulb_gasmask"
           if $game_temp.message_face.start_with?("niko")
             $game_temp.message_face = "niko_gasmask"
           end
-		  if $game_temp.message_face.start_with?("en")
+          if $game_temp.message_face.start_with?("en")
             $game_temp.message_face = "en_gasmask"
           end
         end
@@ -392,14 +393,14 @@ class Window_Message < Window_Selectable
         @text_pause -= 1
       else
         if @blip >= BLIP_TIME
-		  #april fools
-	      if $game_temp.message_face != nil && CTime.month == 4 && CTime.day == 1 && $game_temp.message_face.start_with?("niko")
-		    niko_sounds = [ "cat_2"]
-			@blipsound = niko_sounds[rand(niko_sounds.length)]
+        #april fools
+          if $game_temp.message_face != nil && CTime.month == 4 && CTime.day == 1 && $game_temp.message_face.start_with?("niko")
+            niko_sounds = [ "cat_2"]
+            @blipsound = niko_sounds[rand(niko_sounds.length)]
             Audio.se_play("Audio/SE/#{@blipsound}.wav", 50, rand(100..125)) unless @text.empty?
-	      else
+          else
             Audio.se_play("Audio/SE/#{@blipsound}.wav", 50) unless @text.empty?
-		  end
+          end
           @blip = 0
         else
           @blip += 1

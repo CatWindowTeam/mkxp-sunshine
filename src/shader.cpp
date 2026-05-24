@@ -374,6 +374,7 @@ SpriteShader::SpriteShader(){
 	GET_U(spriteMat);
 	GET_U(tone);
 	GET_U(color);
+	GET_U(modulate);
 	GET_U(opacity);
 	GET_U(bushDepth);
 	GET_U(bushOpacity);
@@ -389,6 +390,10 @@ void SpriteShader::setTone(const Vec4 &tone){
 
 void SpriteShader::setColor(const Vec4 &color){
 	setVec4Uniform(u_color, color);
+}
+
+void SpriteShader::setModulate(const Vec4 &color){
+	setVec4Uniform(u_modulate, color);
 }
 
 void SpriteShader::setOpacity(float value){

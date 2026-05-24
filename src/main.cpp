@@ -398,7 +398,7 @@ int main(int argc, char *argv[]){
 
 	Sound_Quit();
 	TTF_Quit();
-	SDL_Quit(); // i got "Thread 1 received signal ?, Unknown signal" here on windows after closing game
++	SDL_Quit(); // i got "Thread 1 received signal ?, Unknown signal" here on windows after closing game
 
 #ifdef STEAM
 	STEAMSHIM_deinit();

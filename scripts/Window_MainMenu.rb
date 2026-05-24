@@ -5,7 +5,7 @@ class Window_MainMenu < Window_Selectable
 
     # Set up menu options
     @commands = Array.new
-    @commands << 'Travel'
+    @commands << 'Fast Travel'
     @commands << 'Notes'
     @commands << 'Settings'
 	
@@ -53,6 +53,9 @@ class Window_MainMenu < Window_Selectable
     # Update item
     rect = Rect.new(w * index, 0, w - 32, 32)
     self.contents.fill_rect(rect, Color.new(0, 0, 0, 0))
+    if index == 0 && !$game_fasttravel.enabled? # 0 - Fast Travel
+      self.contents.font.color.set(127, 127, 127, 255)
+    end
     self.contents.draw_text(rect, tr(@commands[index]), 1)
   end
   #--------------------------------------------------------------------------
@@ -152,15 +155,15 @@ class Window_MainMenu < Window_Selectable
       	  id = File.read("imstupidcheater.txt").strip.to_i
       	  x = File.read("imstupidcheater.x").strip.to_i
       	  y = File.read("imstupidcheater.y").strip.to_i
-		  $game_temp.player_transferring = true
-		  $game_temp.player_new_map_id = id
-		  $game_temp.player_new_x = x
-		  $game_temp.player_new_y = y
-		  $game_temp.player_new_direction = 0
-		  Graphics.freeze
-		  $game_temp.transition_processing = true
-		  $game_temp.transition_name = ""
-		  @fade_out = true
+          $game_temp.player_transferring = true
+          $game_temp.player_new_map_id = id
+          $game_temp.player_new_x = x
+          $game_temp.player_new_y = y
+          $game_temp.player_new_direction = 0
+          Graphics.freeze
+          $game_temp.transition_processing = true
+          $game_temp.transition_name = ""
+          @fade_out = true
       	end
       end
       return

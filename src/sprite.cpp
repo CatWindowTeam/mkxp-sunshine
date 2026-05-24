@@ -69,6 +69,7 @@ struct SpritePrivate{
 
 	Color *color;
 	Tone *tone;
+	Color *modulate;
 
 	struct{
 		int amp;
@@ -99,7 +100,8 @@ struct SpritePrivate{
 	      isVisible(false),
 	      obscured(false),
 	      color(&tmp.color),
-	      tone(&tmp.tone)
+	      tone(&tmp.tone),
+	      modulate(&tmp.modulate)
 
 	{
 		sceneRect.x = sceneRect.y = 0;
@@ -313,6 +315,7 @@ DEF_ATTR_SIMPLE(Sprite, Opacity,     int,     p->opacity)
 DEF_ATTR_SIMPLE(Sprite, SrcRect,     Rect&,  *p->srcRect)
 DEF_ATTR_SIMPLE(Sprite, Color,       Color&, *p->color)
 DEF_ATTR_SIMPLE(Sprite, Tone,        Tone&,  *p->tone)
+DEF_ATTR_SIMPLE(Sprite, Modulate,    Color&, *p->modulate)
 DEF_ATTR_SIMPLE(Sprite, Obscured,    bool,    p->obscured)
 
 void Sprite::setBitmap(Bitmap *bitmap){
@@ -465,6 +468,7 @@ void Sprite::initDynAttribs(){
 	p->srcRect = new Rect;
 	p->color = new Color;
 	p->tone = new Tone;
+	p->modulate = new Color(255, 255, 255);
 
 	p->updateSrcRectCon();
 }
@@ -489,9 +493,10 @@ void Sprite::draw(){
 
 	ShaderBase *base;
 
-	bool renderEffect = p->color->hasEffect() ||
-	                    p->tone->hasEffect()  ||
-	                    flashing              ||
+	bool renderEffect = p->color->hasEffect()    ||
+	                    p->tone->hasEffect()     ||
+	                    p->modulate->hasEffect() ||
+	                    flashing                 ||
 	                    p->bushDepth != 0;
 
 	if (p->obscured){
@@ -519,6 +524,7 @@ void Sprite::draw(){
 			                 &flashColor : &p->color->norm;
 
 		shader.setColor(*blend);
+		shader.setModulate(p->modulate->norm);
 
 		base = &shader;
 	}

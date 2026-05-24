@@ -40,7 +40,7 @@
 #include <algorithm>
 #include <assert.h>
 
-const Vec2i winSize(700, 500);
+const Vec2i winSize(700, 600);
 
 const uint8_t cBgNorm = 50;
 const uint8_t cBgDark = 20;

@@ -211,6 +211,7 @@ struct EtcTemps{
 	Color color;
 	Tone tone;
 	Rect rect;
+	Color modulate;
 };
 
 #endif // ETC_H
