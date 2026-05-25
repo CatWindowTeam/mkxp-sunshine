@@ -5,7 +5,6 @@ cd `dirname $0`
 
 # User-configurable variables.
 linux_version="0.1.0"
-make_threads=8
 oneshot_id=420530
 STEAMWORKS_PATH=$(realpath ..)/steamworks
 

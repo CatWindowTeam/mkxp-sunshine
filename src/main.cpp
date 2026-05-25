@@ -113,8 +113,6 @@ int rgssThreadFun(void *userdata){
 
 	bool vsync = conf.vsync || conf.syncToRefreshrate;
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
-	if (vsync)
-		SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
 #ifndef NDEBUG
 	GLDebugLogger dLogger;
@@ -228,7 +226,6 @@ int main(int argc, char *argv[]){
 			SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
 		#endif
 	#endif
-	
 
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){

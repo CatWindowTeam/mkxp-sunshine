@@ -16,3 +16,5 @@ Exec=$install_path/oneshot
 Icon=$install_path/icon.png
 Categories=Game;
 """ > $HOME/.local/share/applications/sunshine.desktop
+
+echo "Done!"
