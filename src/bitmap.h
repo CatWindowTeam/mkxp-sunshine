@@ -48,26 +48,17 @@ public:
 	int height() const;
 	IntRect rect() const;
 
-	void blt(int x, int y,
-	         const Bitmap &source, IntRect rect,
-	         int opacity = 255);
+	void blt(int x, int y, const Bitmap &source, IntRect rect, int opacity = 255);
 
-	void stretchBlt(const IntRect &destRect,
-	                const Bitmap &source, const IntRect &sourceRect,
-	                int opacity = 255);
+	void stretchBlt(const IntRect &destRect, const Bitmap &source, const IntRect &sourceRect, int opacity = 255);
 
-	void fillRect(int x, int y,
-	              int width, int height,
-	              const Vec4 &color);
+	void fillRect(int x, int y, int width, int height, const Vec4 &color);
+
 	void fillRect(const IntRect &rect, const Vec4 &color);
 
-	void gradientFillRect(int x, int y,
-	                      int width, int height,
-	                      const Vec4 &color1, const Vec4 &color2,
-	                      bool vertical = false);
-	void gradientFillRect(const IntRect &rect,
-	                      const Vec4 &color1, const Vec4 &color2,
-	                      bool vertical = false);
+	void gradientFillRect(int x, int y, int width, int height, const Vec4 &color1, const Vec4 &color2, bool vertical = false);
+
+	void gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec4 &color2, bool vertical = false);
 
 	void clearRect(int x, int y,
 	               int width, int height);
@@ -89,12 +80,9 @@ public:
 		Right = 2
 	};
 
-	void drawText(int x, int y,
-	              int width, int height,
-	              const char *str, int align = Left);
+	void drawText(int x, int y, int width, int height, const char *str, int align = Left);
 
-	void drawText(const IntRect &rect,
-	              const char *str, int align = Left);
+	void drawText(const IntRect &rect, const char *str, int align = Left);
 
 	IntRect textSize(const char *str);
 

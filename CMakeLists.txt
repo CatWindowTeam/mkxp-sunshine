@@ -153,6 +153,15 @@ elseif(LINUX)
 	list(APPEND PLATFORM_LIBRARIES ${LINUXPKGS_LDFLAGS})
 	list(APPEND MAIN_SOURCE src/xdg-user-dir-lookup.c)
 	list(APPEND MAIN_HEADERS src/xdg-user-dir-lookup.h)
+elseif(BSD)
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(LINUXPKGS REQUIRED gtk+-3.0 libxfconf-0)
+        include_directories(${LINUXPKGS_INCLUDE_DIRS})
+        add_compile_options(${LINUXPKGS_CFLAGS_OTHER})
+        list(APPEND PLATFORM_LIBRARIES ${LINUXPKGS_LDFLAGS})
+        list(APPEND MAIN_SOURCE src/xdg-user-dir-lookup.c)
+        list(APPEND MAIN_HEADERS src/xdg-user-dir-lookup.h)
+	set(STEAM OFF)
 endif()
 
 if (STEAM)
@@ -283,7 +292,7 @@ set(BINDING_SOURCE
 	binding-mri/module_rpg.cpp
 	binding-mri/filesystem-binding.cpp
 	binding-mri/oneshot-binding.cpp
-    binding-mri/sunshine-binding.cpp
+        binding-mri/sunshine-binding.cpp
 	binding-mri/steam-binding.cpp
 	binding-mri/wallpaper-binding.cpp
 	binding-mri/journal-binding.cpp

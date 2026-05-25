@@ -125,8 +125,7 @@ struct BitmapPrivate{
 
 	void addTaintedArea(const IntRect &rect){
 		IntRect norm = normalizedRect(rect);
-		pixman_region_union_rect
-		        (&tainted, &tainted, norm.x, norm.y, norm.w, norm.h);
+		pixman_region_union_rect(&tainted, &tainted, norm.x, norm.y, norm.w, norm.h);
 	}
 
 	void substractTaintedArea(const IntRect &rect){
@@ -148,8 +147,7 @@ struct BitmapPrivate{
 		box.x2 = rect.x + rect.w;
 		box.y2 = rect.y + rect.h;
 
-		pixman_region_overlap_t result =
-		        pixman_region_contains_rectangle(&tainted, &box);
+		pixman_region_overlap_t result = pixman_region_contains_rectangle(&tainted, &box);
 
 		return result != PIXMAN_REGION_OUT;
 	}
@@ -1103,8 +1101,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 
 /* http://www.lemoda.net/c/utf8-to-ucs2/index.html */
 static uint16_t utf8_to_ucs2(const char *_input, const char **end_ptr){
-	const unsigned char *input =
-	        reinterpret_cast<const unsigned char*>(_input);
+	const unsigned char *input = reinterpret_cast<const unsigned char*>(_input);
 	*end_ptr = _input;
 
 	if (input[0] == 0)
