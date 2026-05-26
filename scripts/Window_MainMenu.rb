@@ -9,9 +9,9 @@ class Window_MainMenu < Window_Selectable
     @commands << 'Notes'
     @commands << 'Settings'
 	
-	if Window_Settings.DebugIsEnabled == true
-		@commands << 'TPtL'
-	end
+    if Settings[:debug] == true
+      @commands << 'TPtL'
+    end
 	
     @item_max = @commands.size
     @column_max = @item_max

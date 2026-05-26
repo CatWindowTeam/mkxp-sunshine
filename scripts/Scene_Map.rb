@@ -326,7 +326,7 @@ class Scene_Map
     #  Chroma.playAnim("chroma/Random_Keyboard.chroma", false);
     #end
     # If debug mode is ON and F9 key was pressed
-    if Input.press?(Input::F9) && Window_Settings.DebugIsEnabled = true
+    if Input.press?(Input::F9) && Settings[:debug] = true
        # Set debug calling flag
        $game_temp.debug_calling = true
     end

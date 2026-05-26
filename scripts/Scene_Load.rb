@@ -104,7 +104,7 @@ class Scene_Load < Scene_File
 	
 	
 	# check for debug file to add debug items
-	if Window_Settings.DebugIsEnabled = true
+	if Settings[:debug] = true
 		# debug save
 		$game_party.gain_item(54, 1)
 		# plight skip

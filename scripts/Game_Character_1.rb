@@ -125,7 +125,7 @@ class Game_Character
   #         * 0 = Determines if all directions are impassable (for jumping)
   #--------------------------------------------------------------------------
   def passable?(x, y, d)
-    if Window_Settings.DebugIsEnabled && Input.press?(Input::DEBUGACTION)
+    if Settings[:debug] && Input.press?(Input::DEBUGACTION)
       return true
     end
     # Get new coordinates
