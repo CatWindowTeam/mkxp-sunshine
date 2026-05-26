@@ -430,6 +430,15 @@ void EventThread::process(RGSSThreadData &rtData){
 			updateCursorState(cursorInWindow, gameScreen);
 			break;
 
+		// more mouse support for sunshine :3c
+		case SDL_EVENT_MOUSE_WHEEL:
+			{
+				mouseState.wheelFlipped = event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED;
+				mouseState.wheelX += event.wheel.integer_x;
+				mouseState.wheelY += event.wheel.integer_y;
+			}
+			break;
+
 		case SDL_EVENT_FINGER_DOWN :
 			i = event.tfinger.fingerID;
 			touchState.fingers[i].down = true;

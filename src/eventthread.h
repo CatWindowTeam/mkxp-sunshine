@@ -63,6 +63,10 @@ public:
 		int x, y;
 		bool inWindow;
 		bool buttons[32];
+
+		// mouse wheel support for sunshine
+		bool wheelFlipped;
+		int wheelX, wheelY;
 	};
 
 	struct FingerState{

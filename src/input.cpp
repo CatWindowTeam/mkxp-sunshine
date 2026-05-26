@@ -278,6 +278,12 @@ static const Input::ButtonCode otherDirs[4][3] = {
 	{ Input::Left, Input::Right, Input::Up    }  /* Up    */
 };
 
+// storing wheel as buffer cause yes.
+struct MouseFrameState {
+	int wheelX, wheelY;
+	bool wheelFlipped;
+};
+
 struct InputPrivate {
 	std::vector<KbBinding> kbStatBindings;
 	std::vector<KbBinding> kbBindings;
@@ -310,6 +316,7 @@ struct InputPrivate {
 		int active;
 	} dir8Data;
 
+	MouseFrameState mouseWheelState;
 
 	InputPrivate(const RGSSThreadData &rtData){
 		initStaticKbBindings();
@@ -335,6 +342,8 @@ struct InputPrivate {
 		dir8Data.active = 0;
 
 		triedExit = false;
+
+		mouseWheelState = { 0, 0 };
 	}
 
 	inline ButtonState &getStateCheck(int code){
@@ -615,6 +624,17 @@ void Input::update(){
 	p->swapBuffers();
 	p->clearBuffer();
 
+	// updating mouse wheel state
+	{
+		p->mouseWheelState.wheelFlipped = EventThread::mouseState.wheelFlipped;
+		p->mouseWheelState.wheelX = EventThread::mouseState.wheelX;
+		p->mouseWheelState.wheelY = EventThread::mouseState.wheelY;
+
+		EventThread::mouseState.wheelFlipped = false;
+		EventThread::mouseState.wheelX = 0;
+		EventThread::mouseState.wheelY = 0;
+	}
+
 	ButtonCode repeatCand = None;
 
 	/* Poll all bindings */
@@ -682,6 +702,11 @@ int Input::mouseY(){
 
 	return (EventThread::mouseState.y - rtData.screenOffset.y) * rtData.sizeResoRatio.y;
 }
+
+// wheel support :3
+int Input::wheelX() { return p->mouseWheelState.wheelX; }
+int Input::wheelY() { return p->mouseWheelState.wheelY; }
+bool Input::wheelFlipped() { return p->mouseWheelState.wheelFlipped; }
 
 bool Input::hasQuit(){
 	return p->triedExit;

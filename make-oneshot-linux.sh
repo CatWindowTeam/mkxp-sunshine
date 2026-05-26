@@ -17,7 +17,7 @@ color_reset="\033[0m"   # Reset Colors
 
 echo -e "${white}Compiling ${bold}SyngleChance v${linux_version} ${white}engine for Linux...${color_reset}\n"
 
-cmake . -B build/
+cmake -DZLIB_LIBRARY=/usr/lib/libz.so . -B build/
 cd build
 make -j${nproc}
 cd ..
@@ -62,7 +62,6 @@ yes | cp build/oneshot build/bandle/Sunshine
 
 cp installer/installer.sh build/bandle/
 cp -r ../SunshineAssets/* build/bandle/Sunshine
-cp assets/oneshot.png build/bandle/Sunshine
 
 cd build
 zip -r OneshotSunshine.zip bandle/*

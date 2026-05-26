@@ -62,6 +62,11 @@ public:
 	int mouseX();
 	int mouseY();
 
+	// more non-standard extensions
+	int wheelX();
+	int wheelY();
+	bool wheelFlipped();
+
 	bool hasQuit();
 
 private:

@@ -350,6 +350,15 @@ class Window_Settings
       end
     end
 
+    if Input.mouse_wheel_y > 0
+      @index = (@index - 1) % @data.size
+      $game_system.se_play($data_system.cursor_se)
+    end
+    if Input.mouse_wheel_y < 0
+      @index = (@index + 1) % @data.size
+      $game_system.se_play($data_system.cursor_se)
+    end
+
     if Input.trigger?(Input::UP)
       @index = (@index - 1) % @data.size
       $game_system.se_play($data_system.cursor_se)
