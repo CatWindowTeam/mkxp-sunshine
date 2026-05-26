@@ -17,7 +17,7 @@ color_reset="\033[0m"   # Reset Colors
 
 echo -e "${white}Compiling ${bold}SyngleChance v${linux_version} ${white}engine for Linux...${color_reset}\n"
 
-cmake -DZLIB_LIBRARY=/usr/lib/libz.so . -B build/
+cmake . -B build/
 cd build
 make -j${nproc}
 cd ..
