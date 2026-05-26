@@ -280,7 +280,7 @@ static const Input::ButtonCode otherDirs[4][3] = {
 
 // storing wheel as buffer cause yes.
 struct MouseFrameState {
-	int wheelX, wheelY;
+	float wheelX, wheelY;
 	bool wheelFlipped;
 };
 
@@ -704,8 +704,8 @@ int Input::mouseY(){
 }
 
 // wheel support :3
-int Input::wheelX() { return p->mouseWheelState.wheelX; }
-int Input::wheelY() { return p->mouseWheelState.wheelY; }
+float Input::wheelX() { return p->mouseWheelState.wheelX; }
+float Input::wheelY() { return p->mouseWheelState.wheelY; }
 bool Input::wheelFlipped() { return p->mouseWheelState.wheelFlipped; }
 
 bool Input::hasQuit(){

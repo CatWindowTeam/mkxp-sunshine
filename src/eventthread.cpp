@@ -434,8 +434,8 @@ void EventThread::process(RGSSThreadData &rtData){
 		case SDL_EVENT_MOUSE_WHEEL:
 			{
 				mouseState.wheelFlipped = event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED;
-				mouseState.wheelX += event.wheel.integer_x;
-				mouseState.wheelY += event.wheel.integer_y;
+				mouseState.wheelX += event.wheel.x;
+				mouseState.wheelY += event.wheel.y;
 			}
 			break;
 

@@ -96,12 +96,12 @@ RB_METHOD(inputMouseY){
 // wheel :3
 RB_METHOD(inputWheelX) {
 	RB_UNUSED_PARAM;
-	return rb_fix_new(shState->input().wheelX());
+	return rb_float_new(shState->input().wheelX());
 }
 
 RB_METHOD(inputWheelY) {
 	RB_UNUSED_PARAM;
-	return rb_fix_new(shState->input().wheelY());
+	return rb_float_new(shState->input().wheelY());
 }
 
 RB_METHOD(inputWheelFlipped) {
@@ -165,9 +165,9 @@ void inputBindingInit(){
 	_rb_define_module_function(module, "mouse_y", inputMouseY);
 
 	// wheel support :P
-	_rb_define_module_function(module, "mouse_wheel_x", inputWheelX);
-	_rb_define_module_function(module, "mouse_wheel_y", inputWheelY);
-	_rb_define_module_function(module, "mouse_wheel_flipped", inputWheelFlipped);
+	_rb_define_module_function(module, "wheel_x", inputWheelX);
+	_rb_define_module_function(module, "wheel_y", inputWheelY);
+	_rb_define_module_function(module, "wheel_flipped", inputWheelFlipped);
 
 	_rb_define_module_function(module, "quit?", inputQuit);
 

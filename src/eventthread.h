@@ -66,7 +66,7 @@ public:
 
 		// mouse wheel support for sunshine
 		bool wheelFlipped;
-		int wheelX, wheelY;
+		float wheelX, wheelY;
 	};
 
 	struct FingerState{

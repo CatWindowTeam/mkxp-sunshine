@@ -63,8 +63,8 @@ public:
 	int mouseY();
 
 	// more non-standard extensions
-	int wheelX();
-	int wheelY();
+	float wheelX();
+	float wheelY();
 	bool wheelFlipped();
 
 	bool hasQuit();

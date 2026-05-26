@@ -281,6 +281,10 @@ class Window_Settings
 
 
   def update
+    if @visible
+      @version.bitmap.clear
+      @version.bitmap.draw_text(0, 0, @version.bitmap.width, @version.bitmap.height, Input.wheel_y.to_s)
+    end
     
 	@version.opacity = 128
   
@@ -350,12 +354,8 @@ class Window_Settings
       end
     end
 
-    if Input.mouse_wheel_y > 0
-      @index = (@index - 1) % @data.size
-      $game_system.se_play($data_system.cursor_se)
-    end
-    if Input.mouse_wheel_y < 0
-      @index = (@index + 1) % @data.size
+    if Input.wheel_y != 0
+      @index = (@index - Input.wheel_y.round) % @data.size
       $game_system.se_play($data_system.cursor_se)
     end
 
