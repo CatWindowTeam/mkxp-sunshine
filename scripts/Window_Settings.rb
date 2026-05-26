@@ -5,105 +5,7 @@ class Window_Settings
   ITEM_SPACING = 20
   VALUE_MARGIN = 270
   ACTIVE_MARGIN = MARGIN * 2 + 20
-  SETTINGS_FILE_NAME = Oneshot::SAVE_PATH + '/settings.conf'
-  class << self
-    attr_accessor :DebugIsEnabled
-    attr_accessor :OneShotMode
-    def OneShotMode?
-          !!@OneShotMode
-    end
-    def DebugIsEnabled?
-          !!@DebugIsEnabled
-    end
-  end
-  @DebugIsEnabled = false
-  #You have only ONE shot!
-  @OneShotMode = false
-  def save_settings
-    $persistent.save
-    File.open(SETTINGS_FILE_NAME, 'w') do |file|
-      file.puts('bgm_volume=' + Audio.bgm_volume.to_s)
-      file.puts('sfx_volume=' + Audio.sfx_volume.to_s)
-      file.puts('fullscreen=' + Graphics.fullscreen.to_s)
-      file.puts('default_run=' + $game_switches[251].to_s)
-      file.puts('colorblind_mode=' + $game_switches[252].to_s)
-      file.puts('automash_enabled=' + $game_switches[253].to_s)
-      file.puts('frameskip=' + Graphics.frameskip.to_s)
-      file.puts('in_game_timer=' + $game_temp.igt_timer_visible.to_s)
-      file.puts('debug=' + Window_Settings.DebugIsEnabled.to_s)
-      file.puts('oneshotmode=' + Window_Settings.OneShotMode.to_s)
-    end
-  end
 
-  def self.load_settings
-    return false if !FileTest.exist?(SETTINGS_FILE_NAME)
-    File.foreach(SETTINGS_FILE_NAME).with_index do |line, line_num|
-      if !line.include? "="
-	    next
-	  end
-	  vals = line.strip.split("=")
-	  case vals[0]
-	  when "bgm_volume"
-	    if !!(vals[1] =~ /\A[-+]?[0-9]+\z/) #is a number
-		  number = vals[1].to_i
-		  Audio.bgm_volume = number
-		end
-	  when "sfx_volume"
-	    if !!(vals[1] =~ /\A[-+]?[0-9]+\z/) #is a number
-		  number = vals[1].to_i
-		  Audio.sfx_volume = number
-		end
-	  when "fullscreen"
-	    if vals[1] == "true"
-		  Graphics.fullscreen = true
-		  $console = true
-		elsif vals[1] == "false"
-		  Graphics.fullscreen = false
-		  $console = false
-		end
-	  when "default_run"
-	    if vals[1] == "true"
-		  $game_switches[251] = true
-		elsif vals[1] == "false"
-		  $game_switches[251] = false
-		end
-	  when "colorblind_mode"
-	    if vals[1] == "true"
-		  $game_switches[252] = true
-		elsif vals[1] == "false"
-		  $game_switches[252] = false
-		end
-	  when "automash_enabled"
-	    if vals[1] == "true"
-		  $game_switches[253] = true
-		elsif vals[1] == "false"
-		  $game_switches[253] = false
-		end
-      when "in_game_timer"
-        timer_enabled = vals[1] == "true"
-        $game_temp.igt_timer_visible = timer_enabled
-        $scene.in_game_timer.visible = timer_enabled if $scene.is_a?(Scene_Map)
-	  when "frameskip"
-	    if vals[1] == "true"
-		  Graphics.frameskip = true
-		elsif vals[1] == "false"
-		  Graphics.frameskip = false
-		end
-      when "debug"
-        if vals[1] == "true"
-          Window_Settings.DebugIsEnabled = true
-        elsif vals[1] == "false"
-          Window_Settings.DebugIsEnabled = false
-        end
-      when "oneshotmode"
-        if vals[1] == "true"
-          Window_Settings.OneShotMode = true
-        elsif vals[1] == "false"
-          Window_Settings.OneShotMode = false
-        end
-	  end
-    end
-  end
   def initialize
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @bg = Sprite.new(@viewport)
@@ -243,13 +145,13 @@ class Window_Settings
           l = Language::LANGUAGES[@lang_index] rescue Language::LANGUAGES[0]
           spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr(l))
         when 10
-          if(Window_Settings.DebugIsEnabled == true)
+          if(Settings[:debug] == true)
             spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
           else
             spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
           end
         when 11
-          if(Window_Settings.OneShotMode == true)
+          if(Settings[:oneshot_mode] == true)
             spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
           else
             spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
@@ -509,13 +411,13 @@ class Window_Settings
       when 10
         if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
           $game_system.se_play($data_system.decision_se)
-          Window_Settings.DebugIsEnabled = !Window_Settings.DebugIsEnabled
+          Settings[:debug] = !Settings[:debug]
           redraw_all_settings()
         end
       when 11
         if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
           $game_system.se_play($data_system.decision_se)
-          Window_Settings.OneShotMode = !Window_Settings.OneShotMode
+          Settings[:oneshot_mode] = !Settings[:oneshot_mode]
           redraw_all_settings()
         end
 	end
@@ -523,7 +425,8 @@ class Window_Settings
     if Input.trigger?(Input::CANCEL)
       $game_system.se_play($data_system.cancel_se)
       @fade_out = true
-	  save_settings
+
+      Settings.save!
     end
   end
 
@@ -544,4 +447,3 @@ class Window_Settings
     @bg.opacity
   end
 end
-

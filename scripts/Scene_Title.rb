@@ -9,36 +9,33 @@ class Scene_Title
   MENU_Y = Graphics.height - 100
   SDLVer = "#{Sunshine::SDLVersion_major}.#{Sunshine::SDLVersion_minor}.#{Sunshine::SDLVersion_micro}"
   SunshineVer = "0.1-dev"
+  
   #--------------------------------------------------------------------------
   # * Main Processing
   #--------------------------------------------------------------------------
   def main
     # Load database
     $data_actors        = load_data("Data/Actors.rxdata")
-    #$data_classes       = load_data("Data/Classes.rxdata")
-    #$data_skills        = load_data("Data/Skills.rxdata")
     $data_items         = load_data("Data/Items.rxdata")
-    #$data_weapons       = load_data("Data/Weapons.rxdata")
     $data_armors        = load_data("Data/Armors.rxdata")
-    #$data_enemies       = load_data("Data/Enemies.rxdata")
-    #$data_troops        = load_data("Data/Troops.rxdata")
-    #$data_states        = load_data("Data/States.rxdata")
     $data_animations    = load_data("Data/Animations.rxdata")
     $data_tilesets      = load_data("Data/Tilesets.rxdata")
     $data_common_events = load_data("Data/CommonEvents.rxdata")
     $data_system        = load_data("Data/System.rxdata")
+
     Language.initialize_database
-    # Load save game/initialize data
+
     $game_temp = Game_Temp.new
-    new_game #unless load
-    # Make system object
+    new_game
     $game_system = Game_System.new
 
+    Settings.load! # loading settings
+
     load_perma_flags
-    Window_Settings.load_settings
     Oneshot.allow_exit true
 	
     @window_settings_title = Window_Settings.new
+
     # Make title graphic
     @sprite = Sprite.new
 	
@@ -61,15 +58,13 @@ class Scene_Title
         end
       end
     end
-	# check for debug file to add debug items
-	if Window_Settings.DebugIsEnabled
-		# debug save
-		$game_party.gain_item(54, 1)
-		# plight skip
-		$game_party.gain_item(82, 1)
-        #George reroler
-		$game_party.gain_item(81, 1)
-	end
+
+	  # check for debug file to add debug items
+	  if Settings[:debug]
+	    $game_party.gain_item(54, 1) # debug save
+	    $game_party.gain_item(82, 1) # plight skip
+		  $game_party.gain_item(81, 1) #George reroler
+	  end 
 	
     @sprite.zoom_x = 2.0
     @sprite.zoom_y = 2.0
@@ -80,14 +75,18 @@ class Scene_Title
     @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
-	#Debug info like in minecraft Forge :P
+
+	  #Debug info like in minecraft Forge :P
     @menu.bitmap.draw_text(5, 5, 150, 20, tr("Ruby #{RUBY_VERSION}"))
     @menu.bitmap.draw_text(5, 25, 150, 20, tr("SDL #{SDLVer}"))
     @menu.bitmap.draw_text(5, 45, 150, 20, tr("Sunshine #{SunshineVer}"))
-	if $game_switches[160] && $game_switches[152]
-      @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
-	end
-	Language.register_text_sprite(self.class.name + "_contents", @menu.bitmap)
+
+    if $game_switches[160] && $game_switches[152]
+        @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
+    end
+
+	  Language.register_text_sprite(self.class.name + "_contents", @menu.bitmap)
+
     # Make cursor graphic
     @cursor = Sprite.new
     @cursor.zoom_x = @cursor.zoom_y = 2
@@ -96,8 +95,10 @@ class Scene_Title
     @cursor.bitmap = RPG::Cache.menu('cursor')
     @cursor.x = MENU_X - 12
     @cursor.y = MENU_Y + (22 - @cursor.bitmap.height) / 2
+
     # Initialize cursor position
     @cursor_pos = 0
+
     # Play title BGM
     if File.exist?("badend.lock")
       #TODO: fix audio values
@@ -108,6 +109,7 @@ class Scene_Title
     # Stop playing ME and BGS
     Audio.me_stop
     Audio.bgs_stop
+    
     # Execute transition
     Graphics.transition(40)
     # Main loop
@@ -118,7 +120,7 @@ class Scene_Title
       Input.update
       # Frame update
       update
-	  @window_settings_title.update
+	    @window_settings_title.update
       # Abort loop if screen is changed
       if $scene != self
         break
@@ -133,7 +135,7 @@ class Scene_Title
     @menu.dispose
     @cursor.bitmap.dispose
     @cursor.dispose
-	@window_settings_title.dispose
+	  @window_settings_title.dispose
     Audio.bgm_fade(60)
     Graphics.transition(60)
     # Run automatic change for BGM and BGS set with map
@@ -233,7 +235,6 @@ class Scene_Title
     $game_screen        = Game_Screen.new
     $game_actors        = Game_Actors.new
     $game_party         = Game_Party.new
-    #$game_troop         = Game_Troop.new
     $game_map           = Game_Map.new
     $game_player        = Game_Player.new
     $game_followers     = []
@@ -257,7 +258,7 @@ class Scene_Title
     # Play decision SE
     Audio.se_play('Audio/SE/title_decision.wav')
     # Update map (run parallel process event)
-	Oneshot.allow_exit false
+	  Oneshot.allow_exit false
     $game_map.update
     # Switch to map screen
     $scene = Scene_Map.new

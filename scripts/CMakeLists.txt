@@ -106,7 +106,9 @@ set(scripts
   Window_Target.rb
   i18n_English.rb
   i18n_Japanese.rb
-  i18n_Language.rb)
+  i18n_Language.rb
+  
+  Settings.rb)
 
 find_program(RUBY_EXE ruby
   DOC "Location of the Ruby executable")

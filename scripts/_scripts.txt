@@ -27,6 +27,9 @@ Game_Oneshot
 Game_Follower
 Game_FastTravel
 
+# yes.
+Settings
+
 Sprite_Character
 Sprite_Battler
 Sprite_Picture

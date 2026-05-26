@@ -123,7 +123,7 @@ class Scene_Map
         EdText.info(tr("You cannot perform this action during cutscenes."))
         return
       else
-        if Window_Settings.OneShotMode == true
+        if Settings[:oneshot_mode] == true
           File.new("badend.lock", "w")
           $game_temp.common_event_id = 35
         else
