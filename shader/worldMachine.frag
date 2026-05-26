@@ -46,7 +46,7 @@ void main(){
 	frag *= modulate;
 
 	/* glitch effect */
-	float randTime = rand(floor(uTime * 15.0));
+	float randTime = rand(floor(uTime * 15.0)).x;
 	vec4 glitchFrag1 = clampedTexture2D(texture, v_texCoord + floor(randTime * 2.0 - 0.5) * texSizeInv);
 	vec4 glitchFrag2 = clampedTexture2D(texture, v_texCoord + floor(rand(floor(uTime * 15.0 + 67.6767)) * 2.0 - 0.5) * texSizeInv);
 	vec4 glitchFrag3 = clampedTexture2D(texture, v_texCoord + floor(rand(floor(uTime * 15.0 + 42.5252)) * 2.0 - 0.5) * texSizeInv);
