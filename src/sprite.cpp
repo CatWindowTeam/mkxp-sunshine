@@ -41,8 +41,11 @@
 #include <SDL3/SDL_rect.h>
 
 #include <sigc++/connection.h>
+#include <boost/chrono.hpp>
 
 struct SpritePrivate{
+    boost::chrono::high_resolution_clock::time_point startTime = boost::chrono::high_resolution_clock::now();
+
 	Bitmap *bitmap;
 
 	Quad quad;
@@ -66,6 +69,7 @@ struct SpritePrivate{
 	bool isVisible;
 
 	bool obscured;
+	bool worldMachine;
 
 	Color *color;
 	Tone *tone;
@@ -99,6 +103,7 @@ struct SpritePrivate{
 	      blendType(BlendNormal),
 	      isVisible(false),
 	      obscured(false),
+	      worldMachine(false),
 	      color(&tmp.color),
 	      tone(&tmp.tone),
 	      modulate(&tmp.modulate)
@@ -292,31 +297,32 @@ Sprite::~Sprite(){
 	dispose();
 }
 
-DEF_ATTR_RD_SIMPLE(Sprite, Bitmap,     Bitmap*, p->bitmap)
-DEF_ATTR_RD_SIMPLE(Sprite, X,          int,     p->trans.getPosition().x)
-DEF_ATTR_RD_SIMPLE(Sprite, Y,          int,     p->trans.getPosition().y)
-DEF_ATTR_RD_SIMPLE(Sprite, OX,         int,     p->trans.getOrigin().x)
-DEF_ATTR_RD_SIMPLE(Sprite, OY,         int,     p->trans.getOrigin().y)
-DEF_ATTR_RD_SIMPLE(Sprite, ZoomX,      float,   p->trans.getScale().x)
-DEF_ATTR_RD_SIMPLE(Sprite, ZoomY,      float,   p->trans.getScale().y)
-DEF_ATTR_RD_SIMPLE(Sprite, Angle,      float,   p->trans.getRotation())
-DEF_ATTR_RD_SIMPLE(Sprite, Mirror,     bool,    p->mirrored)
-DEF_ATTR_RD_SIMPLE(Sprite, BushDepth,  int,     p->bushDepth)
-DEF_ATTR_RD_SIMPLE(Sprite, BlendType,  int,     p->blendType)
-DEF_ATTR_RD_SIMPLE(Sprite, Width,      int,     p->srcRect->width)
-DEF_ATTR_RD_SIMPLE(Sprite, Height,     int,     p->srcRect->height)
-DEF_ATTR_RD_SIMPLE(Sprite, WaveAmp,    int,     p->wave.amp)
-DEF_ATTR_RD_SIMPLE(Sprite, WaveLength, int,     p->wave.length)
-DEF_ATTR_RD_SIMPLE(Sprite, WaveSpeed,  int,     p->wave.speed)
-DEF_ATTR_RD_SIMPLE(Sprite, WavePhase,  float,   p->wave.phase)
+DEF_ATTR_RD_SIMPLE(Sprite, Bitmap,       Bitmap*, p->bitmap)
+DEF_ATTR_RD_SIMPLE(Sprite, X,            int,     p->trans.getPosition().x)
+DEF_ATTR_RD_SIMPLE(Sprite, Y,            int,     p->trans.getPosition().y)
+DEF_ATTR_RD_SIMPLE(Sprite, OX,           int,     p->trans.getOrigin().x)
+DEF_ATTR_RD_SIMPLE(Sprite, OY,           int,     p->trans.getOrigin().y)
+DEF_ATTR_RD_SIMPLE(Sprite, ZoomX,        float,   p->trans.getScale().x)
+DEF_ATTR_RD_SIMPLE(Sprite, ZoomY,        float,   p->trans.getScale().y)
+DEF_ATTR_RD_SIMPLE(Sprite, Angle,        float,   p->trans.getRotation())
+DEF_ATTR_RD_SIMPLE(Sprite, Mirror,       bool,    p->mirrored)
+DEF_ATTR_RD_SIMPLE(Sprite, BushDepth,    int,     p->bushDepth)
+DEF_ATTR_RD_SIMPLE(Sprite, BlendType,    int,     p->blendType)
+DEF_ATTR_RD_SIMPLE(Sprite, Width,        int,     p->srcRect->width)
+DEF_ATTR_RD_SIMPLE(Sprite, Height,       int,     p->srcRect->height)
+DEF_ATTR_RD_SIMPLE(Sprite, WaveAmp,      int,     p->wave.amp)
+DEF_ATTR_RD_SIMPLE(Sprite, WaveLength,   int,     p->wave.length)
+DEF_ATTR_RD_SIMPLE(Sprite, WaveSpeed,    int,     p->wave.speed)
+DEF_ATTR_RD_SIMPLE(Sprite, WavePhase,    float,   p->wave.phase)
 
-DEF_ATTR_SIMPLE(Sprite, BushOpacity, int,     p->bushOpacity)
-DEF_ATTR_SIMPLE(Sprite, Opacity,     int,     p->opacity)
-DEF_ATTR_SIMPLE(Sprite, SrcRect,     Rect&,  *p->srcRect)
-DEF_ATTR_SIMPLE(Sprite, Color,       Color&, *p->color)
-DEF_ATTR_SIMPLE(Sprite, Tone,        Tone&,  *p->tone)
-DEF_ATTR_SIMPLE(Sprite, Modulate,    Color&, *p->modulate)
-DEF_ATTR_SIMPLE(Sprite, Obscured,    bool,    p->obscured)
+DEF_ATTR_SIMPLE(Sprite, BushOpacity,  int,     p->bushOpacity)
+DEF_ATTR_SIMPLE(Sprite, Opacity,      int,     p->opacity)
+DEF_ATTR_SIMPLE(Sprite, SrcRect,      Rect&,  *p->srcRect)
+DEF_ATTR_SIMPLE(Sprite, Color,        Color&, *p->color)
+DEF_ATTR_SIMPLE(Sprite, Tone,         Tone&,  *p->tone)
+DEF_ATTR_SIMPLE(Sprite, Modulate,     Color&, *p->modulate)
+DEF_ATTR_SIMPLE(Sprite, Obscured,     bool,    p->obscured)
+DEF_ATTR_SIMPLE(Sprite, WorldMachine, bool,    p->worldMachine)
 
 void Sprite::setBitmap(Bitmap *bitmap){
 	guardDisposed();
@@ -506,6 +512,34 @@ void Sprite::draw(){
 		shader.setObscured(shState->graphics().obscuredTex());
 		base = &shader;
 	}
+    else if (p->worldMachine){
+		WMShader &shader = shState->shaders().worldMachine;
+
+		shader.bind();
+		shader.applyViewportProj();
+		shader.setSpriteMat(p->trans.getMatrix());
+
+		shader.setTone(p->tone->norm);
+		shader.setOpacity(p->opacity.norm);
+		shader.setBushDepth(p->efBushDepth);
+		shader.setBushOpacity(p->bushOpacity.norm);
+
+		/* When both flashing and effective color are set,
+		 * the one with higher alpha will be blended */
+		const Vec4 *blend = (flashing && flashColor.w > p->color->norm.w) ?
+			                 &flashColor : &p->color->norm;
+
+		shader.setColor(*blend);
+		shader.setModulate(p->modulate->norm);
+		//shader.setResolution(p->bitmap->width(), p->bitmap->height());
+        
+        boost::chrono::high_resolution_clock::time_point currentTime = boost::chrono::high_resolution_clock::now();
+        
+        boost::chrono::duration<float> elapsed = currentTime - p->startTime;
+        shader.setTime(elapsed.count());
+
+		base = &shader;
+    }
 	else if (renderEffect){
 		SpriteShader &shader = shState->shaders().sprite;
 

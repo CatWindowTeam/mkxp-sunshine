@@ -176,6 +176,16 @@ private:
 	GLint u_spriteMat, u_tone, u_opacity, u_color, u_modulate, u_bushDepth, u_bushOpacity;
 };
 
+class WMShader : public SpriteShader{
+public:
+	WMShader();
+
+	void setTime(float value);
+	//void setResolution(float x, float y);
+private:
+	GLint u_uTime/*, u_resolution*/;
+};
+
 class PlaneShader : public ShaderBase{
 public:
 	PlaneShader();
@@ -300,6 +310,7 @@ struct ShaderSet{
 	SimpleSpriteShader simpleSprite;
 	AlphaSpriteShader alphaSprite;
 	SpriteShader sprite;
+	WMShader worldMachine;
 	PlaneShader plane;
 	GrayShader gray;
 	TilemapShader tilemap;

@@ -188,6 +188,7 @@ set(EMBEDDED_INPUT
 	shader/trans.frag
 	shader/hue.frag
 	shader/sprite.frag
+	shader/worldMachine.frag
 	shader/plane.frag
 	shader/gray.frag
 	shader/bitmapBlit.frag
@@ -202,6 +203,7 @@ set(EMBEDDED_INPUT
 	shader/simple.vert
 	shader/simpleColor.vert
 	shader/sprite.vert
+	shader/worldMachine.vert
 	shader/tilemap.vert
 	shader/blur.frag
 	shader/blurH.vert
@@ -321,7 +323,7 @@ find_package(SDL3_image CONFIG)
 find_package(SDL3_sound CONFIG)
 find_package(SDL3_ttf CONFIG)
 find_package(OpenAL CONFIG)
-find_package(Boost REQUIRED COMPONENTS program_options)
+find_package(Boost REQUIRED COMPONENTS program_options chrono)
 find_package(PhysFS CONFIG)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
@@ -359,7 +361,7 @@ target_link_libraries(${PROJECT_NAME}
 		${SIGC2_LIBRARIES}
 		${PLATFORM_LIBRARIES}
 		${Ruby_LIBRARIES}
-		Boost::boost ${Boost_LIBRARIES}
+		Boost::boost Boost::chrono ${Boost_LIBRARIES}
 		${VORBISFILE_LIBRARIES}
 		ZLIB::ZLIB
     	${PLATFORM_LIBS}

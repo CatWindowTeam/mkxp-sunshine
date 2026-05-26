@@ -37,6 +37,7 @@ class FastTravel
     @niko_icon.zoom_x = @niko_icon.zoom_y = @scale_multiplier
     @niko_icon.z = 10
     @niko_icon.opacity = 0
+    @niko_icon.world_machine = true
 
     @niko_pos_x = 0.0
     @niko_pos_y = 0.0
@@ -68,6 +69,9 @@ class FastTravel
     
     @arrow_top.opacity = @arrow_bottom.opacity =
     @arrow_left.opacity = @arrow_right.opacity = 0
+    
+    @arrow_top.world_machine = @arrow_bottom.world_machine =
+    @arrow_left.world_machine = @arrow_right.world_machine = true
 
     @arrow_top.z = @arrow_bottom.z =
     @arrow_left.z = @arrow_right.z = 11
@@ -191,6 +195,7 @@ class FastTravel
         spr.x = Graphics.width / 2 + zone.locations[item].x * @scale_multiplier
         spr.y = Graphics.height / 2 + zone.locations[item].y * @scale_multiplier
         spr.opacity = 0
+        spr.world_machine = true
         @data_locations[item] = spr
         set_color(item)
       else
@@ -224,8 +229,8 @@ class FastTravel
 
   def update
     zone = ZONES[$game_fasttravel.zone]
-    
     zone = zone == nil ? Zone.new("", {}, {}) : zone
+
     if zone.locations != nil && !@legacy_ui
       @arrows_timer += 1
       if @arrows_timer >= 30

@@ -28,6 +28,8 @@
 #include "viewport.h"
 #include "util.h"
 
+#include <boost/chrono.hpp>
+
 class Bitmap;
 struct Color;
 struct Tone;
@@ -44,29 +46,31 @@ public:
 	int getHeight() const;
 
 	void update();
-
-	DECL_ATTR( Bitmap,      Bitmap* )
-	DECL_ATTR( SrcRect,     Rect&   )
-	DECL_ATTR( X,           int     )
-	DECL_ATTR( Y,           int     )
-	DECL_ATTR( OX,          int     )
-	DECL_ATTR( OY,          int     )
-	DECL_ATTR( ZoomX,       float   )
-	DECL_ATTR( ZoomY,       float   )
-	DECL_ATTR( Angle,       float   )
-	DECL_ATTR( Mirror,      bool    )
-	DECL_ATTR( BushDepth,   int     )
-	DECL_ATTR( BushOpacity, int     )
-	DECL_ATTR( Opacity,     int     )
-	DECL_ATTR( BlendType,   int     )
-	DECL_ATTR( Color,       Color&  )
-	DECL_ATTR( Modulate,    Color&  )
-	DECL_ATTR( Tone,        Tone&   )
-	DECL_ATTR( WaveAmp,     int     )
-	DECL_ATTR( WaveLength,  int     )
-	DECL_ATTR( WaveSpeed,   int     )
-	DECL_ATTR( WavePhase,   float   )
-	DECL_ATTR( Obscured,    bool    )
+ 
+	DECL_ATTR( Bitmap,       Bitmap* )
+	DECL_ATTR( SrcRect,      Rect&   )
+	DECL_ATTR( X,            int     )
+	DECL_ATTR( Y,            int     )
+	DECL_ATTR( OX,           int     )
+	DECL_ATTR( OY,           int     )
+	DECL_ATTR( ZoomX,        float   )
+	DECL_ATTR( ZoomY,        float   )
+	DECL_ATTR( Angle,        float   )
+	DECL_ATTR( Mirror,       bool    )
+	DECL_ATTR( BushDepth,    int     )
+	DECL_ATTR( BushOpacity,  int     )
+	DECL_ATTR( Opacity,      int     )
+	DECL_ATTR( BlendType,    int     )
+	DECL_ATTR( Color,        Color&  )
+	DECL_ATTR( Modulate,     Color&  )
+	DECL_ATTR( Tone,         Tone&   )
+	DECL_ATTR( WaveAmp,      int     )
+	DECL_ATTR( WaveLength,   int     )
+	DECL_ATTR( WaveSpeed,    int     )
+	DECL_ATTR( WavePhase,    float   )
+	DECL_ATTR( Obscured,     bool    )
+	DECL_ATTR( WorldMachine, bool    )
+	DECL_ATTR( startTime,    boost::chrono::high_resolution_clock::time_point)
 
 	void initDynAttribs();
 

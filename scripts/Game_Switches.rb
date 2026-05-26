@@ -43,3 +43,6 @@ class Game_Switches
     end
   end
 end
+
+# some switches that we know of
+# 160 - re-playing game (when Niko is TWM)

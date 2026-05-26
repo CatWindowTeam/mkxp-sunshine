@@ -76,7 +76,7 @@ class FastTravel
       :mineshaft => ZoneLocations.new(88, -3, 5, 0, nil, nil, nil, :quarry),
       :factory => ZoneLocations.new(15, -42, 13, 2, nil, nil, :cliffs, :dorms),
       :dorms => ZoneLocations.new(-46, -49, 20, 4, nil, :factory, nil, :swamp),
-      :swamp => ZoneLocations.new(-98, -44, 10, 7, nil, :dorms, :docks, nil),
+      :swamp => ZoneLocations.new(-98, -45, 10, 7, nil, :dorms, :docks, nil),
       :docks => ZoneLocations.new(-82, -9, -4, -2, :swamp, nil, :entrance, nil),
       :quarry => ZoneLocations.new(52, -4, 17, -3, nil, :mineshaft, nil, :cliffs),
     }),

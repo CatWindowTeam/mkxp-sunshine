@@ -30,6 +30,7 @@
 
 #include "common.h.xxd"
 #include "sprite.frag.xxd"
+#include "worldMachine.frag.xxd"
 #include "hue.frag.xxd"
 #include "trans.frag.xxd"
 #include "transSimple.frag.xxd"
@@ -46,6 +47,7 @@
 #include "simple.vert.xxd"
 #include "simpleColor.vert.xxd"
 #include "sprite.vert.xxd"
+#include "worldMachine.vert.xxd"
 #include "tilemap.vert.xxd"
 #include "blur.frag.xxd"
 #include "simpleMatrix.vert.xxd"
@@ -407,6 +409,23 @@ void SpriteShader::setBushDepth(float value){
 void SpriteShader::setBushOpacity(float value){
 	gl.Uniform1f(u_bushOpacity, value);
 }
+
+
+WMShader::WMShader(){
+	INIT_SHADER(worldMachine, worldMachine, WMShader);
+	SpriteShader::init();
+
+	GET_U(uTime);
+	//GET_U(resolution);
+}
+
+void WMShader::setTime(float value){
+	gl.Uniform1f(u_uTime, value);
+}
+/*
+void WMShader::setResolution(float x, float y){
+	gl.Uniform2f(u_resolution, x, y);
+}*/
 
 
 PlaneShader::PlaneShader(){
