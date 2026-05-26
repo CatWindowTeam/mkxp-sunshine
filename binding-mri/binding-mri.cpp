@@ -115,7 +115,7 @@ static void mriBindingInit(){
 	wallpaperBindingInit();
 	nikoBindingInit();
 	oneshotBindingInit();
-    	SunshineBindingInit();
+    SunshineBindingInit();
 	steamBindingInit();
 	chromaBindingInit();
 

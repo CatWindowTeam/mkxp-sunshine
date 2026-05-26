@@ -28,6 +28,7 @@
 #include "sharedstate.h"
 #include "boost-hash.h"
 #include "debugwriter.h"
+#include "meow.h"
 
 #include <physfs.h>
 
@@ -53,8 +54,8 @@ struct SDLRWIoContext{
 	      filename(filename)
 	{
 		if (!ops)
-			throw Exception(Exception::SDLError,
-			                "Failed to open file: %s", SDL_GetError());
+			crash("Failed to open file", 0);
+			throw Exception(Exception::SDLError, "Failed to open file: %s", SDL_GetError());
 	}
 
 	~SDLRWIoContext(){

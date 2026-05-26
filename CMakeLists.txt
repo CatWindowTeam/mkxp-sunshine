@@ -90,6 +90,7 @@ set(MAIN_HEADERS
 	chromasdk/RzErrors.h
 	chromasdk/ChromaApi.h
 	src/i18n.h
+	src/meow.h
 )
 
 set(MAIN_SOURCE
@@ -132,6 +133,7 @@ set(MAIN_SOURCE
 	src/oneshot.cpp
 	src/screen.cpp
 	src/i18n.cpp
+	src/meow.cpp
 )
 
 if(WIN32)
@@ -294,7 +296,7 @@ set(BINDING_SOURCE
 	binding-mri/module_rpg.cpp
 	binding-mri/filesystem-binding.cpp
 	binding-mri/oneshot-binding.cpp
-        binding-mri/sunshine-binding.cpp
+    binding-mri/sunshine-binding.cpp
 	binding-mri/steam-binding.cpp
 	binding-mri/wallpaper-binding.cpp
 	binding-mri/journal-binding.cpp
