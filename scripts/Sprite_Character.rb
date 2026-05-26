@@ -23,7 +23,7 @@ class Sprite_Character
     @light_sprite = RPG::Sprite.new(light_viewport)
     @light_sprite.blend_type = 1
     @text_sprite = Sprite.new(viewport)
-    @text_sprite.bitmap = Bitmap.new(Graphics.width, 30)
+    @text_sprite.bitmap = Bitmap.new(Graphics.width, 24)
     @text_sprite.bitmap.font.size = 12
     @character = character
     update
@@ -36,7 +36,7 @@ class Sprite_Character
     @light_sprite.viewport = ($game_screen.tone.blank?) ? @viewport : @light_viewport
     @light_sprite.world_machine = @sprite.world_machine = @character.character_name.start_with?("en") || (@character.character_name.start_with?("niko") && $game_switches[160])
     if Window_Settings.DebugIsEnabled == true
-      @text_sprite.bitmap.draw_text(0, 0, 256, 30, @character.character_name)
+      @text_sprite.bitmap.draw_text(0, 0, 256, 12, "#{@character.character_name}")
       @text_sprite.x = @character.screen_x
       @text_sprite.y = @character.screen_y
       @text_sprite.z = @character.screen_z + 2
@@ -65,7 +65,7 @@ class Sprite_Character
         self.oy = 32
       # If tile ID value is invalid
       else
-        name = @character.character_name
+        name = @character.character_name == "" && Window_Settings.DebugIsEnabled ? "debug" : @character.character_name
         translation_name = "#{$persistent.langcode}/#{name}"
         if File.exist?("Graphics/Characters/#{translation_name}.png")
           @sprite.bitmap = RPG::Cache.character(translation_name,

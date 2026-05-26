@@ -45,4 +45,6 @@ class Game_Switches
 end
 
 # some switches that we know of
+# 101 - Use tower footsplashes i think
+# 112 - Niko in minecart
 # 160 - re-playing game (when Niko is TWM)

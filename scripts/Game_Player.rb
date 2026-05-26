@@ -281,16 +281,16 @@ class Game_Player < Game_Character
       end
       pitch = 85 + rand(30)
       vol = 70 + rand(20)
-	  if $game_switches[112] == true
-	    name = "wheel_squeak1"
-		pitch = 120 + rand(10)
-		if @wheel_squeak != true
-		  pitch += 10
-		  @wheel_squeak = true
-		else
-		  @wheel_squeak = false
-		end
-	  end
+      if $game_switches[112] == true
+        name = "wheel_squeak1"
+        pitch = 120 + rand(10)
+        if @wheel_squeak != true
+          pitch += 10
+          @wheel_squeak = true
+        else
+          @wheel_squeak = false
+        end
+      end
       Audio.se_play("Audio/SE/#{name}.wav", vol * volume, pitch)
     end
     emit_footsplash(@direction)
