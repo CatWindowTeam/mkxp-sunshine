@@ -62,9 +62,13 @@
 #ifdef __linux__
 	void desktopEnvironmentInit(){
 		printf("[desktopEnvironmentInit] desktopEnvironmentInit()\n");
-		if (desktop != "uninitialized") {
+		if (desktop != "uninitialized")
+    		return;
+		
+		desktop = shState->oneshot().desktopEnv;
+		if (desktop != "nope") {
 			#ifdef DEBUG
-			printf("[desktopEnvironmentInit] Running on standalone Window Manager?Trying identify configuration...\n");
+				printf("[desktopEnvironmentInit] Running on standalone Window Manager?Trying identify configuration...\n");
 			#endif
 			// If Nitrogen wallpaper manager and feh is aviable we can just use nitrogen --restore command and feh --bg-scale:P
 			if (FILE *file = fopen("/usr/bin/nitrogen", "r")){
@@ -85,7 +89,6 @@
     			return;
     		}
 		}
-		desktop = shState->oneshot().desktopEnv;
 		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
 			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
 				if (desktop == "cinnamon") bgsetting = g_settings_new("org.cinnamon.desktop.background");
