@@ -33,7 +33,7 @@ module Settings
       Settings.reset!
 
       if FileTest.exist?(Settings::FILE_PATH)
-        File.open(Settings::FILE_PATH, "r") do |f|
+        File.open(Settings::FILE_PATH, "rb") do |f|
           settings = Marshal.load(f) rescue return
           if settings.class == Hash
             settings.each do |key, value|
@@ -50,7 +50,9 @@ module Settings
       Settings::Legacy.save!
 
       if @data
-        File.write(Settings::FILE_PATH, Marshal.dump(@data))
+        File.open(Settings::FILE_PATH, "wb") do |f|
+          f.write Marshal.dump(@data)
+        end
       end
     end
 
