@@ -181,6 +181,9 @@ class Window_Settings
     end
   end
 
+  def self.load_settings
+    Settings.load!
+  end
 
   def update
     if @visible
