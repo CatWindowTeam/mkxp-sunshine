@@ -230,7 +230,6 @@ class FastTravel
   def update
     zone = ZONES[$game_fasttravel.zone]
     zone = zone == nil ? Zone.new("", {}, {}) : zone
-
     if zone.locations != nil && !@legacy_ui
       @arrows_timer += 1
       if @arrows_timer >= 30
