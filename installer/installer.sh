@@ -21,7 +21,6 @@ echo """
 LD_LIBRARY_PATH=$install_path\;$LD_LIBRARY_PATH $install_path/oneshot
 """ > $install_path/oneshot.sh
 chmod +x $install_path/oneshot.sh
-$install_path/oneshot
-LD_LIBRARY_PATH
+chmod +x $install_path/oneshot
 
 echo "Done!"

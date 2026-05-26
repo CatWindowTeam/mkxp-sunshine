@@ -2,12 +2,20 @@
 #include <SDL3/SDL_dialog.h>
 #include <SDL3/SDL_version.h>
 #include <SDL3/SDL_platform.h>
+#include <SDL3_image/SDL_image.h>
+#include <SDL3_sound/SDL_sound.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include "meow.h"
 #include "config.h"
 #include <stdio.h>
 #include <time.h>
 #include <fstream>
 #include <ruby.h>
+#include <zlib.h>
+#include <AL/al.h>
+#include <boost/version.hpp>
+#include <physfs.h>
+#include <pixman.h>
 
 #ifdef __LINUX__
 	#include <gtk/gtk.h>
@@ -44,8 +52,6 @@ int crash(const char* reason, int exit_code){
 		struct tm *now = localtime(&mtime);
 		std::string time = std::to_string(now->tm_hour) + "." + std::to_string(now->tm_min) + "." + std::to_string(now->tm_sec);
 		out.open("crash_" + time + ".txt");
-		const int sdlcompiled = SDL_VERSION;
-		const int sdllinked = SDL_GetVersion();
 		if (out.is_open()){
 				out << "[SUNSHINE CRASHDUMP]" << std::endl;
 				out << "CONFIG" << std::endl;
@@ -76,12 +82,31 @@ int crash(const char* reason, int exit_code){
 				out << "commonDataPath: " << conf.commonDataPath << std::endl;
 				out << "" << std::endl;
 				out << "Ruby version: " << rb_gv_get("ruby_version") << std::endl;
+
+				const int sdlcompiled = SDL_VERSION;
+				const int sdllinked = SDL_GetVersion();
 				out << "SDL(compiled) version: " << SDL_VERSIONNUM_MAJOR(sdlcompiled) << "." << SDL_VERSIONNUM_MINOR(sdlcompiled) << "." << SDL_VERSIONNUM_MICRO(sdlcompiled) << std::endl;
 				out << "SDL(linked) version: " << SDL_VERSIONNUM_MAJOR(sdllinked) << "." << SDL_VERSIONNUM_MINOR(sdllinked) << "." << SDL_VERSIONNUM_MICRO(sdllinked) << std::endl;
+				out << "SDL_image(compiled) version: " << SDL_IMAGE_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << std::endl;
+				out << "SDL_sound(compiled) version: " << SDL_SOUND_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << std::endl;
+				out << "SDL_TTF(compiled) version: " << SDL_TTF_MAJOR_VERSION << "." << SDL_TTF_MINOR_VERSION << "." << SDL_TTF_MICRO_VERSION << std::endl;
+
 				out << "Detected OS: " << SDL_GetPlatform() << std::endl;
+				
 				#ifdef __LINUX__
 					out << "GTK(compiled) version: " << GTK_MAJOR_VERSION << "." << GTK_MINOR_VERSION << "." << GTK_MICRO_VERSION << std::endl;
 				#endif
+				
+				out << "ZLib version: " << ZLIB_VERSION << std::endl;
+
+				out << "OpenAL version: " << alGetString(AL_VERSION) << std::endl;
+
+				out << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << std::endl;
+
+				//out << "PhysFS version: " << PHYSFS_Version << std::endl;
+
+				out << "Pixman version: " << PIXMAN_VERSION_STRING << std::endl;
+				
 				out.close();
 		}else{
 			printf("[CRASHLOG] Failed to write crashdump file\n");
