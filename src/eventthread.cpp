@@ -433,6 +433,9 @@ void EventThread::process(RGSSThreadData &rtData){
 		// more mouse support for sunshine :3c
 		case SDL_EVENT_MOUSE_WHEEL:
 			{
+				if (event.window.windowID != SDL_GetWindowID(rtData.window))
+					break;
+
 				mouseState.wheelFlipped = event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED;
 				mouseState.wheelX += event.wheel.x;
 				mouseState.wheelY += event.wheel.y;
