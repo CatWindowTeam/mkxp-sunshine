@@ -110,7 +110,7 @@ void loadLanguageMetadata() {
 			}
 		}
 
-		fclose(fontsFile);
+		//fclose(fontsFile);
 	}
 
 
@@ -143,7 +143,7 @@ void loadLanguageMetadata() {
 			}
 		}
 
-		fclose(fontSizesFile);
+		//fclose(fontSizesFile);
 	}
 }
 

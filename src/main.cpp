@@ -272,7 +272,10 @@ int main(int argc, char *argv[]){
 	conf.read(argc, argv);
 	#if defined WIN32
 		if(conf.Windows_AllocConsole == true){
-			
+    		AllocConsole();
+    		freopen("CONOUT$", "w", stdout);
+    		freopen("CONOUT$", "w", stderr);
+    		freopen("CONIN$", "r", stdin);
 		}
 	#endif
 	
