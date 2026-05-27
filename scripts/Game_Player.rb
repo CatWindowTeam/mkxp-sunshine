@@ -22,6 +22,9 @@ class Game_Player < Game_Character
   #         * 0 = Determines if all directions are impassable (for jumping)
   #--------------------------------------------------------------------------
   def passable?(x, y, d)
+    if Settings[:debug] && Input.press?(Input::DEBUGACTION)
+      return true
+    end
     # Get new coordinates
     new_x = x + (d == 6 ? 1 : d == 4 ? -1 : 0)
     new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
@@ -30,11 +33,6 @@ class Game_Player < Game_Character
       # Impassable
       return false
     end
-    # If debug mode is ON and ctrl key was pressed
-    #if Settings[:debug] and Input.press?(Input::LCTRL)
-    #   Passable
-    #  return true
-    #end
     super
   end
   #--------------------------------------------------------------------------
