@@ -99,7 +99,7 @@ class FastTravel
   
   #WME
   def update_location_name_text
-    if ZONES[$game_fasttravel.zone].locations == nil || @legacy_ui
+    if ZONES[$game_fasttravel.zone].locations == nil || ZONES[$game_fasttravel.zone].maps[@selected_location] == nil || @legacy_ui
       return
     end
     @location_name_text.bitmap.clear

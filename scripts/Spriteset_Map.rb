@@ -236,7 +236,7 @@ class Spriteset_Map
           raise 'invalid particle type'
         end
         @particles = ParticleLayer.new(@viewport_particles, klass, count)
-        @viewport_particles.z = (layer == :front) ? 500 : -400
+        @viewport_particles.z = (layer == :front) ? 499 : -400
       end
     end
     # Update bg plane
