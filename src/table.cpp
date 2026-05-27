@@ -27,6 +27,7 @@
 #include "serial-util.h"
 #include "exception.h"
 #include "util.h"
+#include "meow.h"
 
 /* Init normally */
 Table::Table(int x, int y /*= 1*/, int z /*= 1*/)
@@ -112,20 +113,26 @@ void Table::serialize(char *buffer) const{
 
 
 Table *Table::deserialize(const char *data, int len){
-	if (len < 20)
+	if (len < 20){
+		crash("Marshal: Table: bad file format");
 		throw Exception(Exception::RGSSError, "Marshal: Table: bad file format");
-
+	}
+	
 	readInt32(&data);
 	int x = readInt32(&data);
 	int y = readInt32(&data);
 	int z = readInt32(&data);
 	int size = readInt32(&data);
 
-	if (size != x*y*z)
+	if (size != x*y*z){
+		crash("Marshal: Table: bad file format");
 		throw Exception(Exception::RGSSError, "Marshal: Table: bad file format");
+	}
 
-	if (len != 20 + x*y*z*2)
+	if (len != 20 + x*y*z*2){
+		crash("Marshal: Table: bad file format");
 		throw Exception(Exception::RGSSError, "Marshal: Table: bad file format");
+	}
 
 	Table *t = new Table(x, y, z);
 	memcpy(dataPtr(t->data), data, sizeof(int16_t)*size);

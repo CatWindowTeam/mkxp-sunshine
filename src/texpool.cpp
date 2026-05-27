@@ -25,6 +25,7 @@
 #include "glstate.h"
 #include "boost-hash.h"
 #include "debugwriter.h"
+#include "meow.h"
 
 #include <list>
 #include <utility>
@@ -96,7 +97,7 @@ TexPool::~TexPool(){
 TEXFBO TexPool::request(int width, int height){
 	CacheNode cnode;
 	Size size(width, height);
-
+	char msg[512];
 	/* See if we can statisfy request from cache */
 	CNodeList &bucket = p->poolHash[size];
 
@@ -116,8 +117,11 @@ TEXFBO TexPool::request(int width, int height){
 	}
 
 	int maxSize = glState.caps.maxTexSize;
-	if (width > maxSize || height > maxSize)
-		throw Exception(Exception::MKXPError, "Texture dimensions [%d, %d] exceed hardware capabilities", width, height);
+	if (width > maxSize || height > maxSize){
+		snprintf(msg, sizeof msg, "Texture dimensions [%d, %d] exceed hardware capabilities", width, height);
+		crash(msg);
+		throw Exception(Exception::MKXPError, msg);
+	}
 
 	/* Nope, create it instead */
 	TEXFBO::init(cnode.obj);

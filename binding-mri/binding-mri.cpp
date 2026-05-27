@@ -30,6 +30,7 @@
 #include "graphics.h"
 #include "audio.h"
 #include "boost-hash.h"
+#include "meow.h"
 
 #include <ruby.h>
 #include <ruby/encoding.h>
@@ -524,10 +525,10 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	file.resize(strlen(file.c_str()));
 	file = btData.scriptNames.value(file, file);
 
-	std::string ms(640, '\0');
-	snprintf(&ms[0], ms.size(), "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
-
-	showMsg(ms);
+	char ms[640];
+	snprintf(&ms[0], 640, "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
+	crash(ms);
+	exit(0);
 }
 
 static void mriBindingExecute(){

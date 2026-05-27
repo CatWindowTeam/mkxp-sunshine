@@ -9,11 +9,9 @@
 #include "config.h"
 #include "debugwriter.h"
 #include "pipe.h"
-
-// #include "oldimpls/include.h"
+#include "meow.h"
 
 static void showInitError(const std::string &msg){
-	Debug() << msg;
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Sunshine Error", msg.c_str(), 0);
 }
 
@@ -30,6 +28,7 @@ static bool readMessage(Pipe &ipc, char *buf, size_t size){
 }
 
 int screenMain(Config &conf){
+	char msg[512];
 	const SDL_Color colorKey = {0x00, 0xFF, 0x00, 0xFF};
 	const SDL_Color black = {0x00, 0x00, 0x00, 0xFF};
 
@@ -39,7 +38,8 @@ int screenMain(Config &conf){
 	win = SDL_CreateWindow("The Journal", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SDL_WINDOW_RESIZABLE | SDL_WINDOW_TRANSPARENT);
 
 	if (!win){
-		showInitError(std::string("Error creating window: ") + SDL_GetError());
+		snprintf(msg, sizeof msg, "Error creating window: %s", SDL_GetError());
+		crash(msg);
 		return 0;
 	}
 
