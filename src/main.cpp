@@ -111,9 +111,9 @@ int rgssThreadFun(void *userdata){
 	SDL_GL_SwapWindow(win);
 
 	Debug() << "[main] GL Vendor    :" << glGetStringInt(GL_VENDOR);
-        Debug() << "[main] GL Renderer  :" << glGetStringInt(GL_RENDERER);
-        Debug() << "[main] GL Version   :" << glGetStringInt(GL_VERSION);
-    	Debug() << "[main] GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
+    Debug() << "[main] GL Renderer  :" << glGetStringInt(GL_RENDERER);
+    Debug() << "[main] GL Version   :" << glGetStringInt(GL_VERSION);
+    Debug() << "[main] GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
 
 	bool vsync = conf.vsync || conf.syncToRefreshrate;
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
@@ -218,6 +218,15 @@ static void setGamePathInRegistry() {
 }
 int main(int argc, char *argv[]){
 	char msg[512];
+	/* now we load the config */
+	Config conf;
+	conf.read(argc, argv);
+	#if defined WIN32
+		if(conf.Windows_AllocConsole == true){
+			
+		}
+	#endif
+	
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
@@ -266,10 +275,6 @@ int main(int argc, char *argv[]){
 
 	/* Initialize physfs here so that config can call PHYSFS_getPrefDir */
 	PHYSFS_init(argv[0]);
-
-	/* now we load the config */
-	Config conf;
-	conf.read(argc, argv);
 
 	if (!conf.gameFolder.empty())
 		if (chdir(conf.gameFolder.c_str()) != 0){

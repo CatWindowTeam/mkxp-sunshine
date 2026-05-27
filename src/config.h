@@ -34,6 +34,7 @@ struct Config{
 	bool printFPS;
 	bool fullscreen;
 	bool fixedAspectRatio;
+	bool Windows_AllocConsole;
 	bool smoothScaling;
 	bool vsync;
 	bool EnableSixteenByNine;
