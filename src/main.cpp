@@ -117,7 +117,7 @@ int rgssThreadFun(void *userdata){
 
 	bool vsync = conf.vsync || conf.syncToRefreshrate;
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
-
+	
 #ifndef NDEBUG
 	GLDebugLogger dLogger;
 #endif
