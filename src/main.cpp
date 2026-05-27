@@ -98,6 +98,7 @@ int rgssThreadFun(void *userdata){
 		initGLFunctions();
 	}
 	catch (const Exception &exc){
+		crash(exc.msg.c_str());
 		rgssThreadError(threadData, exc.msg);
 		SDL_GL_DestroyContext(glCtx);
 		return 0;
@@ -129,7 +130,6 @@ int rgssThreadFun(void *userdata){
 		crash("Error creating OpenAL context");
 		rgssThreadError(threadData, "Error creating OpenAL context");
 		SDL_GL_DestroyContext(glCtx);
-
 		return 0;
 	}
 
@@ -138,6 +138,7 @@ int rgssThreadFun(void *userdata){
 	try{
 		SharedState::initInstance(threadData);
 	}catch (const Exception &exc){
+		crash(exc.msg.c_str());
 		rgssThreadError(threadData, exc.msg);
 		alcDestroyContext(alcCtx);
 		SDL_GL_DestroyContext(glCtx);
@@ -160,7 +161,6 @@ int rgssThreadFun(void *userdata){
 }
 
 static void showInitError(const std::string &msg){
-	Debug() << msg;
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error :(", msg.c_str(), 0);
 }
 
@@ -194,7 +194,7 @@ static void setGamePathInRegistry() {
 			long keyCreateError = RegCreateKeyEx(HKEY_CURRENT_USER, TEXT("Software\\OneShot\\"), 0L, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &key, NULL);
 
 			if (keyCreateError != ERROR_SUCCESS){
-				showInitError("Unable to create key in registry.");
+				crash("Unable to create key in registry.");
 			}
 			else {
 				keyOpenError = ERROR_SUCCESS;
@@ -202,7 +202,7 @@ static void setGamePathInRegistry() {
 		}
 
 		if (keyOpenError != ERROR_SUCCESS){
-			showInitError("Unable to open registry.");
+			crash("Unable to open registry.");
 		}
 		else {
 			DWORD dataSize = (strlen(dataDir) + 1) * sizeof(char);
@@ -211,12 +211,11 @@ static void setGamePathInRegistry() {
 			}
 			RegCloseKey(key);
 		}
-		//SDL_free(dataDir); // not needed in sdl3
 	}
 #endif
 	//TODO handle this for Linux/Mac
 }
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]){                     
 	char msg[512];
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 
@@ -281,7 +280,8 @@ int main(int argc, char *argv[]){
 	
 	if (!conf.gameFolder.empty())
 		if (chdir(conf.gameFolder.c_str()) != 0){
-			showInitError(std::string("Unable to switch into gameFolder ") + conf.gameFolder);
+			snprintf(msg, sizeof msg, "Unable to switch into gameFolder %s", conf.gameFolder);
+			crash(msg);
 			return 0;
 		}
 
@@ -296,7 +296,6 @@ int main(int argc, char *argv[]){
 		snprintf(msg, sizeof msg, "Error initializing SDL_ttf: %s", SDL_GetError());
 		crash(msg);
 		SDL_Quit();
-
 		return 0;
 	}
 
@@ -355,8 +354,7 @@ int main(int argc, char *argv[]){
 
 #ifndef STEAM
 	/* Add controller bindings from embedded controller DB */
-	SDL_IOStream *controllerDB = SDL_IOFromConstMem(assets_gamecontrollerdb_txt,
-	                                             assets_gamecontrollerdb_txt_len);
+	SDL_IOStream *controllerDB = SDL_IOFromConstMem(assets_gamecontrollerdb_txt, assets_gamecontrollerdb_txt_len);
 	SDL_AddGamepadMappingsFromIO(controllerDB, 1);
 #endif
 
@@ -396,8 +394,7 @@ int main(int argc, char *argv[]){
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and OneShot: Sunshine will now force quit", win);
 
 	if (!rtData.rgssErrorMsg.empty()){
-		Debug() << rtData.rgssErrorMsg;
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), rtData.rgssErrorMsg.c_str(), win);
+		crash(rtData.rgssErrorMsg.c_str());
 	}
 
 	/* Clean up any remainin events */

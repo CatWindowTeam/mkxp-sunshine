@@ -149,10 +149,6 @@ static void mriBindingInit(){
 	rb_gv_set("BTEST", rb_bool_new(shState->config().editor.battleTest));
 }
 
-static void showMsg(const std::string &msg){
-	shState->eThread().showMessageBox(msg.c_str());
-}
-
 static void printP(int argc, VALUE *argv, const char *convMethod, const char *sep){
 	VALUE dispString = rb_str_buf_new(128);
 	ID conv = rb_intern(convMethod);
@@ -165,7 +161,7 @@ static void printP(int argc, VALUE *argv, const char *convMethod, const char *se
 			rb_str_buf_cat2(dispString, sep);
 	}
 
-	showMsg(RSTRING_PTR(dispString));
+	shState->eThread().showMessageBox(RSTRING_PTR(dispString));
 }
 
 RB_METHOD(mriPrint){
@@ -332,14 +328,15 @@ static VALUE evalString(VALUE string, VALUE filename, int *state){
 
 static void runCustomScript(const std::string &filename){
 	std::string scriptData;
+	char msg[1024];
 
 	if (!readFileSDL(filename.c_str(), scriptData)){
-		showMsg(std::string("Unable to open '") + filename + "'");
+		snprintf(msg, sizeof msg, "Unable to open %s", filename);
+		crash(msg);
 		return;
 	}
 
-	evalString(newStringUTF8(scriptData.c_str(), scriptData.size()),
-	           newStringUTF8(filename.c_str(), filename.size()), NULL);
+	evalString(newStringUTF8(scriptData.c_str(), scriptData.size()), newStringUTF8(filename.c_str(), filename.size()), NULL);
 }
 
 VALUE kernelLoadDataInt(const char *filename, bool rubyExc);
@@ -354,14 +351,11 @@ struct BacktraceData{
 static void runRMXPScripts(BacktraceData &btData){
 	const Config &conf = shState->rtData().config;
 	const std::string &scriptPack = conf.game.scripts;
-
-	if (scriptPack.empty()){
-		showMsg("No game scripts specified (missing Game.ini?)");
-		return;
-	}
-
+	char msg[512];
+	
 	if (!shState->fileSystem().exists(scriptPack.c_str())){
-		showMsg("Unable to open '" + scriptPack + "'");
+		snprintf(msg, sizeof msg, "Unable to open '%s'", scriptPack.c_str());
+		crash(msg);
 		return;
 	}
 
@@ -373,12 +367,13 @@ static void runRMXPScripts(BacktraceData &btData){
 		scriptArray = kernelLoadDataInt(scriptPack.c_str(), false);
 		printf("[runRMXPScripts] %s\n", scriptPack.c_str());
 	}catch (const Exception &e){
-		showMsg(std::string("Failed to read script data: ") + e.msg);
+		snprintf(msg, sizeof msg, "Failed to read script data: %s", e.msg);
+		crash(msg);
 		return;
 	}
 
 	if (!RB_TYPE_P(scriptArray, RUBY_T_ARRAY)){
-		showMsg("Failed to read script data");
+		crash("Failed to read script data");
 		return;
 	}
 
@@ -429,7 +424,7 @@ static void runRMXPScripts(BacktraceData &btData){
 		if (result != Z_OK){
 			static char buffer[256];
 			snprintf(buffer, sizeof(buffer), "Error decoding script %ld: '%s'\n", i, RSTRING_PTR(scriptName));
-			showMsg(buffer);
+			crash(buffer);
 
 			break;
 		}
