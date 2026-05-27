@@ -31,23 +31,14 @@
 
 void fileIntFreeInstance(void *inst){
     SDL_IOStream *ops = static_cast<SDL_IOStream*>(inst);
-    #ifdef DEBUG
-    	printf("[fileIntFreeInstance] Closing ops\n");
-    #endif
     SDL_CloseIO(ops);
 }
 DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
 
 VALUE fileIntForPath(const char *path, bool rubyExc){
-	#ifdef DEBUG
-		printf("[fileIntForPath] %s!\n", path);
-	#endif
 	SDL_IOStream* ops = nullptr;
 	ops = SDL_IOFromFile(path, "r");
 	if (!ops){
-		#ifdef DEBUG
-			printf("[fileIntForPath] Failed to open file: %s\n", path);
-		#endif
 		if (rubyExc) {
 			rb_raise(rb_eIOError, "Cannot open file: %s", path);
 		}
@@ -71,9 +62,6 @@ RB_METHOD(fileIntRead){
 	}
 
 	if (length == 0){
-		#ifdef DEBUG
-			printf("[fileIntRead] zero length\n");
-		#endif
 		return Qnil;
 	}
 
@@ -87,14 +75,9 @@ RB_METHOD(fileIntRead){
 RB_NA_METHOD(fileIntClose){
     SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
     if (!ops){
-    	#ifdef DEBUG
-        	printf("[fileIntClose] Already closed or null\n");
-        #endif
         return Qnil;
     }
-    #ifdef DEBUG
-    	printf("[fileIntClose] Closing ops\n");
-    #endif
+
     SDL_CloseIO(ops);
     setPrivateData(self, nullptr);
     return Qnil;
@@ -118,18 +101,12 @@ VALUE load_protect(VALUE marsh_and_port) {
 }
 
 VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
-	#ifdef DEBUG
-		printf("[kernelLoadDataInt] Filename: %s\n", filename);
-	#endif
     VALUE port = fileIntForPath(filename, rubyExc);
     if (NIL_P(port)) return Qnil;
     VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
     VALUE args[2] = { marsh, port };
     int state = 0;
     VALUE result = rb_protect(load_protect, (VALUE)args, &state);
-    #ifdef DEBUG
-		printf("[kernelLoadDataInt] State %d\n", state);
-	#endif
 	
     rb_funcallv(port, rb_intern("close"), 0, NULL);
 	
@@ -152,9 +129,6 @@ RB_METHOD(kernelLoadData){
 	RB_UNUSED_PARAM;
 	const char *filename;
 	rb_get_args(argc, argv, "z", &filename);
-	#ifdef DEBUG
-		printf("[kernelLoadData] filename: %s\n", filename);
-	#endif
 	return kernelLoadDataInt(filename, true);
 }
 
@@ -174,11 +148,8 @@ RB_METHOD(kernelSaveData){
 
 	VALUE v[] = { obj, file };
 	rb_funcall2(marsh, rb_intern("dump"), ARRAY_SIZE(v), v);
-	#ifdef DEBUG
-		printf("[kernelSaveData] Closing file %s\n", rb_str_to_str(filename));
-	#endif
-	rb_io_close(file);
 
+	rb_io_close(file);
 	return Qnil;
 }
 

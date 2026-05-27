@@ -117,9 +117,6 @@ DEF_AUD_PROP_I(SFX_Volume)
 
 RB_METHOD(audioReset){
 	RB_UNUSED_PARAM;
-	#ifdef DEBUG
-		printf("[audioReset] Reseting audio\n");
-	#endif
 	shState->audio().reset();
 
 	return Qnil;

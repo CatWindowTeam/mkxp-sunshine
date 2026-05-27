@@ -225,9 +225,6 @@ static VALUE rgssMainRescue(VALUE arg, VALUE exc){
 }
 
 static void processReset(){
-	#ifdef DEBUG
-		printf("[processReset] reset!\n");
-	#endif
 	shState->graphics().reset();
 	shState->audio().reset();
 
@@ -252,9 +249,6 @@ RB_METHOD(mriRgssMain){
 			break;
 
 		if (rb_obj_class(exc) == getRbData()->exc[Reset]){
-			#ifdef DEBUG
-				printf("[mriRgssMain] Reset\n");
-			#endif
 			processReset();
 		}else{
 			rb_exc_raise(exc);
@@ -266,9 +260,6 @@ RB_METHOD(mriRgssMain){
 
 RB_METHOD(mriRgssStop){
 	RB_UNUSED_PARAM;
-	#ifdef DEBUG
-		printf("[mriRgssStop] Stop\n");
-	#endif
 	while (true)
 		shState->graphics().update();
 
@@ -398,10 +389,6 @@ static void runRMXPScripts(BacktraceData &btData){
 		VALUE scriptName = rb_ary_entry(script, 1);
 		VALUE scriptString = rb_ary_entry(script, 2);
 
-		#ifdef DEBUG
-			printf("[runRMXPScripts] Script Name: %s\n", RSTRING_PTR(scriptName));
-		#endif
-
 		int result = Z_OK;
 		unsigned long bufferLen;
 
@@ -477,8 +464,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	VALUE msg = rb_funcall2(exc, rb_intern("message"), 0, NULL);
 	VALUE bt0 = rb_ary_entry(bt, 0);
 	VALUE name = rb_class_path(rb_obj_class(exc));
-	VALUE ds = rb_sprintf("%" PRIsVALUE ": %" PRIsVALUE " (%" PRIsVALUE ")",
-	                      bt0, exc, name);
+	VALUE ds = rb_sprintf("%" PRIsVALUE ": %" PRIsVALUE " (%" PRIsVALUE ")", bt0, exc, name);
 	/* omit "useless" last entry (from ruby:1:in `eval') */
 	for (long i = 1, btlen = RARRAY_LEN(bt) - 1; i < btlen; ++i)
 		rb_str_catf(ds, "\n\tfrom %" PRIsVALUE, rb_ary_entry(bt, i));
@@ -561,18 +547,11 @@ static void mriBindingExecute(){
 	BacktraceData btData;
 
 	mriBindingInit();
-	#ifdef DEBUG
-		printf("[mriBindingExecute] run RMXP Scripts\n");
-	#endif
 	runRMXPScripts(btData);
 
 	VALUE exc = rb_errinfo();
 	if (!NIL_P(exc) && !rb_obj_is_kind_of(exc, rb_eSystemExit))
 		showExc(exc, btData);
-	#ifdef DEBUG
-		printf("[mirBindingExecure] Ruby cleanup\n");
-	#endif
-	//ruby_cleanup(0);
 
 	shState->rtData().rqTermAck.set();
 }
@@ -586,8 +565,5 @@ static void mriBindingTerminate(){
 }
 
 static void mriBindingReset(){
-	#ifdef DEBUG
-		printf("[mriBindingReset] Binding reset...\n");
-	#endif
 	rb_raise(getRbData()->exc[Reset], " ");
 }
