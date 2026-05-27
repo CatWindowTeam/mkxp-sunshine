@@ -63,6 +63,7 @@ DEF_PROP_I(Sprite, BlendType)
 DEF_PROP_I(Sprite, WaveAmp)
 DEF_PROP_I(Sprite, WaveLength)
 DEF_PROP_I(Sprite, WaveSpeed)
+DEF_PROP_I(Sprite, Shader)
 
 DEF_PROP_F(Sprite, ZoomX)
 DEF_PROP_F(Sprite, ZoomY)
@@ -71,7 +72,6 @@ DEF_PROP_F(Sprite, WavePhase)
 
 DEF_PROP_B(Sprite, Mirror)
 DEF_PROP_B(Sprite, Obscured)
-DEF_PROP_B(Sprite, WorldMachine)
 
 RB_METHOD(spriteWidth){
 	RB_UNUSED_PARAM;
@@ -123,7 +123,7 @@ void spriteBindingInit(){
 	INIT_PROP_BIND( Sprite, Tone,         "tone"          );
 	INIT_PROP_BIND( Sprite, Modulate,     "modulate"      );
 	INIT_PROP_BIND( Sprite, Obscured,     "obscured"      );
-	INIT_PROP_BIND( Sprite, WorldMachine, "world_machine" );
+	INIT_PROP_BIND( Sprite, Shader,       "shader"        );
 
 	_rb_define_method(klass, "width", spriteWidth);
 	_rb_define_method(klass, "height", spriteHeight);

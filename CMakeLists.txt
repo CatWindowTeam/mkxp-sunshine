@@ -303,6 +303,7 @@ set(BINDING_SOURCE
 	binding-mri/chroma-binding.cpp
 	binding-mri/niko-binding.cpp
 	binding-mri/time-binding.cpp
+	binding-mri/shader-binging.cpp
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})

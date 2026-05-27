@@ -76,11 +76,15 @@ public:
 
 	void setTexSize(const Vec2i &value);
 	void setTranslation(const Vec2i &value);
+	void setTime(float value);
 
 protected:
 	void init();
 
 	GLint u_texSizeInv, u_translation;
+
+private:
+	GLint u_uTime;
 };
 
 class FlatColorShader : public ShaderBase{
@@ -179,11 +183,6 @@ private:
 class WMShader : public SpriteShader{
 public:
 	WMShader();
-
-	void setTime(float value);
-	//void setResolution(float x, float y);
-private:
-	GLint u_uTime/*, u_resolution*/;
 };
 
 class PlaneShader : public ShaderBase{
@@ -302,26 +301,39 @@ private:
 };
 
 /* Global object containing all available shaders */
+
+//    Name            C++ Class           In ruby const name
+#define SHADER_LIST(X) \
+	X(flatColor,      FlatColorShader,    Flat) \
+	X(simple,         SimpleShader,       Simple) \
+	X(simpleColor,    SimpleColorShader,  SimpleColor) \
+	X(simpleAlpha,    SimpleAlphaShader,  SimpleAlpha) \
+	X(simpleSprite,   SimpleSpriteShader, SimpleSprite) \
+	X(alphaSprite,    AlphaSpriteShader,  AlphaSprite) \
+	X(sprite,         SpriteShader,       Sprite) \
+	X(worldMachine,   WMShader,           WorldMachine) \
+	X(plane,          PlaneShader,        Plane) \
+	X(gray,           GrayShader,         Gray) \
+	X(tilemap,        TilemapShader,      TileMap) \
+	X(flashMap,       FlashMapShader,     Flash) \
+	X(trans,          TransShader,        Trans) \
+	X(simpleTrans,    SimpleTransShader,  SimpleTrans) \
+	X(hue,            HueShader,          Hue) \
+	X(blt,            BltShader,          Blt) \
+	X(simpleMatrix,   SimpleMatrixShader, SimpleMatrix) \
+	X(blur,           BlurShader,         Blur) \
+	X(obscured,       ObscuredShader,     Obscured)
+
 struct ShaderSet{
-	FlatColorShader flatColor;
-	SimpleShader simple;
-	SimpleColorShader simpleColor;
-	SimpleAlphaShader simpleAlpha;
-	SimpleSpriteShader simpleSprite;
-	AlphaSpriteShader alphaSprite;
-	SpriteShader sprite;
-	WMShader worldMachine;
-	PlaneShader plane;
-	GrayShader gray;
-	TilemapShader tilemap;
-	FlashMapShader flashMap;
-	TransShader trans;
-	SimpleTransShader simpleTrans;
-	HueShader hue;
-	BltShader blt;
-	SimpleMatrixShader simpleMatrix;
-	BlurShader blur;
-	ObscuredShader obscured;
+	#define DECLARE_SHADER(name, type, rb) type name;
+		SHADER_LIST(DECLARE_SHADER)
+	#undef DECLARE_SHADER
+};
+enum ShaderType{
+#define DECLARE_ENUM(name, type, rb) SHADER_##name,
+	SHADER_LIST(DECLARE_ENUM)
+#undef DECLARE_ENUM
+	SHADER_COUNT
 };
 
 #endif // SHADER_H

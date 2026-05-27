@@ -27,6 +27,7 @@
 #include "disposable.h"
 #include "viewport.h"
 #include "util.h"
+#include "shader.h"
 
 #include <boost/chrono.hpp>
 
@@ -39,6 +40,8 @@ struct SpritePrivate;
 
 class Sprite : public ViewportElement, public Flashable, public Disposable{
 public:
+    boost::chrono::high_resolution_clock::time_point startTime = boost::chrono::high_resolution_clock::now();
+	
 	Sprite(Viewport *viewport = 0);
 	~Sprite();
 
@@ -69,7 +72,7 @@ public:
 	DECL_ATTR( WaveSpeed,    int     )
 	DECL_ATTR( WavePhase,    float   )
 	DECL_ATTR( Obscured,     bool    )
-	DECL_ATTR( WorldMachine, bool    )
+	DECL_ATTR( Shader,       int     )
 	DECL_ATTR( startTime,    boost::chrono::high_resolution_clock::time_point)
 
 	void initDynAttribs();

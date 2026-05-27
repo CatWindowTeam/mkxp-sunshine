@@ -231,6 +231,7 @@ void ShaderBase::GLProjMat::apply(const Vec2i &value) {
 void ShaderBase::init(){
 	GET_U(texSizeInv);
 	GET_U(translation);
+	GET_U(uTime);
 
 	projMat.u_mat = gl.GetUniformLocation(program, "projMat");
 }
@@ -246,6 +247,10 @@ void ShaderBase::setTexSize(const Vec2i &value){
 
 void ShaderBase::setTranslation(const Vec2i &value){
 	gl.Uniform2f(u_translation, value.x, value.y);
+}
+
+void ShaderBase::setTime(float value){
+	gl.Uniform1f(u_uTime, value);
 }
 
 
@@ -422,18 +427,7 @@ void SpriteShader::setBushOpacity(float value){
 WMShader::WMShader(){
 	INIT_SHADER(worldMachine, worldMachine, WMShader);
 	SpriteShader::init();
-
-	GET_U(uTime);
-	//GET_U(resolution);
 }
-
-void WMShader::setTime(float value){
-	gl.Uniform1f(u_uTime, value);
-}
-/*
-void WMShader::setResolution(float x, float y){
-	gl.Uniform2f(u_resolution, x, y);
-}*/
 
 
 PlaneShader::PlaneShader(){
