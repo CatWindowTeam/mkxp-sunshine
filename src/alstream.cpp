@@ -21,6 +21,7 @@
 
 #include "alstream.h"
 
+#include "meow.h"
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "filesystem.h"
@@ -233,6 +234,7 @@ void ALStream::openSource(const std::string &filename){
 		char buf[512];
 		snprintf(buf, sizeof(buf), "Unable to decode audio stream: %s: %s",
 		         filename.c_str(), handler.errorMsg.c_str());
+		crash(buf);
 
 		Debug() << buf;
 	}

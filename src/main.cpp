@@ -75,6 +75,7 @@ int rgssThreadFun(void *userdata){
 	RGSSThreadData *threadData = static_cast<RGSSThreadData*>(userdata);
 	const Config &conf = threadData->config;
 	SDL_Window *win = threadData->window;
+	char msg[512];
 	SDL_GLContext glCtx;
 
 	/* Setup GL context */
@@ -87,7 +88,9 @@ int rgssThreadFun(void *userdata){
 	glCtx = SDL_GL_CreateContext(win);
 
 	if (!glCtx){
-		rgssThreadError(threadData, std::string("[rgssThreadFun] Error creating context: ") + SDL_GetError());
+		snprintf(msg, sizeof msg, "Error creating context: %s", SDL_GetError());
+		crash(msg);
+		rgssThreadError(threadData, std::string(msg));
 		return 0;
 	}
 
@@ -123,7 +126,8 @@ int rgssThreadFun(void *userdata){
 	ALCcontext *alcCtx = alcCreateContext(threadData->alcDev, 0);
 
 	if (!alcCtx){
-		rgssThreadError(threadData, "[rgssThreadFun] Error creating OpenAL context");
+		crash("Error creating OpenAL context");
+		rgssThreadError(threadData, "Error creating OpenAL context");
 		SDL_GL_DestroyContext(glCtx);
 
 		return 0;
@@ -213,6 +217,7 @@ static void setGamePathInRegistry() {
 	//TODO handle this for Linux/Mac
 }
 int main(int argc, char *argv[]){
+	char msg[512];
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
@@ -230,19 +235,20 @@ int main(int argc, char *argv[]){
 
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
-		showInitError(std::string("Error initializing SDL: ") + SDL_GetError());
+		snprintf(msg, sizeof msg, "Error initializing SDL: %s", SDL_GetError());
+		crash(msg);
 		return 0;
 	}
 
 #ifdef STEAM
 	if (!STEAMSHIM_init()){
-		showInitError("Could not initialize Steamworks API");
+		crash("Could not initialize Steamworks API");
 		return 0;
 	}
 #endif
 
 	if (!EventThread::allocUserEvents()){
-		showInitError("Error allocating SDL user events");
+		crash("Error allocating SDL user events");
 		return 0;
 	}
 
@@ -279,14 +285,16 @@ int main(int argc, char *argv[]){
 		conf.windowTitle = conf.game.title;
 
 	if (TTF_Init() == false){
-		showInitError(std::string("Error initializing SDL_ttf: ") + SDL_GetError());
+		snprintf(msg, sizeof msg, "Error initializing SDL_ttf: %s", SDL_GetError());
+		crash(msg);
 		SDL_Quit();
 
 		return 0;
 	}
 
 	if (Sound_Init() == false){
-		showInitError(std::string("Error initializing SDL_sound: ") + Sound_GetError());
+		snprintf(msg, sizeof msg, "Error initializing SDL_sound: %s", Sound_GetError());
+		crash(msg);
 		TTF_Quit();
 		SDL_Quit();
 
@@ -305,7 +313,8 @@ int main(int argc, char *argv[]){
 		SDL_SetWindowFullscreen(win, true);
 
 	if (!win){
-		showInitError(std::string("Error creating window: ") + SDL_GetError());
+		snprintf(msg, sizeof msg, "Error creating window: %s", SDL_GetError());
+		crash(msg);
 		return 0;
 	}
 
@@ -320,7 +329,7 @@ int main(int argc, char *argv[]){
 	ALCdevice *alcDev = alcOpenDevice(0);
 
 	if (!alcDev){
-		showInitError("Error opening OpenAL device");
+		crash("Error opening OpenAL device");
 		SDL_DestroyWindow(win);
 		TTF_Quit();
 		SDL_Quit();

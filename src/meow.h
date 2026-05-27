@@ -1,1 +1,1 @@
-int crash(const char* reason, int exit_code);
+void crash(const char* reason);

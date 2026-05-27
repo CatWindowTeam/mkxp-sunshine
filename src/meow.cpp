@@ -6,6 +6,7 @@
 #include <SDL3_sound/SDL_sound.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include "meow.h"
+#include "eventthread.h"
 #include "config.h"
 #include <stdio.h>
 #include <time.h>
@@ -19,7 +20,7 @@
 
 #ifdef __LINUX__
 	#include <gtk/gtk.h>
-	#include <gdk/gdk.h>
+	#include "xdg-user-dir-lookup.h"
 #endif
 
 
@@ -28,13 +29,14 @@ SDL_MessageBoxButtonData buttons[] = {
     { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 2, "No" }
 };
 
-int crash(const char* reason, int exit_code){
-	const Config conf;
+void crash(const char* reason){
+	char msg[1024];
+	snprintf(msg, sizeof msg, "Error occured! Error message: %s\n\n Want to create a crash log? You can share the crash log with the developers and help resolve the issue.", reason);
 	SDL_MessageBoxData messageboxdata = {
 	    .flags = SDL_MESSAGEBOX_ERROR,
 	    .window = NULL,
-	    .title = "Crashdump",
-	    .message = "Error occured! Want to create a crash log?",
+	    .title = "Crashlog",
+	    .message = msg,
 	    .numbuttons = SDL_arraysize(buttons),
 	    .buttons = buttons,
 	    .colorScheme = NULL
@@ -48,6 +50,7 @@ int crash(const char* reason, int exit_code){
 
 	if(buttonid == 1){
 		std::ofstream out;
+		const Config conf;
 		time_t mtime = time(NULL);
 		struct tm *now = localtime(&mtime);
 		std::string time = std::to_string(now->tm_hour) + "." + std::to_string(now->tm_min) + "." + std::to_string(now->tm_sec);
@@ -81,7 +84,6 @@ int crash(const char* reason, int exit_code){
 				out << "customDataPath: " << conf.customDataPath << std::endl;
 				out << "commonDataPath: " << conf.commonDataPath << std::endl;
 				out << "" << std::endl;
-				out << "Ruby version: " << rb_gv_get("ruby_version") << std::endl;
 
 				const int sdlcompiled = SDL_VERSION;
 				const int sdllinked = SDL_GetVersion();
@@ -91,20 +93,16 @@ int crash(const char* reason, int exit_code){
 				out << "SDL_sound(compiled) version: " << SDL_SOUND_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << std::endl;
 				out << "SDL_TTF(compiled) version: " << SDL_TTF_MAJOR_VERSION << "." << SDL_TTF_MINOR_VERSION << "." << SDL_TTF_MICRO_VERSION << std::endl;
 
-				out << "Detected OS: " << SDL_GetPlatform() << std::endl;
+				//out << "Detected OS: " << SDL_GetPlatform() << std::endl;
 				
 				#ifdef __LINUX__
 					out << "GTK(compiled) version: " << GTK_MAJOR_VERSION << "." << GTK_MINOR_VERSION << "." << GTK_MICRO_VERSION << std::endl;
+					out << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << getenv("XDG_CURRENT_DESKTOP") << std::endl;
 				#endif
 				
 				out << "ZLib version: " << ZLIB_VERSION << std::endl;
-
 				out << "OpenAL version: " << alGetString(AL_VERSION) << std::endl;
-
 				out << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << std::endl;
-
-				//out << "PhysFS version: " << PHYSFS_Version << std::endl;
-
 				out << "Pixman version: " << PIXMAN_VERSION_STRING << std::endl;
 				
 				out.close();
@@ -112,6 +110,4 @@ int crash(const char* reason, int exit_code){
 			printf("[CRASHLOG] Failed to write crashdump file\n");
 		}
 	}
-	
-	return exit_code;
 }

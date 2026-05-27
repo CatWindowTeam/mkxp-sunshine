@@ -54,7 +54,7 @@ struct SDLRWIoContext{
 	      filename(filename)
 	{
 		if (!ops)
-			crash("Failed to open file", 0);
+			crash("Failed to open file");
 			throw Exception(Exception::SDLError, "Failed to open file: %s", SDL_GetError());
 	}
 

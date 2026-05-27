@@ -36,6 +36,7 @@
 #include "transform.h"
 #include "exception.h"
 
+#include "meow.h"
 #include "sharedstate.h"
 #include "glstate.h"
 #include "texpool.h"
@@ -222,13 +223,14 @@ struct BitmapOpenHandler : FileSystem::OpenHandler{
 
 Bitmap::Bitmap(const char *filename){
 	BitmapOpenHandler handler;
+	char msg[1024];
 	shState->fileSystem().openRead(handler, filename);
 	SDL_Surface *imgSurf = handler.surf;
 
-	if (!imgSurf)
-		throw Exception(Exception::SDLError, "Error loading image '%s': %s",
-		                filename, SDL_GetError());
-
+	if (!imgSurf){
+		snprintf(msg, sizeof msg, "Error loading image '%s': %s", filename, SDL_GetError());
+		throw Exception(Exception::SDLError, msg);
+	}
 	p->ensureFormat(imgSurf, SDL_PIXELFORMAT_ABGR8888);
 
 	if (imgSurf->w > glState.caps.maxTexSize || imgSurf->h > glState.caps.maxTexSize){
@@ -262,8 +264,10 @@ Bitmap::Bitmap(const char *filename){
 }
 
 Bitmap::Bitmap(int width, int height){
-	if (width <= 0 || height <= 0)
-		throw Exception(Exception::RGSSError, "failed to create bitmap");
+	if (width <= 0 || height <= 0){
+		crash("failed to create bitmap");
+		throw Exception(Exception::RGSSError, "failed to create bitmap"); 
+	}
 
 	TEXFBO tex = shState->texPool().request(width, height);
 

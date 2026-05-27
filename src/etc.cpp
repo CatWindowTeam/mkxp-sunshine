@@ -23,6 +23,7 @@
 
 #include "serial-util.h"
 #include "exception.h"
+#include "meow.h"
 
 // this file doesn't exist, idk what to do if it, so i'll comment it.
 // #include <SDL3/SDL_types.h>
@@ -102,8 +103,10 @@ void Color::serialize(char *buffer) const{
 }
 
 Color *Color::deserialize(const char *data, int len){
-	if (len != 32)
+	if (len != 32){
+		crash("Color: Serialized data invalid");
 		throw Exception(Exception::ArgumentError, "Color: Serialized data invalid");
+	}
 
 	Color *c = new Color();
 
@@ -221,8 +224,10 @@ void Tone::serialize(char *buffer) const{
 }
 
 Tone *Tone::deserialize(const char *data, int len){
-	if (len != 32)
+	if (len != 32){
+		crash("Tone: Serialized data invalid");
 		throw Exception(Exception::ArgumentError, "Tone: Serialized data invalid");
+	}
 
 	Tone *t = new Tone();
 
@@ -352,8 +357,10 @@ void Rect::serialize(char *buffer) const{
 }
 
 Rect *Rect::deserialize(const char *data, int len){
-	if (len != 16)
+	if (len != 16){
+		crash("Rect: Serialized data invalid");
 		throw Exception(Exception::ArgumentError, "Rect: Serialized data invalid");
+	}
 
 	Rect *r = new Rect();
 
