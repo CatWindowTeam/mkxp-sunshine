@@ -26,6 +26,9 @@ class Sprite_Character
     @text_sprite.bitmap = Bitmap.new(Graphics.width, 24)
     @text_sprite.bitmap.font.size = 12
     @character = character
+    
+    #for debug
+    @last_char_name
     update
   end
   #--------------------------------------------------------------------------
@@ -35,13 +38,18 @@ class Sprite_Character
     # Choose the appropriate light sprite
     @light_sprite.viewport = ($game_screen.tone.blank?) ? @viewport : @light_viewport
     @light_sprite.world_machine = @sprite.world_machine = @character.character_name.start_with?("en") || (@character.character_name.start_with?("niko") && $game_switches[160])
-    if Settings[:debug] == true
+    if @last_char_name != character.character_name && Settings[:debug]
+      @text_sprite.bitmap.clear
       @text_sprite.bitmap.draw_text(0, 0, 256, 12, "#{@character.character_name}")
+      @last_char_name = character.character_name
+    elsif @last_char_name != "мямямя :3" && !Settings[:debug]
+      @text_sprite.bitmap.clear
+      @last_char_name = "мямямя :3"
+    end
+    if Settings[:debug]
       @text_sprite.x = @character.screen_x
       @text_sprite.y = @character.screen_y
       @text_sprite.z = @character.screen_z + 2
-    else
-      @text_sprite.bitmap.clear
     end
     # Update sprites
     @sprite.update
