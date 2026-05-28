@@ -50,6 +50,7 @@ DEF_PROP_I(Plane, OX)
 DEF_PROP_I(Plane, OY)
 DEF_PROP_I(Plane, Opacity)
 DEF_PROP_I(Plane, BlendType)
+DEF_PROP_I(Plane, Shader)
 
 DEF_PROP_F(Plane, ZoomX)
 DEF_PROP_F(Plane, ZoomY)
@@ -75,4 +76,5 @@ void planeBindingInit(){
 	INIT_PROP_BIND( Plane, BlendType, "blend_type" );
 	INIT_PROP_BIND( Plane, Color,     "color"      );
 	INIT_PROP_BIND( Plane, Tone,      "tone"       );
+	INIT_PROP_BIND( Plane, Shader,    "shader"      );
 }

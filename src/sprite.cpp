@@ -505,7 +505,7 @@ void Sprite::draw(){
 	                    flashing                 ||
 	                    p->bushDepth != 0;
 
-	if (p->obscured){
+	if (p->obscured || p->shader == ShaderType::SHADER_obscured){
 		ObscuredShader &shader = shState->shaders().obscured;
 		shader.bind();
 		shader.applyViewportProj();
@@ -513,27 +513,37 @@ void Sprite::draw(){
 		base = &shader;
 	}
 	else{
-		switch (p->shader){
+		switch (p->shader)
+		{
+		case ShaderType::SHADER_plane:
+			{
+				PlaneShader &shader = shState->shaders().plane;
+			
+				shader.bind();
+				shader.applyViewportProj();
+				shader.setTone(p->tone->norm);
+				shader.setColor(p->color->norm);
+				shader.setFlash(Vec4());
+				shader.setOpacity(p->opacity.norm);
+				
+				base = &shader;
+				break;
+			}
+		case ShaderType::SHADER_water:
+			{
+				WaterShader &shader = shState->shaders().water;
+
+				defaultSpriteShaderInit(shader);
+
+				base = &shader;
+
+				break;
+			}
 		case ShaderType::SHADER_worldMachine:
 			{
 				WMShader &shader = shState->shaders().worldMachine;
 
-				shader.bind();
-				shader.applyViewportProj();
-				shader.setSpriteMat(p->trans.getMatrix());
-
-				shader.setTone(p->tone->norm);
-				shader.setOpacity(p->opacity.norm);
-				shader.setBushDepth(p->efBushDepth);
-				shader.setBushOpacity(p->bushOpacity.norm);
-
-				/* When both flashing and effective color are set,
-				 * the one with higher alpha will be blended */
-				const Vec4 *blend = (flashing && flashColor.w > p->color->norm.w) ?
-					                 &flashColor : &p->color->norm;
-
-				shader.setColor(*blend);
-				shader.setModulate(p->modulate->norm);
+				defaultSpriteShaderInit(shader);
 
 				base = &shader;
 
@@ -544,22 +554,7 @@ void Sprite::draw(){
 				if (renderEffect){
 					SpriteShader &shader = shState->shaders().sprite;
 
-					shader.bind();
-					shader.applyViewportProj();
-					shader.setSpriteMat(p->trans.getMatrix());
-
-					shader.setTone(p->tone->norm);
-					shader.setOpacity(p->opacity.norm);
-					shader.setBushDepth(p->efBushDepth);
-					shader.setBushOpacity(p->bushOpacity.norm);
-
-					/* When both flashing and effective color are set,
-					 * the one with higher alpha will be blended */
-					const Vec4 *blend = (flashing && flashColor.w > p->color->norm.w) ?
-						                 &flashColor : &p->color->norm;
-
-					shader.setColor(*blend);
-					shader.setModulate(p->modulate->norm);
+					defaultSpriteShaderInit(shader);
 
 					base = &shader;
 				}
@@ -614,4 +609,23 @@ void Sprite::releaseResources(){
 	unlink();
 
 	delete p;
+}
+
+void Sprite::defaultSpriteShaderInit(SpriteShaderBase &shader){
+	shader.bind();
+	shader.applyViewportProj();
+	shader.setSpriteMat(p->trans.getMatrix());
+
+	shader.setTone(p->tone->norm);
+	shader.setOpacity(p->opacity.norm);
+	shader.setBushDepth(p->efBushDepth);
+	shader.setBushOpacity(p->bushOpacity.norm);
+
+	/* When both flashing and effective color are set,
+	 * the one with higher alpha will be blended */
+	const Vec4 *blend = (flashing && flashColor.w > p->color->norm.w) ?
+		                 &flashColor : &p->color->norm;
+
+	shader.setColor(*blend);
+	shader.setModulate(p->modulate->norm);
 }

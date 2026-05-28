@@ -160,9 +160,9 @@ private:
 	GLint u_currentScene, u_frozenScene, u_prog;
 };
 
-class SpriteShader : public ShaderBase{
+class SpriteShaderBase : public ShaderBase{
 public:
-	SpriteShader();
+	void SpriteShaderInit();
 
 	void setSpriteMat(const float value[16]);
 	void setTone(const Vec4 &value);
@@ -176,9 +176,19 @@ private:
 	GLint u_spriteMat, u_tone, u_opacity, u_color, u_modulate, u_bushDepth, u_bushOpacity;
 };
 
-class WMShader : public SpriteShader{
+class SpriteShader : public SpriteShaderBase{
+public:
+	SpriteShader();
+};
+
+class WMShader : public SpriteShaderBase{
 public:
 	WMShader();
+};
+
+class WaterShader : public SpriteShaderBase{
+public:
+	WaterShader();
 };
 
 class PlaneShader : public ShaderBase{
@@ -308,6 +318,7 @@ private:
 	X(alphaSprite,    AlphaSpriteShader,  AlphaSprite) \
 	X(sprite,         SpriteShader,       Sprite) \
 	X(worldMachine,   WMShader,           WorldMachine) \
+	X(water,	      WaterShader,        Water) \
 	X(plane,          PlaneShader,        Plane) \
 	X(gray,           GrayShader,         Gray) \
 	X(tilemap,        TilemapShader,      TileMap) \

@@ -24,6 +24,9 @@
 
 #include "disposable.h"
 #include "viewport.h"
+#include "shader.h"
+
+#include <boost/chrono.hpp>
 
 class Bitmap;
 struct Color;
@@ -33,6 +36,8 @@ struct PlanePrivate;
 
 class Plane : public ViewportElement, public Disposable{
 public:
+    boost::chrono::high_resolution_clock::time_point startTime = boost::chrono::high_resolution_clock::now();
+	
 	Plane(Viewport *viewport = 0);
 	~Plane();
 
@@ -46,6 +51,7 @@ public:
 	DECL_ATTR( BlendType, int     )
 	DECL_ATTR( Color,     Color&  )
 	DECL_ATTR( Tone,      Tone&   )
+	DECL_ATTR( Shader,    int     )
 
 	void initDynAttribs();
 
@@ -54,6 +60,7 @@ private:
 
 	void draw();
 	void onGeometryChange(const Scene::Geometry &);
+	void defaultSpriteShaderInit(SpriteShaderBase &);
 
 	void releaseResources();
 	const char *klassName() const { return "plane"; }

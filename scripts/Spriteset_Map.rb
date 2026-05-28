@@ -28,12 +28,12 @@ class Spriteset_Map
     if $game_map.tileset_name == "blank"
       @tilemap.tileset = nil
     else
-	  translation_name = "#{$persistent.langcode}/#{$game_map.tileset_name}"
-	  if File.exist?("Graphics/Tilesets/#{translation_name}.png")
-        @tilemap.tileset = RPG::Cache.tileset(translation_name)
-	  else
-        @tilemap.tileset = RPG::Cache.tileset($game_map.tileset_name)
-	  end
+      translation_name = "#{$persistent.langcode}/#{$game_map.tileset_name}"
+      if File.exist?("Graphics/Tilesets/#{translation_name}.png")
+          @tilemap.tileset = RPG::Cache.tileset(translation_name)
+      else
+          @tilemap.tileset = RPG::Cache.tileset($game_map.tileset_name)
+      end
     end
     for i in 0..6
       autotile_name = $game_map.autotile_names[i]
@@ -173,17 +173,33 @@ class Spriteset_Map
       end
       if @panorama_name != ""
         if $game_map.pan_fade_animate
+          @panorama.shader = Shader::Plane
           if @panorama2 == nil
             @panorama2 = Plane.new(@viewport_bg)
             @panorama2.z = -999
             @panorama2.opacity = 0
             @pan_frame_index = 0
           end
-		  @panorama.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
-		  @panorama2.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
-
+          @panorama.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
+          @panorama2.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
         else
-		  @panorama.bitmap = RPG::Cache.panorama(@panorama_name, @panorama_hue)
+          if @panorama_name == "dark_water"
+            @panorama.shader = Shader::Water
+            @panorama.color.set(0, 0, 127, 0)
+            @panorama.tone.set(0, 0, 255, 63)
+            @panorama.blend_type = 1
+          elsif @panorama_name == "green_water"
+            @panorama.shader = Shader::Water
+            @panorama.color.set(0, 21, 43, 100)
+            @panorama.tone.set(13, 236, 255, 200)
+            @panorama.blend_type = 1
+          else
+            @panorama.shader = Shader::Plane
+            @panorama.color.set(0, 0, 0, 0)
+            @panorama.tone.set(0, 0, 0, 0)
+            @panorama.blend_type = 0
+          end
+          @panorama.bitmap = RPG::Cache.panorama(@panorama_name, @panorama_hue)
         end
       end
       Graphics.frame_reset
@@ -272,7 +288,7 @@ class Spriteset_Map
       end
     end
 
-    if $game_map.pan_fade_animate
+    if $game_map.pan_fade_animate && @panorama2 != nil
       @panorama2.opacity += 3
       @panorama2.ox = @panorama.ox
       @panorama2.oy = @panorama.oy
@@ -307,19 +323,19 @@ class Spriteset_Map
       # based on its current width and height
       # no point in updating the sprite if offscreen
       # this greatly increases performance on larger maps
-		if Graphics.width == 1280
-			((sprite.character.real_x + (sprite.ox*4) > Graphics.width - 128) &&
-        		(sprite.character.real_x - (sprite.ox*4) < Graphics.width + (21 * 128)) &&
-        		(sprite.character.real_y + (sprite.oy*4) > (Graphics.height) - 128) &&
-        		(sprite.character.real_y - (sprite.oy*4) < (Graphics.height) + (17 * 128)))
+        if Graphics.width == 1280
+            ((sprite.character.real_x + (sprite.ox*4) > Graphics.width - 128) &&
+                (sprite.character.real_x - (sprite.ox*4) < Graphics.width + (21 * 128)) &&
+                (sprite.character.real_y + (sprite.oy*4) > (Graphics.height) - 128) &&
+                (sprite.character.real_y - (sprite.oy*4) < (Graphics.height) + (17 * 128)))
             sprite.update
-		else
-			((sprite.character.real_x + (sprite.ox*4) > Graphics.width - 128) &&
-        		(sprite.character.real_x - (sprite.ox*4) < Graphics.width + (10 * 128)) &&
-        		(sprite.character.real_y + (sprite.oy*4) > (Graphics.height) - 128) &&
-        		(sprite.character.real_y - (sprite.oy*4) < (Graphics.height) + (6 * 128)))
+        else
+            ((sprite.character.real_x + (sprite.ox*4) > Graphics.width - 128) &&
+                (sprite.character.real_x - (sprite.ox*4) < Graphics.width + (10 * 128)) &&
+                (sprite.character.real_y + (sprite.oy*4) > (Graphics.height) - 128) &&
+                (sprite.character.real_y - (sprite.oy*4) < (Graphics.height) + (6 * 128)))
             sprite.update
-		end
+        end
       else
         sprite.update_fast
       end

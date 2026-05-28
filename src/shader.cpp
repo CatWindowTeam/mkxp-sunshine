@@ -31,6 +31,7 @@
 #include "common.h.xxd"
 #include "sprite.frag.xxd"
 #include "worldMachine.frag.xxd"
+#include "water.frag.xxd"
 #include "hue.frag.xxd"
 #include "trans.frag.xxd"
 #include "transSimple.frag.xxd"
@@ -47,7 +48,6 @@
 #include "simple.vert.xxd"
 #include "simpleColor.vert.xxd"
 #include "sprite.vert.xxd"
-#include "worldMachine.vert.xxd"
 #include "tilemap.vert.xxd"
 #include "blur.frag.xxd"
 #include "simpleMatrix.vert.xxd"
@@ -378,9 +378,7 @@ void SimpleTransShader::setProg(float value){
 }
 
 
-SpriteShader::SpriteShader(){
-	INIT_SHADER(sprite, sprite, SpriteShader);
-
+void SpriteShaderBase::SpriteShaderInit(){
 	ShaderBase::init();
 
 	GET_U(spriteMat);
@@ -392,38 +390,50 @@ SpriteShader::SpriteShader(){
 	GET_U(bushOpacity);
 }
 
-void SpriteShader::setSpriteMat(const float value[16]){
+void SpriteShaderBase::setSpriteMat(const float value[16]){
 	gl.UniformMatrix4fv(u_spriteMat, 1, GL_FALSE, value);
 }
 
-void SpriteShader::setTone(const Vec4 &tone){
+void SpriteShaderBase::setTone(const Vec4 &tone){
 	setVec4Uniform(u_tone, tone);
 }
 
-void SpriteShader::setColor(const Vec4 &color){
+void SpriteShaderBase::setColor(const Vec4 &color){
 	setVec4Uniform(u_color, color);
 }
 
-void SpriteShader::setModulate(const Vec4 &color){
+void SpriteShaderBase::setModulate(const Vec4 &color){
 	setVec4Uniform(u_modulate, color);
 }
 
-void SpriteShader::setOpacity(float value){
+void SpriteShaderBase::setOpacity(float value){
 	gl.Uniform1f(u_opacity, value);
 }
 
-void SpriteShader::setBushDepth(float value){
+void SpriteShaderBase::setBushDepth(float value){
 	gl.Uniform1f(u_bushDepth, value);
 }
 
-void SpriteShader::setBushOpacity(float value){
+void SpriteShaderBase::setBushOpacity(float value){
 	gl.Uniform1f(u_bushOpacity, value);
 }
 
 
+SpriteShader::SpriteShader(){
+	INIT_SHADER(sprite, sprite, SpriteShader);
+	SpriteShaderBase::SpriteShaderInit();
+}
+
+
 WMShader::WMShader(){
-	INIT_SHADER(worldMachine, worldMachine, WMShader);
-	SpriteShader::init();
+	INIT_SHADER(sprite, worldMachine, WMShader);
+	SpriteShaderBase::SpriteShaderInit();
+}
+
+
+WaterShader::WaterShader(){
+	INIT_SHADER(simple, water, WaterShader);
+	SpriteShaderBase::SpriteShaderInit();
 }
 
 

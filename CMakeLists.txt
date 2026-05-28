@@ -191,6 +191,7 @@ set(EMBEDDED_INPUT
 	shader/hue.frag
 	shader/sprite.frag
 	shader/worldMachine.frag
+	shader/water.frag
 	shader/plane.frag
 	shader/gray.frag
 	shader/bitmapBlit.frag
@@ -205,7 +206,6 @@ set(EMBEDDED_INPUT
 	shader/simple.vert
 	shader/simpleColor.vert
 	shader/sprite.vert
-	shader/worldMachine.vert
 	shader/tilemap.vert
 	shader/blur.frag
 	shader/blurH.vert

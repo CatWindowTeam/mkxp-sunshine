@@ -62,10 +62,7 @@ class Game_Map
   ANIMATED = [
     'blue_water',
     ]
-  FADE_ANIMATION_PANORAMA = [
-    'dark_water',
-    'green_water',
-    ]
+  FADE_ANIMATION_PANORAMA = []
   ONETOONE = [
     'blue_water',
     'green_water',
@@ -73,7 +70,7 @@ class Game_Map
     ]
   NOZOOM = [
     'dark_water',
-    #'green_water',
+    'green_water',
     ]
 
   ALWAYS_MOVING = [

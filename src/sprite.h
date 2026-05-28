@@ -73,7 +73,6 @@ public:
 	DECL_ATTR( WavePhase,    float   )
 	DECL_ATTR( Obscured,     bool    )
 	DECL_ATTR( Shader,       int     )
-	DECL_ATTR( startTime,    boost::chrono::high_resolution_clock::time_point)
 
 	void initDynAttribs();
 
@@ -82,6 +81,7 @@ private:
 
 	void draw();
 	void onGeometryChange(const Scene::Geometry &);
+	void defaultSpriteShaderInit(SpriteShaderBase &);
 
 	void releaseResources();
 	const char *klassName() const { return "sprite"; }
