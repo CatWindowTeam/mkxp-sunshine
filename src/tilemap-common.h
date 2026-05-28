@@ -69,8 +69,7 @@ enum AtSubPos{
 	BottomRightTable = 5
 };
 
-static inline void
-atSelectSubPos(FloatRect &pos, int i){
+static inline void atSelectSubPos(FloatRect &pos, int i){
 	switch (i){
 	case TopLeft:
 		return;

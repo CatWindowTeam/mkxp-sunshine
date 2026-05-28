@@ -54,7 +54,7 @@ struct SDLRWIoContext{
 	      filename(filename)
 	{
 		if (!ops)
-			crash("Failed to open file", Exception::SDLError, true);
+			throw Exception(Exception::SDLError, "Failed to open file: %s", SDL_GetError());
 	}
 
 	~SDLRWIoContext(){
@@ -69,6 +69,7 @@ static SDL_IOStream *getSDLRWops(PHYSFS_Io *io){
 }
 
 static PHYSFS_sint64 SDLRWIoRead(struct PHYSFS_Io *io, void *buf, PHYSFS_uint64 len){
+	// return SDL_ReadIO(getSDLRWops(io), buf, 1, len);
 	return SDL_ReadIO(getSDLRWops(io), buf, len);
 }
 
@@ -118,7 +119,6 @@ static PHYSFS_Io *createSDLRWIo(const char *filename){
 	try{
 		ctx = new SDLRWIoContext(filename);
 	}catch (const Exception &e){
-		
 		Debug() << "Failed mounting" << filename;
 		return 0;
 	}
@@ -562,7 +562,6 @@ openReadEnumCB(void *d, const char *dirpath, const char *filename){
 
 void FileSystem::openRead(OpenHandler &handler, const char *filename){
 	char buffer[512];
-	char msg[512];
 	size_t len = strcpySafe(buffer, filename, sizeof(buffer), -1);
 	char *delim;
 
@@ -588,7 +587,8 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 		dir = buffer;
 	}
 
-	OpenReadEnumData data(handler, file, len + buffer - delim - !root, p->havePathCache ? &p->pathCache : 0);
+	OpenReadEnumData data(handler, file, len + buffer - delim - !root,
+	                      p->havePathCache ? &p->pathCache : 0);
 
 	if (p->havePathCache){
 		/* Get the list of files contained in this directory
@@ -601,22 +601,17 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 		PHYSFS_enumerate(dir, openReadEnumCB, &data);
 	}
 
-	if (data.physfsError){
-		snprintf(msg, sizeof msg, "PhysFS: %s", data.physfsError);
-		crash(msg, Exception::PHYSFSError, true);
-	}
+	if (data.physfsError)
+		throw Exception(Exception::PHYSFSError, "PhysFS: %s", data.physfsError);
 
-	if (data.matchCount == 0){
-		snprintf(msg, sizeof msg, "NoFileError: %s", data.physfsError);
-		crash(msg, Exception::NoFileError, true);
-	}
+	if (data.matchCount == 0)
+		throw Exception(Exception::NoFileError, "%s", filename);
 }
 
 void FileSystem::openReadRaw(SDL_IOStream* &stream, const char *filename){
 	PHYSFS_File *handle = PHYSFS_openRead(filename);
-	if (!handle){
+	if (!handle)
 		throw Exception(Exception::NoFileError, "%s", filename);
-	}
 
 	initReadOps(handle, stream);
 }

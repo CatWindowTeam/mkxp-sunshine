@@ -564,9 +564,7 @@ struct GraphicsPrivate{
 	}
 
 	void metaBlitBufferFlippedScaled(){
-		GLMeta::blitRectangle(IntRect(0, 0, scRes.x, scRes.y),
-		                      IntRect(scOffset.x, scSize.y+scOffset.y, scSize.x, -scSize.y),
-		                      threadData->config.smoothScaling);
+		GLMeta::blitRectangle(IntRect(0, 0, scRes.x, scRes.y), IntRect(scOffset.x, scSize.y+scOffset.y, scSize.x, -scSize.y), threadData->config.smoothScaling);
 	}
 
 	void redrawScreen(){

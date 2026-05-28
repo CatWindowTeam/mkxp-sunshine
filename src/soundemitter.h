@@ -51,9 +51,7 @@ struct SoundEmitter{
 	SoundEmitter(const Config &conf);
 	~SoundEmitter();
 
-	void play(const std::string &filename,
-	          int volume,
-	          int pitch);
+	void play(const std::string &filename, int volume, int pitch);
 
 	void stop();
 

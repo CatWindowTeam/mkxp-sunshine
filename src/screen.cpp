@@ -11,10 +11,6 @@
 #include "pipe.h"
 #include "meow.h"
 
-static void showInitError(const std::string &msg){
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Sunshine Error", msg.c_str(), 0);
-}
-
 static bool readMessage(Pipe &ipc, char *buf, size_t size){
 	size_t index = 0;
 	while (index < size - 1) {

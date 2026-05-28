@@ -970,8 +970,7 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData){
 	p->hasFocus = false;
 	p->destroyReq = false;
 
-	p->window = SDL_CreateWindow(findtext(TRSTR_KEYBIND_TITLE, "Key bindings"),
-	                             winSize.x, winSize.y, SDL_WINDOW_INPUT_FOCUS);
+	p->window = SDL_CreateWindow(findtext(TRSTR_KEYBIND_TITLE, "Key bindings"), winSize.x, winSize.y, SDL_WINDOW_INPUT_FOCUS);
 	p->winSurf = SDL_GetWindowSurface(p->window);
 	p->winID = SDL_GetWindowID(p->window);
 
@@ -1045,9 +1044,7 @@ SettingsMenu::~SettingsMenu() {
 	delete p;
 }
 
-bool SettingsMenu::onEvent(const SDL_Event &event,
-                           const std::map<int, SDL_Joystick*> &joysticks)
-{
+bool SettingsMenu::onEvent(const SDL_Event &event, const std::map<int, SDL_Joystick*> &joysticks) {
 	switch (event.window.type) {
 		case SDL_EVENT_WINDOW_SHOWN : // SDL is bugged and doesn't give us a first FOCUS_GAINED event
 		case SDL_EVENT_WINDOW_FOCUS_GAINED :

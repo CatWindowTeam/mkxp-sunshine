@@ -141,8 +141,7 @@ static BlitVec calcBlitsInt(ColumnVec &srcCols, ColumnVec &dstCols){
 			}
 			else{
 				/* srcCol fits perfectly into dstCol */
-				blits.push_back(Blit(srcCol.x, srcCol.y,
-				                     dstCol.x, dstCol.y, dstCol.h));
+				blits.push_back(Blit(srcCol.x, srcCol.y, dstCol.x, dstCol.y, dstCol.h));
 			}
 		}
 	}

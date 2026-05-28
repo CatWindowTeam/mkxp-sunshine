@@ -160,10 +160,6 @@ int rgssThreadFun(void *userdata){
 	return 0;
 }
 
-static void showInitError(const std::string &msg){
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error :(", msg.c_str(), 0);
-}
-
 static void setupWindowIcon(const Config &conf, SDL_Window *win){
 	SDL_IOStream *iconSrc;
 
@@ -241,13 +237,13 @@ int main(int argc, char *argv[]){
 
 #ifdef STEAM
 	if (!STEAMSHIM_init()){
-		crash("Could not initialize Steamworks API", Exception::MEOW, true);
-		return 0
+		crash("Could not initialize Steamworks API", Exception::MEOW, false);
+		return 0;
 	}
 #endif
 
 	if (!EventThread::allocUserEvents()){
-		crash("Error allocating SDL user events", Exception::MEOW, true);
+		crash("Error allocating SDL user events", Exception::MEOW, false);
 		return 0;
 	}
 
@@ -281,7 +277,7 @@ int main(int argc, char *argv[]){
 	if (!conf.gameFolder.empty()){
 		if (chdir(conf.gameFolder.c_str()) != 0){
 			snprintf(msg, sizeof msg, "Unable to switch into gameFolder %s", conf.gameFolder);
-			crash(msg, Exception::MEOW, true);
+			crash(msg, Exception::MEOW, false);
 			return 0;
 		}
 	}
@@ -337,7 +333,7 @@ int main(int argc, char *argv[]){
 
 	if (!alcDev){
 		SDL_DestroyWindow(win);
-		crash("Error opening OpenAL device", Exception::MEOW, true);
+		crash("Error opening OpenAL device", Exception::MEOW, false);
 		TTF_Quit();
 		SDL_Quit();
 
@@ -391,7 +387,7 @@ int main(int argc, char *argv[]){
 	if (rtData.rqTermAck)
 		SDL_WaitThread(rgssThread, 0);
 	else
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and OneShot: Sunshine will now force quit", win);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and Sunshine will now force quit", win);
 
 	if (!rtData.rgssErrorMsg.empty())
 		crash(rtData.rgssErrorMsg.c_str(), Exception::MEOW, false);

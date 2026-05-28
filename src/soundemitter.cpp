@@ -73,8 +73,7 @@ private:
 };
 
 /* Before: [a][b][c][d], After (index=1): [a][c][d][b] */
-static void
-arrayPushBack(std::vector<size_t> &array, size_t size, size_t index){
+static void arrayPushBack(std::vector<size_t> &array, size_t size, size_t index){
 	size_t v = array[index];
 
 	for (size_t t = index; t < size-1; ++t)
@@ -227,8 +226,6 @@ SoundBuffer *SoundEmitter::allocateBuffer(const std::string &filename){
 			char buf[512];
 			snprintf(buf, sizeof(buf), "Unable to decode sound: %s: %s", filename.c_str(), Sound_GetError());
 			crash(msg, Exception::MEOW, false);
-			Debug() << buf;
-
 			return 0;
 		}
 
