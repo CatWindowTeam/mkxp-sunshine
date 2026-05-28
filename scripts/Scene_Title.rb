@@ -102,7 +102,7 @@ class Scene_Title
     # Play title BGM
     if File.exist?("badend.lock")
       #TODO: fix audio values
-      Audio.bgm_play("Audio/BGM/MyBurdenIsDead.ogg", 100, 100)
+      Audio.bgm_play("Audio/BGM/MyBurdenIsDead.ogg", bgm_volume, 100)
     else
       $game_system.bgm_play($data_system.title_bgm)
     end

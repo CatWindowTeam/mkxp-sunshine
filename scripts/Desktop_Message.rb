@@ -193,7 +193,7 @@ class Desktop_Message
         refresh
         @viewport.visible = true
         @fade_in = true
-        Audio.se_play("Audio/SE/pc_messagebox.wav", 90, 150)
+        Audio.se_play("Audio/SE/pc_messagebox.wav", (sfx_volume * 0.9).to_i, 150)
       end
     end
 
