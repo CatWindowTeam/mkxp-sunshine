@@ -39,7 +39,10 @@ struct Exception{
 		/* New types introduced in mkxp */
 		PHYSFSError,
 		SDLError,
-		MKXPError
+		MKXPError,
+
+		// For crash()
+		MEOW
 	};
 
 	Type type;

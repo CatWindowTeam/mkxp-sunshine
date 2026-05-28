@@ -89,7 +89,7 @@ int rgssThreadFun(void *userdata){
 
 	if (!glCtx){
 		snprintf(msg, sizeof msg, "Error creating context: %s", SDL_GetError());
-		crash(msg);
+		crash(msg, Exception::MEOW, false);
 		rgssThreadError(threadData, std::string(msg));
 		return 0;
 	}
@@ -98,7 +98,7 @@ int rgssThreadFun(void *userdata){
 		initGLFunctions();
 	}
 	catch (const Exception &exc){
-		crash(exc.msg.c_str());
+		crash(exc.msg.c_str(), Exception::MEOW, false);
 		rgssThreadError(threadData, exc.msg);
 		SDL_GL_DestroyContext(glCtx);
 		return 0;
@@ -127,7 +127,7 @@ int rgssThreadFun(void *userdata){
 	ALCcontext *alcCtx = alcCreateContext(threadData->alcDev, 0);
 
 	if (!alcCtx){
-		crash("Error creating OpenAL context");
+		crash("Error creating OpenAL context", Exception::MEOW, false);
 		rgssThreadError(threadData, "Error creating OpenAL context");
 		SDL_GL_DestroyContext(glCtx);
 		return 0;
@@ -138,7 +138,7 @@ int rgssThreadFun(void *userdata){
 	try{
 		SharedState::initInstance(threadData);
 	}catch (const Exception &exc){
-		crash(exc.msg.c_str());
+		crash(exc.msg.c_str(), Exception::MEOW, false);
 		rgssThreadError(threadData, exc.msg);
 		alcDestroyContext(alcCtx);
 		SDL_GL_DestroyContext(glCtx);
@@ -194,7 +194,7 @@ static void setGamePathInRegistry() {
 			long keyCreateError = RegCreateKeyEx(HKEY_CURRENT_USER, TEXT("Software\\OneShot\\"), 0L, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &key, NULL);
 
 			if (keyCreateError != ERROR_SUCCESS){
-				crash("Unable to create key in registry.");
+				crash("Unable to create key in registry", Exception::MEOW, false);
 			}
 			else {
 				keyOpenError = ERROR_SUCCESS;
@@ -202,12 +202,12 @@ static void setGamePathInRegistry() {
 		}
 
 		if (keyOpenError != ERROR_SUCCESS){
-			crash("Unable to open registry.");
+			crash("Unable to open registry.", Exception::MEOW, false);
 		}
 		else {
 			DWORD dataSize = (strlen(dataDir) + 1) * sizeof(char);
 			if (RegSetValueEx(key, TEXT("GameDirectory"), 0, REG_SZ, (LPBYTE)dataDir, dataSize) != ERROR_SUCCESS){
-				showInitError("Unable to set GameDirectory registry value.");
+				crash("Unable to set GameDirectory registry value", Exception::MEOW, false);
 			}
 			RegCloseKey(key);
 		}
@@ -235,19 +235,19 @@ int main(int argc, char *argv[]){
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
 		snprintf(msg, sizeof msg, "Error initializing SDL: %s", SDL_GetError());
-		crash(msg);
+		crash(msg, Exception::MEOW, false);
 		return 0;
 	}
 
 #ifdef STEAM
 	if (!STEAMSHIM_init()){
-		crash("Could not initialize Steamworks API");
-		return 0;
+		crash("Could not initialize Steamworks API", Exception::MEOW, true);
+		return 0
 	}
 #endif
 
 	if (!EventThread::allocUserEvents()){
-		crash("Error allocating SDL user events");
+		crash("Error allocating SDL user events", Exception::MEOW, true);
 		return 0;
 	}
 
@@ -278,12 +278,13 @@ int main(int argc, char *argv[]){
 		}
 	#endif
 	
-	if (!conf.gameFolder.empty())
+	if (!conf.gameFolder.empty()){
 		if (chdir(conf.gameFolder.c_str()) != 0){
 			snprintf(msg, sizeof msg, "Unable to switch into gameFolder %s", conf.gameFolder);
-			crash(msg);
+			crash(msg, Exception::MEOW, true);
 			return 0;
 		}
+	}
 
 	extern int screenMain(Config &conf);
 	if (conf.screenMode)
@@ -294,14 +295,13 @@ int main(int argc, char *argv[]){
 
 	if (TTF_Init() == false){
 		snprintf(msg, sizeof msg, "Error initializing SDL_ttf: %s", SDL_GetError());
-		crash(msg);
+		crash(msg, Exception::MEOW, false);
 		SDL_Quit();
-		return 0;
 	}
 
 	if (Sound_Init() == false){
 		snprintf(msg, sizeof msg, "Error initializing SDL_sound: %s", Sound_GetError());
-		crash(msg);
+		crash(msg, Exception::MEOW, false);
 		TTF_Quit();
 		SDL_Quit();
 
@@ -321,7 +321,7 @@ int main(int argc, char *argv[]){
 
 	if (!win){
 		snprintf(msg, sizeof msg, "Error creating window: %s", SDL_GetError());
-		crash(msg);
+		crash(msg, Exception::MEOW, false);
 		return 0;
 	}
 
@@ -336,8 +336,8 @@ int main(int argc, char *argv[]){
 	ALCdevice *alcDev = alcOpenDevice(0);
 
 	if (!alcDev){
-		crash("Error opening OpenAL device");
 		SDL_DestroyWindow(win);
+		crash("Error opening OpenAL device", Exception::MEOW, true);
 		TTF_Quit();
 		SDL_Quit();
 
@@ -393,9 +393,8 @@ int main(int argc, char *argv[]){
 	else
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and OneShot: Sunshine will now force quit", win);
 
-	if (!rtData.rgssErrorMsg.empty()){
-		crash(rtData.rgssErrorMsg.c_str());
-	}
+	if (!rtData.rgssErrorMsg.empty())
+		crash(rtData.rgssErrorMsg.c_str(), Exception::MEOW, false);
 
 	/* Clean up any remainin events */
 	eventThread.cleanup();

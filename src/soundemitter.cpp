@@ -27,6 +27,7 @@
 #include "config.h"
 #include "util.h"
 #include "debugwriter.h"
+#include "meow.h"
 
 #include <SDL3_sound/SDL_sound.h>
 
@@ -197,8 +198,7 @@ struct SoundOpenHandler : FileSystem::OpenHandler{
 
 		ALenum alFormat = chooseALFormat(sampleSize, sample->actual.channels);
 
-		AL::Buffer::uploadData(buffer->alBuffer, alFormat, sample->buffer,
-							   buffer->bytes, sample->actual.freq);
+		AL::Buffer::uploadData(buffer->alBuffer, alFormat, sample->buffer, buffer->bytes, sample->actual.freq);
 
 		Sound_FreeSample(sample);
 
@@ -207,6 +207,7 @@ struct SoundOpenHandler : FileSystem::OpenHandler{
 };
 
 SoundBuffer *SoundEmitter::allocateBuffer(const std::string &filename){
+	char msg[512];
 	SoundBuffer *buffer = bufferHash.value(filename, 0);
 
 	if (buffer){
@@ -224,8 +225,8 @@ SoundBuffer *SoundEmitter::allocateBuffer(const std::string &filename){
 
 		if (!buffer){
 			char buf[512];
-			snprintf(buf, sizeof(buf), "Unable to decode sound: %s: %s",
-			         filename.c_str(), Sound_GetError());
+			snprintf(buf, sizeof(buf), "Unable to decode sound: %s: %s", filename.c_str(), Sound_GetError());
+			crash(msg, Exception::MEOW, false);
 			Debug() << buf;
 
 			return 0;

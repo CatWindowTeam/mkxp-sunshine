@@ -21,6 +21,7 @@
 
 #include "aldatasource.h"
 #include "exception.h"
+#include "meow.h"
 
 #include <SDL3_sound/SDL_sound.h>
 
@@ -29,6 +30,7 @@ struct SDLSoundSource : ALDataSource{
 	SDL_IOStream &srcOps;
 	uint8_t sampleSize;
 	bool looped;
+	char msg[512];
 
 	ALenum alFormat;
 	ALsizei alFreq;
@@ -44,7 +46,8 @@ struct SDLSoundSource : ALDataSource{
 
 		if (!sample){
 			SDL_CloseIO(&ops);
-			throw Exception(Exception::SDLError, "SDL_sound: %s", Sound_GetError());
+			snprintf(msg, sizeof msg, "SDL_sound: %s", Sound_GetError());
+			crash(msg, Exception::SDLError, true);
 		}
 
 		sampleSize = formatSampleSize(sample->actual.format);

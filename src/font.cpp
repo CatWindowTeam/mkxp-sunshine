@@ -27,6 +27,7 @@
 #include "boost-hash.h"
 #include "util.h"
 #include "config.h"
+#include "meow.h"
 
 #include <string>
 #include <utility>
@@ -101,6 +102,7 @@ void SharedFontState::initFontSetCB(SDL_IOStream* &ops, const std::string &filen
 }
 
 TTF_Font *SharedFontState::getFont(std::string family, int size){
+	char msg[512];
 	if (family.empty())
 		family = "Terminus (TTF)"; // terminus hardcoded :3c
 
@@ -126,7 +128,7 @@ TTF_Font *SharedFontState::getFont(std::string family, int size){
 	SDL_IOStream *ops;
 
 	if (family.empty()){
-		throw Exception(Exception::RGSSError, "font does not exist");
+		crash("font does not exist", Exception::RGSSError, true);
 	}else{
 		/* Use 'other' path as alternative in case
 		 * we have no 'regular' styled font asset */
@@ -140,8 +142,10 @@ TTF_Font *SharedFontState::getFont(std::string family, int size){
 
 	font = TTF_OpenFontIO(ops, 1, size);
 
-	if (!font)
-		throw Exception(Exception::SDLError, "%s", SDL_GetError());
+	if (!font){
+		snprintf(msg, sizeof msg, "%s", SDL_GetError());
+		crash(msg, Exception::SDLError, true);
+	}
 
 	p->pool.insert(key, font);
 	return font;

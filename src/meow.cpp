@@ -6,8 +6,10 @@
 #include <SDL3_sound/SDL_sound.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3/SDL_video.h>
+
 #include "meow.h"
 #include "eventthread.h"
+#include "exception.h"
 #include "config.h"
 #include "gl-debug.h"
 #include "gl-fun.h"
@@ -38,7 +40,7 @@ static inline const char* glGetStringInt(GLenum name){
 }
 
 
-void crash(const char* reason){
+void crash(const char* reason, Exception::Type t, bool do_exp){
 	char msg[1024];
 	snprintf(msg, sizeof msg, "Error occured! Error message: %s\n\n Want to create a crash log? You can share the crash log with the developers and help resolve the issue.", reason);
 	SDL_MessageBoxData messageboxdata = {
@@ -104,4 +106,9 @@ void crash(const char* reason){
 			printf("[CRASHLOG] Failed to write crashdump file\n");
 		}
 	}
+
+	if(do_exp == true){
+		if(!t == Exception::MEOW)
+			throw Exception(t, msg);
+	}	
 }

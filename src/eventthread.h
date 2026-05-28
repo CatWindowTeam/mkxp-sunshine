@@ -114,8 +114,7 @@ private:
 
 	void resetInputStates();
 	void setFullscreen(SDL_Window *, bool mode);
-	void updateCursorState(bool inWindow,
-	                       const SDL_Rect &screen);
+	void updateCursorState(bool inWindow, const SDL_Rect &screen);
 
 	bool fullscreen;
 	bool showCursor;

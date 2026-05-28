@@ -21,6 +21,7 @@
 
 #include "aldatasource.h"
 #include "exception.h"
+#include "meow.h"
 
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
@@ -79,7 +80,7 @@ struct VorbisSource : ALDataSource{
 
 		if (error){
 			SDL_CloseIO(&src);
-			throw Exception(Exception::MKXPError, "Vorbisfile: Cannot read ogg file");
+			crash("Vorbisfile: Cannot read ogg file", Exception::MKXPError, true);
 		}
 
 		/* Extract bitstream info */
@@ -89,7 +90,7 @@ struct VorbisSource : ALDataSource{
 		if (info.channels > 2){
 			ov_clear(&vf);
 			SDL_CloseIO(&src);
-			throw Exception(Exception::MKXPError, "Cannot handle audio with more than 2 channels");
+			crash("Cannot handle audio with more than 2 channels", Exception::MKXPError, true);
 		}
 
 		info.alFormat = chooseALFormat(sizeof(int16_t), info.channels);

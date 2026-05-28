@@ -513,8 +513,7 @@ void Sprite::draw(){
 		base = &shader;
 	}
 	else{
-		switch (p->shader)
-		{
+		switch (p->shader){
 		case ShaderType::SHADER_worldMachine:
 			{
 				WMShader &shader = shState->shaders().worldMachine;

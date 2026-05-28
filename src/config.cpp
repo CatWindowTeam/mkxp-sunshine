@@ -168,19 +168,21 @@ void Config::read(int argc, char *argv[]){
 
 	commonDataPath = prefPath(".", "Oneshot");
 
-	//Hardcode some ini/version settings
 	rgssVersion = 1;
-	game.title = "OneShot: Sunshine";
+	if(windowTitle == "")
+		game.title = "OneShot: Sunshine";
 	game.scripts = "Data/xScripts.rxdata";
-
-	if (EnableSixteenByNine){
-		defScreenW = 1280;
-		defScreenH = 720;	
-	}else{
-		defScreenW = 640;
-		defScreenH = 480;
+	
+	if(defScreenW == 0 || defScreenH == 0){
+		if (EnableSixteenByNine){
+			defScreenW = 1280;
+			defScreenH = 720;	
+		}else{
+			defScreenW = 640;
+			defScreenH = 480;
+		}
 	}
-
+	
 #ifdef STEAM
 	/* Override fullscreen config if Big Picture */
 	if (const char *env = std::getenv("SteamTenfoot")){

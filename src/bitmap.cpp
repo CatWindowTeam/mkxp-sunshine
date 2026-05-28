@@ -47,9 +47,9 @@
 
 #define GUARD_MEGA \
 	{ \
-		if (p->megaSurface) \
-			throw Exception(Exception::MKXPError, \
-                            "Operation not supported for mega surfaces"); \
+		if (p->megaSurface) { \
+			crash("Operation not supported for mega surfaces", Exception::MKXPError, true); \
+		} \
 	}
 
 #define OUTLINE_SIZE 1
@@ -229,7 +229,7 @@ Bitmap::Bitmap(const char *filename){
 
 	if (!imgSurf){
 		snprintf(msg, sizeof msg, "Error loading image '%s': %s", filename, SDL_GetError());
-		throw Exception(Exception::SDLError, msg);
+		crash(msg, Exception::SDLError, true);
 	}
 	p->ensureFormat(imgSurf, SDL_PIXELFORMAT_ABGR8888);
 
@@ -265,8 +265,7 @@ Bitmap::Bitmap(const char *filename){
 
 Bitmap::Bitmap(int width, int height){
 	if (width <= 0 || height <= 0){
-		crash("failed to create bitmap");
-		throw Exception(Exception::RGSSError, "failed to create bitmap"); 
+		crash("failed to create bitmap", Exception::RGSSError, true);
 	}
 
 	TEXFBO tex = shState->texPool().request(width, height);
@@ -411,8 +410,7 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 		}
 		else{
 			/* Clipped blit */
-			GLMeta::subRectImageUpload(blitTemp->w, bltRect.x - dstRect.x, bltRect.y - dstRect.y,
-			                           bltRect.x, bltRect.y, bltRect.w, bltRect.h, blitTemp, GL_RGBA);
+			GLMeta::subRectImageUpload(blitTemp->w, bltRect.x - dstRect.x, bltRect.y - dstRect.y, bltRect.x, bltRect.y, bltRect.w, bltRect.h, blitTemp, GL_RGBA);
 			GLMeta::subRectImageEnd();
 		}
 

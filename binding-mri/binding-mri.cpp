@@ -323,7 +323,7 @@ static void runCustomScript(const std::string &filename){
 
 	if (!readFileSDL(filename.c_str(), scriptData)){
 		snprintf(msg, sizeof msg, "Unable to open %s", filename);
-		crash(msg);
+		crash(msg, Exception::MEOW, false);
 		return;
 	}
 
@@ -342,11 +342,11 @@ struct BacktraceData{
 static void runRMXPScripts(BacktraceData &btData){
 	const Config &conf = shState->rtData().config;
 	const std::string &scriptPack = conf.game.scripts;
-	char msg[512];
+	char msg[1024];
 	
 	if (!shState->fileSystem().exists(scriptPack.c_str())){
 		snprintf(msg, sizeof msg, "Unable to open '%s'", scriptPack.c_str());
-		crash(msg);
+		crash(msg, Exception::MEOW, false);
 		return;
 	}
 
@@ -356,15 +356,14 @@ static void runRMXPScripts(BacktraceData &btData){
 	 * still go wrong */
 	try{
 		scriptArray = kernelLoadDataInt(scriptPack.c_str(), false);
-		printf("[runRMXPScripts] %s\n", scriptPack.c_str());
 	}catch (const Exception &e){
 		snprintf(msg, sizeof msg, "Failed to read script data: %s", e.msg);
-		crash(msg);
+		crash(msg, Exception::MEOW, false);
 		return;
 	}
 
 	if (!RB_TYPE_P(scriptArray, RUBY_T_ARRAY)){
-		crash("Failed to read script data");
+		crash("Failed to read script data", Exception::MEOW, false);
 		return;
 	}
 
@@ -374,9 +373,6 @@ static void runRMXPScripts(BacktraceData &btData){
 	rb_gv_set("$RGSS_SCRIPTS", scriptArray);
 
 	long scriptCount = RARRAY_LEN(scriptArray);
-	#ifdef DEBUG
-		printf("[runRMXPScripts] Scripts count: %ld\n", scriptCount);
-	#endif
 	std::string decodeBuffer;
 	decodeBuffer.resize(0x1000);
 
@@ -411,7 +407,7 @@ static void runRMXPScripts(BacktraceData &btData){
 		if (result != Z_OK){
 			static char buffer[256];
 			snprintf(buffer, sizeof(buffer), "Error decoding script %ld: '%s'\n", i, RSTRING_PTR(scriptName));
-			crash(buffer);
+			crash(buffer, Exception::MEOW, false);
 
 			break;
 		}
@@ -510,7 +506,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 
 	char ms[640];
 	snprintf(&ms[0], 640, "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
-	crash(ms);
+	crash(ms, Exception::MEOW, false);
 	exit(0);
 }
 

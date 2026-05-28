@@ -38,6 +38,7 @@
 #include "vertex.h"
 #include "tileatlas.h"
 #include "tilemap-common.h"
+#include "meow.h"
 
 #include <sigc++/connection.h>
 
@@ -400,7 +401,7 @@ struct TilemapPrivate {
 		atlas.size = TileAtlas::minSize(atlas.efTilesetH, glState.caps.maxTexSize);
 
 		if (atlas.size.x < 0)
-			throw Exception(Exception::MKXPError, "Cannot allocate big enough texture for tileset atlas");
+			crash("Cannot allocate big enough texture for tileset atlas", Exception::MKXPError, true);
 	}
 
 	void updateAutotileInfo(){

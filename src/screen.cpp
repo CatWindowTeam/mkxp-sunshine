@@ -39,7 +39,7 @@ int screenMain(Config &conf){
 
 	if (!win){
 		snprintf(msg, sizeof msg, "Error creating window: %s", SDL_GetError());
-		crash(msg);
+		crash(msg, Exception::MEOW, false);
 		return 0;
 	}
 
