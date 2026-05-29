@@ -235,13 +235,13 @@ class Window_Message < Window_Selectable
         next
       end
       # \.
-      if c == "\001"
+      if c == "\001" && !(Input.press?(Input::DEBUGACTION) && Settings[:debug])
         # Pause
         @text_pause = autoMash ? 0 : 10
         return
       end
       # \|
-      if c == "\002"
+      if c == "\002" && !(Input.press?(Input::DEBUGACTION) && Settings[:debug])
         # Pause
         @text_pause = autoMash ? 0 : 10*4
         return
@@ -407,7 +407,7 @@ class Window_Message < Window_Selectable
         end
         tick
       end
-      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL) || (Input.press?(Input::R) && $game_switches[253])
+      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL) || (Input.press?(Input::R) && $game_switches[253]) || Input.press?(Input::DEBUGACTION) && Settings[:debug]
         @skip_text = true
       end
     else
@@ -443,7 +443,7 @@ class Window_Message < Window_Selectable
         self.pause = true
 
         # Advance/Close message
-        if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL) || (Input.press?(Input::R) && $game_switches[253])
+        if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL) || (Input.press?(Input::R) && $game_switches[253]) || Input.press?(Input::DEBUGACTION) && Settings[:debug]
           if @text.length <= 0
             terminate_message
           else
