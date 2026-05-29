@@ -13,7 +13,6 @@ Game_Battler_2
 Game_Battler_3
 Game_BattleAction
 Game_Actor
-Game_Enemy
 Game_Actors
 Game_Party
 Game_Map
@@ -31,7 +30,6 @@ Game_FastTravel
 Settings
 
 Sprite_Character
-Sprite_Battler
 Sprite_Picture
 Sprite_Timer
 Sprite_Light
@@ -44,32 +42,13 @@ FastTravel
 
 Window_Base
 Window_Selectable
-Window_Command
 Window_Help
-Window_Gold
-Window_PlayTime
-Window_Steps
-Window_MenuStatus
 Window_Item
-Window_Target
-Window_EquipLeft
-Window_EquipRight
-Window_EquipItem
-Window_Status
-Window_SaveFile
 Window_Settings
-Window_ShopCommand
-Window_ShopBuy
-Window_ShopSell
-Window_ShopNumber
-Window_ShopStatus
 Window_NameEdit
 Window_NameInput
 Window_InputNumber
 Window_Message
-Window_PartyCommand
-Window_BattleStatus
-Window_BattleResult
 Window_DebugLeft
 Window_DebugRight
 Window_MainMenu
@@ -84,15 +63,6 @@ Interpreter_7
 
 Scene_Title
 Scene_Map
-Scene_Menu
-Scene_Item
-Scene_Skill
-Scene_Equip
-Scene_Status
-Scene_File
-Scene_Save
-Scene_Load
-Scene_End
 Scene_Name
 Scene_Debug
 

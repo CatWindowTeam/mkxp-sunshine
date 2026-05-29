@@ -19,7 +19,6 @@ set(scripts
   Game_Character_2.rb
   Game_Character_3.rb
   Game_CommonEvent.rb
-  Game_Enemy.rb
   Game_Event.rb
   Game_FastTravel.rb
   Game_Follower.rb
@@ -51,20 +50,10 @@ set(scripts
   RPG.rb
   SaveLoad.rb
   Scene_Debug.rb
-  Scene_End.rb
-  Scene_Equip.rb
-  Scene_File.rb
-  Scene_Item.rb
-  Scene_Load.rb
   Scene_Map.rb
-  Scene_Menu.rb
   Scene_Name.rb
-  Scene_Save.rb
-  Scene_Skill.rb
-  Scene_Status.rb
   Scene_Title.rb
   Script.rb
-  Sprite_Battler.rb
   Sprite_Character.rb
   Sprite_Footprint.rb
   Sprite_Footsplash.rb
@@ -74,36 +63,17 @@ set(scripts
   Sprite_Timer.rb
   Spriteset_Map.rb
   Window_Base.rb
-  Window_BattleResult.rb
-  Window_BattleStatus.rb
-  Window_Command.rb
   Window_DebugLeft.rb
   Window_DebugRight.rb
-  Window_EquipItem.rb
-  Window_EquipLeft.rb
-  Window_EquipRight.rb
-  Window_Gold.rb
   Window_Help.rb
   Window_InputNumber.rb
   Window_Item.rb
   Window_MainMenu.rb
-  Window_MenuStatus.rb
   Window_Message.rb
   Window_NameEdit.rb
   Window_NameInput.rb
-  Window_PartyCommand.rb
-  Window_PlayTime.rb
-  Window_SaveFile.rb
   Window_Selectable.rb
   Window_Settings.rb
-  Window_ShopBuy.rb
-  Window_ShopCommand.rb
-  Window_ShopNumber.rb
-  Window_ShopSell.rb
-  Window_ShopStatus.rb
-  Window_Status.rb
-  Window_Steps.rb
-  Window_Target.rb
   i18n_English.rb
   i18n_Japanese.rb
   i18n_Language.rb
