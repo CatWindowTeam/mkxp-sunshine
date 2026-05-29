@@ -3,6 +3,7 @@ uniform mat4 projMat;
 
 uniform vec2 texSizeInv;
 uniform vec2 translation;
+uniform vec2 offset;
 
 uniform float aniIndex;
 
@@ -10,6 +11,7 @@ attribute vec2 position;
 attribute vec2 texCoord;
 
 varying vec2 v_texCoord;
+varying vec2 worldCoord;
 
 const float atAreaW = 96.0;
 const float atAreaH = 128.0*7.0;
@@ -24,4 +26,5 @@ void main(){
 	gl_Position = projMat * vec4(position + translation, 0, 1);
 
 	v_texCoord = tex * texSizeInv;
+	worldCoord = position + offset * 32.0;
 }

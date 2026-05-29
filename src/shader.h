@@ -191,6 +191,17 @@ public:
 	WaterShader();
 };
 
+class TilemapWaterShader : public ShaderBase{
+public:
+	TilemapWaterShader();
+
+	void setAniIndex(int value);
+	void setOffset(const Vec2i &value);
+
+private:
+	GLint u_aniIndex, u_offset;
+};
+
 class PlaneShader : public ShaderBase{
 public:
 	PlaneShader();
@@ -319,6 +330,7 @@ private:
 	X(sprite,         SpriteShader,       Sprite) \
 	X(worldMachine,   WMShader,           WorldMachine) \
 	X(water,	      WaterShader,        Water) \
+	X(tilemapWater,	  TilemapWaterShader, TilemapWater) \
 	X(plane,          PlaneShader,        Plane) \
 	X(gray,           GrayShader,         Gray) \
 	X(tilemap,        TilemapShader,      TileMap) \

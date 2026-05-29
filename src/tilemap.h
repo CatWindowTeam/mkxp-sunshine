@@ -25,6 +25,7 @@
 #include "disposable.h"
 
 #include "util.h"
+#include <boost/chrono.hpp>
 
 class Viewport;
 class Bitmap;
@@ -34,6 +35,7 @@ struct TilemapPrivate;
 
 class Tilemap : public Disposable{
 public:
+
 	class Autotiles{
 	public:
 		void set(int i, Bitmap *bitmap);

@@ -32,6 +32,7 @@
 #include "sprite.frag.xxd"
 #include "worldMachine.frag.xxd"
 #include "water.frag.xxd"
+#include "tilemapWater.frag.xxd"
 #include "hue.frag.xxd"
 #include "trans.frag.xxd"
 #include "transSimple.frag.xxd"
@@ -488,6 +489,24 @@ TilemapShader::TilemapShader(){
 
 void TilemapShader::setAniIndex(int value){
 	gl.Uniform1f(u_aniIndex, value);
+}
+
+
+TilemapWaterShader::TilemapWaterShader(){
+	INIT_SHADER(tilemap, tilemapWater, TilemapWaterShader);
+
+	ShaderBase::init();
+
+	GET_U(aniIndex);
+	GET_U(offset);
+}
+
+void TilemapWaterShader::setAniIndex(int value){
+	gl.Uniform1f(u_aniIndex, value);
+}
+
+void TilemapWaterShader::setOffset(const Vec2i &value){
+	gl.Uniform2f(u_offset, value.x, value.y);
 }
 
 
