@@ -40,6 +40,7 @@
 #include "tilemap-common.h"
 
 #include <sigc++/connection.h>
+#include <boost/chrono.hpp>
 
 #include <string.h>
 #include <stdint.h>
@@ -222,6 +223,8 @@ struct ZLayer : public ViewportElement {
 };
 
 struct TilemapPrivate {
+    boost::chrono::high_resolution_clock::time_point startTime = boost::chrono::high_resolution_clock::now();
+
 	Viewport *viewport;
 
 	Bitmap *autotiles[autotileCount];
@@ -726,12 +729,28 @@ struct TilemapPrivate {
 	}
 
 	void bindShader(ShaderBase *&shaderVar){
-		if (tiles.animated){
+		if (tiles.animated){ // it is advisable to check for water in some way ッ
+			TilemapWaterShader &tilemapShader = shState->shaders().tilemapWater;
+			tilemapShader.bind();
+
+			if (tiles.animated)
+				tilemapShader.setAniIndex(tiles.frameIdx);
+			
+			tilemapShader.setOffset(viewpPos);
+
+			boost::chrono::high_resolution_clock::time_point currentTime = boost::chrono::high_resolution_clock::now();
+			boost::chrono::duration<float> elapsed = currentTime - startTime;
+			tilemapShader.setTime(elapsed.count());
+
+			shaderVar = &tilemapShader;
+		}/*
+		else if(tiles.animated){
 			TilemapShader &tilemapShader = shState->shaders().tilemap;
 			tilemapShader.bind();
 			tilemapShader.setAniIndex(tiles.frameIdx);
+
 			shaderVar = &tilemapShader;
-		}
+		}*/
 		else{
 			shaderVar = &shState->shaders().simple;
 			shaderVar->bind();

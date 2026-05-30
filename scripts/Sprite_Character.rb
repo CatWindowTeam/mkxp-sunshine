@@ -36,11 +36,14 @@ class Sprite_Character
     # Choose the appropriate light sprite
     @light_sprite.viewport = ($game_screen.tone.blank?) ? @viewport : @light_viewport
     @light_sprite.shader = @sprite.shader = @character.character_name.start_with?("en") || (@character.character_name.start_with?("niko") && $game_switches[160]) ? Shader::WorldMachine : Shader::Sprite
-    if @last_char_name != character.character_name && Settings[:debug]
+    
+    dir = (@character.direction - 2) / 2
+    if Settings[:debug] && (@last_char_name != character.character_name || dir != @old_dir) 
       @text_sprite.bitmap.clear
-      @text_sprite.bitmap.draw_text(0, 0, 256, 12, "#{@character.character_name}")
+      @text_sprite.bitmap.draw_text(0, 0, 256, 12, "#{dir == 0 ? "↓" : dir == 1 ? "←" : dir == 2 ? "→" : "↑"} #{@character.character_name}")
       @last_char_name = character.character_name
-    elsif @last_char_name != "мямямя :3" && !Settings[:debug]
+      @old_dir = dir
+    elsif !Settings[:debug] && @last_char_name != "мямямя :3"
       @text_sprite.bitmap.clear
       @last_char_name = "мямямя :3"
     end
@@ -100,7 +103,7 @@ class Sprite_Character
     if @tile_id == 0
       # Set rectangular transfer
       sx = @character.pattern * @cw
-      sy = (@character.direction - 2) / 2 * @ch
+      sy = dir * @ch
       @sprite.src_rect.set(sx, sy, @cw, @ch)
       @light_sprite.src_rect.set(sx, sy, @cw, @ch)
     end

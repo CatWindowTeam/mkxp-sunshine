@@ -447,15 +447,6 @@ class Scene_Map
     @window_settings.open
   end
   #--------------------------------------------------------------------------
-  # * Save Call
-  #--------------------------------------------------------------------------
-  def call_save
-    # Straighten player position
-    $game_player.straighten
-    # Switch to save screen
-    $scene = Scene_Save.new
-  end
-  #--------------------------------------------------------------------------
   # * Debug Call
   #--------------------------------------------------------------------------
   def call_debug

@@ -192,6 +192,7 @@ set(EMBEDDED_INPUT
 	shader/sprite.frag
 	shader/worldMachine.frag
 	shader/water.frag
+	shader/tilemapWater.frag
 	shader/plane.frag
 	shader/gray.frag
 	shader/bitmapBlit.frag

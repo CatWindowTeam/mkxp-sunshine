@@ -162,19 +162,7 @@ class Interpreter
           battler.current_action.skill_id = @parameters[3]
         end
         # Set action target
-        if @parameters[4] == -2
-          if battler.is_a?(Game_Enemy)
-            battler.current_action.decide_last_target_for_enemy
-          else
-            battler.current_action.decide_last_target_for_actor
-          end
-        elsif @parameters[4] == -1
-          if battler.is_a?(Game_Enemy)
-            battler.current_action.decide_random_target_for_enemy
-          else
-            battler.current_action.decide_random_target_for_actor
-          end
-        elsif @parameters[4] >= 0
+        if @parameters[4] >= 0
           battler.current_action.target_index = @parameters[4]
         end
         # Set force flag
