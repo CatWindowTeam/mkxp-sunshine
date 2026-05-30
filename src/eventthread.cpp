@@ -38,7 +38,7 @@
 
 #include "oneshot.h"
 
-#include <string.h>
+#include <SDL3/SDL_stdinc.h>
 
 #include <map>
 
@@ -307,8 +307,7 @@ void EventThread::process(RGSSThreadData &rtData){
 
 					if (fullscreen){
 						/* Prevent fullscreen flicker */
-						strncpy(pendingTitle, rtData.config.windowTitle.c_str(),
-						        sizeof(pendingTitle));
+						SDL_strlcpy(pendingTitle, rtData.config.windowTitle.c_str(), sizeof(pendingTitle));
 						break;
 					}
 
@@ -455,7 +454,7 @@ void EventThread::process(RGSSThreadData &rtData){
 
 		case SDL_EVENT_FINGER_UP :
 			i = event.tfinger.fingerID;
-			memset(&touchState.fingers[i], 0, sizeof(touchState.fingers[0]));
+			SDL_memset(&touchState.fingers[i], 0, sizeof(touchState.fingers[0]));
 			break;
 
 		default :
@@ -471,10 +470,8 @@ void EventThread::process(RGSSThreadData &rtData){
 				break;
 
 			case REQUEST_MESSAGEBOX :
-				SDL_ShowSimpleMessageBox(event.user.code,
-				                         rtData.config.windowTitle.c_str(),
-				                         (const char*) event.user.data1, win);
-				free(event.user.data1);
+				SDL_ShowSimpleMessageBox(event.user.code, rtData.config.windowTitle.c_str(), (const char*) event.user.data1, win);
+				SDL_free(event.user.data1);
 				msgBoxDone.set();
 				break;
 
@@ -487,12 +484,12 @@ void EventThread::process(RGSSThreadData &rtData){
 				if (!fps.sendUpdates)
 					break;
 
-				snprintf(buffer, sizeof(buffer), "%s - %d FPS", rtData.config.windowTitle.c_str(), event.user.code);
+				SDL_snprintf(buffer, sizeof(buffer), "%s - %d FPS", rtData.config.windowTitle.c_str(), event.user.code);
 
 				/* Updating the window title in fullscreen
 				 * mode seems to cause flickering */
 				if (fullscreen){
-					strncpy(pendingTitle, buffer, sizeof(pendingTitle));
+					SDL_strlcpy(pendingTitle, buffer, sizeof(pendingTitle));
 					break;
 				}
 
@@ -585,15 +582,15 @@ void EventThread::cleanup(){
 
 	while (SDL_PollEvent(&event))
 		if ((event.type - usrIdStart) == REQUEST_MESSAGEBOX)
-			free(event.user.data1);
+			SDL_free(event.user.data1);
 }
 
 void EventThread::resetInputStates(){
-	memset(&keyStates, 0, sizeof(keyStates));
-	memset(&gcState, 0, sizeof(gcState));
-	memset(&joyState, 0, sizeof(joyState));
-	memset(&mouseState.buttons, 0, sizeof(mouseState.buttons));
-	memset(&touchState, 0, sizeof(touchState));
+	SDL_memset(&keyStates, 0, sizeof(keyStates));
+	SDL_memset(&gcState, 0, sizeof(gcState));
+	SDL_memset(&joyState, 0, sizeof(joyState));
+	SDL_memset(&mouseState.buttons, 0, sizeof(mouseState.buttons));
+	SDL_memset(&touchState, 0, sizeof(touchState));
 }
 
 void EventThread::setFullscreen(SDL_Window *win, bool mode){

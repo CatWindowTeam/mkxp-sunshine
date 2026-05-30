@@ -5,8 +5,7 @@
 extern "C" {
 #endif
 
-typedef enum STEAMSHIM_EventType
-{
+typedef enum STEAMSHIM_EventType{
     SHIMEVENT_BYE,
     SHIMEVENT_STATSRECEIVED,
     SHIMEVENT_STATSSTORED,
@@ -22,8 +21,7 @@ typedef enum STEAMSHIM_EventType
 } STEAMSHIM_EventType;
 
 /* not all of these fields make sense in a given event. */
-typedef struct STEAMSHIM_Event
-{
+typedef struct STEAMSHIM_Event{
     STEAMSHIM_EventType type;
     int okay;
     int ivalue;

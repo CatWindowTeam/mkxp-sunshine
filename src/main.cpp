@@ -33,7 +33,7 @@
 #else
 #include <unistd.h>
 #endif
-#include <string.h>
+#include <SDL3/SDL_stdinc.h>
 #include <assert.h>
 #include <string>
 #include <iostream>
@@ -88,7 +88,7 @@ int rgssThreadFun(void *userdata){
 	glCtx = SDL_GL_CreateContext(win);
 
 	if (!glCtx){
-		snprintf(msg, sizeof msg, "Error creating context: %s", SDL_GetError());
+		SDL_snprintf(msg, sizeof msg, "Error creating context: %s", SDL_GetError());
 		crash(msg, Exception::MEOW, false);
 		rgssThreadError(threadData, std::string(msg));
 		return 0;
@@ -230,7 +230,7 @@ int main(int argc, char *argv[]){
 
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
-		snprintf(msg, sizeof msg, "Error initializing SDL: %s", SDL_GetError());
+		SDL_snprintf(msg, sizeof msg, "Error initializing SDL: %s", SDL_GetError());
 		crash(msg, Exception::MEOW, false);
 		return 0;
 	}
@@ -276,7 +276,7 @@ int main(int argc, char *argv[]){
 	
 	if (!conf.gameFolder.empty()){
 		if (chdir(conf.gameFolder.c_str()) != 0){
-			snprintf(msg, sizeof msg, "Unable to switch into gameFolder %s", conf.gameFolder);
+			SDL_snprintf(msg, sizeof msg, "Unable to switch into gameFolder %s", conf.gameFolder);
 			crash(msg, Exception::MEOW, false);
 			return 0;
 		}
@@ -290,13 +290,13 @@ int main(int argc, char *argv[]){
 		conf.windowTitle = conf.game.title;
 
 	if (TTF_Init() == false){
-		snprintf(msg, sizeof msg, "Error initializing SDL_ttf: %s", SDL_GetError());
+		SDL_snprintf(msg, sizeof msg, "Error initializing SDL_ttf: %s", SDL_GetError());
 		crash(msg, Exception::MEOW, false);
 		SDL_Quit();
 	}
 
 	if (Sound_Init() == false){
-		snprintf(msg, sizeof msg, "Error initializing SDL_sound: %s", Sound_GetError());
+		SDL_snprintf(msg, sizeof msg, "Error initializing SDL_sound: %s", Sound_GetError());
 		crash(msg, Exception::MEOW, false);
 		TTF_Quit();
 		SDL_Quit();
@@ -316,7 +316,7 @@ int main(int argc, char *argv[]){
 		SDL_SetWindowFullscreen(win, true);
 
 	if (!win){
-		snprintf(msg, sizeof msg, "Error creating window: %s", SDL_GetError());
+		SDL_snprintf(msg, sizeof msg, "Error creating window: %s", SDL_GetError());
 		crash(msg, Exception::MEOW, false);
 		return 0;
 	}

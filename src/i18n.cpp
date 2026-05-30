@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+#include <SDL3/SDL_stdinc.h>
 
 char** strdict = 0;
 unsigned int nStr = 0;
@@ -35,10 +35,10 @@ const char* findtext(unsigned int msgid, const char* fallback) {
 
 void unloadLocale() {
 	for (unsigned int i = 0; i < nStr; i++) {
-		free(strdict[i]);
+		SDL_free(strdict[i]);
 	}
-	free(strdict);
-	free(currentLocale);
+	SDL_free(strdict);
+	SDL_free(currentLocale);
 	strdict = 0;
 	nStr = 0;
 }
@@ -50,16 +50,16 @@ void unloadLanguageMetadata() {
 			LanguageFontAndSize* ldata = languageMetadata[i];
 			if (ldata) {
 				if (ldata->font_name) {
-					free(ldata->font_name);
+					SDL_free(ldata->font_name);
 				}
 				if (ldata->lang_code) {
-					free(ldata->lang_code);
+					SDL_free(ldata->lang_code);
 				}
-				free(ldata);
+				SDL_free(ldata);
 			}
 		}
 	}
-	free(languageMetadata);
+	SDL_free(languageMetadata);
 }
 
 void loadLanguageMetadata() {
@@ -77,27 +77,27 @@ void loadLanguageMetadata() {
 		int languageMetadataIndex = 0;
 
 		while (fgets(line, 1024, fontsFile)) {
-			char* indexOfEquals = strchr(line, '=');
+			char* indexOfEquals = SDL_strchr(line, '=');
 			if (indexOfEquals) {
 				// splitting the string in place here
 				indexOfEquals[0] = 0;
 				char* indexOfFontName = indexOfEquals + 1;
 				
 				// remove new line from end of font name
-				char* indexOfNewLine = strchr(indexOfFontName, '\n');
+				char* indexOfNewLine = SDL_strchr(indexOfFontName, '\n');
 				if (indexOfNewLine) {
 					indexOfNewLine[0] = 0;
 				}
 
 				// make new strings for code and font name
-				char* langCode = (char*)calloc(LANGCODE_SIZE, sizeof(char));
-				char* langFont = (char*)calloc(LANGFONT_SIZE, sizeof(char));
+				char* langCode = (char*)SDL_calloc(LANGCODE_SIZE, sizeof(char));
+				char* langFont = (char*)SDL_calloc(LANGFONT_SIZE, sizeof(char));
 
-				strcpy(langCode, line);
-				strcpy(langFont, indexOfFontName);
+				SDL_strlcpy(langCode, line, sizeof(line));
+				SDL_strlcpy(langFont, indexOfFontName, sizeof(indexOfFontName));
 
 				// allocate metadata mem
-				LanguageFontAndSize* metadata = (LanguageFontAndSize*) calloc(1, sizeof(LanguageFontAndSize));
+				LanguageFontAndSize* metadata = (LanguageFontAndSize*) SDL_calloc(1, sizeof(LanguageFontAndSize));
 				metadata->font_name = langFont;
 				metadata->lang_code = langCode;
 
@@ -118,7 +118,7 @@ void loadLanguageMetadata() {
 	if (fontSizesFile) {
 		while (fgets(line, 1024, fontSizesFile)) {
 			int languageMetadataIndex = 0;
-			char* indexOfEquals = strchr(line, '=');
+			char* indexOfEquals = SDL_strchr(line, '=');
 			if (indexOfEquals) {
 				// splitting the string in place here
 				indexOfEquals[0] = 0;
@@ -135,22 +135,20 @@ void loadLanguageMetadata() {
 				for (int i = 0; i < MAX_LANGUAGES; i++) {
 					// search for corresponding langCode in metadata array to populate font size in the appropriate metadata
 					LanguageFontAndSize* metadata = languageMetadata[i];
-					if (metadata && strcmp(line, metadata->lang_code) == 0) {
+					if (metadata && SDL_strcmp(line, metadata->lang_code) == 0) {
 						metadata->size = fontSize;
 						break;
 					}
 				}
 			}
 		}
-
-		//fclose(fontSizesFile);
 	}
 }
 
 int getFontSize() {
 	for (int i = 0; i < MAX_LANGUAGES; i++) {
 		LanguageFontAndSize* metadata = languageMetadata[i];
-		if (metadata && strcmp(currentLocale, metadata->lang_code) == 0) {
+		if (metadata && SDL_strcmp(currentLocale, metadata->lang_code) == 0) {
 			return metadata->size;
 		}
 	}
@@ -162,7 +160,7 @@ int getFontSize() {
 char* getFontName() {
 	for (int i = 0; i < MAX_LANGUAGES; i++) {
 		LanguageFontAndSize* metadata = languageMetadata[i];
-		if (metadata && strcmp(currentLocale, metadata->lang_code) == 0) {
+		if (metadata && SDL_strcmp(currentLocale, metadata->lang_code) == 0) {
 			return metadata->font_name;
 		}
 	}
@@ -178,21 +176,21 @@ void loadLocale(const char* locale) {
 
 	unloadLocale();
 
-	currentLocale = (char*) calloc(128, sizeof(char));
-	strncpy(currentLocale, locale, 128 - 1);
+	currentLocale = (char*) SDL_calloc(128, sizeof(char));
+	SDL_strlcpy(currentLocale, locale, 128 - 1);
 
 	int dictSize = 100;
 	// currently there are 52, but 100 should be plenty if we ever do add more
-	strdict = (char**)malloc(sizeof(char*) * dictSize);
+	strdict = (char**)SDL_malloc(sizeof(char*) * dictSize);
 
 	sprintf(pathbuf, "Languages/internal/%s.po", locale);
 	locfile = fopen(pathbuf, "r");
 	if (locfile) {
 		while (fgets(line, 1024, locfile)) {
-			if (strncmp("msgstr \"", line, 8) == 0) {
+			if (SDL_strncmp("msgstr \"", line, 8) == 0) {
 				char* lineWithoutMsgid = line + 8;
 				
-				char* endQuoteAddress = strrchr(lineWithoutMsgid, '"');
+				char* endQuoteAddress = SDL_strrchr(lineWithoutMsgid, '"');
 
 				// end string at last quotation mark
 				if (endQuoteAddress != 0) {
@@ -201,10 +199,10 @@ void loadLocale(const char* locale) {
 
 				decodeEscapeChars(lineWithoutMsgid);
 
-				int lineLen = strlen(lineWithoutMsgid);
+				int lineLen = SDL_strlen(lineWithoutMsgid);
 
 				strdict[nStr] = (char*)malloc(lineLen + 1);
-				strcpy(strdict[nStr], lineWithoutMsgid);
+				SDL_strlcpy(strdict[nStr], lineWithoutMsgid, sizeof(lineWithoutMsgid));
 
 				nStr++;
 			}

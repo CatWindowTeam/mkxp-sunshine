@@ -27,7 +27,7 @@
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_gamepad.h>
-#include <stdint.h>
+#include <SDL3/SDL_stdinc.h>
 #include <assert.h>
 #include <vector>
 

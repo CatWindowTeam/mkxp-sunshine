@@ -48,8 +48,7 @@
 #define GUARD_MEGA \
 	{ \
 		if (p->megaSurface) \
-			throw Exception(Exception::MKXPError, \
-                            "Operation not supported for mega surfaces"); \
+			crash("Operation not supported for mega surfaces", Exception::MKXPError, true); \
 	}
 
 #define OUTLINE_SIZE 1
@@ -1034,15 +1033,10 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 				TEX::bind(p->gl.tex);
 
 				if (!subImage){
-					TEX::uploadSubImage(posRect.x, posRect.y,
-					                    posRect.w, posRect.h,
-					                    txtSurf->pixels, GL_RGBA);
+					TEX::uploadSubImage(posRect.x, posRect.y, posRect.w, posRect.h, txtSurf->pixels, GL_RGBA);
 				}
 				else{
-					GLMeta::subRectImageUpload(txtSurf->w, subSrcX, subSrcY,
-					                           posRect.x, posRect.y,
-					                           posRect.w, posRect.h,
-					                           txtSurf, GL_RGBA);
+					GLMeta::subRectImageUpload(txtSurf->w, subSrcX, subSrcY, posRect.x, posRect.y, posRect.w, posRect.h, txtSurf, GL_RGBA);
 					GLMeta::subRectImageEnd();
 				}
 			}

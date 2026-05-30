@@ -24,7 +24,7 @@
 
 #include "gl-fun.h"
 
-#include <stdio.h>
+#include <SDL3/SDL_stdinc.h>
 #include <algorithm>
 
 struct GLDebugLoggerPrivate;
@@ -42,7 +42,7 @@ private:
 	if (gl.StringMarker) \
 	{ \
 		char buf[128]; \
-		int len = snprintf(buf, sizeof(buf), format, ##__VA_ARGS__); \
+		int len = SDL_snprintf(buf, sizeof(buf), format, ##__VA_ARGS__); \
 		gl.StringMarker(std::min<size_t>(len, sizeof(buf)), buf); \
 	}
 

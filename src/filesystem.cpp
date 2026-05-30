@@ -33,9 +33,7 @@
 #include <physfs.h>
 
 #include <SDL3_sound/SDL_sound.h>
-
-#include <stdio.h>
-#include <string.h>
+#include <SDL3/SDL_stdinc.h>
 #include <algorithm>
 #include <vector>
 #include <stack>
@@ -233,11 +231,11 @@ static int SDL_RWopsCloseFree(void *userdata)
  * Returns copied bytes (minus terminating null) */
 static size_t strcpySafe(char *dst, const char *src, size_t dstMax, int srcN){
 	if (srcN < 0)
-		srcN = strlen(src);
+		srcN = SDL_strlen(src);
 
 	size_t cpyMax = std::min<size_t>(dstMax-1, srcN);
 
-	memcpy(dst, src, cpyMax);
+	SDL_memcpy(dst, src, cpyMax);
 	dst[cpyMax] = '\0';
 
 	return cpyMax;
@@ -249,7 +247,7 @@ static size_t strcpySafe(char *dst, const char *src, size_t dstMax, int srcN){
 static const char *findExt(const char *filename){
 	size_t len;
 
-	for (len = strlen(filename); len > 0; --len){
+	for (len = SDL_strlen(filename); len > 0; --len){
 		if (filename[len] == '/')
 			return 0;
 
@@ -357,7 +355,7 @@ struct CacheEnumData{
 	/* Converts in-place */
 	void toNFC(char *inout){
 #ifdef OS_OSX
-		size_t srcSize = strlen(inout);
+		size_t srcSize = SDL_strlen(inout);
 		size_t bufSize = sizeof(buf);
 		char *bufPtr = buf;
 		char *inoutPtr = inout;
@@ -365,9 +363,7 @@ struct CacheEnumData{
 		/* Reserve room for null terminator */
 		--bufSize;
 
-		iconv(nfd2nfc,
-			  &inoutPtr, &srcSize,
-			  &bufPtr, &bufSize);
+		iconv(nfd2nfc, &inoutPtr, &srcSize, &bufPtr, &bufSize);
 		/* Null-terminate */
 		*bufPtr = 0;
 		strcpy(inout, buf);
@@ -382,9 +378,9 @@ static PHYSFS_EnumerateCallbackResult cacheEnumCB(void *d, const char *origdir, 
 	char fullPath[512];
 
 	if (!*origdir)
-		snprintf(fullPath, sizeof(fullPath), "%s", fname);
+		SDL_snprintf(fullPath, sizeof(fullPath), "%s", fname);
 	else
-		snprintf(fullPath, sizeof(fullPath), "%s/%s", origdir, fname);
+		SDL_snprintf(fullPath, sizeof(fullPath), "%s/%s", origdir, fname);
 
 	/* Deal with OSX' weird UTF-8 standards */
 	data.toNFC(fullPath);
@@ -448,11 +444,11 @@ static PHYSFS_EnumerateCallbackResult fontSetEnumCB (void *data, const char *dir
 		lowExt[i] = tolower(ext[i]);
 	lowExt[i] = '\0';
 
-	if (strcmp(lowExt, "ttf") && strcmp(lowExt, "otf") && strcmp(lowExt, "ttc"))
+	if (SDL_strcmp(lowExt, "ttf") && SDL_strcmp(lowExt, "otf") && SDL_strcmp(lowExt, "ttc"))
 		return PHYSFS_ENUM_OK;
 
 	char filename[512];
-	snprintf(filename, sizeof(filename), "%s/%s", dir, fname);
+	SDL_snprintf(filename, sizeof(filename), "%s/%s", dir, fname);
 
 	PHYSFS_File *handle = PHYSFS_openRead(filename);
 	if (!handle)
@@ -494,9 +490,7 @@ struct OpenReadEnumData{
 	 * doesn't get changed before we get back into our code */
 	const char *physfsError;
 
-	OpenReadEnumData(FileSystem::OpenHandler &handler,
-	                 const char *filename, size_t filenameN,
-	                 BoostHash<std::string, std::string> *pathTrans)
+	OpenReadEnumData(FileSystem::OpenHandler &handler, const char *filename, size_t filenameN, BoostHash<std::string, std::string> *pathTrans)
 	    : handler(handler), filename(filename), filenameN(filenameN),
 	      pathTrans(pathTrans), matchCount(0), stopSearching(false),
 	      physfsError(0)
@@ -513,14 +507,14 @@ openReadEnumCB(void *d, const char *dirpath, const char *filename){
 		return PHYSFS_ENUM_STOP;
 
 	/* If there's not even a partial match, continue searching */
-	if (strncmp(filename, data.filename, data.filenameN) != 0)
+	if (SDL_strncmp(filename, data.filename, data.filenameN) != 0)
 		return PHYSFS_ENUM_OK;
 
 	if (!*dirpath){
 		fullPath = filename;
 	}
 	else{
-		snprintf(buffer, sizeof(buffer), "%s/%s", dirpath, filename);
+		SDL_snprintf(buffer, sizeof(buffer), "%s/%s", dirpath, filename);
 		fullPath = buffer;
 	}
 
@@ -587,8 +581,7 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 		dir = buffer;
 	}
 
-	OpenReadEnumData data(handler, file, len + buffer - delim - !root,
-	                      p->havePathCache ? &p->pathCache : 0);
+	OpenReadEnumData data(handler, file, len + buffer - delim - !root, p->havePathCache ? &p->pathCache : 0);
 
 	if (p->havePathCache){
 		/* Get the list of files contained in this directory

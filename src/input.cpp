@@ -30,7 +30,7 @@
 #include <SDL3/SDL_mouse.h>
 
 #include <vector>
-#include <string.h>
+#include <SDL3/SDL_stdinc.h>
 #include <assert.h>
 
 #define BUTTON_CODE_COUNT 24
@@ -113,9 +113,7 @@ struct GcButtonBinding : public Binding{
 struct GcAxisBinding : public Binding{
 	GcAxisBinding() {}
 
-	GcAxisBinding(uint8_t source,
-	              AxisDir dir,
-	              Input::ButtonCode target)
+	GcAxisBinding(uint8_t source, AxisDir dir, Input::ButtonCode target)
 	    : Binding(target),
 	      source(source),
 	      dir(dir)
@@ -157,9 +155,7 @@ struct JsButtonBinding : public Binding{
 struct JsAxisBinding : public Binding{
 	JsAxisBinding() {}
 
-	JsAxisBinding(uint8_t source,
-	              AxisDir dir,
-	              Input::ButtonCode target)
+	JsAxisBinding(uint8_t source, AxisDir dir, Input::ButtonCode target)
 	    : Binding(target),
 	      source(source),
 	      dir(dir)
@@ -186,9 +182,7 @@ struct JsAxisBinding : public Binding{
 struct JsHatBinding : public Binding{
 	JsHatBinding() {}
 
-	JsHatBinding(uint8_t source,
-	              uint8_t pos,
-	              Input::ButtonCode target)
+	JsHatBinding(uint8_t source, uint8_t pos, Input::ButtonCode target)
 	    : Binding(target),
 	      source(source),
 	      pos(pos)
@@ -211,8 +205,7 @@ struct JsHatBinding : public Binding{
 struct MsBinding : public Binding{
 	MsBinding() {}
 
-	MsBinding(int buttonIndex,
-	          Input::ButtonCode target)
+	MsBinding(int buttonIndex, Input::ButtonCode target)
 	    : Binding(target),
 	      index(buttonIndex)
 	{}
@@ -373,7 +366,7 @@ struct InputPrivate {
 
 	void clearBuffer(){
 		const size_t size = sizeof(ButtonState) * BUTTON_CODE_COUNT;
-		memset(states, 0, size);
+		SDL_memset(states, 0, size);
 	}
 
 	void checkBindingChange(const RGSSThreadData &rtData){
@@ -508,8 +501,7 @@ struct InputPrivate {
 		updateDir8();
 	}
 
-	void pollBindingPriv(const Binding &b,
-	                     Input::ButtonCode &repeatCand){
+	void pollBindingPriv(const Binding &b, Input::ButtonCode &repeatCand){
 		if (!b.sourceActive())
 			return;
 

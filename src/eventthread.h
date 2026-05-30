@@ -35,8 +35,6 @@
 
 #include <string>
 
-#include <stdint.h>
-
 #include <alc.h>
 //typedef struct ALCdevice_struct ALCdevice;
 
@@ -256,11 +254,7 @@ struct RGSSThreadData{
 	std::string inputText;
 	int inputTextLimit;
 
-	RGSSThreadData(EventThread *ethread,
-	               SDL_Window *window,
-	               ALCdevice *alcDev,
-	               int refreshRate,
-	               const Config& newconf)
+	RGSSThreadData(EventThread *ethread, SDL_Window *window, ALCdevice *alcDev, int refreshRate, const Config& newconf)
 	    : allowExit(true),
 	      ethread(ethread),
 	      window(window),

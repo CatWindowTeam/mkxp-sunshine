@@ -13,7 +13,7 @@
 #include "config.h"
 #include "gl-debug.h"
 #include "gl-fun.h"
-#include <stdio.h>
+#include <SDL3/SDL_stdinc.h>
 #include <time.h>
 #include <fstream>
 #include <ruby.h>
@@ -29,7 +29,6 @@
 	#include "xdg-user-dir-lookup.h"
 #endif
 
-
 SDL_MessageBoxButtonData buttons[] = {
     { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes" },
     { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 2, "No" }
@@ -39,10 +38,9 @@ static inline const char* glGetStringInt(GLenum name){
 	return (const char*) gl.GetString(name);
 }
 
-
 void crash(const char* reason, Exception::Type t, bool do_exp){
 	char msg[1024];
-	snprintf(msg, sizeof msg, "Error occured! Error message: %s\n\n Want to create a crash log? You can share the crash log with the developers and help resolve the issue.", reason);
+	SDL_snprintf(msg, sizeof msg, "Error occured! Error message: %s\n\n Want to create a crash log? You can share the crash log with the developers and help resolve the issue.", reason);
 	SDL_MessageBoxData messageboxdata = {
 	    .flags = SDL_MESSAGEBOX_ERROR,
 	    .window = NULL,

@@ -113,8 +113,7 @@ struct AudioStream{
 		uint32_t startTicks;
 	} fadeIn;
 
-	AudioStream(ALStream::LoopMode loopMode,
-	            const std::string &threadId);
+	AudioStream(ALStream::LoopMode loopMode, const std::string &threadId);
 	~AudioStream();
 
 	void play(const std::string &filename, int volume, int pitch, float offset = 0);

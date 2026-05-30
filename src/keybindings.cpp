@@ -24,7 +24,7 @@
 #include "config.h"
 #include "util.h"
 
-#include <stdio.h>
+#include <SDL3/SDL_stdinc.h>
 
 struct KbBindingData{
 	SDL_Scancode source;
@@ -156,7 +156,7 @@ struct Header{
 };
 
 static void buildPath(const std::string &dir, char *out, size_t outSize){
-	snprintf(out, outSize, "%skeybindings.dat", dir.c_str());
+	SDL_snprintf(out, outSize, "%skeybindings.dat", dir.c_str());
 }
 
 static bool writeBindings(const BDescVec &d, const std::string &dir){

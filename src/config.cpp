@@ -28,7 +28,7 @@
 #include <physfs.h>
 
 #include <fstream>
-#include <stdint.h>
+#include <SDL3/SDL_stdinc.h>
 #include <cstdlib>
 
 #include "debugwriter.h"
@@ -129,8 +129,7 @@ void Config::read(int argc, char *argv[]){
 
 	/* Parse command line options */
 	try{
-		po::parsed_options cmdPo =
-			po::command_line_parser(argc, argv).options(podesc).run();
+		po::parsed_options cmdPo = po::command_line_parser(argc, argv).options(podesc).run();
 		po::store(cmdPo, vm);
 	}
 	catch (po::error &error){
@@ -186,7 +185,7 @@ void Config::read(int argc, char *argv[]){
 #ifdef STEAM
 	/* Override fullscreen config if Big Picture */
 	if (const char *env = std::getenv("SteamTenfoot")){
-		if (!strcmp(env, "1"))
+		if (!SDL_strcmp(env, "1"))
 			fullscreen = true;
 	}
 #endif
