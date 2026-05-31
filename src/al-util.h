@@ -177,7 +177,8 @@ inline uint8_t formatSampleSize(int sdlFormat){
 	case SDL_AUDIO_S16BE :
 		return 2;
 	default :
-		crash(Exception::MEOW, true, "Unhandled sample format");
+		crash("Unhandled sample format", Exception::MEOW, false);
+		assert(!"Unhandled sample format");
 	}
 
 	return 0;
@@ -196,7 +197,8 @@ inline ALenum chooseALFormat(int sampleSize, int channelCount){
 		case 2 : return AL_FORMAT_STEREO16;
 		}
 	default :
-		crash(Exception::SDLError, true, "Unhandled sample size / channel count");
+		crash("Unhandled sample size / channel count", Exception::MEOW, false);
+		assert(!"Unhandled sample size / channel count");
 	}
 
 	return 0;

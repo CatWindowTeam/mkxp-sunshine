@@ -188,8 +188,7 @@
 				desktop = "kde_error";
 			}
 		} else {
-			//not all linux enviroment show dekstop icons + need translation support
-			fallbackPath = std::string(getenv("HOME")) + "/ONESHOT_hint.png";
+			fallbackPath = std::string(getenv("HOME")) + "/Desktop/ONESHOT_hint.png";
 		}
 	}
 #endif

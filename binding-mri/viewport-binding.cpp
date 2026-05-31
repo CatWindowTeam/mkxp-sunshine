@@ -32,7 +32,7 @@ DEF_TYPE(Viewport);
 RB_METHOD(viewportInitialize){
 	Viewport *v;
 
-	if (argc == 0){
+	if (argc == 0 && rgssVer >= 3){
 		v = new Viewport();
 	}
 	else if (argc == 1){

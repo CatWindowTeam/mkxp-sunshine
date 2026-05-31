@@ -27,6 +27,9 @@
 DEF_TYPE(Window);
 
 RB_METHOD(windowInitialize){
+	#ifdef DEBUG
+		printf("[windowInitialize] Creating window\n");
+	#endif
 	Window *w = viewportElementInitialize<Window>(argc, argv, self);
 
 	setPrivateData(self, w);

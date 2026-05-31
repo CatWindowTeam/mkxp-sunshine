@@ -1,3 +1,2 @@
 #include "exception.h"
-void crash(Exception::Type t, bool do_exp, const char *fmt, ...);
-void ShowError(const char* m);
+void crash(const char* reason, Exception::Type t, bool do_exp);

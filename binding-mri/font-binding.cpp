@@ -93,7 +93,9 @@ RB_METHOD(fontInitialize){
 	f->initDynAttribs();
 
 	wrapProperty(self, &f->getColor(), "color", ColorType);
-	wrapProperty(self, &f->getOutColor(), "out_color", ColorType);
+
+	if (rgssVer >= 3)
+		wrapProperty(self, &f->getOutColor(), "out_color", ColorType);
 
 	return self;
 }
@@ -113,7 +115,9 @@ RB_METHOD(fontInitializeCopy){
 	f->initDynAttribs();
 
 	wrapProperty(self, &f->getColor(), "color", ColorType);
-	wrapProperty(self, &f->getOutColor(), "out_color", ColorType);
+
+	if (rgssVer >= 3)
+		wrapProperty(self, &f->getOutColor(), "out_color", ColorType);
 
 	return self;
 }

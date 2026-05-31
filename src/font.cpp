@@ -128,7 +128,7 @@ TTF_Font *SharedFontState::getFont(std::string family, int size){
 	SDL_IOStream *ops;
 
 	if (family.empty()){
-		crash(Exception::RGSSError, true, "font does not exist");
+		crash("font does not exist", Exception::RGSSError, true);
 	}else{
 		/* Use 'other' path as alternative in case
 		 * we have no 'regular' styled font asset */
@@ -142,8 +142,10 @@ TTF_Font *SharedFontState::getFont(std::string family, int size){
 
 	font = TTF_OpenFontIO(ops, 1, size);
 
-	if (!font)
-		crash(Exception::SDLError, true, "%s", SDL_GetError());
+	if (!font){
+		snprintf(msg, sizeof msg, "%s", SDL_GetError());
+		crash(msg, Exception::SDLError, true);
+	}
 
 	p->pool.insert(key, font);
 	return font;
@@ -159,7 +161,10 @@ bool SharedFontState::fontPresent(std::string family) const{
 	return !(set.regular.empty() && set.other.empty());
 }
 
-void pickExistingFontName(const std::vector<std::string> &names, std::string &out, const SharedFontState &sfs) {
+void pickExistingFontName(const std::vector<std::string> &names,
+                          std::string &out,
+                          const SharedFontState &sfs)
+{
 	/* Note: In RMXP, a names array with no existing entry
 	 * results in no text being drawn at all (same for "" and []);
 	 * we can't replicate this in mkxp due to the default substitute. */

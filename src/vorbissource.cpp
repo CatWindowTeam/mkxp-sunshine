@@ -80,7 +80,7 @@ struct VorbisSource : ALDataSource{
 
 		if (error){
 			SDL_CloseIO(&src);
-			crash(Exception::MKXPError, true, "Vorbisfile: Cannot read ogg file");
+			crash("Vorbisfile: Cannot read ogg file", Exception::MKXPError, true);
 		}
 
 		/* Extract bitstream info */
@@ -90,7 +90,7 @@ struct VorbisSource : ALDataSource{
 		if (info.channels > 2){
 			ov_clear(&vf);
 			SDL_CloseIO(&src);
-			crash(Exception::MKXPError, true, "Cannot handle audio with more than 2 channels");
+			crash("Cannot handle audio with more than 2 channels", Exception::MKXPError, true);
 		}
 
 		info.alFormat = chooseALFormat(sizeof(int16_t), info.channels);
