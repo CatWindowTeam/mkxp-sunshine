@@ -110,3 +110,12 @@ void crash(const char* reason, Exception::Type t, bool do_exp){
 			throw Exception(t, msg);
 	}	
 }
+
+
+void ErrorMsg(const char* message){
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", message, NULL);
+}
+
+void WarnMsg(const char* message){
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", message, NULL);
+}
