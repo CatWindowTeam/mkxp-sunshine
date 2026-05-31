@@ -17,12 +17,15 @@
 #include <time.h>
 #include <fstream>
 #include <ruby.h>
-#include <ruby/version.h>
 #include <zlib.h>
+#include <ruby/version.h>
 #include <AL/al.h>
 #include <boost/version.hpp>
 #include <physfs.h>
 #include <pixman.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef __LINUX__
 	#include <gtk/gtk.h>
@@ -38,9 +41,23 @@ static inline const char* glGetStringInt(GLenum name){
 	return (const char*) gl.GetString(name);
 }
 
-void crash(const char* reason, Exception::Type t, bool do_exp){
-	char msg[1024];
-	SDL_snprintf(msg, sizeof msg, "Error occured! Error message: %s\n\n Want to create a crash log? You can share the crash log with the developers and help resolve the issue.", reason);
+void crash(Exception::Type t, bool do_exp, const char *fmt, ...){
+    va_list ap;
+    va_start(ap, fmt);
+    va_list ap2;
+    va_copy(ap2, ap);
+    unsigned short len = vsnprintf(NULL, 0, fmt, ap2);
+    va_end(ap2);
+
+    char *buf = (char*)malloc(len + 1);
+    if (!buf)
+    	va_end(ap);
+
+    vsnprintf(buf, len + 1, fmt, ap);
+    va_end(ap);
+
+	char msg[256 + len];    
+	SDL_snprintf(msg, sizeof msg, "Error occured! Error message: %s\n\nWant to create a crash log? You can share the crash log with the developers and help resolve the issue.", buf);
 	SDL_MessageBoxData messageboxdata = {
 	    .flags = SDL_MESSAGEBOX_ERROR,
 	    .window = NULL,
@@ -54,7 +71,7 @@ void crash(const char* reason, Exception::Type t, bool do_exp){
 	
 	int buttonid = 0;
 	if (SDL_ShowMessageBox(&messageboxdata, &buttonid) == false) {
-		printf("[CRASHDUMP] %s\n", reason);
+		printf("[CRASHDUMP] %s\n", buf);
 	}
 
 	if(buttonid == 1){
@@ -109,4 +126,8 @@ void crash(const char* reason, Exception::Type t, bool do_exp){
 		if(!t == Exception::MEOW)
 			throw Exception(t, msg);
 	}	
+}
+
+void ShowError(const char* m){
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Sunshine Error", m, NULL);
 }

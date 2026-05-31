@@ -322,8 +322,7 @@ static void runCustomScript(const std::string &filename){
 	char msg[1024];
 
 	if (!readFileSDL(filename.c_str(), scriptData)){
-		snprintf(msg, sizeof msg, "Unable to open %s", filename);
-		crash(msg, Exception::MEOW, false);
+		crash(Exception::MEOW, false, "Unable to open %s", filename);
 		return;
 	}
 
@@ -337,16 +336,14 @@ struct BacktraceData{
 	BoostHash<std::string, std::string> scriptNames;
 };
 
-#define SCRIPT_SECTION_FMT (rgssVer >= 3 ? "{%04ld}" : "Section%03ld")
+#define SCRIPT_SECTION_FMT ("Section%03ld")
 
 static void runRMXPScripts(BacktraceData &btData){
 	const Config &conf = shState->rtData().config;
 	const std::string &scriptPack = conf.game.scripts;
-	char msg[1024];
 	
 	if (!shState->fileSystem().exists(scriptPack.c_str())){
-		snprintf(msg, sizeof msg, "Unable to open '%s'", scriptPack.c_str());
-		crash(msg, Exception::MEOW, false);
+		crash(Exception::MEOW, false, "Unable to open '%s'", scriptPack.c_str());
 		return;
 	}
 
@@ -357,13 +354,12 @@ static void runRMXPScripts(BacktraceData &btData){
 	try{
 		scriptArray = kernelLoadDataInt(scriptPack.c_str(), false);
 	}catch (const Exception &e){
-		snprintf(msg, sizeof msg, "Failed to read script data: %s", e.msg);
-		crash(msg, Exception::MEOW, false);
+		crash(Exception::MEOW, false, "Failed to read script data: %s", e.msg);
 		return;
 	}
 
 	if (!RB_TYPE_P(scriptArray, RUBY_T_ARRAY)){
-		crash("Failed to read script data", Exception::MEOW, false);
+		crash(Exception::MEOW, false, "Failed to read script data");
 		return;
 	}
 
@@ -406,8 +402,7 @@ static void runRMXPScripts(BacktraceData &btData){
 
 		if (result != Z_OK){
 			static char buffer[256];
-			snprintf(buffer, sizeof(buffer), "Error decoding script %ld: '%s'\n", i, RSTRING_PTR(scriptName));
-			crash(buffer, Exception::MEOW, false);
+			crash(Exception::MEOW, false, "Error decoding script %ld: '%s'\n", i, RSTRING_PTR(scriptName));
 
 			break;
 		}
@@ -504,9 +499,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	file.resize(strlen(file.c_str()));
 	file = btData.scriptNames.value(file, file);
 
-	char ms[640];
-	snprintf(&ms[0], 640, "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
-	crash(ms, Exception::MEOW, false);
+	crash(Exception::MEOW, false, "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
 	exit(0);
 }
 
@@ -517,7 +510,7 @@ static void mriBindingExecute(){
 	//JIT for performance
 	int argc = 0;
 	char **argv = 0;
-	char options_argv1[] = "oneshot", options_argv2[] = "-evd", options_argv3[] = "--jit";
+	char options_argv1[] = "oneshot", options_argv2[] = "-ev", options_argv3[] = "--jit";
 	char* options_argv[] = {options_argv1, options_argv2, options_argv3, NULL};
 	ruby_sysinit(&argc, &argv);
 	RUBY_INIT_STACK;

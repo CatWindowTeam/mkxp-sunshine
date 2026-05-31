@@ -45,9 +45,8 @@ struct SDLSoundSource : ALDataSource{
 		sample = Sound_NewSample(&srcOps, extension, 0, maxBufSize);
 
 		if (!sample){
-			SDL_CloseIO(&ops);
-			snprintf(msg, sizeof msg, "SDL_sound: %s", Sound_GetError());
-			crash(msg, Exception::SDLError, true);
+			SDL_CloseIO(&ops);			
+			crash(Exception::SDLError, true, "SDL_sound: %s", Sound_GetError());
 		}
 
 		sampleSize = formatSampleSize(sample->actual.format);

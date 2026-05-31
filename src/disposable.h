@@ -26,13 +26,14 @@
 #include "exception.h"
 #include "sharedstate.h"
 #include "graphics.h"
+#include "meow.h"
 
 #include <assert.h>
 
 #include <sigc++/signal.h>
-// #include <sigc++2.0/sigc++/signal.h>
 #include <sigc++/connection.h>
-// #include <sigc++2.0/sigc++/connection.h>
+
+
 
 class Disposable{
 public:
@@ -65,7 +66,7 @@ public:
 protected:
 	void guardDisposed() const{
 		if (isDisposed())
-			throw Exception(Exception::RGSSError, "disposed %s", klassName());
+			crash(Exception::RGSSError, true, "disposed %s", klassName());
 	}
 
 private:

@@ -34,8 +34,7 @@ int screenMain(Config &conf){
 	win = SDL_CreateWindow("The Journal", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SDL_WINDOW_RESIZABLE | SDL_WINDOW_TRANSPARENT);
 
 	if (!win){
-		snprintf(msg, sizeof msg, "Error creating window: %s", SDL_GetError());
-		crash(msg, Exception::MEOW, false);
+		crash(Exception::MEOW, false, "Error creating window: %s", SDL_GetError());
 		return 0;
 	}
 

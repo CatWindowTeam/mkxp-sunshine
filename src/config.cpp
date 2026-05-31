@@ -35,6 +35,8 @@
 #include "util.h"
 #include "sdl-util.h"
 
+#define CONF_FILE "oneshot.conf"
+
 namespace std{
 	std::ostream& operator<<(std::ostream &os, const std::vector<std::string> &vec){
 		for (auto item : vec){
@@ -60,8 +62,6 @@ std::set<T> setFromVec(const std::vector<T> &vec){
 
 typedef std::vector<std::string> StringVec;
 namespace po = boost::program_options;
-
-#define CONF_FILE "oneshot.conf"
 
 Config::Config()
 {}

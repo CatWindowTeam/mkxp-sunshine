@@ -152,8 +152,7 @@ void Shader::init(const unsigned char *vert, int vertSize, const unsigned char *
 
 	if (!success){
 		printShaderLog(vertShader);
-		snprintf(msg, sizeof msg, "GLSL: An error occured while compiling vertex shader '%s' in program '%s'", vertName, programName);
-		crash(msg, Exception::MKXPError ,true);
+		crash(Exception::MKXPError , true, "GLSL: An error occured while compiling vertex shader '%s' in program '%s'", vertName, programName);
 	}
 
 	/* Compile fragment shader */
@@ -164,8 +163,7 @@ void Shader::init(const unsigned char *vert, int vertSize, const unsigned char *
 
 	if (!success){
 		printShaderLog(fragShader);
-		snprintf(msg, sizeof msg, "GLSL: An error occured while compiling fragment shader '%s' in program '%s'", fragName, programName);
-		crash(msg, Exception::MKXPError, true);
+		crash(Exception::MKXPError, true, "GLSL: An error occured while compiling fragment shader '%s' in program '%s'", fragName, programName);
 	}
 
 	/* Link shader program */
@@ -182,8 +180,7 @@ void Shader::init(const unsigned char *vert, int vertSize, const unsigned char *
 
 	if (!success){
 		printProgramLog(program);
-		snprintf(msg, sizeof msg, "GLSL: An error occured while linking program '%s' (vertex '%s', fragment '%s')", programName, vertName, fragName);
-		crash(msg, Exception::MKXPError, true);
+		crash(Exception::MKXPError, true, "GLSL: An error occured while linking program '%s' (vertex '%s', fragment '%s')", programName, vertName, fragName);
 	}
 }
 
@@ -378,7 +375,6 @@ void SimpleTransShader::setProg(float value){
 	gl.Uniform1f(u_prog, value);
 }
 
-
 void SpriteShaderBase::SpriteShaderInit(){
 	ShaderBase::init();
 
@@ -465,7 +461,6 @@ void PlaneShader::setOpacity(float value){
 	gl.Uniform1f(u_opacity, value);
 }
 
-
 GrayShader::GrayShader(){
 	INIT_SHADER(simple, gray, GrayShader);
 
@@ -478,7 +473,6 @@ void GrayShader::setGray(float value){
 	gl.Uniform1f(u_gray, value);
 }
 
-
 TilemapShader::TilemapShader(){
 	INIT_SHADER(tilemap, simple, TilemapShader);
 
@@ -490,7 +484,6 @@ TilemapShader::TilemapShader(){
 void TilemapShader::setAniIndex(int value){
 	gl.Uniform1f(u_aniIndex, value);
 }
-
 
 TilemapWaterShader::TilemapWaterShader(){
 	INIT_SHADER(tilemap, tilemapWater, TilemapWaterShader);
@@ -508,8 +501,6 @@ void TilemapWaterShader::setAniIndex(int value){
 void TilemapWaterShader::setOffset(const Vec2i &value){
 	gl.Uniform2f(u_offset, value.x, value.y);
 }
-
-
 
 FlashMapShader::FlashMapShader(){
 	INIT_SHADER(simpleColor, flashMap, FlashMapShader);
