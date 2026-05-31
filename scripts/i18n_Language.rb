@@ -29,6 +29,45 @@ class Language
       reset_fonts(@text_sprites)
       Oneshot.set_yes_no(tr('Yes'), tr('No'))
     end
+	  
+    def unescape_string(str)
+      unescaped = []
+      
+      string_began = false
+      escape = false
+      str.chars.each do |c|
+        if not string_began
+          string_began = true if c == '"'
+		  next
+        end
+		
+        next if c == "\n"
+        next if c == "\r"
+	
+        if not escape
+          break if c == '"'
+          if c == '\\'
+        	escape = true
+			next
+		  end
+		else
+		  escape = false
+		  case c
+		  when 'n'
+			unescaped.push("\n")
+		  when 'r'
+			unescaped.push("\r")
+		  else
+			unescaped.push(c)
+		  end
+		  next
+		end
+	
+        unescaped.push(c)
+	  end
+	
+	  return unescaped.join('')
+	end
 
     def load_pot(path)
       msgid = nil
@@ -42,25 +81,25 @@ class Language
             line = line[6..-1]
             #unescape the string
 			#note that I tried using undump here instead before, but it doesn't play nicely with non-ascii characters
-            eval("msgid = " + line)
+            msgid = unescape_string(line)
             lastLineWasMsgId = true
             lastLineWasMsgStr = false
       
           elsif line.start_with?("msgstr ")
             line = line[7..-1]
             #unescape the string
-            eval("msgstr = " + line)
+            msgstr = unescape_string(line)
             lastLineWasMsgId = false
             lastLineWasMsgStr = true
       
           elsif line.start_with?("\"")
             if lastLineWasMsgId
-              eval("msgid += " + line)
+              msgid += unescape_string(line)
               lastLineWasMsgId = true
               lastLineWasMsgStr = false
         
             elsif lastLineWasMsgStr
-              eval("msgstr += " + line)
+              msgstr += unescape_string(line)
               lastLineWasMsgId = false
               lastLineWasMsgStr = true
         
