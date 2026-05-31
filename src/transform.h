@@ -50,7 +50,7 @@
 #include "etc-internal.h"
 
 #include <math.h>
-#include <string.h>
+#include <SDL3/SDL_stdinc.h>
 
 class Transform{
 public:
@@ -59,7 +59,7 @@ public:
 	      rotation(0),
 	      dirty(true)
 	{
-		memset(matrix, 0, sizeof(matrix));
+		SDL_memset(matrix, 0, sizeof(matrix));
 
 		matrix[10] = 1;
 		matrix[15] = 1;
