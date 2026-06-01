@@ -24,6 +24,8 @@
 #include <physfs.h>
 #include <pixman.h>
 
+#include <boost/stacktrace.hpp>
+
 #ifdef __LINUX__
 	#include <gtk/gtk.h>
 	#include "xdg-user-dir-lookup.h"
@@ -66,6 +68,8 @@ void crash(const char* reason, Exception::Type t, bool do_exp){
 		if (out.is_open()){
 				out << "[SUNSHINE CRASHDUMP]" << std::endl;
 				try{
+					out << boost::stacktrace::stacktrace() << std::endl;
+					out << "REASON: " << reason << std::endl;
 					out << "GL Vendor: " << glGetStringInt(GL_VENDOR) << std::endl;
 					out << "GL Renderer: " << glGetStringInt(GL_RENDERER) << std::endl;
 					out << "GL Version: " << glGetStringInt(GL_VERSION) << std::endl;
@@ -98,7 +102,7 @@ void crash(const char* reason, Exception::Type t, bool do_exp){
 				out << "OpenAL version: " << AL_VERSION << std::endl;	
 				out << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << std::endl;
 				out << "Pixman version: " << PIXMAN_VERSION_STRING << std::endl;
-				
+				out << "Stack trace" << std::endl;
 				out.close();
 		}else{
 			printf("[CRASHLOG] Failed to write crashdump file\n");
