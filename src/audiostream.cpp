@@ -23,6 +23,7 @@
 
 #include "util.h"
 #include "exception.h"
+#include <assert.h>
 
 #include <SDL3/SDL_mutex.h>
 #include <SDL3/SDL_thread.h>

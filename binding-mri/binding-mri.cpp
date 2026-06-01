@@ -319,11 +319,9 @@ static VALUE evalString(VALUE string, VALUE filename, int *state){
 
 static void runCustomScript(const std::string &filename){
 	std::string scriptData;
-	char msg[1024];
 
 	if (!readFileSDL(filename.c_str(), scriptData)){
-		snprintf(msg, sizeof msg, "Unable to open %s", filename);
-		crash(msg, Exception::MEOW, false);
+		crash(Exception::MEOW, "Unable to open %s", filename);
 		return;
 	}
 
@@ -342,11 +340,9 @@ struct BacktraceData{
 static void runRMXPScripts(BacktraceData &btData){
 	const Config &conf = shState->rtData().config;
 	const std::string &scriptPack = conf.game.scripts;
-	char msg[1024];
 	
 	if (!shState->fileSystem().exists(scriptPack.c_str())){
-		snprintf(msg, sizeof msg, "Unable to open '%s'", scriptPack.c_str());
-		crash(msg, Exception::MEOW, false);
+		crash(Exception::MEOW, "Unable to open '%s'", scriptPack.c_str());
 		return;
 	}
 
@@ -357,13 +353,12 @@ static void runRMXPScripts(BacktraceData &btData){
 	try{
 		scriptArray = kernelLoadDataInt(scriptPack.c_str(), false);
 	}catch (const Exception &e){
-		snprintf(msg, sizeof msg, "Failed to read script data: %s", e.msg);
-		crash(msg, Exception::MEOW, false);
+		crash(Exception::MEOW, "Failed to read script data: %s", e.msg);
 		return;
 	}
 
 	if (!RB_TYPE_P(scriptArray, RUBY_T_ARRAY)){
-		crash("Failed to read script data", Exception::MEOW, false);
+		crash(Exception::MEOW, "Failed to read script data");
 		return;
 	}
 
@@ -405,10 +400,7 @@ static void runRMXPScripts(BacktraceData &btData){
 		}
 
 		if (result != Z_OK){
-			static char buffer[256];
-			snprintf(buffer, sizeof(buffer), "Error decoding script %ld: '%s'\n", i, RSTRING_PTR(scriptName));
-			crash(buffer, Exception::MEOW, false);
-
+			crash(Exception::MEOW, "Error decoding script %ld: '%s'\n", i, RSTRING_PTR(scriptName));
 			break;
 		}
 		rb_ary_store(script, 3, rb_str_new_cstr(decodeBuffer.c_str()));
@@ -504,9 +496,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	file.resize(strlen(file.c_str()));
 	file = btData.scriptNames.value(file, file);
 
-	char ms[640];
-	snprintf(&ms[0], 640, "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
-	crash(ms, Exception::MEOW, false);
+	crash(Exception::MEOW, "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
 	exit(0);
 }
 
