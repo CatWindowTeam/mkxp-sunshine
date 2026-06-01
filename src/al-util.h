@@ -25,7 +25,6 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <SDL3/SDL_audio.h>
-#include <assert.h>
 #include "meow.h"
 namespace AL{
 
@@ -177,8 +176,7 @@ inline uint8_t formatSampleSize(int sdlFormat){
 	case SDL_AUDIO_S16BE :
 		return 2;
 	default :
-		crash("Unhandled sample format", Exception::MEOW, false);
-		assert(!"Unhandled sample format");
+		crash(Exception::MEOW, "Unhandled sample format");
 	}
 
 	return 0;
@@ -197,8 +195,7 @@ inline ALenum chooseALFormat(int sampleSize, int channelCount){
 		case 2 : return AL_FORMAT_STEREO16;
 		}
 	default :
-		crash("Unhandled sample size / channel count", Exception::MEOW, false);
-		assert(!"Unhandled sample size / channel count");
+		crash(Exception::MEOW, "Unhandled sample size / channel count");
 	}
 
 	return 0;
