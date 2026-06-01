@@ -51,9 +51,8 @@ struct SDLRWIoContext{
 	    : ops(SDL_IOFromFile(filename, "r")),
 	      filename(filename)
 	{
-		if (!ops){
-			crash(Exception::SDLError, "Failed to open file: %s", SDL_GetError());
-		}
+		if (!ops)
+			throw Exception(Exception::SDLError, "Failed to open file: %s", SDL_GetError());
 	}
 
 	~SDLRWIoContext(){
@@ -118,7 +117,7 @@ static PHYSFS_Io *createSDLRWIo(const char *filename){
 	try{
 		ctx = new SDLRWIoContext(filename);
 	}catch (const Exception &e){
-		crash(Exception::MEOW, "Failed mounting %s", filename);
+		Debug() << "Failed mounting" << filename;
 		return 0;
 	}
 
@@ -595,20 +594,17 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 		PHYSFS_enumerate(dir, openReadEnumCB, &data);
 	}
 
-	if (data.physfsError){
-		crash(Exception::PHYSFSError, "PhysFS: %s", data.physfsError);
-	}
+	if (data.physfsError)
+		throw Exception(Exception::PHYSFSError, "PhysFS: %s", data.physfsError);
 
-	if (data.matchCount == 0){
-		crash(Exception::NoFileError, "%s", filename);
-	}
+	if (data.matchCount == 0)
+		throw Exception(Exception::NoFileError, "%s", filename);
 }
 
 void FileSystem::openReadRaw(SDL_IOStream* &stream, const char *filename){
 	PHYSFS_File *handle = PHYSFS_openRead(filename);
-	if (!handle){
-		crash(Exception::NoFileError, "%s", filename);
-	}
+	if (!handle)
+		throw Exception(Exception::NoFileError, "%s", filename);
 
 	initReadOps(handle, stream);
 }
