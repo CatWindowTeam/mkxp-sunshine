@@ -36,16 +36,16 @@ class Graphics{
 public:
 	void update(bool limitFps = true);
 	void freeze();
-	void transition(int duration = 8, const char *filename = "", int vague = 40);
+	void transition(unsigned short duration = 8, const char *filename = "", int vague = 40);
 	void frameReset();
 
 	DECL_ATTR( FrameRate,  int )
 	DECL_ATTR( FrameCount, int )
 	DECL_ATTR( Brightness, int )
 
-	void wait(int duration);
-	void fadeout(int duration);
-	void fadein(int duration);
+	void wait(unsigned int duration);
+	void fadeout(unsigned int duration);
+	void fadein(unsigned int duration);
 
 	Bitmap *snapToBitmap();
 

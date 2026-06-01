@@ -654,7 +654,7 @@ void Graphics::freeze(){
 	p->compositeToBuffer(p->frozenScene);
 }
 
-void Graphics::transition(int duration, const char *filename, int vague){
+void Graphics::transition(unsigned short duration, const char *filename, int vague){
 	p->checkSyncLock();
 
 	if (!p->frozen)
@@ -783,14 +783,14 @@ void Graphics::setFrameRate(int value){
 	p->fpsLimiter.setDesiredFPS(p->frameRate);
 }
 
-void Graphics::wait(int duration){
+void Graphics::wait(unsigned int duration){
 	for (int i = 0; i < duration; ++i){
 		p->checkShutDownReset();
 		p->redrawScreen();
 	}
 }
 
-void Graphics::fadeout(int duration){
+void Graphics::fadeout(unsigned int duration){
 	FBO::unbind();
 
 	float curr = p->brightness;
@@ -816,7 +816,7 @@ void Graphics::fadeout(int duration){
 	}
 }
 
-void Graphics::fadein(int duration){
+void Graphics::fadein(unsigned int duration){
 	FBO::unbind();
 
 	float curr = p->brightness;
