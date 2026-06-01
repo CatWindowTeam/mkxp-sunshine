@@ -52,14 +52,6 @@
 
 #define DEF_FRAMERATE (60)
 
-#if defined _WIN32
-	#define OS_W32
-#elif defined __APPLE__
-	#define OS_OSX
-#else
-	#define OS_LINUX
-#endif
-
 struct PingPong{
 	TEXFBO rt[2];
 	uint8_t srcInd, dstInd;
@@ -438,8 +430,8 @@ struct GraphicsPrivate{
 	RGSSThreadData *threadData;
 	SDL_GLContext glCtx;
 
-	int frameRate;
-	int frameCount;
+	unsigned int frameRate;
+	unsigned int frameCount;
 	int brightness;
 	bool smooth;
 
@@ -738,7 +730,7 @@ void Graphics::transition(int duration, const char *filename, int vague){
 			simpleShader.setProg(prog);
 		}
 
-		#ifndef OS_LINUX
+		#ifndef __linux__ || BSD || __unix__
 			if (p->threadData->exiting) SDL_SetWindowOpacity(p->threadData->window, 1.0f - prog);
 		#endif
 
@@ -906,10 +898,7 @@ void Graphics::reset(){
 	/* Dispose all live Disposables */
 	IntruListLink<Disposable> *iter;
 
-	for (iter = p->dispList.begin();
-	     iter != p->dispList.end();
-	     iter = iter->next)
-	{
+	for (iter = p->dispList.begin(); iter != p->dispList.end(); iter = iter->next){
 		iter->data->dispose();
 	}
 

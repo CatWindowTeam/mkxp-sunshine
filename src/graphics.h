@@ -36,9 +36,7 @@ class Graphics{
 public:
 	void update(bool limitFps = true);
 	void freeze();
-	void transition(int duration = 8,
-	                const char *filename = "",
-	                int vague = 40);
+	void transition(int duration = 8, const char *filename = "", int vague = 40);
 	void frameReset();
 
 	DECL_ATTR( FrameRate,  int )
@@ -68,8 +66,7 @@ public:
 	/* Repaint screen with static image until exitCond
 	 * is set. Observes reset flag on top of shutdown
 	 * if "checkReset" */
-	void repaintWait(const AtomicFlag &exitCond,
-	                 bool checkReset = true);
+	void repaintWait(const AtomicFlag &exitCond, bool checkReset = true);
 
 	const TEX::ID &obscuredTex() const;
 
