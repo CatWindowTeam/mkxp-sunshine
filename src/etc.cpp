@@ -104,7 +104,7 @@ void Color::serialize(char *buffer) const{
 
 Color *Color::deserialize(const char *data, int len){
 	if (len != 32)
-		crash("Color: Serialized data invalid", Exception::ArgumentError, true);
+		crash(Exception::ArgumentError, "Color: Serialized data invalid");
 
 	Color *c = new Color();
 
@@ -223,7 +223,7 @@ void Tone::serialize(char *buffer) const{
 
 Tone *Tone::deserialize(const char *data, int len){
 	if (len != 32)
-		crash("Tone: Serialized data invalid", Exception::ArgumentError, true);
+		crash(Exception::ArgumentError, "Tone: Serialized data invalid");
 
 	Tone *t = new Tone();
 
@@ -354,7 +354,7 @@ void Rect::serialize(char *buffer) const{
 
 Rect *Rect::deserialize(const char *data, int len){
 	if (len != 16)
-		crash("Rect: Serialized data invalid", Exception::ArgumentError, true);
+		crash(Exception::ArgumentError, "Rect: Serialized data invalid");
 
 	Rect *r = new Rect();
 
