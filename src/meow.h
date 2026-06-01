@@ -1,4 +1,4 @@
 #include "exception.h"
-void crash(const char* reason, Exception::Type t, bool do_exp);
+void crash(Exception::Type t, const char *fmt, ...);
 void ErrorMsg(const char* message);
 void WarnMsg(const char* message);

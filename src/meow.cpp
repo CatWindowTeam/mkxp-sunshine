@@ -40,9 +40,19 @@ static inline const char* glGetStringInt(GLenum name){
 	return (const char*) gl.GetString(name);
 }
 
-void crash(const char* reason, Exception::Type t, bool do_exp){
+void crash(Exception::Type t, const char *fmt, ...){
 	char msg[1024];
-	SDL_snprintf(msg, sizeof msg, "Error occured! Error message: %s\n\n Want to create a crash log? You can share the crash log with the developers and help resolve the issue.", reason);
+	va_list args;
+	va_start(args, fmt);
+	va_list args_copy;
+	va_copy(args_copy, args);
+	short len = SDL_vsnprintf(NULL, 0, fmt, args_copy);
+	va_end(args_copy);
+	char *buf = SDL_malloc((size_t)len + 1);
+	SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
+	va_end(args);
+	
+	SDL_snprintf(msg, sizeof msg, "Error occured! Error message: %s\n\n Want to create a crash log? You can share the crash log with the developers and help resolve the issue.", buf);
 	SDL_MessageBoxData messageboxdata = {
 	    .flags = SDL_MESSAGEBOX_ERROR,
 	    .window = NULL,
@@ -53,7 +63,6 @@ void crash(const char* reason, Exception::Type t, bool do_exp){
 	    .colorScheme = NULL
 	};
 
-	
 	int buttonid = 0;
 	if (SDL_ShowMessageBox(&messageboxdata, &buttonid) == false) {
 		printf("[CRASHDUMP] %s\n", reason);
@@ -109,10 +118,8 @@ void crash(const char* reason, Exception::Type t, bool do_exp){
 		}
 	}
 
-	if(do_exp == true){
-		if(!t == Exception::MEOW)
-			throw Exception(t, msg);
-	}	
+	if(!t == Exception::MEOW)
+		throw Exception(t, msg);
 }
 
 
