@@ -114,7 +114,7 @@ void Table::serialize(char *buffer) const{
 
 Table *Table::deserialize(const char *data, int len){
 	if (len < 20)
-		crash("Marshal: Table: bad file format", Exception::RGSSError, true);
+		crash(Exception::RGSSError, "Marshal: Table: bad file format");
 	
 	readInt32(&data);
 	int x = readInt32(&data);
@@ -123,10 +123,10 @@ Table *Table::deserialize(const char *data, int len){
 	int size = readInt32(&data);
 
 	if (size != x*y*z)
-		crash("Marshal: Table: bad file format", Exception::RGSSError, true);
+		crash(Exception::RGSSError, "Marshal: Table: bad file format");
 
 	if (len != 20 + x*y*z*2)
-		crash("Marshal: Table: bad file format", Exception::RGSSError, true);
+		crash(Exception::RGSSError, "Marshal: Table: bad file format");
 
 	Table *t = new Table(x, y, z);
 	memcpy(dataPtr(t->data), data, sizeof(int16_t)*size);
