@@ -68,9 +68,6 @@ static void parseExtensionsCompat(_PFNGLGETSTRINGPROC GetString, BoostSet<std::s
 #define GL_FUN(name, type) \
 	gl.name = (type) SDL_GL_GetProcAddress("gl" #name EXT_SUFFIX);
 
-#define EXC(msg) \
-	crash(Exception::MKXPError, "%s", msg)
-
 void initGLFunctions(){
 #define EXT_SUFFIX ""
 	GL_20_FUN;
@@ -94,7 +91,7 @@ void initGLFunctions(){
 	int glMajor = *ver - '0';
 
 	if (glMajor < 2)
-		throw EXC("At least OpenGL (ES) 2.0 is required");
+		crash(Exception::MKXPError, "At least OpenGL (ES) 2.0 is required");
 
 	if (gles){
 		GL_ES_FUN;
@@ -129,7 +126,7 @@ void initGLFunctions(){
 		}
 	}
 	else{
-		throw EXC("No FBO support available");
+		crash(Exception::MKXPError, "No FBO support available");
 	}
 
 	/* VAO entrypoints */

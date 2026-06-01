@@ -16,32 +16,31 @@
 #include <SDL3/SDL_messagebox.h>
 
 // OS-Specific code
-#if defined _WIN32
-	#define OS_W32
-	#define WIN32_LEAN_AND_MEAN
-	#define SECURITY_WIN32
-	#include <windows.h>
-	#include <mmsystem.h>
-	#include <security.h>
-	#include <shlobj.h>
-#elif defined __APPLE__ || __linux__ || BSD
-	#include <stdlib.h>
-	#include <unistd.h>
-	#include <pwd.h>
-	#include <dlfcn.h>
-
-	#ifdef __APPLE__
-		#define OS_OSX
-		#include <dispatch/dispatch.h>
-	#else
-		#define OS_LINUX || BSD
-		#include <gtk/gtk.h>
-		#include <gdk/gdk.h>
-		#include "xdg-user-dir-lookup.h"
-	#endif
+#if defined(_WIN32)
+    #define WIN32_LEAN_AND_MEAN
+    #define SECURITY_WIN32
+    #include <windows.h>
+    #include <mmsystem.h>
+    #include <security.h>
+    #include <shlobj.h>
+#elif defined(__APPLE__)
+    #include <stdlib.h>
+    #include <unistd.h>
+    #include <pwd.h>
+    #include <dlfcn.h>
+    #include <dispatch/dispatch.h>
+#elif defined(__linux__) || defined(__unix__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+    #include <stdlib.h>
+    #include <unistd.h>
+    #include <pwd.h>
+    #include <dlfcn.h>
+    #include <gtk/gtk.h>
+    #include <gdk/gdk.h>
+    #include "xdg-user-dir-lookup.h"
 #else
-	#error "Operating system not detected or unsupported."
+    #error "Operating system not detected or unsupported."
 #endif
+
 
 const Config conf;
 #define DEF_SCREEN_W conf.defScreenW
@@ -87,7 +86,7 @@ struct OneshotPrivate{
 };
 
 //OS-SPECIFIC FUNCTIONS
-#if defined OS_LINUX || BSD
+#if defined(__linux__) || defined(__unix__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 struct linux_DialogData{
 	// Input
 	int type;
@@ -134,7 +133,7 @@ static int linux_dialog(void *rawData){
 	return 0;
 }
 
-#elif defined OS_W32
+#elif defined _WIN32
 /* Convert WCHAR pointer to std::string */
 static std::string w32_fromWide(const WCHAR *ustr){
 	std::string result;
@@ -178,20 +177,20 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	p->winPosChanged = false;
 	p->allowExit = true;
 	p->exiting = false;
-	#ifdef OS_W32
+	#ifdef _WIN32
 		p->os = "windows";
-	#elif defined OS_OSX
+	#elif __APPLE__
 		p->os = "macos";
-	#elif defined BSD
+	#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(BSD)
 		p->os = "BSD";
-	#else
+	#elif __LINUX__
 		p->os = "linux";
 	#endif
 
 	/********************
 	 * USERNAME/DOCS PATH
 	 ********************/
-#if defined OS_W32
+#if defined _WIN32
 	//Get language code
 	WCHAR wlang[9];
 	GetLocaleInfoW(LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME, wlang, sizeof(wlang) / sizeof(WCHAR));
@@ -242,7 +241,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	// Get user's name
 	#ifdef OS_OSX
 		struct passwd *pwd = getpwuid(geteuid());
-	#elif defined OS_LINUX
+	#elif defined(__linux__) || defined(__unix__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 		struct passwd *pwd = getpwuid(getuid());
 	#endif
 	if (pwd){
@@ -256,12 +255,12 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	}
 
 	// Get documents path
-	#ifdef OS_OSX
+	#ifdef __APPLE__
 		std::string path = std::string(getenv("HOME")) + "/Documents";
 		p->docsPath = path.c_str();
 		p->gamePath = path.c_str();
 		p->journal = "_______.app";
-	#elif defined OS_LINUX
+	#elif defined(__linux__) || defined(__unix__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 		char * path = xdg_user_dir_lookup("DOCUMENTS");
 		p->docsPath = path;
 		p->gamePath = path;
@@ -272,7 +271,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	Debug() << "[oneshot] Game path    :" << p->gamePath;
 	Debug() << "[oneshot] Docs path    :" << p->docsPath;
 
-#ifdef OS_LINUX
+#ifdef defined(__linux__) || defined(__unix__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 	char const* xdg_current_desktop = getenv("XDG_CURRENT_DESKTOP");
 	gtk_init(0, 0);
 
@@ -309,7 +308,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	/********
 	 * MISC
 	 ********/
-#if defined OS_W32
+#if defined _WIN32
 	//Get windows version
 	OSVERSIONINFOW version;
 	ZeroMemory(&version, sizeof(version));
@@ -461,7 +460,7 @@ void Oneshot::setAllowExit(bool allowExit){
 bool Oneshot::msgbox(int type, const char *body, const char *title){
 	if (!title)
 		title = "";
-#ifdef OS_LINUX
+#ifdef defined(__linux__) || defined(__unix__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 	linux_DialogData data = {type, body, title, 0};
 	gdk_threads_add_idle(linux_dialog, &data);
 	gtk_main();
@@ -482,7 +481,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title){
 	data.colorScheme = 0;
 	data.title = title;
 	data.message = body;
-#ifdef OS_W32
+#ifdef _WIN32
 	DWORD sound;
 #endif
 
@@ -492,19 +491,19 @@ bool Oneshot::msgbox(int type, const char *body, const char *title){
 	case MSG_YESNO:
 	default:
 		data.flags = SDL_MESSAGEBOX_INFORMATION;
-#ifdef OS_W32
+#ifdef _WIN32
 		sound = SND_ALIAS_SYSTEMQUESTION;
 #endif
 		break;
 	case MSG_WARN:
 		data.flags = SDL_MESSAGEBOX_WARNING;
-#ifdef OS_W32
+#ifdef _WIN32
 		sound = SND_ALIAS_SYSTEMEXCLAMATION;
 #endif
 		break;
 	case MSG_ERR:
 		data.flags = SDL_MESSAGEBOX_WARNING;
-#ifdef OS_W32
+#ifdef _WIN32
 		sound = SND_ALIAS_SYSTEMASTERISK;
 #endif
 		break;
@@ -526,12 +525,12 @@ bool Oneshot::msgbox(int type, const char *body, const char *title){
 	}
 
 	// Show messagebox
-#ifdef OS_W32
+#ifdef _WIN32
 	PlaySoundW((LPCWSTR)sound, NULL, SND_ALIAS_ID | SND_ASYNC);
 #endif
 	int button;
 
-	#ifdef OS_OSX
+	#ifdef __APPLE__
 		int *btn = &button;
 
 		// Message boxes and UI changes must be performed from the main thread on macOS Mojave and above.

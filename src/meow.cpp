@@ -48,7 +48,7 @@ void crash(Exception::Type t, const char *fmt, ...){
 	va_copy(args_copy, args);
 	short len = SDL_vsnprintf(NULL, 0, fmt, args_copy);
 	va_end(args_copy);
-	char *buf = SDL_malloc((size_t)len + 1);
+	char *buf = (char*)SDL_malloc((size_t)len + 1);
 	SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
 	va_end(args);
 	
@@ -65,7 +65,7 @@ void crash(Exception::Type t, const char *fmt, ...){
 
 	int buttonid = 0;
 	if (SDL_ShowMessageBox(&messageboxdata, &buttonid) == false) {
-		printf("[CRASHDUMP] %s\n", reason);
+		printf("[CRASHDUMP] %s\n", buf);
 	}
 
 	if(buttonid == 1){
@@ -78,7 +78,7 @@ void crash(Exception::Type t, const char *fmt, ...){
 				out << "[SUNSHINE CRASHDUMP]" << std::endl;
 				try{
 					out << boost::stacktrace::stacktrace() << std::endl;
-					out << "REASON: " << reason << std::endl;
+					out << "REASON: " << buf << std::endl;
 					out << "GL Vendor: " << glGetStringInt(GL_VENDOR) << std::endl;
 					out << "GL Renderer: " << glGetStringInt(GL_RENDERER) << std::endl;
 					out << "GL Version: " << glGetStringInt(GL_VERSION) << std::endl;
