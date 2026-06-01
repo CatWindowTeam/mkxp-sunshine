@@ -57,8 +57,7 @@ void GLScissorTest::apply(const bool &value){
 }
 
 void GLBlendMode::apply(const BlendType &value){
-	switch (value)
-	{
+	switch (value){
 	case BlendKeepDestAlpha :
 		gl.BlendEquation(GL_FUNC_ADD);
 		gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
