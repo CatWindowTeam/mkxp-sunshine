@@ -48,7 +48,7 @@
 #define GUARD_MEGA \
 	{ \
 		if (p->megaSurface) \
-			crash("Operation not supported for mega surfaces", Exception::MKXPError, true); \
+			crash(Exception::MKXPError, "Operation not supported for mega surfaces"); \
 	}
 
 #define OUTLINE_SIZE 1
@@ -110,7 +110,6 @@ struct BitmapPrivate{
 	}
 
 	~BitmapPrivate(){
-		//SDL_DeleteFormat(format);
 		pixman_region_fini(&tainted);
 	}
 
@@ -226,10 +225,9 @@ Bitmap::Bitmap(const char *filename){
 	shState->fileSystem().openRead(handler, filename);
 	SDL_Surface *imgSurf = handler.surf;
 
-	if (!imgSurf){
-		snprintf(msg, sizeof msg, "Error loading image '%s': %s", filename, SDL_GetError());
-		throw Exception(Exception::SDLError, msg);
-	}
+	if (!imgSurf)
+		crash(Exception::SDLError, "Error loading image '%s': %s", filename, SDL_GetError());
+		
 	p->ensureFormat(imgSurf, SDL_PIXELFORMAT_ABGR8888);
 
 	if (imgSurf->w > glState.caps.maxTexSize || imgSurf->h > glState.caps.maxTexSize){
@@ -263,10 +261,8 @@ Bitmap::Bitmap(const char *filename){
 }
 
 Bitmap::Bitmap(int width, int height){
-	if (width <= 0 || height <= 0){
-		//rash("failed to create bitmap");
-		throw Exception(Exception::RGSSError, "failed to create bitmap"); 
-	}
+	if (width <= 0 || height <= 0)
+		crash(Exception::RGSSError, "failed to create bitmap"); 
 
 	TEXFBO tex = shState->texPool().request(width, height);
 
@@ -1050,8 +1046,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 
 			GLMeta::blitBegin(p->gl);
 			GLMeta::blitSource(gpTF);
-			GLMeta::blitRectangle(IntRect(0, 0, txtSurf->w, txtSurf->h),
-			                      posRect, true);
+			GLMeta::blitRectangle(IntRect(0, 0, txtSurf->w, txtSurf->h), posRect, true);
 			GLMeta::blitEnd();
 		}
 	}
