@@ -23,6 +23,7 @@
 
 #include "boost-hash.h"
 #include "exception.h"
+#include "meow.h"
 
 #include <SDL3/SDL_video.h>
 #include <string>
@@ -32,8 +33,7 @@ GLFunctions gl;
 typedef const GLubyte* (APIENTRYP _PFNGLGETSTRINGIPROC) (GLenum, GLuint);
 
 static void parseExtensionsCore(_PFNGLGETINTEGERVPROC GetIntegerv, BoostSet<std::string> &out){
-	_PFNGLGETSTRINGIPROC GetStringi =
-		(_PFNGLGETSTRINGIPROC) SDL_GL_GetProcAddress("glGetStringi");
+	_PFNGLGETSTRINGIPROC GetStringi = (_PFNGLGETSTRINGIPROC) SDL_GL_GetProcAddress("glGetStringi");
 
 	GLint extCount = 0;
 	GetIntegerv(GL_NUM_EXTENSIONS, &extCount);
@@ -69,7 +69,7 @@ static void parseExtensionsCompat(_PFNGLGETSTRINGPROC GetString, BoostSet<std::s
 	gl.name = (type) SDL_GL_GetProcAddress("gl" #name EXT_SUFFIX);
 
 #define EXC(msg) \
-	Exception(Exception::MKXPError, "%s", msg)
+	crash(Exception::MKXPError, "%s", msg)
 
 void initGLFunctions(){
 #define EXT_SUFFIX ""
