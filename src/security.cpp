@@ -7,12 +7,7 @@
 	#include <seccomp.h>
 	//shitty shit
 	scmp_filter_ctx ctx;
-	int seccomplist[] = {SCMP_SYS(bpf), SCMP_SYS(set_mempolicy), SCMP_SYS(set_mempolicy_home_node), SCMP_SYS(vhangup), SCMP_SYS(settimeofday), SCMP_SYS(stime), SCMP_SYS(clock_settime), SCMP_SYS(clock_settime64),
-	SCMP_SYS(iopl), SCMP_SYS(ioperm), SCMP_SYS(ptrace), SCMP_SYS(process_vm_writev), SCMP_SYS(process_vm_readv), SCMP_SYS(process_madvise), SCMP_SYS(pidfd_getfd), SCMP_SYS(kcmp), 
-	SCMP_SYS(delete_module), SCMP_SYS(init_module), SCMP_SYS(init_module), SCMP_SYS(chroot), SCMP_SYS(reboot), SCMP_SYS(unshare), SCMP_SYS(umount2), SCMP_SYS(umount), SCMP_SYS(setns), SCMP_SYS(sethostname), SCMP_SYS(setdomainname), SCMP_SYS(bpf), SCMP_SYS(quotactl_fd), SCMP_SYS(quotactl), 
-	SCMP_SYS(move_mount), SCMP_SYS(mount_setattr), SCMP_SYS(mount), SCMP_SYS(lsm_set_self_attr), SCMP_SYS(lsm_list_modules), SCMP_SYS(lsm_get_self_attr), SCMP_SYS(process_vm_readv), SCMP_SYS(process_vm_writev), SCMP_SYS(ptrace)};
-
-	char ro_paths[] = {"/"};
+	int seccomplist[] = {SCMP_SYS(bpf), SCMP_SYS(set_mempolicy), SCMP_SYS(set_mempolicy_home_node), SCMP_SYS(vhangup), SCMP_SYS(settimeofday), SCMP_SYS(stime), SCMP_SYS(clock_settime), SCMP_SYS(clock_settime64), SCMP_SYS(iopl), SCMP_SYS(ioperm), SCMP_SYS(ptrace), SCMP_SYS(process_vm_writev), SCMP_SYS(process_vm_readv), SCMP_SYS(process_madvise), SCMP_SYS(pidfd_getfd), SCMP_SYS(kcmp), SCMP_SYS(delete_module), SCMP_SYS(init_module), SCMP_SYS(init_module), SCMP_SYS(chroot), SCMP_SYS(reboot), SCMP_SYS(unshare), SCMP_SYS(umount2), SCMP_SYS(umount), SCMP_SYS(setns), SCMP_SYS(sethostname), SCMP_SYS(setdomainname), SCMP_SYS(bpf), SCMP_SYS(quotactl_fd), SCMP_SYS(quotactl), SCMP_SYS(move_mount), SCMP_SYS(mount_setattr), SCMP_SYS(mount), SCMP_SYS(lsm_set_self_attr), SCMP_SYS(lsm_list_modules), SCMP_SYS(lsm_get_self_attr), SCMP_SYS(process_vm_readv), SCMP_SYS(process_vm_writev), SCMP_SYS(ptrace)};
 #endif
 
 void SecurityManagerInit(){

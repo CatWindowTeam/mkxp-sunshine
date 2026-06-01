@@ -28,5 +28,5 @@ ln -sfh "$ONESHOT_PATH/OneShot.app" "$HOME/Applications/OneShot.app"
 
 rm -f /tmp/oneshot-pipe # Important for pre-release version cleanup
 
-echo "\n${green}Complete!  ${white}Please report any issues to https://github.com/vinyldarkscratch/synglechance/issues${color_reset}"
+echo "\n${green}Complete!  ${white}Please report any issues to https://github.com/ZakatTeamI2P/mkxp-sunshine/issues${color_reset}"
 open "$ONESHOT_PATH"

@@ -42,8 +42,7 @@
 #include <sigc++/connection.h>
 #include <boost/chrono.hpp>
 
-#include <string.h>
-#include <stdint.h>
+#include <SDL3/SDL_stdinc.h>
 #include <algorithm>
 #include <vector>
 
@@ -334,7 +333,7 @@ struct TilemapPrivate {
 	      zOrderDirty(false),
 	      tilemapReady(false)
 	{
-		memset(autotiles, 0, sizeof(autotiles));
+		SDL_memset(autotiles, 0, sizeof(autotiles));
 
 		atlas.animatedATs.reserve(autotileCount);
 		atlas.efTilesetH = 0;
@@ -357,8 +356,7 @@ struct TilemapPrivate {
 		for (size_t i = 0; i < zlayersMax; ++i)
 			elem.zlayers[i] = new ZLayer(this, viewport);
 
-		prepareCon = shState->prepareDraw.connect
-		        (sigc::mem_fun(this, &TilemapPrivate::prepare));
+		prepareCon = shState->prepareDraw.connect(sigc::mem_fun(this, &TilemapPrivate::prepare));
 
 		updateFlashMapViewport();
 	}
@@ -499,13 +497,11 @@ struct TilemapPrivate {
 			if (blitW <= autotileW && tiles.animated){
 				/* Static autotile */
 				for (int j = 0; j < 4; ++j)
-					GLMeta::blitRectangle(IntRect(0, 0, blitW, blitH),
-					                      Vec2i(autotileW*j, atInd*autotileH));
+					GLMeta::blitRectangle(IntRect(0, 0, blitW, blitH), Vec2i(autotileW*j, atInd*autotileH));
 			}
 			else{
 				/* Animated autotile */
-				GLMeta::blitRectangle(IntRect(0, 0, blitW, blitH),
-				                      Vec2i(0, atInd*autotileH));
+				GLMeta::blitRectangle(IntRect(0, 0, blitW, blitH), Vec2i(0, atInd*autotileH));
 			}
 		}
 
@@ -535,8 +531,7 @@ struct TilemapPrivate {
 					Vec2i texSize;
 					shState->ensureTexSize(tsLaneW, blitOp.h, texSize);
 					shState->bindTex();
-					GLMeta::subRectImageUpload(tsSurf->w, blitOp.src.x, blitOp.src.y,
-					                           0, 0, tsLaneW, blitOp.h, tsSurf, GL_RGBA);
+					GLMeta::subRectImageUpload(tsSurf->w, blitOp.src.x, blitOp.src.y, 0, 0, tsLaneW, blitOp.h, tsSurf, GL_RGBA);
 
 					shader.setTexSize(texSize);
 					quad.setTexRect(FloatRect(0, 0, tsLaneW, blitOp.h));
@@ -556,8 +551,7 @@ struct TilemapPrivate {
 				for (size_t i = 0; i < blits.size(); ++i){
 					const TileAtlas::Blit &blitOp = blits[i];
 
-					GLMeta::subRectImageUpload(tsSurf->w, blitOp.src.x, blitOp.src.y,
-					                           blitOp.dst.x, blitOp.dst.y, tsLaneW, blitOp.h, tsSurf, GL_RGBA);
+					GLMeta::subRectImageUpload(tsSurf->w, blitOp.src.x, blitOp.src.y, blitOp.dst.x, blitOp.dst.y, tsLaneW, blitOp.h, tsSurf, GL_RGBA);
 				}
 
 				GLMeta::subRectImageEnd();
@@ -572,8 +566,7 @@ struct TilemapPrivate {
 			for (size_t i = 0; i < blits.size(); ++i){
 				const TileAtlas::Blit &blitOp = blits[i];
 
-				GLMeta::blitRectangle(IntRect(blitOp.src.x, blitOp.src.y, tsLaneW, blitOp.h),
-				                      blitOp.dst);
+				GLMeta::blitRectangle(IntRect(blitOp.src.x, blitOp.src.y, tsLaneW, blitOp.h), blitOp.dst);
 			}
 
 			GLMeta::blitEnd();
@@ -628,8 +621,7 @@ struct TilemapPrivate {
 		if (!wrapping && (ox < 0 || oy < 0 || ox >= mapData->xSize() || oy >= mapData->ySize()))
 			return;
 
-		int tileInd =
-			tableGetWrapped(*mapData, ox, oy, z);
+		int tileInd = tableGetWrapped(*mapData, ox, oy, z);
 
 		/* Check for empty space */
 		if (tileInd < 48)
@@ -718,8 +710,7 @@ struct TilemapPrivate {
 			if (zlayerVert[i].empty())
 				continue;
 
-			VBO::uploadSubData(quadDataSize(zlayerBases[i]),
-			                   quadDataSize(zlayerSize(i)), dataPtr(zlayerVert[i]));
+			VBO::uploadSubData(quadDataSize(zlayerBases[i]), quadDataSize(zlayerSize(i)), dataPtr(zlayerVert[i]));
 		}
 
 		VBO::unbind();
@@ -1141,8 +1132,7 @@ void Tilemap::setPriorities(Table *value){
 
 	p->invalidateBuffers();
 	p->prioritiesCon.disconnect();
-	p->prioritiesCon = value->modified.connect
-	        (sigc::mem_fun(p, &TilemapPrivate::invalidateBuffers));
+	p->prioritiesCon = value->modified.connect(sigc::mem_fun(p, &TilemapPrivate::invalidateBuffers));
 }
 
 void Tilemap::setVisible(bool value){
