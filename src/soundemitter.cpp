@@ -206,7 +206,6 @@ struct SoundOpenHandler : FileSystem::OpenHandler{
 };
 
 SoundBuffer *SoundEmitter::allocateBuffer(const std::string &filename){
-	char msg[512];
 	SoundBuffer *buffer = bufferHash.value(filename, 0);
 
 	if (buffer){
@@ -223,9 +222,7 @@ SoundBuffer *SoundEmitter::allocateBuffer(const std::string &filename){
 		buffer = handler.buffer;
 
 		if (!buffer){
-			char buf[512];
-			snprintf(buf, sizeof(buf), "Unable to decode sound: %s: %s", filename.c_str(), Sound_GetError());
-			crash(msg, Exception::MEOW, false);
+			crash(Exception::MEOW, "Unable to decode sound: %s: %s", filename.c_str(), Sound_GetError());
 			return 0;
 		}
 
