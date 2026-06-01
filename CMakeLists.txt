@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.28.3)
-project(oneshot)
+project(sunshine)
 ## Setup options ##
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
+set(VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "5.1.2600.7701")
 include(FindPackageHandleStandardArgs)
 
 option(STEAM "Build for Steam" OFF)
@@ -16,6 +17,7 @@ if(DEBUG)
 	# Debug stuff
 	if (MSVC)
     		add_compile_options(/EHr /fsanitize /validate-charset /DEBUG /RTCu /RTCs /RTCc)
+		set(WINDOWS_EXPORT_ALL_SYMBOLS ON)
 	else()
     		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -fcheck-new -gbtf -pipe)
 	endif()
