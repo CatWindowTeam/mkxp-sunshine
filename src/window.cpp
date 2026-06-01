@@ -258,8 +258,7 @@ struct WindowPrivate {
 		cursorVert.count = 9;
 		pauseAniVert.count = 1;
 
-		prepareCon = shState->prepareDraw.connect
-		        (sigc::mem_fun(this, &WindowPrivate::prepare));
+		prepareCon = shState->prepareDraw.connect(sigc::mem_fun(this, &WindowPrivate::prepare));
 	}
 
 	~WindowPrivate(){
@@ -274,8 +273,7 @@ struct WindowPrivate {
 
 	void refreshCursorRectCon(){
 		cursorRectCon.disconnect();
-		cursorRectCon = cursorRect->valueChanged.connect
-		        (sigc::mem_fun(this, &WindowPrivate::markControlVertDirty));
+		cursorRectCon = cursorRect->valueChanged.connect(sigc::mem_fun(this, &WindowPrivate::markControlVertDirty));
 	}
 
 	void buildBaseVert(){
