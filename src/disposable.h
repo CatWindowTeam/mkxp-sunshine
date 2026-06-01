@@ -26,6 +26,7 @@
 #include "exception.h"
 #include "sharedstate.h"
 #include "graphics.h"
+#include "meow.h"
 
 #include <assert.h>
 
@@ -65,7 +66,7 @@ public:
 protected:
 	void guardDisposed() const{
 		if (isDisposed())
-			throw Exception(Exception::RGSSError, "disposed %s", klassName());
+			crash(Exception::RGSSError, "disposed %s", klassName());
 	}
 
 private:

@@ -184,7 +184,7 @@ void Config::read(int argc, char *argv[]){
 	
 #ifdef STEAM
 	/* Override fullscreen config if Big Picture */
-	if (const char *env = std::getenv("SteamTenfoot")){
+	if (const char *env = SDL_getenv("SteamTenfoot")){
 		if (!SDL_strcmp(env, "1"))
 			fullscreen = true;
 	}
