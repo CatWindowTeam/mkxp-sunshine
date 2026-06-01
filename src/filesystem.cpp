@@ -51,8 +51,9 @@ struct SDLRWIoContext{
 	    : ops(SDL_IOFromFile(filename, "r")),
 	      filename(filename)
 	{
-		if (!ops)
+		if (!ops){
 			crash(Exception::SDLError, "Failed to open file: %s", SDL_GetError());
+		}
 	}
 
 	~SDLRWIoContext(){
@@ -594,17 +595,20 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 		PHYSFS_enumerate(dir, openReadEnumCB, &data);
 	}
 
-	if (data.physfsError)
+	if (data.physfsError){
 		crash(Exception::PHYSFSError, "PhysFS: %s", data.physfsError);
+	}
 
-	if (data.matchCount == 0)
+	if (data.matchCount == 0){
 		crash(Exception::NoFileError, "%s", filename);
+	}
 }
 
 void FileSystem::openReadRaw(SDL_IOStream* &stream, const char *filename){
 	PHYSFS_File *handle = PHYSFS_openRead(filename);
-	if (!handle)
+	if (!handle){
 		crash(Exception::NoFileError, "%s", filename);
+	}
 
 	initReadOps(handle, stream);
 }
