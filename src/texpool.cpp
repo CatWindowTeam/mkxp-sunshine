@@ -97,7 +97,6 @@ TexPool::~TexPool(){
 TEXFBO TexPool::request(int width, int height){
 	CacheNode cnode;
 	Size size(width, height);
-	char msg[512];
 	/* See if we can statisfy request from cache */
 	CNodeList &bucket = p->poolHash[size];
 
@@ -118,8 +117,7 @@ TEXFBO TexPool::request(int width, int height){
 
 	int maxSize = glState.caps.maxTexSize;
 	if (width > maxSize || height > maxSize){
-		snprintf(msg, sizeof msg, "Texture dimensions [%d, %d] exceed hardware capabilities", width, height);
-		crash(msg, Exception::MKXPError, true);
+		crash(Exception::MKXPError, "Texture dimensions [%d, %d] exceed hardware capabilities", width, height);
 	}
 
 	/* Nope, create it instead */
