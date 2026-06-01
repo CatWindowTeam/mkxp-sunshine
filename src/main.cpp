@@ -48,6 +48,7 @@
 #include "exception.h"
 #include "gl-fun.h"
 #include "i18n.h"
+#include "security.h"
 
 #include "meow.h"
 
@@ -56,10 +57,11 @@
 #include "icon.png.xxd"
 
 #ifdef STEAM
-#include "steamshim/steamshim_child.h"
+	#include "steamshim/steamshim_child.h"
 #else
-#include "gamecontrollerdb.txt.xxd"
+	#include "gamecontrollerdb.txt.xxd"
 #endif
+
 
 static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
 	rtData->rgssErrorMsg = msg;
@@ -211,8 +213,9 @@ static void setGamePathInRegistry() {
 #endif
 	//TODO handle this for Linux/Mac
 }
-int main(int argc, char *argv[]){                     
-	char msg[512];
+int main(int argc, char *argv[]){
+    char msg[512];
+    SecurityManagerInit();
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
@@ -227,7 +230,7 @@ int main(int argc, char *argv[]){
 			SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
 		#endif
 	#endif
-
+	
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
 		SDL_snprintf(msg, sizeof msg, "Error initializing SDL: %s", SDL_GetError());

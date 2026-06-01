@@ -7,16 +7,17 @@ include(FindPackageHandleStandardArgs)
 option(STEAM "Build for Steam" OFF)
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 option(DEBUG "Debug mode" ON)
-set(SDLTTF_VENDORED ON)
+#For paranoics:3
+option(EXTRA_SECURITY "Extra security" OFF)
 set(ZLIB_USE_STATIC_LIBS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if(DEBUG)
 	# Debug stuff
 	if (MSVC)
-    		add_compile_options(/EHr /fsanitize /validate-charset /DEBUG /RTCu /RTCs /RTCc /guard:cf /GS)
+    		add_compile_options(/EHr /fsanitize /validate-charset /DEBUG /RTCu /RTCs /RTCc)
 	else()
-    		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -Wall -fcheck-new -gbtf -pipe)
+    		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -fcheck-new -gbtf -pipe)
 	endif()
 else()
 	# Optimization stuff
@@ -27,6 +28,15 @@ else()
 		add_link_options(-Wl,-O2)
 	endif()
 endif()
+
+if(EXTRA_SECURITY)
+	if (MSVC)
+    		add_compile_options(/guard:cf /GS /sdl /DYNAMICBASE /HIGHENTROPYVA /SAFESEH /guard:ehcont)
+	else()
+    		add_compile_options(-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -D_GLIBCXX_ASSERTIONS -fstrict-flex-arrays=3 -fstack-clash-protection -fstack-protector-strong -Wl,--no-copy-dt-needed-entries -fPIE -pie)
+	endif()
+endif()
+
 ## Setup main source ##
 
 # main stuff
@@ -78,6 +88,7 @@ set(MAIN_HEADERS
 	src/gl-meta.h
 	src/vertex.h
 	src/soundemitter.h
+	src/security.h
 	src/aldatasource.h
 	src/alstream.h
 	src/audiostream.h
@@ -118,6 +129,7 @@ set(MAIN_SOURCE
 	src/etc.cpp
 	src/config.cpp
 	src/settingsmenu.cpp
+	src/security.cpp
 	src/keybindings.cpp
 	src/tileatlas.cpp
 	src/sharedstate.cpp
@@ -140,16 +152,13 @@ if(WIN32)
 	list(APPEND MAIN_SOURCE assets/resources.rc)
 	list(APPEND DEFINES UNICODE)
 	list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi winmm z)
-	#list(APPEND PLATFORM_LIBS winmm z)
-	include_directories(
-		${CMAKE_CURRENT_BINARY_DIR}/windows
-	)
+	include_directories( ${CMAKE_CURRENT_BINARY_DIR}/windows )
 elseif(APPLE)
 	list(APPEND MAIN_HEADERS src/mac-desktop.h)
 	list(APPEND MAIN_SOURCE src/mac-desktop.mm)
 elseif(LINUX)
 	find_package(PkgConfig REQUIRED)
-	pkg_check_modules(LINUXPKGS REQUIRED gtk+-3.0 libxfconf-0)
+	pkg_check_modules(LINUXPKGS REQUIRED gtk+-3.0 libxfconf-0 libseccomp)
 	include_directories(${LINUXPKGS_INCLUDE_DIRS})
 	add_compile_options(${LINUXPKGS_CFLAGS_OTHER})
 	list(APPEND PLATFORM_LIBRARIES ${LINUXPKGS_LDFLAGS})
@@ -215,12 +224,6 @@ set(EMBEDDED_INPUT
 	assets/icon.png
 	assets/gamecontrollerdb.txt
 )
-
-if (RGSS2)
-	list(APPEND DEFINES
-		RGSS2
-	)
-endif()
 
 if (MSVC)
 	list(APPEND DEFINES
@@ -321,6 +324,12 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 	${EMBEDDED_SOURCE}
 )
 
+if(LINUX)
+	pkg_check_modules(SECCOMP REQUIRED libseccomp)
+	target_include_directories(${PROJECT_NAME} PRIVATE ${SECCOMP_INCLUDE_DIRS})
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${SECCOMP_LIBRARIES})
+endif()
+
 find_package(ZLIB REQUIRED)
 find_package(SDL3 CONFIG)
 find_package(SDL3_image CONFIG)
@@ -335,11 +344,6 @@ find_package(Ruby 3.0 REQUIRED COMPONENTS Development)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
-if(PIXMAN-1_FOUND)
-	set(PIXMAN_LIBRARIES ${PIXMAN_LIBRARY})
-	set(PIXMAN_INCLUDE_DIRS ${PIXMAN_INCLUDE_DIR})
-endif()
-
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 
 target_compile_definitions(${PROJECT_NAME}
@@ -349,7 +353,7 @@ target_compile_definitions(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
 	PRIVATE
 		src
-		${PIXMAN_INCLUDE_DIRS}
+		${PIXMAN_INCLUDE_DIR}
 		${SIGC2_INCLUDE_DIRS}
 		${Ruby_INCLUDE_DIRS}
 		Boost::boost ${Boost_INCLUDE_DIRS}
@@ -361,15 +365,14 @@ target_link_libraries(${PROJECT_NAME}
 		SDL3::SDL3 SDL3_image::SDL3_image SDL3_sound::SDL3_sound SDL3_ttf::SDL3_ttf
 		OpenAL::OpenAL
 		physfs
-		${PIXMAN_LIBRARIES}
+		${PIXMAN_LIBRARY}
 		${SIGC2_LIBRARIES}
 		${PLATFORM_LIBRARIES}
 		${Ruby_LIBRARIES}
 		Boost::boost Boost::chrono ${Boost_LIBRARIES}
 		${VORBISFILE_LIBRARIES}
 		ZLIB::ZLIB
-    	${PLATFORM_LIBS}
-	)
+    	${PLATFORM_LIBS})
 
 IF(APPLE)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)

@@ -28,6 +28,8 @@
 #include "xdg-user-dir-lookup.h"
 
 #include <SDL3/SDL_stdinc.h>
+#include <stdio.h>
+#include <stdlib.h>
 /**
  * xdg_user_dir_lookup_with_fallback:
  * @type: a string specifying the type of directory
@@ -65,7 +67,7 @@ char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback
       if (config_file == NULL)
         goto error;
 
-      SDL_strcpy(config_file, home_dir);
+      SDL_strlcpy(config_file, home_dir, sizeof(config_file));
       SDL_strlcat(config_file, "/.config/user-dirs.dirs", sizeof(config_file) + 22);
     }
   else{
@@ -73,8 +75,8 @@ char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback
       if (config_file == NULL)
         goto error;
 
-      SDL_strcpy(config_file, config_home);
-      SDL_strcat(config_file, "/user-dirs.dirs", sizeof(config_file) + 16);
+      SDL_strlcpy(config_file, config_home, sizeof(config_file));
+      SDL_strlcat(config_file, "/user-dirs.dirs", sizeof(config_file) + 16);
     }
 
   file = fopen(config_file, "r");
@@ -130,7 +132,7 @@ char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback
           if (user_dir == NULL)
             goto error2;
 
-	  SDL_strcpy(user_dir, home_dir);
+	  SDL_strlcpy(user_dir, home_dir, sizeof(user_dir));
 	  SDL_strlcat(user_dir, "/", sizeof(user_dir) + 2);
 	}
       else{
@@ -196,7 +198,7 @@ char *xdg_user_dir_lookup (const char *type){
       if (user_dir == NULL)
         return NULL;
 
-      SDL_strcpy(user_dir, home_dir);
+      SDL_strlcpy(user_dir, home_dir, sizeof(user_dir));
       SDL_strlcat(user_dir, "/Desktop", sizeof(user_dir) + 9);
       return user_dir;
     }
