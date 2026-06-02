@@ -102,9 +102,7 @@ void crash(Exception::Type t, const char *fmt, ...){
 				}catch(const std::exception& e){
 					out << "Detected OS: " << e.what() << std::endl;
 				}
-				if(getenv("XDG_CURRENT_DESKTOP") == NULL){
-					out << "Desktop enviroment(XDG_CURRENT_DESKTOP): Unknown"<< std::endl;
-				}else{
+				if(!getenv("XDG_CURRENT_DESKTOP") == NULL){
 					out << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << getenv("XDG_CURRENT_DESKTOP") << std::endl;					
 				}
 
@@ -112,10 +110,9 @@ void crash(Exception::Type t, const char *fmt, ...){
 				out << "OpenAL version: " << AL_VERSION << std::endl;	
 				out << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << std::endl;
 				out << "Pixman version: " << PIXMAN_VERSION_STRING << std::endl;
-				out << "Stack trace" << std::endl;
 				out.close();
 		}else{
-			printf("[CRASHLOG] Failed to write crashdump file\n");
+			Debug() << "[CRASHLOG] Failed to write crashdump file";
 		}
 	}
 
@@ -129,6 +126,6 @@ void ErrorMsg(const char* message){
 }
 
 void WarnMsg(const char* message){
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", message, NULL);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", message, NULL); 
 }
 
