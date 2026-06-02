@@ -112,9 +112,9 @@ int rgssThreadFun(void *userdata){
 	SDL_GL_SwapWindow(win);
 
 	Debug() << "[main] GL Vendor    :" << glGetStringInt(GL_VENDOR);
-    Debug() << "[main] GL Renderer  :" << glGetStringInt(GL_RENDERER);
-    Debug() << "[main] GL Version   :" << glGetStringInt(GL_VERSION);
-    Debug() << "[main] GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
+        Debug() << "[main] GL Renderer  :" << glGetStringInt(GL_RENDERER);
+        Debug() << "[main] GL Version   :" << glGetStringInt(GL_VERSION);
+        Debug() << "[main] GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
 
 	bool vsync = conf.vsync || conf.syncToRefreshrate;
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);

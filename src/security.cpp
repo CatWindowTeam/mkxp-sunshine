@@ -11,7 +11,7 @@
 #endif
 
 void SecurityManagerInit(){
-	printf("[SECURITY] Initializing SecurityEngine...\n");
+	log("Initializing SecurityEngine", 3);
 	#ifdef __linux__
 		printf("[SECURITY] initializing SECCOMP filter...\n");
 		ctx = seccomp_init(SCMP_ACT_ALLOW); // Default action: Kill the process

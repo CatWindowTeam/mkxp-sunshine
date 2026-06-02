@@ -104,6 +104,7 @@ set(MAIN_HEADERS
 	chromasdk/ChromaApi.h
 	src/i18n.h
 	src/meow.h
+	src/termcolor/termcolor.hpp
 )
 
 set(MAIN_SOURCE

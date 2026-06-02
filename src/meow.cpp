@@ -25,6 +25,7 @@
 #include <pixman.h>
 
 #include <boost/stacktrace.hpp>
+#include "termcolor/termcolor.hpp"
 
 #ifdef __LINUX__
 	#include <gtk/gtk.h>
@@ -130,3 +131,4 @@ void ErrorMsg(const char* message){
 void WarnMsg(const char* message){
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", message, NULL);
 }
+

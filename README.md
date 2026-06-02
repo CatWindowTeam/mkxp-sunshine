@@ -33,3 +33,6 @@ Target of sunshine mod - improve original game.
 
 # TODOs
 TODOs moved to github Issues
+
+# Misc
+* src/termcolor/termcolor.hpp original author is Ihor Kalnytskyi, termcolor distributed under BSD license.

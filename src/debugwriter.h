@@ -27,9 +27,10 @@
 #include <vector>
 
 #ifdef __ANDROID__
-#include <android/log.h>
+	#include <android/log.h>
 #endif
 
+#include <SDL3/SDL_platform_defines.h>
 
 /* A cheap replacement for qDebug() */
 
@@ -58,6 +59,20 @@ public:
 	~Debug(){
 #ifdef __ANDROID__
 		__android_log_write(ANDROID_LOG_DEBUG, "mkxp", buf.str().c_str());
+#elif SDL_PLATFORM_3DS
+		//TODO
+#elif SDL_PLATFORM_IOS
+		//TODO
+#elif SDL_PLATFORM_PS2
+		//TODO
+#elif SDL_PLATFORM_PSP
+		//TODO
+#elif SDL_PLATFORM_VITA
+		//TODO
+#elif SDL_PLATFORM_XBOXONE
+		//TODO
+#elif SDL_PLATFORM_XBOXSERIES
+		//TODO
 #else
 		std::cerr << buf.str() << std::endl;
 #endif
