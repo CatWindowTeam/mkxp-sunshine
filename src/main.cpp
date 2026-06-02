@@ -190,7 +190,7 @@ static void setGamePathInRegistry() {
 			long keyCreateError = RegCreateKeyEx(HKEY_CURRENT_USER, TEXT("Software\\OneShot\\"), 0L, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &key, NULL);
 
 			if (keyCreateError != ERROR_SUCCESS){
-				crash(Exception::MEOW, "Unable to create key in registry");
+				WarnMsg("Unable to create key in registry");
 			}
 			else {
 				keyOpenError = ERROR_SUCCESS;
@@ -198,12 +198,12 @@ static void setGamePathInRegistry() {
 		}
 
 		if (keyOpenError != ERROR_SUCCESS){
-			crash(Exception::MEOW, "Unable to open registry.");
+			WatnMsg("Unable to open registry.");
 		}
 		else {
 			DWORD dataSize = (strlen(dataDir) + 1) * sizeof(char);
 			if (RegSetValueEx(key, TEXT("GameDirectory"), 0, REG_SZ, (LPBYTE)dataDir, dataSize) != ERROR_SUCCESS){
-				crash(Exception::MEOW, "Unable to set GameDirectory registry value");
+				WarnMsg("Unable to set GameDirectory registry value");
 			}
 			RegCloseKey(key);
 		}
@@ -267,10 +267,9 @@ int main(int argc, char *argv[]){
 	conf.read(argc, argv);
 	#if defined WIN32
 		if(conf.Windows_AllocConsole == true){
-    		AllocConsole();
-    		freopen("CONOUT$", "w", stdout);
-    		freopen("CONOUT$", "w", stderr);
-    		freopen("CONIN$", "r", stdin);
+    			AllocConsole();
+    			freopen("CONOUT$", "w", stdout);
+    			freopen("CONOUT$", "w", stderr);
 		}
 	#endif
 	
