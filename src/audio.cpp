@@ -33,16 +33,16 @@
 #include <SDL3/SDL_timer.h>
 
 struct AudioPrivate{
-	unsigned char bgm_volume;
-	unsigned char sfx_volume;
+	uint8_t bgm_volume;
+	uint8_t sfx_volume;
 
 	AudioStream bgm;
 	AudioStream bgs;
 	AudioStream me;
 
-	unsigned char current_bgm_volume;
-	unsigned char current_bgs_volume;
-	unsigned char current_me_volume;
+	uint8_t current_bgm_volume;
+	uint8_t current_bgs_volume;
+	uint8_t current_me_volume;
 
 	SoundEmitter se;
 
