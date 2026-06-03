@@ -2,7 +2,7 @@
 #include "binding-types.h"
 #include "debugwriter.h"
 
-#include "chromasdk/ChromaApi.h"
+#include "third_party/chromasdk/ChromaApi.h"
 
 bool INIT_SUCCESS = false;
 
