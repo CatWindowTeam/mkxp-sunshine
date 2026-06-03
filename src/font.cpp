@@ -101,8 +101,7 @@ void SharedFontState::initFontSetCB(SDL_IOStream* &ops, const std::string &filen
 		set.other = filename;
 }
 
-TTF_Font *SharedFontState::getFont(std::string family, int size){
-	char msg[512];
+TTF_Font *SharedFontState::getFont(std::string family, unsigned int size){
 	if (family.empty())
 		family = "Terminus (TTF)"; // terminus hardcoded :3c
 

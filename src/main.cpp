@@ -212,7 +212,6 @@ static void setGamePathInRegistry() {
 	//TODO handle this for Linux/Mac
 }
 int main(int argc, char *argv[]){
-    char msg[512];
     SecurityManagerInit();
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 
