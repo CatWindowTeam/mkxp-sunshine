@@ -13,6 +13,7 @@
 #include "config.h"
 #include "gl-debug.h"
 #include "gl-fun.h"
+#include "debugwriter.h"
 #include <SDL3/SDL_stdinc.h>
 #include <time.h>
 #include <fstream>

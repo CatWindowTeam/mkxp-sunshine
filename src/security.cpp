@@ -1,6 +1,7 @@
 // https://github.com/moby/profiles/blob/main/seccomp/default.json
 #include "security.h"
 #include "meow.h"
+#include "debugwriter.h"
 #include <stdio.h>
 
 #ifdef __linux__
@@ -11,7 +12,7 @@
 #endif
 
 void SecurityManagerInit(){
-	log("Initializing SecurityEngine", 3);
+	Debug() << "Initializing SecurityEngine";
 	#ifdef __linux__
 		printf("[SECURITY] initializing SECCOMP filter...\n");
 		ctx = seccomp_init(SCMP_ACT_ALLOW); // Default action: Kill the process

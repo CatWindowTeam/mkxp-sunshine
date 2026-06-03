@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28.3)
-project(sunshine)
+project(oneshot)
 ## Setup options ##
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
 set(VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "5.1.2600.0")
@@ -7,7 +7,7 @@ include(FindPackageHandleStandardArgs)
 
 option(STEAM "Build for Steam" OFF)
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
-option(DEBUG "Debug mode" ON)
+option(DEBUG "Debug mode" OFF)
 #For paranoicws:3
 option(EXTRA_SECURITY "Extra security" OFF)
 set(ZLIB_USE_STATIC_LIBS ON)
