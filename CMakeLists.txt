@@ -109,13 +109,8 @@ set(MAIN_HEADERS
 	src/sdl-util.h
 	src/oneshot.h
 	src/pipe.h
-	chromasdk/RzChromaSDKDefines.h
-	chromasdk/RzChromaSDKTypes.h
-	chromasdk/RzErrors.h
-	chromasdk/ChromaApi.h
 	src/i18n.h
 	src/meow.h
-	src/termcolor/termcolor.hpp
 )
 
 set(MAIN_SOURCE
@@ -367,6 +362,8 @@ target_compile_definitions(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
 	PRIVATE
 		src
+		include
+		
 		${PIXMAN_INCLUDE_DIR}
 		${SIGC2_INCLUDE_DIRS}
 		${Ruby_INCLUDE_DIRS}
