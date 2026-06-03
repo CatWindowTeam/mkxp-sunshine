@@ -63,16 +63,15 @@ struct VorbisSource : ALDataSource{
 	} loop;
 
 	struct{
-		int channels;
-		int rate;
-		int frameSize;
+		unsigned int channels;
+		unsigned int rate;
+		unsigned int frameSize;
 		ALenum alFormat;
 	} info;
 
 	std::vector<int16_t> sampleBuf;
 
-	VorbisSource(SDL_IOStream &ops,
-	             bool looped)
+	VorbisSource(SDL_IOStream &ops, bool looped)
 	    : src(ops),
 	      currentFrame(0)
 	{

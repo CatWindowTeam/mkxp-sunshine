@@ -269,8 +269,7 @@ bool Font::doesExist(const char *name){
 	return shState->fontState().fontPresent(name);
 }
 
-Font::Font(const std::vector<std::string> *names,
-           int size){
+Font::Font(const std::vector<std::string> *names, unsigned int size){
 	p = new FontPrivate(size ? size : FontPrivate::defaultSize);
 
 	if (names)

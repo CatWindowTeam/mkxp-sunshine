@@ -45,11 +45,9 @@ public:
 	 * (when "Fonts/" is scanned for available assets).
 	 * 'ops' is an opened handle to a possible font file,
 	 * 'filename' is the corresponding path */
-	void initFontSetCB(SDL_IOStream* &ops,
-	                   const std::string &filename);
+	void initFontSetCB(SDL_IOStream* &ops, const std::string &filename);
 
-	TTF_Font *getFont(std::string family,
-	                   int size);
+	TTF_Font *getFont(std::string family, unsigned int size);
 
 	bool fontPresent(std::string family) const;
 
@@ -63,8 +61,7 @@ class Font{
 public:
 	static bool doesExist(const char *name);
 
-	Font(const std::vector<std::string> *names = 0,
-	     int size = 0);
+	Font(const std::vector<std::string> *names = 0, unsigned int size = 0);
 
 	/* Clone constructor */
 	Font(const Font &other);
@@ -96,8 +93,7 @@ public:
 	 * The core object picks the first existing name from the
 	 * passed array and stores it internally (same for default). */
 	void setName(const std::vector<std::string> &names);
-	static void setDefaultName(const std::vector<std::string> &names,
-	                           const SharedFontState &sfs);
+	static void setDefaultName(const std::vector<std::string> &names, const SharedFontState &sfs);
 
 	static const std::vector<std::string> &getInitialDefaultNames();
 

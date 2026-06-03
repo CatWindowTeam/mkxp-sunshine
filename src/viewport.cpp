@@ -47,7 +47,7 @@ struct ViewportPrivate{
 
 	EtcTemps tmp;
 
-	ViewportPrivate(int x, int y, int width, int height, Viewport *self)
+	ViewportPrivate(int x, int y, unsigned int width, unsigned int height, Viewport *self)
 	    : self(self),
 	      rect(&tmp.rect),
 	      color(&tmp.color),
@@ -91,7 +91,7 @@ struct ViewportPrivate{
 	}
 };
 
-Viewport::Viewport(int x, int y, int width, int height)
+Viewport::Viewport(int x, int y, unsigned int width, unsigned int height)
     : SceneElement(*shState->screen()),
       sceneLink(this)
 {
@@ -113,7 +113,7 @@ Viewport::Viewport()
 	initViewport(0, 0, graphics.width(), graphics.height());
 }
 
-void Viewport::initViewport(int x, int y, int width, int height){
+void Viewport::initViewport(int x, int y, unsigned int width, unsigned int height){
 	p = new ViewportPrivate(x, y, width, height, this);
 
 	/* Set our own geometry */
@@ -209,7 +209,6 @@ void Viewport::releaseResources(){
 
 	delete p;
 }
-
 
 ViewportElement::ViewportElement(Viewport *viewport, int z, int spriteY)
     : SceneElement(viewport ? *viewport : *shState->screen(), z, spriteY),

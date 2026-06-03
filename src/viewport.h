@@ -31,7 +31,7 @@ struct ViewportPrivate;
 
 class Viewport : public Scene, public SceneElement, public Flashable, public Disposable{
 public:
-	Viewport(int x, int y, int width, int height);
+	Viewport(int x, int y, unsigned int width, unsigned int height);
 	Viewport(Rect *rect);
 	Viewport();
 	~Viewport();
@@ -47,7 +47,7 @@ public:
 	void initDynAttribs();
 
 private:
-	void initViewport(int x, int y, int width, int height);
+	void initViewport(int x, int y, unsigned int width, unsigned int height);
 	void geometryChanged();
 
 	void composite();
