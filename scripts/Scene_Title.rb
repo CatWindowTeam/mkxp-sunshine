@@ -77,9 +77,12 @@ class Scene_Title
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
 
 	  #Debug info like in minecraft Forge :P
-    @menu.bitmap.draw_text(5, 5, 150, 20, tr("Ruby #{RUBY_VERSION}"))
-    @menu.bitmap.draw_text(5, 25, 150, 20, tr("SDL #{SDLVer}"))
-    @menu.bitmap.draw_text(5, 45, 150, 20, tr("Sunshine #{SunshineVer}"))
+    @debug = Sprite.new
+    @debug.z += @menu.z
+    @debug.bitmap = Bitmap.new(Graphics.width, Graphics.height)
+    @debug.bitmap.draw_text(5, 5, 200, 20, tr("Ruby #{RUBY_VERSION}"))
+    @debug.bitmap.draw_text(5, 25, 200, 20, tr("SDL #{SDLVer}"))
+    @debug.bitmap.draw_text(5, 45, 200, 20, tr("Sunshine #{SunshineVer}"))
 
     if $game_switches[160] && $game_switches[152]
         @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
@@ -94,10 +97,10 @@ class Scene_Title
     @cursor.z += 2
     @cursor.bitmap = RPG::Cache.menu('cursor')
     @cursor.x = MENU_X - 12
-    @cursor.y = MENU_Y + (22 - @cursor.bitmap.height) / 2
+    @cursor.y = MENU_Y + (20 - @cursor.bitmap.height) / 2
 
     # Initialize cursor position
-    @cursor_pos = 0
+    @cursor_pos = 0.0
 
     # Play title BGM
     if File.exist?("badend.lock")
@@ -145,18 +148,9 @@ class Scene_Title
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
-    @menu.bitmap.clear
-    @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
-    @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
-    @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
-    @menu.bitmap.draw_text(5, 5, 150, 20, tr("Ruby #{RUBY_VERSION}"))
-    @menu.bitmap.draw_text(5, 25, 150, 20, tr("SDL #{SDLVer}"))
-    @menu.bitmap.draw_text(5, 45, 150, 20, tr("Sunshine #{SunshineVer}"))
-    if $game_switches[160] && $game_switches[152]
-      @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
-    end
     # Handle cursor movement
     if !@window_settings_title.visible
+      @cursor.y = (MENU_Y.to_f + (20.0 - @cursor.bitmap.height.to_f) / 2.0 + 25.5 * @cursor_pos) * 0.65 + @cursor.y.to_f * 0.35
       update_cursor = false
       if Input.trigger?(Input::UP)
         if @cursor_pos > 0
@@ -188,7 +182,6 @@ class Scene_Title
       end
       if update_cursor
         Audio.se_play('Audio/SE/title_cursor.wav', 40)
-        @cursor.y = MENU_Y + (24 - @cursor.bitmap.height) / 2 + 25 * @cursor_pos
       end
     end
 

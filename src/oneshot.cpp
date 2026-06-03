@@ -21,6 +21,7 @@
     #include <windows.h>
     #include <mmsystem.h>
     #include <security.h>
+	#include <secext.h>
     #include <shlobj.h>
 #elif defined(__APPLE__)
     #include <stdlib.h>
