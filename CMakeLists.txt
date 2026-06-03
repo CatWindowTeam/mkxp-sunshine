@@ -1,17 +1,28 @@
 cmake_minimum_required(VERSION 3.28.3)
 project(oneshot)
-## Setup options ##
-set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
-set(VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "5.1.2600.0")
 include(FindPackageHandleStandardArgs)
 
+# Options
 option(STEAM "Build for Steam" OFF)
-set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 option(DEBUG "Debug mode" OFF)
-#For paranoicws:3
+option(FORCE32 "Force 32bit compile on 64bit OS" OFF) # from MKXP
 option(EXTRA_SECURITY "Extra security" OFF)
+
+set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
+set(VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "5.1.2600.0")
+set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 set(ZLIB_USE_STATIC_LIBS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+# from MKXP
+if(FORCE32)
+	if(APPLE)
+		set(CMAKE_OSX_ARCHITECTURES "i386")
+	else()
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+	endif()
+endif()
 
 if(DEBUG)
 	# Debug stuff
