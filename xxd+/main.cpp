@@ -1,4 +1,3 @@
-
 #include <QFile>
 #include <QTextStream>
 #include <QDataStream>
@@ -8,18 +7,10 @@
 #include <QStringList>
 #include <QDebug>
 
-static const char intro[] =
-        "extern const %1 %2[] = {\n";
-static const char outro[] =
-        "\n};\nextern const %1 %2 = %3;";
+static const char intro[] = "extern const %1 %2[] = {\n";
+static const char outro[] = "\n};\nextern const %1 %2 = %3;";
 
-int writeDump(const QString &srcFilename,
-              const QString &dstFilename,
-              const QString &dataType,
-              const QString &lenType,
-              const QString &dataSymbol,
-              bool addNullTerm)
-{
+int writeDump(const QString &srcFilename, const QString &dstFilename, const QString &dataType, const QString &lenType, const QString &dataSymbol, bool addNullTerm){
 	QFile srcFile(srcFilename);
 	if (!srcFile.open(QFile::ReadOnly))
 		return 1;
@@ -61,8 +52,7 @@ int writeDump(const QString &srcFilename,
 		if (!in.atEnd())
 			out << ",";
 
-		if (++columnInd == byteColumns)
-		{
+		if (++columnInd == byteColumns){
 			out << "\n";
 			columnInd = 0;
 		}
@@ -79,10 +69,7 @@ int writeDump(const QString &srcFilename,
 	return 0;
 }
 
-QString getNamedOption(const QStringList &args,
-                       const QString &optName,
-                       const QString &defValue)
-{
+QString getNamedOption(const QStringList &args, const QString &optName, const QString &defValue){
 	QString value = defValue;
 
 	if (args.contains(optName)){
@@ -151,7 +138,5 @@ int main(int argc, char *argv[]){
 
 	QString dataType = stringData ? "char" : "unsigned char";
 
-	return writeDump(inFile, outFile,
-	                 dataType, "unsigned int",
-	                 outSymbol, nullTerm);
+	return writeDump(inFile, outFile, dataType, "unsigned int", outSymbol, nullTerm);
 }
