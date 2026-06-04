@@ -1,18 +1,10 @@
 # The main menu window
-class Window_MainMenu < Window_Selectable
+class Window_TPtL < Window_Selectable
   def initialize
-    super(Graphics.width / 2 - 304, 16, 608, 64)
-    # Set up menu options
-    @commands = Array.new
-    @commands << 'Fast Travel'
-    @commands << 'Notes'
-    @commands << 'Settings'
-	
-    if Settings[:debug] == true
-      @commands << 'TPtL'
-    end
-	
-    @item_max = @commands.size
+    super(Graphics.width, 64, Graphics.height, 64)
+    @mapinfo = load_data("Data/MapInfos.rxdata")
+		
+    @item_max = 262
     @column_max = @item_max
 
     # Make invisible by default
@@ -52,10 +44,7 @@ class Window_MainMenu < Window_Selectable
     # Update item
     rect = Rect.new(w * index, 0, w - 32, 32)
     self.contents.fill_rect(rect, Color.new(0, 0, 0, 0))
-    if index == 0 && !$game_fasttravel.enabled? # 0 - Fast Travel
-      self.contents.font.color.set(127, 127, 127, 255)
-    end
-    self.contents.draw_text(rect, tr(@commands[index]), 1)
+    self.contents.draw_text(rect, tr(@mapinfo&.[](index)&.name || "EMPTY"), 1)
   end
   #--------------------------------------------------------------------------
   # * Disable Item
@@ -126,35 +115,20 @@ class Window_MainMenu < Window_Selectable
       @fade_out = true
       return
     end
+  end
 	
     # Select menu item
     if Input.trigger?(Input::ACTION)
       self.active = false
       self.opacity = 127
-      case @index
-      when 0
-        if $game_fasttravel.enabled?
-          $game_system.se_play($data_system.decision_se)
-          $game_temp.travel_menu_calling = true
-          @fade_out = true
-        else
-          $game_system.se_play($data_system.buzzer_se)
-          $game_temp.message_ed_text = tr("You cannot fast travel right now.")
-          $game_temp.message_proc = Proc.new { self.active = true; self.opacity = 255 }
-        end
-      when 1
-        $game_temp.common_event_id = 15
-        @fade_out = true
-      when 2
-        $game_system.se_play($data_system.decision_se)
-        $game_temp.window_settings_calling = true
-        @fade_out = true
-      when 3
-		@menu = ::Window_TPtL.new
-		@menu.open
-		@menu.dispose
-	  end
-    end
-
+	  $game_temp.player_transferring = true
+	  $game_temp.player_new_map_id = @index
+	  $game_temp.player_new_x = 0
+	  $game_temp.player_new_y = 0
+	  $game_temp.player_new_direction = 0
+	  Graphics.freeze
+	  $game_temp.transition_processing = true
+	  $game_temp.transition_name = ""
+	  @fade_out = true
   end
 end

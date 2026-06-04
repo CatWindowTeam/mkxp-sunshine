@@ -52,6 +52,7 @@ Window_Message
 Window_DebugLeft
 Window_DebugRight
 Window_MainMenu
+Window_TPtL
 
 Interpreter_1
 Interpreter_2
@@ -98,5 +99,4 @@ Credits_Message
 Particles
 
 EdText
-#main
 Main

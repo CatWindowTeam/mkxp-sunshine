@@ -239,12 +239,6 @@ class Scene_Map
         end
       end
     end
-    # If game over
-    if $game_temp.gameover
-      # Switch to game over screen
-      $scene = Scene_Gameover.new
-      return
-    end
     # If returning to title screen
     if $game_temp.to_title
       # Change to title screen
@@ -312,19 +306,6 @@ class Scene_Map
       $game_temp.player_new_x = $data_system.start_x
       $game_temp.player_new_y = $data_system.start_y
     end
-    # debug && F6
-    #if $debug and Input.press?(Input::F6) and $lastpress != 6
-    #  $lastpress = 6
-    #  Chroma.playAnim("chroma/blank_keyboard.chroma", false);
-    #end
-    #if $debug and Input.press?(Input::F7) and $lastpress != 7
-    #  $lastpress = 7
-    #  Chroma.playAnim("chroma/Fire_Keyboard.chroma", true);
-    #end
-    #if $debug and Input.press?(Input::F9) and $lastpress != 9
-    #  $lastpress = 9
-    #  Chroma.playAnim("chroma/Random_Keyboard.chroma", false);
-    #end
     # If debug mode is ON and F9 key was pressed
     if Input.press?(Input::F9) && Settings[:debug] == true
        # Set debug calling flag
