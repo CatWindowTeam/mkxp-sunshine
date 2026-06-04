@@ -16,7 +16,7 @@ class Doc_Message
       @sprite_scroll_up.bitmap = RPG::Cache.picture('scroll_up_red')
       @sprite_scroll_down.bitmap = RPG::Cache.picture('scroll_down_red')
   	else
-      @sprite_bg.bitmap = RPG::Cache.picture('lined_paper_blue') #Bitmap.new(640, 480)
+      @sprite_bg.bitmap = RPG::Cache.picture('lined_paper_blue')
       @sprite_scroll_up.bitmap = RPG::Cache.picture('scroll_up_blue')
       @sprite_scroll_down.bitmap = RPG::Cache.picture('scroll_down_blue')
   	end
@@ -29,7 +29,6 @@ class Doc_Message
     @sprite_scroll_down.zoom_x = @sprite_scroll_down.zoom_y = 2
     @sprite_scroll_down.x = @sprite_bg.x + 404
     @sprite_scroll_down.y = @sprite_bg.y + 400
-    #@sprite_bg.bitmap.fill_rect(0, 0, 640, 480, Color.new(0, 0, 0, 128))
     @sprite_text = Sprite.new(@viewport)
     @contents = Bitmap.new(200, 216)
     Language.register_text_sprite(self.class.name + "_contents", @contents)
@@ -256,7 +255,7 @@ class Doc_Message
         refresh
         @viewport.visible = true
         @fade_in = true
-        Audio.se_play("Audio/SE/page.wav", 100)
+        Audio.se_play("Audio/SE/page.wav", Audio.sfx_volume)
       end
     end
 

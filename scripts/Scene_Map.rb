@@ -319,8 +319,6 @@ class Scene_Map
       # Run calling of each screen
       if $game_temp.battle_calling
         call_battle
-      elsif $game_temp.shop_calling
-        call_shop
       elsif $game_temp.name_calling
         call_name
       elsif $game_temp.menu_calling
