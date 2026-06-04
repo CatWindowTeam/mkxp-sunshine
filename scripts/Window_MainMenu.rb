@@ -2,6 +2,9 @@
 class Window_MainMenu < Window_Selectable
   def initialize
     super(Graphics.width / 2 - 304, 16, 608, 64)
+    #kostil' ebanyy
+    @debug_menu = ::Window_TPtL.new
+
     # Set up menu options
     @commands = Array.new
     @commands << 'Fast Travel'
@@ -150,11 +153,10 @@ class Window_MainMenu < Window_Selectable
         $game_temp.window_settings_calling = true
         @fade_out = true
       when 3
-		@menu = ::Window_TPtL.new
-		@menu.open
-		@menu.dispose
-	  end
+        $game_temp.window_debug_calling = true
+        @fade_out = true
+      end
+      return
     end
-
   end
 end

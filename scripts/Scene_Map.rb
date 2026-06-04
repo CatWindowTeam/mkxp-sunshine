@@ -51,6 +51,7 @@ class Scene_Map
     # Make fast travel menu
     @fast_travel = FastTravel.new
     @window_settings = Window_Settings.new
+    @window_debug = Window_TPtL.new
     # Fade to black transition
     @blackfade = Sprite.new
     @blackfade.bitmap = Bitmap.new(Graphics.width, Graphics.height)
@@ -86,7 +87,8 @@ class Scene_Map
     @menu.dispose
     @item_menu.dispose
     @fast_travel.dispose
-	@window_settings.dispose
+    @window_settings.dispose
+    @window_debug.dispose
     # Dispose of item icon
     @item_icon.dispose
     @item_icon_flash.dispose
@@ -147,7 +149,7 @@ class Scene_Map
         return
       end
       $game_system.map_interpreter.update
-	  $game_temp.menus_visible = @menu.visible || @item_menu.visible || @fast_travel.visible || @window_settings.visible
+      $game_temp.menus_visible = @menu.visible || @item_menu.visible || @fast_travel.visible || @window_settings.visible || @window_debug.visible
       $game_player.update
       $game_followers.each{|f| f.update}
       # Update system (timer), screen
@@ -196,13 +198,13 @@ class Scene_Map
         @item_icon.bitmap = nil
         @item_icon_flash.bitmap = nil
       else
-	    name = $data_items[@item_id].icon_name
-	    translation_name = "#{$persistent.langcode}/#{name}"
+        name = $data_items[@item_id].icon_name
+        translation_name = "#{$persistent.langcode}/#{name}"
         if File.exist?("Graphics/Icons/#{translation_name}.png")
           @item_icon.bitmap = RPG::Cache.icon(translation_name)
-	    else
+        else
           @item_icon.bitmap = RPG::Cache.icon(name)
-	    end
+        end
         @item_icon.zoom_x = 2.0
         @item_icon.zoom_y = 2.0
 	  
@@ -265,21 +267,22 @@ class Scene_Map
     end
     # Update fast travel
     @fast_travel.update
-	@window_settings.update
+    @window_settings.update
+    @window_debug.update
 
     if Input.trigger?(Input::F8) && !$game_switches[123]
       if Graphics.fullscreen == true
-	    Graphics.fullscreen = false
-		$console = false
-	  else
-	    Graphics.fullscreen = true
-		$console = true
-	  end
-	  sleep(0.500)
-	  if @window_settings.visible
-	    @window_settings.redraw_setting_index(2)
-	    sleep(0.500)
-	  end
+      Graphics.fullscreen = false
+      $console = false
+      else
+        Graphics.fullscreen = true
+    	$console = true
+      end
+      sleep(0.500)
+      if @window_settings.visible
+        @window_settings.redraw_setting_index(2)
+        sleep(0.500)
+      end
     end
     # If showing message window
     if $game_temp.message_window_showing || @ed_message.visible || @doc_message.visible || @desktop_message.visible || @credits_message.visible
@@ -288,7 +291,7 @@ class Scene_Map
     # Process menu opening
     unless $game_system.map_interpreter.running? ||
         $game_system.menu_disabled ||
-        @fast_travel.visible || @window_settings.visible || $game_temp.menu_calling == true  || $game_temp.item_menu_calling == true
+        @fast_travel.visible || @window_settings.visible || @window_debug.visible || $game_temp.menu_calling == true  || $game_temp.item_menu_calling == true
       if !@menu.visible && Input.trigger?(Input::MENU)
         $game_temp.menu_calling = true
         $game_temp.menu_beep = true
@@ -328,6 +331,8 @@ class Scene_Map
         call_travel_menu
       elsif $game_temp.window_settings_calling
         call_window_settings
+      elsif $game_temp.window_debug_calling
+        call_window_debug
       elsif $game_temp.save_calling
         call_save
       elsif $game_temp.debug_calling
@@ -426,6 +431,14 @@ class Scene_Map
     $game_player.straighten
     # Open the menu
     @window_settings.open
+  end
+  def call_window_debug
+    # Clear menu call flag
+    $game_temp.window_debug_calling = false
+    # Straighten player position
+    $game_player.straighten
+    # Open the menu
+    @window_debug.open
   end
   #--------------------------------------------------------------------------
   # * Debug Call

@@ -77,7 +77,7 @@ set(scripts
   i18n_English.rb
   i18n_Japanese.rb
   i18n_Language.rb
-  Window_TPtL  
+  Window_TPtL.rb
   Settings.rb)
 
 find_program(RUBY_EXE ruby

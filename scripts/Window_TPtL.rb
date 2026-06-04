@@ -1,11 +1,11 @@
 # The main menu window
 class Window_TPtL < Window_Selectable
   def initialize
-    super(Graphics.width, 64, Graphics.height, 64)
+    super(16, 16, Graphics.width - 32, Graphics.height - 32)
     @mapinfo = load_data("Data/MapInfos.rxdata")
 		
     @item_max = 262
-    @column_max = @item_max
+    @column_max = Graphics.width > 600 ? 4 : 2
 
     # Make invisible by default
     self.visible = false
@@ -15,7 +15,7 @@ class Window_TPtL < Window_Selectable
     @fade_out = false
 
     # Render menu
-    self.contents = Bitmap.new(width - 32, 32)
+    self.contents = Bitmap.new(width - 32, @item_max * 32)
     Language.register_text_sprite(self.class.name + "_contents", self.contents)
     for i in 0...@item_max
       draw_item(i, normal_color)
@@ -38,11 +38,11 @@ class Window_TPtL < Window_Selectable
     # Set color
     self.contents.font.color = color
 
-    # Get width of text and cap
-    w = self.width / @item_max
+    x = index % @column_max
+    y = index / @column_max
 
     # Update item
-    rect = Rect.new(w * index, 0, w - 32, 32)
+    rect = Rect.new(self.width / @column_max * x, 32 * y, self.width / @column_max - 32, 32)
     self.contents.fill_rect(rect, Color.new(0, 0, 0, 0))
     self.contents.draw_text(rect, tr(@mapinfo&.[](index)&.name || "EMPTY"), 1)
   end
@@ -104,7 +104,6 @@ class Window_TPtL < Window_Selectable
       return
     end
 
-
     # Cancel menu
     if Input.trigger?(Input::CANCEL) ||
         Input.trigger?(Input::MENU) ||
@@ -115,20 +114,20 @@ class Window_TPtL < Window_Selectable
       @fade_out = true
       return
     end
-  end
 	
     # Select menu item
     if Input.trigger?(Input::ACTION)
       self.active = false
       self.opacity = 127
-	  $game_temp.player_transferring = true
-	  $game_temp.player_new_map_id = @index
-	  $game_temp.player_new_x = 0
-	  $game_temp.player_new_y = 0
-	  $game_temp.player_new_direction = 0
-	  Graphics.freeze
-	  $game_temp.transition_processing = true
-	  $game_temp.transition_name = ""
-	  @fade_out = true
+      $game_temp.player_transferring = true
+      $game_temp.player_new_map_id = @index
+      $game_temp.player_new_x = 0
+      $game_temp.player_new_y = 0
+      $game_temp.player_new_direction = 0
+      Graphics.freeze
+      $game_temp.transition_processing = true
+      $game_temp.transition_name = ""
+      @fade_out = true
+    end
   end
 end
