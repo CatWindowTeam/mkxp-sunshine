@@ -71,8 +71,7 @@ static C *viewportElementInitialize(int argc, VALUE *argv, VALUE self){
 	if (!NIL_P(viewportObj)){
 		viewport = getPrivateDataCheck<Viewport>(viewportObj, ViewportType);
 
-		if (rgssVer == 1)
-			disposableAddChild(viewportObj, self);
+		disposableAddChild(viewportObj, self);
 	}
 
 	/* Construct object */

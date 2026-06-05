@@ -27,8 +27,6 @@
 #include <set>
 
 struct Config{
-	unsigned short rgssVersion;
-
 	bool debugMode;
 	bool screenMode;
 	bool printFPS;

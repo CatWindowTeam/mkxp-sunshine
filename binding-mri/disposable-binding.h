@@ -65,8 +65,7 @@ RB_METHOD(disposableDispose){
 	if (d->isDisposed())
 		return Qnil;
 
-	if (rgssVer == 1)
-		disposableDisposeChildren(self);
+	disposableDisposeChildren(self);
 
 	d->dispose();
 

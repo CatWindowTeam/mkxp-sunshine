@@ -48,7 +48,6 @@
 #include <string>
 
 SharedState *SharedState::instance = 0;
-int SharedState::rgssVersion = 0;
 static GlobalIBO *_globalIBO = 0;
 
 struct SharedStatePrivate{
@@ -145,9 +144,7 @@ void SharedState::initInstance(RGSSThreadData *threadData){
 	/* This section is tricky because of dependencies:
 	 * SharedState depends on GlobalIBO existing,
 	 * Font depends on SharedState existing */
-
-	rgssVersion = threadData->config.rgssVersion;
-
+	 
 	_globalIBO = new GlobalIBO();
 	_globalIBO->ensureSize(1);
 

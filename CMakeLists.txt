@@ -6,6 +6,7 @@ include(FindPackageHandleStandardArgs)
 option(STEAM "Build for Steam" OFF)
 option(DEBUG "Debug mode" OFF)
 option(FORCE32 "Force 32bit compile on 64bit OS" OFF) # from MKXP
+option(NATIVE "Use native instructions(for local use only)" ON) # from MKXP
 option(EXTRA_SECURITY "Extra security" OFF)
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
@@ -24,21 +25,45 @@ if(FORCE32)
 	endif()
 endif()
 
+if(NATIVE)
+	if (MSVC)
+			#TODO
+    		add_compile_options()
+	else()
+    		add_compile_options(-march=native -mtune=native)
+	endif()
+endif()
+
 if(DEBUG)
 	# Debug stuff
 	if (MSVC)
     		add_compile_options(/EHr /fsanitize /validate-charset /DEBUG /RTCu /RTCs /RTCc)
-		set(WINDOWS_EXPORT_ALL_SYMBOLS ON)
 	else()
-    		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -fcheck-new -gbtf -pipe)
+    		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -fcheck-new -gbtf)
 	endif()
 else()
 	# Optimization stuff
 	if (MSVC)
 		add_compile_options(/O2 /fp:fast /GL /GF /GA)
 	else()
-		add_compile_options(-O3 -ffast-math -flto -pipe -funroll-loops -falign-functions=16 -falign-jumps=8 -falign-loops=8 -fno-common -s)
+		#bruh....
+		add_compile_options(-Ofast -flto -funroll-loops -fipa-pta -ftree-vectorize -fstdarg-opt -fomit-frame-pointer)
 		add_link_options(-Wl,-O2)
+		set_property(SOURCE src/tilequad.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/tilemap.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/tileatlas.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/texpool.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/table.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/sprite.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/shader.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/security.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/vorbissource.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/sdlsoundsource.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/screen.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/oneshot.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/meow.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/etc.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
+		set_property(SOURCE src/filesystem.cpp APPEND PROPERTY COMPILE_OPTIONS "-fgcse-las")
 	endif()
 endif()
 
@@ -313,7 +338,6 @@ set(BINDING_SOURCE
 	binding-mri/steam-binding.cpp
 	binding-mri/wallpaper-binding.cpp
 	binding-mri/journal-binding.cpp
-	binding-mri/chroma-binding.cpp
 	binding-mri/niko-binding.cpp
 	binding-mri/time-binding.cpp
 	binding-mri/shader-binging.cpp

@@ -83,7 +83,6 @@ void nikoBindingInit();
 void oneshotBindingInit();
 void SunshineBindingInit();
 void steamBindingInit();
-void chromaBindingInit();
 void shaderBindingInit();
 
 RB_METHOD(mriPrint);
@@ -119,7 +118,6 @@ static void mriBindingInit(){
 	oneshotBindingInit();
     SunshineBindingInit();
 	steamBindingInit();
-	chromaBindingInit();
 	shaderBindingInit();
 
 	_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
@@ -142,11 +140,6 @@ static void mriBindingInit(){
 
 	/* Load global constants */
 	rb_gv_set("MKXP", Qtrue);
-
-	VALUE debug = rb_bool_new(shState->config().editor.debug);
-	rb_gv_set("DEBUG", debug);
-
-	rb_gv_set("BTEST", rb_bool_new(shState->config().editor.battleTest));
 }
 
 static void printP(int argc, VALUE *argv, const char *convMethod, const char *sep){
@@ -335,7 +328,7 @@ struct BacktraceData{
 	BoostHash<std::string, std::string> scriptNames;
 };
 
-#define SCRIPT_SECTION_FMT (rgssVer >= 3 ? "{%04ld}" : "Section%03ld")
+#define SCRIPT_SECTION_FMT "Section%03ld"
 
 static void runRMXPScripts(BacktraceData &btData){
 	const Config &conf = shState->rtData().config;
