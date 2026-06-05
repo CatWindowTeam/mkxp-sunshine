@@ -47,10 +47,7 @@ struct SDLRWIoContext{
 	SDL_IOStream *ops;
 	std::string filename;
 
-	SDLRWIoContext(const char *filename)
-	    : ops(SDL_IOFromFile(filename, "r")),
-	      filename(filename)
-	{
+	SDLRWIoContext(const char *filename) : ops(SDL_IOFromFile(filename, "r")), filename(filename){
 		if (!ops)
 			throw Exception(Exception::SDLError, "Failed to open file: %s", SDL_GetError());
 	}
@@ -67,7 +64,6 @@ static SDL_IOStream *getSDLRWops(PHYSFS_Io *io){
 }
 
 static PHYSFS_sint64 SDLRWIoRead(struct PHYSFS_Io *io, void *buf, PHYSFS_uint64 len){
-	// return SDL_ReadIO(getSDLRWops(io), buf, 1, len);
 	return SDL_ReadIO(getSDLRWops(io), buf, len);
 }
 
@@ -117,7 +113,7 @@ static PHYSFS_Io *createSDLRWIo(const char *filename){
 	try{
 		ctx = new SDLRWIoContext(filename);
 	}catch (const Exception &e){
-		Debug() << "Failed mounting" << filename;
+		Debug() << "Failed mounting: " << filename;
 		return 0;
 	}
 
@@ -224,22 +220,6 @@ static int SDL_RWopsCloseFree(void *userdata)
 
 	return result;
 }*/
-
-/* Copies the first srcN characters from src into dst,
- * or the full string if srcN == -1. Never writes more
- * than dstMax, and guarantees dst to be null terminated.
- * Returns copied bytes (minus terminating null) */
-static size_t strcpySafe(char *dst, const char *src, size_t dstMax, int srcN){
-	if (srcN < 0)
-		srcN = SDL_strlen(src);
-
-	size_t cpyMax = std::min<size_t>(dstMax-1, srcN);
-
-	SDL_memcpy(dst, src, cpyMax);
-	dst[cpyMax] = '\0';
-
-	return cpyMax;
-}
 
 /* Attempt to locate an extension string in a filename.
  * Either a pointer into the input string pointing at the
@@ -556,7 +536,7 @@ openReadEnumCB(void *d, const char *dirpath, const char *filename){
 
 void FileSystem::openRead(OpenHandler &handler, const char *filename){
 	char buffer[512];
-	size_t len = strcpySafe(buffer, filename, sizeof(buffer), -1);
+	size_t len = SDL_strlcpy(buffer, filename, sizeof(buffer));
 	char *delim;
 
 	if (p->havePathCache)

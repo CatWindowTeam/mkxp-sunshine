@@ -30,10 +30,7 @@
 #include <SDL3/SDL_timer.h>
 
 AudioStream::AudioStream(ALStream::LoopMode loopMode, const std::string &threadId)
-	: extPaused(false),
-	  noResumeStop(false),
-	  stream(loopMode, threadId)
-{
+	: extPaused(false), noResumeStop(false), stream(loopMode, threadId){
 	current.volume = 1.0f;
 	current.pitch = 1.0f;
 
@@ -199,8 +196,7 @@ void AudioStream::fadeOut(int duration){
 	fade.reqTerm.clear();
 	fade.startTicks = SDL_GetTicks();
 
-	fade.thread = createSDLThread
-		<AudioStream, &AudioStream::fadeOutThread>(this, fade.threadName);
+	fade.thread = createSDLThread<AudioStream, &AudioStream::fadeOutThread>(this, fade.threadName);
 
 	unlockStream();
 }

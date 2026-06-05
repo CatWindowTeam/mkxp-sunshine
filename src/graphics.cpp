@@ -654,7 +654,7 @@ void Graphics::freeze(){
 	p->compositeToBuffer(p->frozenScene);
 }
 
-void Graphics::transition(unsigned short duration, const char *filename, int vague){
+void Graphics::transition(unsigned int duration, const char *filename, int vague){
 	p->checkSyncLock();
 
 	if (!p->frozen)

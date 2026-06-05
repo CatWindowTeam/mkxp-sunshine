@@ -35,13 +35,7 @@
 #include <SDL3/SDL_timer.h>
 
 ALStream::ALStream(LoopMode loopMode, const std::string &threadId)
-	: looped(loopMode == Looped),
-	  state(Closed),
-	  source(0),
-	  thread(0),
-	  preemptPause(false),
-      pitch(1.0f)
-{
+	: looped(loopMode == Looped), state(Closed), source(0), thread(0), preemptPause(false), pitch(1.0f) {
 	alSrc = AL::Source::gen();
 
 	AL::Source::setVolume(alSrc, 1.0f);

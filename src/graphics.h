@@ -36,7 +36,7 @@ class Graphics{
 public:
 	void update(bool limitFps = true);
 	void freeze();
-	void transition(unsigned short duration = 8, const char *filename = "", int vague = 40);
+	void transition(unsigned int duration = 8, const char *filename = "", int vague = 40);
 	void frameReset();
 
 	DECL_ATTR( FrameRate,  int )
