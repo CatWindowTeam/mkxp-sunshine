@@ -167,7 +167,6 @@ void Config::read(int argc, char *argv[]){
 
 	commonDataPath = prefPath(".", "Oneshot");
 
-	rgssVersion = 1;
 	if(windowTitle == "")
 		game.title = "OneShot: Sunshine";
 	game.scripts = "Data/xScripts.rxdata";

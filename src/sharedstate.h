@@ -27,7 +27,6 @@
 
 #define shState SharedState::instance
 #define glState shState->_glState()
-#define rgssVer SharedState::rgssVersion
 
 struct SharedStatePrivate;
 struct RGSSThreadData;
@@ -119,7 +118,6 @@ struct SharedState{
 	void checkReset();
 
 	static SharedState *instance;
-	static int rgssVersion;
 
 	/* This function will throw an Exception instance
 	 * on initialization error */

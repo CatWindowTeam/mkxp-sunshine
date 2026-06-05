@@ -27,7 +27,6 @@
 
 #include <string.h>
 
-
 static void collectStrings(VALUE obj, std::vector<std::string> &out){
 	if (RB_TYPE_P(obj, RUBY_T_STRING)){
 		out.push_back(RSTRING_PTR(obj));
@@ -94,9 +93,6 @@ RB_METHOD(fontInitialize){
 
 	wrapProperty(self, &f->getColor(), "color", ColorType);
 
-	if (rgssVer >= 3)
-		wrapProperty(self, &f->getOutColor(), "out_color", ColorType);
-
 	return self;
 }
 
@@ -115,9 +111,6 @@ RB_METHOD(fontInitializeCopy){
 	f->initDynAttribs();
 
 	wrapProperty(self, &f->getColor(), "color", ColorType);
-
-	if (rgssVer >= 3)
-		wrapProperty(self, &f->getOutColor(), "out_color", ColorType);
 
 	return self;
 }

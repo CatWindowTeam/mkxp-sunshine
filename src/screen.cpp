@@ -24,7 +24,6 @@ static bool readMessage(Pipe &ipc, char *buf, size_t size){
 }
 
 int screenMain(Config &conf){
-	char msg[512];
 	const SDL_Color colorKey = {0x00, 0xFF, 0x00, 0xFF};
 	const SDL_Color black = {0x00, 0x00, 0x00, 0xFF};
 

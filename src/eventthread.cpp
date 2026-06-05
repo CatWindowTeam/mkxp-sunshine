@@ -565,7 +565,7 @@ bool EventThread::eventFilter(void *data, SDL_Event *event){
 	/* Workaround for Windows pausing on drag */
 	default:
 		if (event->window.type == SDL_EVENT_WINDOW_MOVED){
-			if (shState != NULL && shState->rgssVersion > 0){
+			if (shState != NULL){
 				shState->oneshot().setWindowPos(event->window.data1, event->window.data2);
 				shState->graphics().update(false);
 			}
