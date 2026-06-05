@@ -360,17 +360,6 @@ class Scene_Map
     $scene = Scene_Battle.new
   end
   #--------------------------------------------------------------------------
-  # * Shop Call
-  #--------------------------------------------------------------------------
-  def call_shop
-    # Clear shop call flag
-    $game_temp.shop_calling = false
-    # Straighten player position
-    $game_player.straighten
-    # Switch to shop screen
-    $scene = Scene_Shop.new
-  end
-  #--------------------------------------------------------------------------
   # * Name Input Call
   #--------------------------------------------------------------------------
   def call_name

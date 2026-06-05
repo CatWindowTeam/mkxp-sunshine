@@ -39,14 +39,12 @@ class Game_Temp
   attr_accessor :battle_main_phase        # battle flag: main phase
   attr_accessor :battleback_name          # battleback file name
   attr_accessor :forcing_battler          # battler being forced into action
-  attr_accessor :shop_calling             # shop calling flag
-  attr_accessor :shop_goods               # list of shop goods
   attr_accessor :name_calling             # name input: calling flag
   attr_accessor :menu_calling             # menu calling flag
   attr_accessor :item_menu_calling        # item menu calling flag
   attr_accessor :travel_menu_calling      # fast travel menu calling flag
   attr_accessor :window_settings_calling  # fast travel menu calling flag
-  attr_accessor :window_debug_calling  # fast travel menu calling flag
+  attr_accessor :window_debug_calling     # debug menu calling flag
   attr_accessor :menu_beep                # menu: play sound effect flag
   attr_accessor :save_calling             # save calling flag
   attr_accessor :debug_calling            # debug calling flag
@@ -98,8 +96,6 @@ class Game_Temp
     @battle_main_phase = false
     @battleback_name = ''
     @forcing_battler = nil
-    @shop_calling = false
-    @shop_id = 0
     @name_calling = false
     @name_actor_id = 0
     @name_max_char = 0

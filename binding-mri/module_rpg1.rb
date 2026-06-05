@@ -1415,7 +1415,6 @@ module RPG
       @cancel_se = RPG::AudioFile.new("", 80)
       @buzzer_se = RPG::AudioFile.new("", 80)
       @equip_se = RPG::AudioFile.new("", 80)
-      @shop_se = RPG::AudioFile.new("", 80)
       @save_se = RPG::AudioFile.new("", 80)
       @load_se = RPG::AudioFile.new("", 80)
       @battle_start_se = RPG::AudioFile.new("", 80)
@@ -1451,7 +1450,6 @@ module RPG
     attr_accessor :cancel_se
     attr_accessor :buzzer_se
     attr_accessor :equip_se
-    attr_accessor :shop_se
     attr_accessor :save_se
     attr_accessor :load_se
     attr_accessor :battle_start_se

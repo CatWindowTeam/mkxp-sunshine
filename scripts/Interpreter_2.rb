@@ -155,8 +155,6 @@ class Interpreter
       return command_602
     when 603  # If Lose
       return command_603
-    when 302  # Shop Processing
-      return command_302
     when 303  # Name Input Processing
       return command_303
     when 311  # Change HP

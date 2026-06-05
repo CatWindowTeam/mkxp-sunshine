@@ -2,8 +2,6 @@
 class Window_MainMenu < Window_Selectable
   def initialize
     super(Graphics.width / 2 - 304, 16, 608, 64)
-    #kostil' ebanyy
-    @debug_menu = ::Window_TPtL.new
 
     # Set up menu options
     @commands = Array.new
