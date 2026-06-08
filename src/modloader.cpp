@@ -34,6 +34,8 @@ std::string getCacheDir(){
 	return SDL_getenv("Temp");
 #elif defined(__linux__)
 	return std::string(SDL_getenv("HOME")) + "/.cache";
+#elif __APPLE__
+	return "~/Library/Caches";
 #else
 	return "idk";
 #endif
@@ -93,10 +95,14 @@ std::string sha256_file(const std::string &fn) {
 }
 
 std::string ModLoader(Config conf){
-		//"mods" by defailt
 		std::string path = conf.ModsDirPath;
-		if (!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
+		if (!fs::exists(path) || !std::filesystem::is_directory(path)) {
 			Debug() << "[MODLOADER] Mods directory not found, skip.";
+			return "";
+		}
+		
+		if (fs::is_empty(path)){
+			Debug() << "[MODLOADER] Mods directory empty, skip.";
 			return "";
 		}
 
@@ -117,20 +123,17 @@ std::string ModLoader(Config conf){
 			    std::string full = p.string();
 			    Debug() << "[MODLOADER] " << full;
 			    mod_list.push_back(full);
+			    mods_count++;
 			
-			    try {
-			        auto h = sha256_file(full);
-			        buildID_tmp.append(h);
-			    }catch (const std::exception &e) {
-			        Debug() << "[MODLOADER] sha256 failed for " << full << ", ex: " << e.what();
-			        continue;
-			    }
+			    auto h = sha256_file(full);
+			    buildID_tmp.append(h);
 			}
 				
 			buildID = sha512(buildID_tmp);
 			Debug() << "[MODLOADER] BuildID: " << buildID;
 			std::string path3 = getCacheDir() + "/sunshine-" + buildID;
 			int err = 0;
+			modloader_is_enabled = true;
 			if(!std::filesystem::exists(path3)){
 				std::error_code ec;
 				fs::create_directory(path3, ec);
@@ -143,7 +146,6 @@ std::string ModLoader(Config conf){
 				    crash(Exception::ModLoaderError, "Copy error: %s", ec.message().c_str());
 				}
 
-				char state2[1024];
 				//Extracting zipsodpsofspo idk
 				for (size_t i = 0; i < mod_list.size(); ++i){
 					zip_t* za = zip_open(mod_list[i].c_str(), ZIP_RDONLY, &err);
@@ -204,7 +206,7 @@ std::string ModLoader(Config conf){
 				return path3;
 			}else{
 				return path3;
-			}	
+			}
 		}catch(const std::exception& e){
 			crash(Exception::ModLoaderError, "Something is wrong, Exception: %s ", e.what());
 		}

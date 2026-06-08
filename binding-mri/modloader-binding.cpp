@@ -8,6 +8,7 @@
 #include "ruby/encoding.h"
 #include "ruby/intern.h"
 #include "ruby/thread.h"
+#include "modloader.h"
 #include <ruby.h>
 #include <filesystem>
 #include <fstream>
@@ -60,4 +61,6 @@ void ModLoaderBindingInit(){
 	Debug() << "[MODLOADER] initalizing binding...";
 	VALUE klass = rb_define_module("ModLoader");
 	rb_define_module_function(klass, "hooks", RUBY_METHOD_FUNC(hooks), -1);
+	rb_define_const(klass, "IS_ENABLED", modloader_is_enabled ? Qtrue : Qfalse);
+	rb_define_const(klass, "COUNT", INT2NUM(mods_count));
 }

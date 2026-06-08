@@ -85,6 +85,9 @@ class Scene_Title
     @debug.bitmap.draw_text(5, 5, 200, 20, tr("Ruby #{RUBY_VERSION}"))
     @debug.bitmap.draw_text(5, 25, 200, 20, tr("SDL #{SDLVer}"))
     @debug.bitmap.draw_text(5, 45, 200, 20, tr("Sunshine #{SunshineVer}"))
+    if ModLoader::IS_ENABLED
+    	@debug.bitmap.draw_text(5, 65, 200, 20, tr("Mods loaded: #{ModLoader::COUNT}"))
+    end
 
     if $game_switches[160] && $game_switches[152]
         @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))

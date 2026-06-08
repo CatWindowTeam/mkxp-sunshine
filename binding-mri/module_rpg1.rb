@@ -1275,8 +1275,10 @@ module RPG
 
   class Mod
 	def self.exec_hooks(path, b)
-	  ModLoader.hooks(path).each do |item|
-	    eval(File.read(item), b)
+	  if ModLoader::IS_ENABLED
+	  	ModLoader.hooks(path).each do |item|
+	    	eval(File.read(item), b)
+	  	end
 	  end
 	end
   end
