@@ -11,6 +11,7 @@ class Game_Switches
   #--------------------------------------------------------------------------
   def initialize
     @data = []
+    RPG::Mod.exec_hooks("hooks/Game_Switches/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Get Switch

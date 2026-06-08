@@ -39,6 +39,7 @@ struct Config{
 	int defScreenW;
 	int defScreenH;
 	std::string windowTitle;
+	std::string ModsDirPath;
 
 	int fixedFramerate;
 	bool frameSkip;

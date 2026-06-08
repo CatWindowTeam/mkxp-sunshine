@@ -11,6 +11,7 @@ class Game_Actors
   #--------------------------------------------------------------------------
   def initialize
     @data = []
+    RPG::Mod.exec_hooks("hooks/Game_Actors/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Get Actor

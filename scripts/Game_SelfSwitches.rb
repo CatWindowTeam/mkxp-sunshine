@@ -11,6 +11,7 @@ class Game_SelfSwitches
   #--------------------------------------------------------------------------
   def initialize
     @data = {}
+    RPG::Mod.exec_hooks("hooks/Game_SelfSwitches/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Get Self Switch

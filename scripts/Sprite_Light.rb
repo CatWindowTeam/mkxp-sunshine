@@ -8,6 +8,7 @@ class Light < RPG::Sprite
     @map_y = y
     self.z = 9999
     self.visible = true
+    RPG::Mod.exec_hooks("hooks/Light/init", binding)
     update
   end
 

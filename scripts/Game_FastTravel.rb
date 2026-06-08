@@ -21,6 +21,7 @@ class Game_FastTravel
     @unlocked = {}
     @zone = nil
     @enabled = false
+    RPG::Mod.exec_hooks("hooks/Game_FastTravel/init", binding)
   end
 
   def unlock(map, id, x, y, dir)

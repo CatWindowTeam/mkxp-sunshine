@@ -95,6 +95,7 @@ class FastTravel
     @fade_out = false
 
     @transfer_player = nil
+    RPG::Mod.exec_hooks("hooks/FastTravel/init", binding)
   end
   
   #WME

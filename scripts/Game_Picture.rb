@@ -45,6 +45,7 @@ class Game_Picture
     @tone_duration = 0
     @angle = 0
     @rotate_speed = 0
+    RPG::Mod.exec_hooks("hooks/Game_Picture/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Show Picture

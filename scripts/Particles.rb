@@ -7,6 +7,7 @@ class Particle
     @sprite.oy = bitmap.height / 2
     self.x = rand(Graphics.width)
     self.y = rand(Graphics.height)
+    RPG::Mod.exec_hooks("hooks/Particle/main", binding)
   end
 
   # Link various things to the sprite

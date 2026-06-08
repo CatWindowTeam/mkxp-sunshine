@@ -14,7 +14,9 @@ class Game_Oneshot
     @plight_timer = nil
     @wallpaper = nil
     @bruteforce_start = nil
+    RPG::Mod.exec_hooks("hooks/Game_Oneshot/init", binding)
   end
+  
   def self.get_user_name
     user_name = (Oneshot::USER_NAME).split(/\s+/)
     #user_name = (Steam.enabled? ? Steam::USER_NAME : Oneshot::USER_NAME).split(/\s+/)

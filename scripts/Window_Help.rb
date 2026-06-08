@@ -15,6 +15,7 @@ class Window_Help < Window_Base
     self.visible = false
     self.back_opacity = 230
     self.z = 9998
+    RPG::Mod.exec_hooks("hooks/Window_Help/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Set Text

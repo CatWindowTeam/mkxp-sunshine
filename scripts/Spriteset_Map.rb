@@ -87,6 +87,7 @@ class Spriteset_Map
     @bulb.opacity = has_lightbulb? ? 255 : 0
     # Panorama animation timer
     @pan_animate_timer = 0
+    RPG::Mod.exec_hooks("hooks/Spriteset_Map/init", binding)
     # Frame update
     update
   end

@@ -21,6 +21,7 @@ class Window_Base < Window
     self.width = width
     self.height = height
     self.z = 100
+    RPG::Mod.exec_hooks("hooks/Window_Base/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose

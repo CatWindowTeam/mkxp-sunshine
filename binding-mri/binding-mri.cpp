@@ -84,6 +84,7 @@ void oneshotBindingInit();
 void SunshineBindingInit();
 void steamBindingInit();
 void shaderBindingInit();
+void ModLoaderBindingInit();
 
 RB_METHOD(mriPrint);
 RB_METHOD(mriP);
@@ -119,6 +120,7 @@ static void mriBindingInit(){
     SunshineBindingInit();
 	steamBindingInit();
 	shaderBindingInit();
+	ModLoaderBindingInit();
 
 	_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
 	_rb_define_module_function(rb_mKernel, "rgss_stop", mriRgssStop);

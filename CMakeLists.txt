@@ -6,14 +6,15 @@ include(FindPackageHandleStandardArgs)
 option(STEAM "Build for Steam" OFF)
 option(DEBUG "Debug mode" OFF)
 option(FORCE32 "Force 32bit compile on 64bit OS" OFF) # from MKXP
-option(NATIVE "Use native instructions(for local use only)" ON)
-option(PROFILE "Extra optimization" ON)
+option(NATIVE "Use native instructions(for local use only)" OFF)
+option(PROFILE "Extra optimization" OFF)
 option(EXTRA_SECURITY "Extra security" OFF)
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
 set(VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "5.1.2600.0")
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 set(ZLIB_USE_STATIC_LIBS ON)
+set(OPENSSL_USE_STATIC_LIBS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # from MKXP
@@ -50,12 +51,6 @@ else()
 		#bruh....
 		add_compile_options(-Ofast -flto -funroll-loops -fipa-pta -ftree-vectorize -fstdarg-opt -fomit-frame-pointer -frename-registers)
 		add_link_options(-Wl,-O2)
-	endif()
-endif()
-
-if(PROFILE)
-	if (!MSVC)
-    	add_compile_options(-fprofile-generate -fprofile-use)
 	endif()
 endif()
 
@@ -128,6 +123,7 @@ set(MAIN_HEADERS
 	src/pipe.h
 	src/i18n.h
 	src/meow.h
+	src/modloader.h
 )
 
 set(MAIN_SOURCE
@@ -172,6 +168,7 @@ set(MAIN_SOURCE
 	src/screen.cpp
 	src/i18n.cpp
 	src/meow.cpp
+	src/modloader.cpp
 )
 
 if(WIN32)
@@ -333,6 +330,7 @@ set(BINDING_SOURCE
 	binding-mri/niko-binding.cpp
 	binding-mri/time-binding.cpp
 	binding-mri/shader-binging.cpp
+	binding-mri/modloader-binding.cpp
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
@@ -355,6 +353,7 @@ if(LINUX)
 	target_link_libraries(${PROJECT_NAME} PRIVATE ${SECCOMP_LIBRARIES})
 endif()
 
+find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(SDL3 CONFIG)
 find_package(SDL3_image CONFIG)
@@ -363,6 +362,7 @@ find_package(SDL3_ttf CONFIG)
 find_package(OpenAL CONFIG)
 find_package(Boost REQUIRED COMPONENTS program_options chrono)
 find_package(PhysFS CONFIG)
+find_package(OpenSSL CONFIG REQUIRED COMPONENTS Crypto)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
 find_package(Ruby 3.0 REQUIRED COMPONENTS Development)
@@ -370,6 +370,7 @@ pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
+pkg_check_modules(LIBZIP REQUIRED libzip)
 
 target_compile_definitions(${PROJECT_NAME}
 	PRIVATE
@@ -379,7 +380,8 @@ target_include_directories(${PROJECT_NAME}
 	PRIVATE
 		src
 		include
-		
+		${LIBZIP_INCLUDE_DIRS}
+		${OPENSSL_INCLUDE_DIR}
 		${PIXMAN_INCLUDE_DIR}
 		${SIGC2_INCLUDE_DIRS}
 		${Ruby_INCLUDE_DIRS}
@@ -390,8 +392,10 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
 	PRIVATE
 		SDL3::SDL3 SDL3_image::SDL3_image SDL3_sound::SDL3_sound SDL3_ttf::SDL3_ttf
+		OpenSSL::Crypto
 		OpenAL::OpenAL
 		physfs
+		${LIBZIP_LIBRARIES}
 		${PIXMAN_LIBRARY}
 		${SIGC2_LIBRARIES}
 		${PLATFORM_LIBRARIES}

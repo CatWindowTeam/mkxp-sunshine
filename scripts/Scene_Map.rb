@@ -58,6 +58,9 @@ class Scene_Map
     @blackfade.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0))
     @blackfade.visible = false
     @blackfade.z = 9999
+
+	RPG::Mod.exec_hooks("hooks/Scene_Map/main", binding)
+    
     # Transition run
     Graphics.transition
     # Main loop

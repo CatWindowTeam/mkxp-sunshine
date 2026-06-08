@@ -15,6 +15,7 @@ class NameInputMode
     @size = names.map { |n| bitmap.text_size(n).width }.max
     @index = 0
     @count = 0
+    RPG::Mod.exec_hooks("hooks/NameInputMode/init", binding)
   end
 
   def cycle
@@ -47,6 +48,7 @@ class Window_NameInput < Window_Base
     @ok_text = "OK"
     @char_w = 28
     @char_h = 32
+    RPG::Mod.exec_hooks("hooks/Window_NameInput/init", binding)
   end
   def init
     # Create dimension information
@@ -63,6 +65,8 @@ class Window_NameInput < Window_Base
       end
     end
 
+	RPG::Mod.exec_hooks("hooks/Window_NameInput/init2", binding)
+	
     refresh
     update_cursor_rect
     self

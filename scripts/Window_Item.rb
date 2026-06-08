@@ -25,6 +25,7 @@ class Window_Item < Window_Selectable
     @fade_out = false
 
     @help_window = Window_Help.new
+    RPG::Mod.exec_hooks("hooks/Window_Item/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Get Item

@@ -30,6 +30,7 @@ class Window_MainMenu < Window_Selectable
       draw_item(i, normal_color)
     end
     self.z = 9998
+    RPG::Mod.exec_hooks("hooks/Window_MainMenu/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose

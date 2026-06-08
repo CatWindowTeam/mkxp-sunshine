@@ -49,6 +49,7 @@
 #include "gl-fun.h"
 #include "i18n.h"
 #include "security.h"
+#include "modloader.h"
 
 #include "meow.h"
 
@@ -271,12 +272,22 @@ int main(int argc, char *argv[]){
     			freopen("CONOUT$", "w", stderr);
 		}
 	#endif
+
 	
 	if (!conf.gameFolder.empty()){
 		if (chdir(conf.gameFolder.c_str()) != 0){
 			crash(Exception::MEOW, "Unable to switch into gameFolder %s", conf.gameFolder);
 			return 0;
 		}
+	}
+
+	std::string new_path = ModLoader(conf);
+	
+	if(new_path != ""){
+		if (chdir(new_path.c_str()) != 0){
+			crash(Exception::MEOW, "Unable to switch into new gameFolder %s", new_path);
+			return 0;
+		}	
 	}
 
 	extern int screenMain(Config &conf);

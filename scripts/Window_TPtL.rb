@@ -21,6 +21,7 @@ class Window_TPtL < Window_Selectable
       draw_item(i, normal_color)
     end
     self.z = 9998
+    RPG::Mod.exec_hooks("hooks/Window_TPtL/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose

@@ -25,6 +25,7 @@ class Window_InputNumber < Window_Base
     @index = 0
     refresh
     update_cursor_rect
+    RPG::Mod.exec_hooks("hooks/Window_InputNumber/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Get Number

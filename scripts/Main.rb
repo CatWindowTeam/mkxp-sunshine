@@ -5,11 +5,13 @@
 #==============================================================================
 
 at_exit do
+  RPG::Mod.exec_hooks("hooks/Main/at_exit", binding)
   Wallpaper.reset
   save unless $game_switches[99] || ($game_system.map_interpreter.running? || !$scene.is_a?(Scene_Map))
 end
 
 begin
+  RPG::Mod.exec_hooks("hooks/Main/start", binding)
   $console = Graphics.fullscreen
   Graphics.frame_rate = 60
   Font.default_size = 20

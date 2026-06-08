@@ -21,6 +21,7 @@ class Window_DebugRight < Window_Selectable
     @item_max = 10
     @mode = 0
     @top_id = 1
+    RPG::Mod.exec_hooks("hooks/Window_DebugRight/init", binding)
     refresh
   end
   #--------------------------------------------------------------------------

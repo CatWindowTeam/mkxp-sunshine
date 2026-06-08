@@ -35,6 +35,7 @@ class Game_System
     @message_frame = 0
     @save_count = 0
     @magic_number = 0
+    RPG::Mod.exec_hooks("hooks/Game_System/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Play Background Music

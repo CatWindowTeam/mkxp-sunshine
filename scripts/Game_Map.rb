@@ -83,6 +83,7 @@ class Game_Map
     @map_id = 0
     @display_x = 0
     @display_y = 0
+    RPG::Mod.exec_hooks("hooks/Game_Map/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Setup

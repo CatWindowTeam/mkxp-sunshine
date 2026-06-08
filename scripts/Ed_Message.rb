@@ -28,6 +28,7 @@ class Ed_Message
     @fade_out = false
     @fade_in_text = false
     @fade_out_text = false
+    RPG::Mod.exec_hooks("hooks/Ed_Message/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose

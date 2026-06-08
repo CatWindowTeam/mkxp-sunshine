@@ -42,6 +42,7 @@ class Window_Message < Window_Selectable
 
     # Text blip sound
     @blipsound = nil
+    RPG::Mod.exec_hooks("hooks/Window_Message/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose

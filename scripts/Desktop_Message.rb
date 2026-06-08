@@ -29,6 +29,7 @@ class Desktop_Message
     # Animation flags
     @fade_in = false
     @fade_out = false
+    RPG::Mod.exec_hooks("hooks/Desktop_Message/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose

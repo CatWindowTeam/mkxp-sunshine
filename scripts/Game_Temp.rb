@@ -125,6 +125,7 @@ class Game_Temp
     @menus_visible = false
     @countdown_password = ""
     @igt_timer_visible = false
+    RPG::Mod.exec_hooks("hooks/Game_Temp/init", binding)
   end
 
   def bgm_fadein(game_system)

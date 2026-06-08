@@ -59,13 +59,15 @@ class Scene_Title
       end
     end
 
-	  # check for debug file to add debug items
-	  if Settings[:debug]
-	    $game_party.gain_item(54, 1) # debug save
-	    $game_party.gain_item(82, 1) # plight skip
-		  $game_party.gain_item(81, 1) #George reroler
-	  end 
+	RPG::Mod.exec_hooks("hooks/Scene_Title/init", binding)
 	
+	# check for debug file to add debug items
+	if Settings[:debug]
+		$game_party.gain_item(54, 1) # debug save
+	    $game_party.gain_item(82, 1) # plight skip
+		$game_party.gain_item(81, 1) # George reroler
+	end 
+
     @sprite.zoom_x = 2.0
     @sprite.zoom_y = 2.0
     # Create/render menu options
@@ -76,7 +78,7 @@ class Scene_Title
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
 
-	  #Debug info like in minecraft Forge :P
+	#Debug info like in minecraft Forge :P
     @debug = Sprite.new
     @debug.z += @menu.z
     @debug.bitmap = Bitmap.new(Graphics.width, Graphics.height)
@@ -88,7 +90,7 @@ class Scene_Title
         @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
     end
 
-	  Language.register_text_sprite(self.class.name + "_contents", @menu.bitmap)
+	Language.register_text_sprite(self.class.name + "_contents", @menu.bitmap)
 
     # Make cursor graphic
     @cursor = Sprite.new
@@ -98,9 +100,10 @@ class Scene_Title
     @cursor.bitmap = RPG::Cache.menu('cursor')
     @cursor.x = MENU_X - 12
     @cursor.y = MENU_Y + (20 - @cursor.bitmap.height) / 2
-
+	
     # Initialize cursor position
     @cursor_pos = 0.0
+    
 
     # Play title BGM
     if File.exist?("badend.lock")
@@ -138,7 +141,7 @@ class Scene_Title
     @menu.dispose
     @cursor.bitmap.dispose
     @cursor.dispose
-	  @window_settings_title.dispose
+	@window_settings_title.dispose
     Audio.bgm_fade(60)
     Graphics.transition(60)
     # Run automatic change for BGM and BGS set with map

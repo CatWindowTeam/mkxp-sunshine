@@ -22,6 +22,7 @@ class Window_Selectable < Window_Base
     @item_max = 1
     @column_max = 1
     @index = -1
+    RPG::Mod.exec_hooks("hooks/Window_Selectable/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Set Cursor Position

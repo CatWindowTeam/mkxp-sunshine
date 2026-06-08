@@ -41,6 +41,9 @@ struct Exception{
 		SDLError,
 		MKXPError,
 
+		//modloader
+		ModLoaderError,
+		
 		// For crash()
 		MEOW
 	};

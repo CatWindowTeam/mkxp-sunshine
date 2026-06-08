@@ -11,6 +11,7 @@ class Window_DebugLeft < Window_Selectable
   def initialize
     super(0, 0, 192, Graphics.height)
     self.index = 0
+    RPG::Mod.exec_hooks("hooks/Window_DebugLeft/init", binding)
     refresh
   end
   #--------------------------------------------------------------------------

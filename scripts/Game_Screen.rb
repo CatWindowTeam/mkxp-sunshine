@@ -38,6 +38,7 @@ class Game_Screen
     @weather_type_target = 0
     @weather_max_target = 0.0
     @weather_duration = 0
+    RPG::Mod.exec_hooks("hooks/Game_Screen/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Start Changing Color Tone

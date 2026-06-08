@@ -36,6 +36,7 @@ class Window_Settings
 
     @transfer_player = nil
 	@visible = false
+	RPG::Mod.exec_hooks("hooks/Window_Settings/init", binding)
   end
 
   def dispose

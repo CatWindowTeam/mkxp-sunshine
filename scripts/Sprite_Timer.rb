@@ -16,6 +16,7 @@ class Sprite_Timer < Sprite
     self.x = 640 - self.bitmap.width
     self.y = 0
     self.z = 500
+    RPG::Mod.exec_hooks("hooks/Sprite_Timer/init", binding)
     update
   end
   #--------------------------------------------------------------------------

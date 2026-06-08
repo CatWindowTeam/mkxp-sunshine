@@ -64,9 +64,6 @@ module RPG
     def self.windowskin(filename)
       self.load_bitmap("Graphics/Windowskins/", filename)
     end
-    #def self.minimap(zone, location)
-    #  self.load_bitmap("Graphics/Menus/minimap/", zone + "_" + location)
-    #end
     def self.tile(filename, tile_id, hue)
       key = [filename, tile_id, hue]
       if not @cache.include?(key) or @cache[key].disposed?
@@ -1276,6 +1273,14 @@ module RPG
     attr_accessor :timings
   end
 
+  class Mod
+	def self.exec_hooks(path, b)
+	  ModLoader.hooks(path).each do |item|
+	    eval(File.read(item), b)
+	  end
+	end
+  end
+  
   class Tileset
     def initialize
       @id = 0

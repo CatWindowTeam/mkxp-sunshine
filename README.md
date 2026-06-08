@@ -11,7 +11,7 @@ Target of sunshine mod - improve original game.
 * Cmake
 * C/C++ compiler
 * xxd
-* Ruby (3 or higher)
+* Ruby 3+
 * Boost
 * SDL3
 * pixman
@@ -21,6 +21,8 @@ Target of sunshine mod - improve original game.
 * OpenAL 
 * PhysFS
 * sigc++-2.0
+* OpenSSL
+* libzip
 * GTK3(Linux only!)
 * libxfconf(Linux only!)
 
