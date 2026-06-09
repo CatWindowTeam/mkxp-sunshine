@@ -531,6 +531,16 @@ void Sprite::draw(){
 
 				break;
 			}
+		case ShaderType::SHADER_crt:
+			{
+				CRTShader &shader = shState->shaders().crt;
+
+				defaultSpriteShaderInit(shader);
+
+				base = &shader;
+
+				break;
+			}
 		case ShaderType::SHADER_worldMachine:
 			{
 				WMShader &shader = shState->shaders().worldMachine;

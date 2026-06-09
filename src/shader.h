@@ -191,6 +191,11 @@ public:
 	WaterShader();
 };
 
+class CRTShader : public SpriteShaderBase{
+public:
+	CRTShader();
+};
+
 class TilemapWaterShader : public ShaderBase{
 public:
 	TilemapWaterShader();
@@ -330,6 +335,7 @@ private:
 	X(sprite,         SpriteShader,       Sprite) \
 	X(worldMachine,   WMShader,           WorldMachine) \
 	X(water,	      WaterShader,        Water) \
+	X(crt,	          CRTShader,          CRT) \
 	X(tilemapWater,	  TilemapWaterShader, TilemapWater) \
 	X(plane,          PlaneShader,        Plane) \
 	X(gray,           GrayShader,         Gray) \

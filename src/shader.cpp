@@ -32,6 +32,7 @@
 #include "sprite.frag.xxd"
 #include "worldMachine.frag.xxd"
 #include "water.frag.xxd"
+#include "crt.frag.xxd"
 #include "tilemapWater.frag.xxd"
 #include "hue.frag.xxd"
 #include "trans.frag.xxd"
@@ -430,6 +431,12 @@ WMShader::WMShader(){
 
 WaterShader::WaterShader(){
 	INIT_SHADER(simple, water, WaterShader);
+	SpriteShaderBase::SpriteShaderInit();
+}
+
+
+CRTShader::CRTShader(){
+	INIT_SHADER(sprite, crt, CRTShader);
 	SpriteShaderBase::SpriteShaderInit();
 }
 

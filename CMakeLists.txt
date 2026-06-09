@@ -49,7 +49,7 @@ else()
 		add_compile_options(/O2 /fp:fast /GL /GF /GA)
 	else()
 		#bruh....
-		add_compile_options(-Ofast -flto -funroll-loops -fipa-pta -ftree-vectorize -fstdarg-opt -fomit-frame-pointer -frename-registers)
+		add_compile_options(-Ofast -funroll-loops -fipa-pta -ftree-vectorize -fstdarg-opt -fomit-frame-pointer -frename-registers)
 		add_link_options(-Wl,-O2)
 	endif()
 endif()
@@ -224,6 +224,7 @@ set(EMBEDDED_INPUT
 	shader/sprite.frag
 	shader/worldMachine.frag
 	shader/water.frag
+	shader/crt.frag
 	shader/tilemapWater.frag
 	shader/plane.frag
 	shader/gray.frag

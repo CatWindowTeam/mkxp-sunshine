@@ -2,28 +2,31 @@
 class Desktop_Message
   HORIZ_MARGIN = 8
   VERT_MARGIN = 8
-  HEIGHT = 160
 
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @sprite_bg = Sprite.new(@viewport)
-    @sprite_bg.bitmap = RPG::Cache.picture('cg_desktop_messagebox') #Bitmap.new(640, 480)
-    @sprite_bg.zoom_x = @sprite_bg.zoom_y = 2
+    @sprite_messagebox = Sprite.new(@viewport)
+    @sprite_messagebox.bitmap = RPG::Cache.picture('cg_desktop_messagebox') #Bitmap.new(640, 480)
+    @sprite_messagebox.zoom_x = @sprite_messagebox.zoom_y = 2
+    @sprite_messagebox.x = (Graphics.width) / 2 - 320
+    @sprite_messagebox.y = (Graphics.height) / 2 - 240
+    @sprite_messagebox.shader = Shader::CRT
+    
     @sprite_text = Sprite.new(@viewport)
-    @contents = Bitmap.new(Graphics.width, HEIGHT)
+    @contents = Bitmap.new(Graphics.width, Graphics.height)
     Language.register_text_sprite(self.class.name + "_contents", @contents)
     @sprite_text.bitmap = @contents
-    @sprite_text.y = (Graphics.height - HEIGHT) / 2
-    @sprite_bg.z = 0
-    @sprite_text.z = 1
+    @sprite_text.y = (Graphics.height - Graphics.height) / 2
+    @sprite_messagebox.z = 1
+    @sprite_text.z = 2
     @sprite_text.zoom_x = @sprite_text.zoom_y = 1
     @viewport.z = 9999
     @viewport.visible = false
 
-    @sprite_bg.opacity = 0
+    @sprite_messagebox.opacity = 0
     @sprite_text.opacity = 0
 
     # Animation flags
@@ -38,7 +41,7 @@ class Desktop_Message
     terminate_message
     $game_temp.message_window_showing = false
     @contents.dispose
-    #@sprite_bg.dispose
+    #@sprite_messagebox.dispose
     @sprite_text.dispose
     @viewport.dispose
   end
@@ -119,7 +122,7 @@ class Desktop_Message
     # Prepare renderer
     @contents.clear
     @contents.font.color = Color.new(44, 37, 54, 255)
-    y_top = (HEIGHT - widths.length * 24) / 2
+    y_top = (Graphics.height - widths.length * 24) / 2
     x = (Graphics.width - widths[0]) / 2
     y = 0
 
@@ -156,9 +159,9 @@ class Desktop_Message
     # Handle fade-out effect
     if @fade_out
       @sprite_text.opacity -= 200
-      @sprite_bg.opacity -= 200
+      @sprite_messagebox.opacity -= 200
       if @sprite_text.opacity <= 0
-        @sprite_bg.opacity = 0
+        @sprite_messagebox.opacity = 0
         @fade_out = false
         @viewport.visible = false
         $game_temp.message_window_showing = false
@@ -169,9 +172,9 @@ class Desktop_Message
     # Handle fade-in effect
     if @fade_in
       @sprite_text.opacity += 200
-      @sprite_bg.opacity += 200
+      @sprite_messagebox.opacity += 200
       if @sprite_text.opacity >= 255
-      @sprite_bg.opacity = 255
+      @sprite_messagebox.opacity = 255
         @fade_in = false
         $game_temp.message_window_showing = true
       end
