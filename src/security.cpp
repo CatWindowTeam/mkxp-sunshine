@@ -54,8 +54,8 @@ void SecurityManagerInit(){
 
 		securitystate = "sandboxed_SECCOMP";
 		
-	#elif
-			Debug() << "[SECURITY] SecurityManager doesn't support this platform.";
+	#else
+		Debug() << "[SECURITY] SecurityManager doesn't support this platform.";
 	#endif
 }
 

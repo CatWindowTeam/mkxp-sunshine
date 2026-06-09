@@ -730,7 +730,7 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 			simpleShader.setProg(prog);
 		}
 
-		#ifndef __linux__ || BSD || __unix__
+		#if !defined(__linux__) && !defined(BSD) && !defined(__unix__)
 			if (p->threadData->exiting) SDL_SetWindowOpacity(p->threadData->window, 1.0f - prog);
 		#endif
 
