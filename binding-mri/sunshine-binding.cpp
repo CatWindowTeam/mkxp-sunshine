@@ -39,6 +39,7 @@ void SunshineBindingInit(){
     rb_const_set(module, rb_intern("SDLVersion_major"), INT2NUM(SDL_MAJOR_VERSION));
     rb_const_set(module, rb_intern("SDLVersion_minor"), INT2NUM(SDL_MINOR_VERSION));
     rb_const_set(module, rb_intern("SDLVersion_micro"), INT2NUM(SDL_MICRO_VERSION));
+	rb_const_set(module, rb_intern("SECURITYSTATE"), rb_str_new_cstr(securitystate));
 
     //если методы доступны то просто не перезаписываем их
 	if (!rb_respond_to(rb_cObject, rb_intern("class"))) {
