@@ -124,6 +124,7 @@ set(MAIN_HEADERS
 	src/i18n.h
 	src/meow.h
 	src/modloader.h
+	src/sunshine.h
 )
 
 set(MAIN_SOURCE
