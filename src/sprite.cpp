@@ -35,6 +35,7 @@
 #include "quadarray.h"
 #include "config.h"
 #include "debugwriter.h"
+#include "sunshine.h"
 
 #include <math.h>
 

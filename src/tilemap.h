@@ -25,7 +25,6 @@
 #include "disposable.h"
 
 #include "util.h"
-#include <boost/chrono.hpp>
 
 class Viewport;
 class Bitmap;

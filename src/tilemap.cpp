@@ -38,6 +38,7 @@
 #include "vertex.h"
 #include "tileatlas.h"
 #include "tilemap-common.h"
+#include "sunshine.h"
 
 #include <sigc++/connection.h>
 #include <boost/chrono.hpp>
@@ -222,8 +223,6 @@ struct ZLayer : public ViewportElement {
 };
 
 struct TilemapPrivate {
-    boost::chrono::high_resolution_clock::time_point startTime = boost::chrono::high_resolution_clock::now();
-
 	Viewport *viewport;
 
 	Bitmap *autotiles[autotileCount];

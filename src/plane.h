@@ -36,8 +36,6 @@ struct PlanePrivate;
 
 class Plane : public ViewportElement, public Disposable{
 public:
-    boost::chrono::high_resolution_clock::time_point startTime = boost::chrono::high_resolution_clock::now();
-	
 	Plane(Viewport *viewport = 0);
 	~Plane();
 

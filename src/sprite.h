@@ -40,8 +40,6 @@ struct SpritePrivate;
 
 class Sprite : public ViewportElement, public Flashable, public Disposable{
 public:
-    boost::chrono::high_resolution_clock::time_point startTime = boost::chrono::high_resolution_clock::now();
-	
 	Sprite(Viewport *viewport = 0);
 	~Sprite();
 

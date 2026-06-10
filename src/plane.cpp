@@ -34,6 +34,7 @@
 #include "etc-internal.h"
 #include "shader.h"
 #include "glstate.h"
+#include "sunshine.h"
 
 #include <sigc++/connection.h>
 
