@@ -28,9 +28,9 @@
 
 #ifdef __ANDROID__
 	#include <android/log.h>
+#elif __EMSCRIPTEN__
+	#include <emscripten/console.h>
 #endif
-
-#include <SDL3/SDL_platform_defines.h>
 
 /* A cheap replacement for qDebug() */
 
@@ -58,21 +58,9 @@ public:
 
 	~Debug(){
 #ifdef __ANDROID__
-		__android_log_write(ANDROID_LOG_DEBUG, "mkxp", buf.str().c_str());
-#elif SDL_PLATFORM_3DS
-		//TODO
-#elif SDL_PLATFORM_IOS
-		//TODO
-#elif SDL_PLATFORM_PS2
-		//TODO
-#elif SDL_PLATFORM_PSP
-		//TODO
-#elif SDL_PLATFORM_VITA
-		//TODO
-#elif SDL_PLATFORM_XBOXONE
-		//TODO
-#elif SDL_PLATFORM_XBOXSERIES
-		//TODO
+		__android_log_write(ANDROID_LOG_DEBUG, "sunshine", buf.str().c_str());
+#elif __EMSCRIPTEN__
+		emscripten_console_log(buf.str().c_str());		
 #else
 		std::cerr << buf.str() << std::endl;
 #endif

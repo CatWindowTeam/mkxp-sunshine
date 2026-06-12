@@ -94,6 +94,11 @@ std::string sha256_file(const std::string &fn) {
     return out;
 }
 
+#ifdef __EMSCRIPTEN__
+std::string ModLoader(Config conf){
+	return "";
+}
+#else
 std::string ModLoader(Config conf){
 		std::string path = conf.Modloader.ModsDirPath;
 		if (!fs::exists(path) || !std::filesystem::is_directory(path)) {
@@ -211,3 +216,4 @@ std::string ModLoader(Config conf){
 			crash(Exception::ModLoaderError, "Something is wrong, Exception: %s ", e.what());
 		}
 }
+#endif
