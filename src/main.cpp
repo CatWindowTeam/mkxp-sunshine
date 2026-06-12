@@ -226,7 +226,7 @@ int main(int argc, char *argv[]){
 	SDL_SetHint(SDL_HINT_AUDIO_DEVICE_STREAM_ROLE, "Game");
 	//X11 work on *BSD,Solaris too!
 	#if defined(__linux__) || defined(BSD) || defined(__sun)
-	SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
+		SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
 		#if SDL_VERSION_ATLEAST(3, 4, 10)
 			SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
 		#endif
@@ -331,7 +331,7 @@ int main(int argc, char *argv[]){
 
 	/* OSX and Windows have their own native ways of
 	 * dealing with icons; don't interfere with them */
-#ifdef __LINUX__
+#ifdef defined(__linux__) || defined(BSD)
 	setupWindowIcon(conf, win);
 #elif __EMSCRIPTEN__
 	Debug() << "meow";

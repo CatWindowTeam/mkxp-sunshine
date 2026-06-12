@@ -133,8 +133,7 @@ void Config::read(int argc, char *argv[]){
 	try{
 		po::parsed_options cmdPo = po::command_line_parser(argc, argv).options(podesc).run();
 		po::store(cmdPo, vm);
-	}
-	catch (po::error &error){
+	}catch (po::error &error){
 		Debug() << "[config] Command line:" << error.what();
 	}
 

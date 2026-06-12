@@ -355,16 +355,16 @@ find_package(Ruby 3.0 REQUIRED COMPONENTS Development)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
-if(!EMSCRIPTEN)
+if(EMSCRIPTEN)
+	
+else()
 	find_package(OpenSSL CONFIG REQUIRED COMPONENTS Crypto)
 	pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
 	pkg_check_modules(LIBZIP REQUIRED libzip)
 endif()
-target_compile_definitions(${PROJECT_NAME}
-	PRIVATE
-		${DEFINES})
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 
-if(!EMSCRIPTEN)
+if(EMSCRIPTEN)
 	target_include_directories(${PROJECT_NAME} PRIVATE src include ${PIXMAN_INCLUDE_DIR}
 			${Ruby_INCLUDE_DIRS} Boost::boost ${Boost_INCLUDE_DIRS} ${VORBISFILE_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 
