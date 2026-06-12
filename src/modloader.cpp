@@ -95,7 +95,7 @@ std::string sha256_file(const std::string &fn) {
 }
 
 std::string ModLoader(Config conf){
-		std::string path = conf.ModsDirPath;
+		std::string path = conf.Modloader.ModsDirPath;
 		if (!fs::exists(path) || !std::filesystem::is_directory(path)) {
 			Debug() << "[MODLOADER] Mods directory not found, skip.";
 			return "";

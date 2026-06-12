@@ -93,7 +93,6 @@ RB_METHOD(oneshotCRC32){
 }
 
 void oneshotBindingInit(){
-	printf("[oneshotBindingInit] Initializing Oneshot binding\n");
 	VALUE module = rb_define_module("Oneshot");
 	VALUE msg = rb_define_module_under(module, "Msg");
 

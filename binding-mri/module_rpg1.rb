@@ -46,10 +46,14 @@ module RPG
       self.load_bitmap("Graphics/Icons/", filename)
     end
     def self.panorama(filename, hue)
-      self.load_bitmap("Graphics/Panoramas/", filename, hue)
+	  if Graphics.width == 1280 && File.exist?("Graphics/Panoramas/" + filename + "_16.png")
+		self.load_bitmap("Graphics/Panoramas/", filename + "_16", hue)
+      else
+      	self.load_bitmap("Graphics/Panoramas/", filename, hue)
+      end
     end
     def self.picture(filename)
-      if (Graphics.width == 1280 && File.exist?("Graphics/Pictures/" + filename + "_16.png"))
+      if Graphics.width == 1280 && File.exist?("Graphics/Pictures/" + filename + "_16.png")
         self.load_bitmap("Graphics/Pictures/", filename + "_16")
       else
         self.load_bitmap("Graphics/Pictures/", filename)

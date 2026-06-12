@@ -9,7 +9,6 @@
 VALUE rb_mShader;
 
 void shaderBindingInit(){
-	printf("[shaderBindingInit] Initializing Shaders binding\n");
     rb_mShader = rb_define_module("Shader");
     
     #define DEFINE_RUBY_CONST(name, type, rb) \

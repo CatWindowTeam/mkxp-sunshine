@@ -96,7 +96,6 @@ RB_METHOD(spriteHeight){
 }
 
 void spriteBindingInit(){
-	printf("[spriteBindingInit] Initializing sprite binding\n");
 	VALUE klass = rb_define_class("Sprite", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&SpriteType>);
 

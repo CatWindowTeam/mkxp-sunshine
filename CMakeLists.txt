@@ -7,7 +7,6 @@ option(STEAM "Build for Steam" OFF)
 option(DEBUG "Debug mode" OFF)
 option(FORCE32 "Force 32bit compile on 64bit OS" OFF) # from MKXP
 option(NATIVE "Use native instructions(for local use only)" OFF)
-option(PROFILE "Extra optimization" OFF)
 option(EXTRA_SECURITY "Extra security" OFF)
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)

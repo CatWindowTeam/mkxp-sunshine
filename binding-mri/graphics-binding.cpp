@@ -185,7 +185,6 @@ DEF_GRA_PROP_B(Frameskip)
 }
 
 void graphicsBindingInit(){
-	printf("[graphicsBindingInit] Initializing Graphics binding\n");
 	VALUE module = rb_define_module("Graphics");
 
 	_rb_define_module_function(module, "update", graphicsUpdate);

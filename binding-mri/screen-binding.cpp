@@ -71,7 +71,6 @@ RB_METHOD(screenSet){
 }
 
 void screenBindingInit(){
-	printf("[screenBindingInit] Initializing Screen binding\n");
     VALUE module = rb_define_module("Screen");
     _rb_define_module_function(module, "start", screenStart);
     _rb_define_module_function(module, "finish", screenFinish);

@@ -75,7 +75,6 @@ RB_METHOD(sceneElementSetVisible){
 
 template<class C>
 void sceneElementBindingInit(VALUE klass){
-	printf("[sceneElementBindingInit] Initialing SceneElement binding\n");
 	_rb_define_method(klass, "z",        sceneElementGetZ<C>);
 	_rb_define_method(klass, "z=",       sceneElementSetZ<C>);
 	_rb_define_method(klass, "visible",  sceneElementGetVisible<C>);

@@ -79,7 +79,7 @@ void Config::read(int argc, char *argv[]){
 	PO_DESC(defScreenW, int, 640) \
 	PO_DESC(defScreenH, int, 480) \
 	PO_DESC(windowTitle, std::string, "") \
-	PO_DESC(ModsDirPath, std::string,"mods") \
+	PO_DESC(Modloader.ModsDirPath, std::string,"mods") \
 	PO_DESC(fixedFramerate, int, 0) \
 	PO_DESC(frameSkip, bool, true) \
 	PO_DESC(syncToRefreshrate, bool, false) \
@@ -92,7 +92,8 @@ void Config::read(int argc, char *argv[]){
 	PO_DESC(iconPath, std::string, "") \
 	PO_DESC(SE.sourceCount, int, 6) \
 	PO_DESC(pathCache, bool, true) \
-	PO_DESC(Windows_AllocConsole, bool, false)
+	PO_DESC(Windows_AllocConsole, bool, false) \ 
+	PO_DESC(Modloader.use_default_save_path, bool, false)
 	
 // Not gonna take your shit boost
 #define GUARD_ALL( exp ) try { exp } catch(...) {}
@@ -166,7 +167,7 @@ void Config::read(int argc, char *argv[]){
 
 	SE.sourceCount = clamp(SE.sourceCount, 1, 64);
 
-	commonDataPath = prefPath(".", "Oneshot");
+	commonDataPath = prefPath(".", "Sunshine");
 
 	if(windowTitle == "")
 		game.title = "OneShot: Sunshine";

@@ -9,6 +9,7 @@
 #include "ruby/intern.h"
 #include "ruby/thread.h"
 #include "modloader.h"
+#include "config.h"
 #include <ruby.h>
 #include <filesystem>
 #include <fstream>
@@ -58,7 +59,6 @@ static VALUE hooks(int argc, VALUE *argv, VALUE self) {
 }
 
 void ModLoaderBindingInit(){
-	Debug() << "[MODLOADER] initalizing binding...";
 	VALUE klass = rb_define_module("ModLoader");
 	rb_define_module_function(klass, "hooks", RUBY_METHOD_FUNC(hooks), -1);
 	rb_define_const(klass, "IS_ENABLED", modloader_is_enabled ? Qtrue : Qfalse);

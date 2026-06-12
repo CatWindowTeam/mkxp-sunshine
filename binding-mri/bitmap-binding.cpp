@@ -369,7 +369,6 @@ RB_METHOD(bitmapInitializeCopy){
 
 
 void bitmapBindingInit(){
-	printf("[bitmapBindingInit] Initializing Bitmap binding\n");
 	VALUE klass = rb_define_class("Bitmap", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&BitmapType>);
 

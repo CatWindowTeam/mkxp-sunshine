@@ -233,7 +233,6 @@ RB_METHOD(FontSetDefaultColor){
 }
 
 void fontBindingInit(){
-	printf("[fontBindingInit] Initializing Font binding\n");
 	VALUE klass = rb_define_class("Font", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&FontType>);
 

@@ -39,8 +39,7 @@ struct Config{
 	int defScreenW;
 	int defScreenH;
 	std::string windowTitle;
-	std::string ModsDirPath;
-
+	
 	int fixedFramerate;
 	bool frameSkip;
 	bool syncToRefreshrate;
@@ -60,6 +59,11 @@ struct Config{
 	struct{
 		int sourceCount;
 	} SE;
+	
+	struct{
+			std::string ModsDirPath;
+			bool use_default_save_path;
+	} Modloader;
 
 	bool useScriptNames;
 

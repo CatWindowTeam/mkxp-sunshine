@@ -4,7 +4,6 @@ set -e
 cd `dirname $0`
 
 # User-configurable variables.
-linux_version="0.1.0"
 oneshot_id=420530
 STEAMWORKS_PATH=$(realpath ..)/steamworks
 
@@ -15,11 +14,11 @@ cyan="\033[1;36m"       # Cyan - Bold
 green="\033[1;32m"      # Green - Bold
 color_reset="\033[0m"   # Reset Colors
 
-echo -e "${white}Compiling ${bold}SyngleChance v${linux_version} ${white}engine for Linux...${color_reset}\n"
+echo -e "Compiling ${bold}Sunshine Bandle for Linux...${color_reset}\n"
 
 cmake . -B build/
 cd build
-make -j${nproc}
+make
 cd ..
 
 mkdir build/bandle
@@ -62,6 +61,7 @@ yes | cp build/oneshot build/bandle/Sunshine
 
 cp installer/installer.sh build/bandle/
 cp -r ../SunshineAssets/* build/bandle/Sunshine
+cp oneshot.conf build/bandle/Sunshine
 
 cd build
 zip -r OneshotSunshine.zip bandle/*

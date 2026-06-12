@@ -41,7 +41,6 @@ static VALUE serializableDump(int, VALUE *, VALUE self){
 
 template<class C>
 void serializableBindingInit(VALUE klass){
-	printf("[serializableBindingInit] Initialing Binding binding\n");
 	_rb_define_method(klass, "_dump", serializableDump<C>);
 }
 

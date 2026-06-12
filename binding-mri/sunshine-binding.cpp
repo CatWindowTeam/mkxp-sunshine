@@ -47,7 +47,7 @@ void SunshineBindingInit(){
 	}
 	//сразу для всех обьектов
 	if (!rb_respond_to(rb_cObject, rb_intern("clone"))) {
-	        	        rb_define_method(rb_cObject, "clone", RUBY_METHOD_FUNC(obj_clone), 0);
+	        rb_define_method(rb_cObject, "clone", RUBY_METHOD_FUNC(obj_clone), 0);
 	}
 
 	if (!rb_respond_to(rb_cInteger, rb_intern("times"))) {

@@ -57,7 +57,6 @@ DEF_PROP_F(Plane, ZoomY)
 
 
 void planeBindingInit(){
-	printf("[planeBindingInit] Initializing Plane binding\n");
 	VALUE klass = rb_define_class("Plane", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&PlaneType>);
 

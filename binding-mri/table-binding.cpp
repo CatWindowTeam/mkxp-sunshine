@@ -150,7 +150,6 @@ MARSH_LOAD_FUN(Table)
 INITCOPY_FUN(Table)
 
 void tableBindingInit(){
-	printf("[tableBindingInit] Initializing Table binding\n");
 	VALUE klass = rb_define_class("Table", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&TableType>);
 

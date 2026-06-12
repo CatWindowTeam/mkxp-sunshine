@@ -8,6 +8,7 @@ Artists:
 
 * Issac332
 * Creature_of_steel1
+* Dess
 
 Testers:
 

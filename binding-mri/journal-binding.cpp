@@ -160,7 +160,6 @@ RB_METHOD(journalActive){
 }
 
 void journalBindingInit(){
-	printf("[journalBindingInit] Initializing Journal binding\n");
 	mutex = SDL_CreateMutex();
 	memset((char*)lang_buffer, 0, BUFFER_SIZE);
 	lang_buffer[0] = '_';

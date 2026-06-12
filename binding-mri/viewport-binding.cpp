@@ -78,9 +78,7 @@ DEF_PROP_OBJ_VAL(Viewport, Tone,  Tone,  "tone")
 DEF_PROP_I(Viewport, OX)
 DEF_PROP_I(Viewport, OY)
 
-
 void viewportBindingInit(){
-	printf("[viewportBindingInit] Initializing viewport binding\n");
 	VALUE klass = rb_define_class("Viewport", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&ViewportType>);
 

@@ -136,7 +136,6 @@ DEF_PROP_I(Tilemap, OX)
 DEF_PROP_I(Tilemap, OY)
 
 void tilemapBindingInit(){
-	printf("[tilemapBindingInit] Initializing tilemap binding\n");
 	VALUE klass = rb_define_class("TilemapAutotiles", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&TilemapAutotilesType>);
 

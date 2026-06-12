@@ -190,7 +190,6 @@ INITCOPY_FUN(Rect)
 	{ RB_ATTR_R(Klass, Attr, attr); RB_ATTR_W(Klass, Attr, attr); }
 
 void etcBindingInit(){
-	printf("[etcBindingInit] Initializing etc binding\n");
 	VALUE klass;
 
 	INIT_BIND(Color);

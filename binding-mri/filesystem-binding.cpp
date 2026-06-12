@@ -192,7 +192,6 @@ RB_METHOD(_marshalLoad){
 }
 
 void fileIntBindingInit(){
-	printf("[fileIntBindingInit] Initializing filesystem binding...\n");
 	VALUE klass = rb_define_class("FileInt", rb_cIO);
 	rb_define_alloc_func(klass, classAllocate<&FileIntType>);
     

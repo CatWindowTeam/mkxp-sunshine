@@ -195,7 +195,6 @@ RB_METHOD(nikoStart){
 }
 
 void nikoBindingInit(){
-	printf("[nikoBindingInit] Initializing Niko binding:3\n");
 	mutex = SDL_CreateMutex();
 #if defined __linux
 	mkfifo(NIKO_PIPE_PATH.c_str(), 0666);

@@ -12,14 +12,12 @@ echo """[Desktop Entry]
 Type=Application
 Name=Oneshot: Sunshine
 Comment=Oneshot mod
-Exec=$install_path/oneshot.sh
+Exec=/bin/sh $install_path/oneshot.sh
 Icon=$install_path/icon.png
 Categories=Game;
 """ > $HOME/.local/share/applications/sunshine.desktop
-echo """
-#!/bin/bash
-LD_LIBRARY_PATH=$install_path\;$LD_LIBRARY_PATH $install_path/oneshot
-""" > $install_path/oneshot.sh
+set +u
+echo "LD_LIBRARY_PATH=$install_path:$LD_LIBRARY_PATH $install_path/oneshot" > $install_path/oneshot.sh
 chmod +x $install_path/oneshot.sh
 chmod +x $install_path/oneshot
 
