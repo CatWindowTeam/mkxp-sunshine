@@ -32,7 +32,9 @@ namespace fs = std::filesystem;
 std::string getCacheDir(){
 #ifdef _WIN32
 	return SDL_getenv("Temp");
-#elif defined(__linux__)
+#elif __linux__
+	return std::string(SDL_getenv("HOME")) + "/.cache";
+#elif BSD
 	return std::string(SDL_getenv("HOME")) + "/.cache";
 #elif __APPLE__
 	return "~/Library/Caches";
@@ -95,9 +97,7 @@ std::string sha256_file(const std::string &fn) {
 }
 
 #ifdef __EMSCRIPTEN__
-std::string ModLoader(Config conf){
-	return "";
-}
+std::string ModLoader(Config conf){ return ""; }
 #else
 std::string ModLoader(Config conf){
 		std::string path = conf.Modloader.ModsDirPath;
