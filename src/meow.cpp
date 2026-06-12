@@ -26,7 +26,6 @@
 #include <pixman.h>
 
 #include <boost/stacktrace.hpp>
-#include "third_party/termcolor.hpp"
 
 #ifdef __LINUX__
 	#include <gtk/gtk.h>

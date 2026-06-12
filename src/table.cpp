@@ -21,7 +21,7 @@
 
 #include "table.h"
 
-#include <string.h>
+#include <SDL3/SDL_stdinc.h>
 #include <algorithm>
 
 #include "serial-util.h"
@@ -108,7 +108,7 @@ void Table::serialize(char *buffer) const{
 	writeInt32(&buffer, zs);
 	writeInt32(&buffer, size);
 
-	memcpy(buffer, dataPtr(data), sizeof(int16_t)*size);
+	SDL_memcpy(buffer, dataPtr(data), sizeof(int16_t)*size);
 }
 
 
@@ -129,7 +129,7 @@ Table *Table::deserialize(const char *data, int len){
 		crash(Exception::RGSSError, "Marshal: Table: bad file format");
 
 	Table *t = new Table(x, y, z);
-	memcpy(dataPtr(t->data), data, sizeof(int16_t)*size);
+	SDL_memcpy(dataPtr(t->data), data, sizeof(int16_t)*size);
 
 	return t;
 }

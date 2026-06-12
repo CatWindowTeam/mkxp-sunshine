@@ -23,10 +23,10 @@
 #include "sharedstate.h"
 #include "glstate.h"
 #include "exception.h"
+#include "debugwriter.h"
 
 #include <assert.h>
 #include <string.h>
-#include <iostream>
 
 #include "common.h.xxd"
 #include "sprite.frag.xxd"
@@ -59,8 +59,7 @@
 
 #include "meow.h"
 
-#define INIT_SHADER(vert, frag, name) \
-{ \
+#define INIT_SHADER(vert, frag, name){ \
 	Shader::init(shader_##vert##_vert, shader_##vert##_vert_len, shader_##frag##_frag, shader_##frag##_frag_len, \
 	#vert, #frag, #name); \
 }
@@ -74,7 +73,7 @@ static void printShaderLog(GLuint shader){
 	std::string log(logLength, '\0');
 	gl.GetShaderInfoLog(shader, log.size(), 0, &log[0]);
 
-	std::clog << "Shader log:\n" << log;
+	Debug() << "Shader log:\n" << log;
 }
 
 static void printProgramLog(GLuint program){
@@ -84,7 +83,7 @@ static void printProgramLog(GLuint program){
 	std::string log(logLength, '\0');
 	gl.GetProgramInfoLog(program, log.size(), 0, &log[0]);
 
-	std::clog << "Program log:\n" << log;
+	Debug() << "Program log:\n" << log;
 }
 
 Shader::Shader(){
@@ -416,30 +415,25 @@ void SpriteShaderBase::setBushOpacity(float value){
 	gl.Uniform1f(u_bushOpacity, value);
 }
 
-
 SpriteShader::SpriteShader(){
 	INIT_SHADER(sprite, sprite, SpriteShader);
 	SpriteShaderBase::SpriteShaderInit();
 }
-
 
 WMShader::WMShader(){
 	INIT_SHADER(sprite, worldMachine, WMShader);
 	SpriteShaderBase::SpriteShaderInit();
 }
 
-
 WaterShader::WaterShader(){
 	INIT_SHADER(simple, water, WaterShader);
 	SpriteShaderBase::SpriteShaderInit();
 }
 
-
 CRTShader::CRTShader(){
 	INIT_SHADER(sprite, crt, CRTShader);
 	SpriteShaderBase::SpriteShaderInit();
 }
-
 
 PlaneShader::PlaneShader(){
 	INIT_SHADER(simple, plane, PlaneShader);
@@ -468,7 +462,6 @@ void PlaneShader::setOpacity(float value){
 	gl.Uniform1f(u_opacity, value);
 }
 
-
 GrayShader::GrayShader(){
 	INIT_SHADER(simple, gray, GrayShader);
 
@@ -481,7 +474,6 @@ void GrayShader::setGray(float value){
 	gl.Uniform1f(u_gray, value);
 }
 
-
 TilemapShader::TilemapShader(){
 	INIT_SHADER(tilemap, simple, TilemapShader);
 
@@ -493,7 +485,6 @@ TilemapShader::TilemapShader(){
 void TilemapShader::setAniIndex(int value){
 	gl.Uniform1f(u_aniIndex, value);
 }
-
 
 TilemapWaterShader::TilemapWaterShader(){
 	INIT_SHADER(tilemap, tilemapWater, TilemapWaterShader);
@@ -511,8 +502,6 @@ void TilemapWaterShader::setAniIndex(int value){
 void TilemapWaterShader::setOffset(const Vec2i &value){
 	gl.Uniform2f(u_offset, value.x, value.y);
 }
-
-
 
 FlashMapShader::FlashMapShader(){
 	INIT_SHADER(simpleColor, flashMap, FlashMapShader);
@@ -538,7 +527,6 @@ void HueShader::setHueAdjust(float value){
 	gl.Uniform1f(u_hueAdjust, value);
 }
 
-
 SimpleMatrixShader::SimpleMatrixShader(){
 	INIT_SHADER(simpleMatrix, simpleAlpha, SimpleMatrixShader);
 
@@ -551,7 +539,6 @@ void SimpleMatrixShader::setMatrix(const float value[16]){
 	gl.UniformMatrix4fv(u_matrix, 1, GL_FALSE, value);
 }
 
-
 BlurShader::HPass::HPass(){
 	INIT_SHADER(blurH, blur, BlurShader::HPass);
 
@@ -563,7 +550,6 @@ BlurShader::VPass::VPass(){
 
 	ShaderBase::init();
 }
-
 
 BltShader::BltShader(){
 	INIT_SHADER(simple, bitmapBlit, BltShader);
