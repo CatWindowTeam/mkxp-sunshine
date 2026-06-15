@@ -22,7 +22,6 @@ class Game_Actor < Game_Battler
   #--------------------------------------------------------------------------
   def initialize(actor_id)
     super()
-    RPG::Mod.exec_hooks("hooks/Game_Actor/init", binding)
     setup(actor_id)
   end
   #--------------------------------------------------------------------------
