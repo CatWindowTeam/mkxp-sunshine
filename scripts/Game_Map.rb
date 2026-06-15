@@ -260,7 +260,6 @@ class Game_Map
     @need_refresh = false
   end
 
-
   #--------------------------------------------------------------------------
   # * Scroll Down
   #     distance : scroll distance

@@ -1,6 +1,6 @@
 #!/bin/sh
-set -e
-
+#set -e
+set -euo pipefail
 cd `dirname $0`
 
 # User-configurable variables.
