@@ -4,7 +4,7 @@ class Window_TPtL < Window_Selectable
     super(16, 16, Graphics.width - 32, Graphics.height - 32)
     @mapinfo = load_data("Data/MapInfos.rxdata")
 		
-    @item_max = 262
+    @item_max = 300
     @column_max = Graphics.width > 600 ? 6 : 2
 
     # Make invisible by default

@@ -303,11 +303,8 @@ class Scene_Map
         $game_temp.menu_beep = true
       end
     end
-    # If debug mode is ON and F5 key was pressed
-    if $debug and Input.press?(Input::F5) and 
-      # Set transferring player flag
+    if Settings[:debug] and Input.press?(Input::F5) and 
       $game_temp.player_transferring = true
-      # Set player move destination
       $game_temp.player_new_map_id = $data_system.start_map_id
       $game_temp.player_new_x = $data_system.start_x
       $game_temp.player_new_y = $data_system.start_y
@@ -320,129 +317,49 @@ class Scene_Map
     # If player is not moving
     unless $game_player.moving?
       # Run calling of each screen
-      if $game_temp.battle_calling
-        call_battle
-      elsif $game_temp.name_calling
-        call_name
+      if $game_temp.name_calling
+        $game_temp.name_calling = false
+        $game_player.straighten
+        $scene = Scene_Name.new
       elsif $game_temp.menu_calling
-        call_menu
+        $game_temp.menu_calling = false
+        if $game_temp.menu_beep
+          $game_system.se_play($data_system.decision_se)
+          $game_temp.menu_beep = false
+        end
+        $game_player.straighten
+        @menu.open
       elsif $game_temp.item_menu_calling
-        call_item_menu
+        $game_temp.item_menu_calling = false
+        if $game_temp.menu_beep
+          $game_system.se_play($data_system.decision_se)
+          $game_temp.menu_beep = false
+        end
+        $game_player.straighten
+        @item_menu.open
       elsif $game_temp.travel_menu_calling
-        call_travel_menu
+        $game_temp.travel_menu_calling = false
+        $game_player.straighten
+        @fast_travel.open
       elsif $game_temp.window_settings_calling
-        call_window_settings
+        $game_temp.window_settings_calling = false
+        $game_player.straighten
+        @window_settings.open
       elsif $game_temp.window_debug_calling
-        call_window_debug
+        $game_temp.window_debug_calling = false
+        $game_player.straighten
+        @window_debug.open
       elsif $game_temp.save_calling
         call_save
       elsif $game_temp.debug_calling
-        call_debug
+        $game_temp.debug_calling = false
+        $game_system.se_play($data_system.decision_se)
+        $game_player.straighten
+        $scene = Scene_Debug.new
       end
     end
   end
-  #--------------------------------------------------------------------------
-  # * Battle Call
-  #--------------------------------------------------------------------------
-  def call_battle
-    # Clear battle calling flag
-    $game_temp.battle_calling = false
-    # Clear menu calling flag
-    $game_temp.menu_calling = false
-    $game_temp.menu_beep = false
-    # Memorize map BGM and stop BGM
-    $game_temp.map_bgm = $game_system.playing_bgm
-    $game_system.bgm_stop
-    # Play battle start SE
-    $game_system.se_play($data_system.battle_start_se)
-    # Play battle BGM
-    $game_system.bgm_play($game_system.battle_bgm)
-    # Straighten player position
-    $game_player.straighten
-    # Switch to battle screen
-    $scene = Scene_Battle.new
-  end
-  #--------------------------------------------------------------------------
-  # * Name Input Call
-  #--------------------------------------------------------------------------
-  def call_name
-    # Clear name input call flag
-    $game_temp.name_calling = false
-    # Straighten player position
-    $game_player.straighten
-    # Switch to name input screen
-    $scene = Scene_Name.new
-  end
-  #--------------------------------------------------------------------------
-  # * Menu Call
-  #--------------------------------------------------------------------------
-  def call_menu
-    # Clear menu call flag
-    $game_temp.menu_calling = false
-    # If menu beep flag is set
-    if $game_temp.menu_beep
-      # Play decision SE
-      $game_system.se_play($data_system.decision_se)
-      # Clear menu beep flag
-      $game_temp.menu_beep = false
-    end
-    # Straighten player position
-    $game_player.straighten
-    # Open the menu
-    @menu.open
-  end
-  def call_item_menu
-    # Clear menu call flag
-    $game_temp.item_menu_calling = false
-    # If menu beep flag is set
-    if $game_temp.menu_beep
-      # Play decision SE
-      $game_system.se_play($data_system.decision_se)
-      # Clear menu beep flag
-      $game_temp.menu_beep = false
-    end
-    # Straighten player position
-    $game_player.straighten
-    # Open the menu
-    @item_menu.open
-  end
-  def call_travel_menu
-    # Clear menu call flag
-    $game_temp.travel_menu_calling = false
-    # Straighten player position
-    $game_player.straighten
-    # Open the menu
-    @fast_travel.open
-  end
-  def call_window_settings
-    # Clear menu call flag
-    $game_temp.window_settings_calling = false
-    # Straighten player position
-    $game_player.straighten
-    # Open the menu
-    @window_settings.open
-  end
-  def call_window_debug
-    # Clear menu call flag
-    $game_temp.window_debug_calling = false
-    # Straighten player position
-    $game_player.straighten
-    # Open the menu
-    @window_debug.open
-  end
-  #--------------------------------------------------------------------------
-  # * Debug Call
-  #--------------------------------------------------------------------------
-  def call_debug
-    # Clear debug call flag
-    $game_temp.debug_calling = false
-    # Play decision SE
-    $game_system.se_play($data_system.decision_se)
-    # Straighten player position
-    $game_player.straighten
-    # Switch to debug screen
-    $scene = Scene_Debug.new
-  end
+
   #--------------------------------------------------------------------------
   # * Player Place Move
   #--------------------------------------------------------------------------
@@ -477,13 +394,6 @@ class Scene_Map
     # Update map (run parallel process event)
     $game_map.update
     @spriteset.update
-    # # If processing transition
-    # if $game_temp.transition_processing
-    #   # Clear transition processing flag
-    #   $game_temp.transition_processing = false
-    #   # Execute transition
-    #   Graphics.transition(20)
-    # end
     # Run automatic change for BGM and BGS set on the map
     $game_map.autoplay
     # Frame reset
