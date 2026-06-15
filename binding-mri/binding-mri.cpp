@@ -498,11 +498,10 @@ static void mriBindingExecute(){
 	/* Normally only a ruby executable would do a sysinit,
 	 * but not doing it will lead to crashes due to closed
 	 * stdio streams on some platforms (eg. Windows) */
-	//JIT for performance
 	int argc = 0;
 	char **argv = 0;
-	char options_argv1[] = "oneshot", options_argv2[] = "-evd", options_argv3[] = "--jit";
-	char* options_argv[] = {options_argv1, options_argv2, options_argv3, NULL};
+	char options_argv1[] = "oneshot", options_argv2[] = "-ev";
+	char* options_argv[] = {options_argv1, options_argv2, NULL};
 	ruby_sysinit(&argc, &argv);
 	RUBY_INIT_STACK;
 	ruby_init();
@@ -514,7 +513,6 @@ static void mriBindingExecute(){
 	if (!conf.rubyLoadpaths.empty()){
 		/* Setup custom load paths */
 		VALUE lpaths = rb_gv_get("$:");
-
 		for (size_t i = 0; i < conf.rubyLoadpaths.size(); ++i){
 			std::string &path = conf.rubyLoadpaths[i];
 
