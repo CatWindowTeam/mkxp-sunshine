@@ -54,19 +54,19 @@ class Window_Settings
     self.opacity = 0
     @fade_in = true
     @data = [
-	         tr('BGM Volume'),
-			 tr('SFX Volume'),
-			 tr('Fullscreen'),
-			 tr('Default movement'),
-			 tr('Colorblind mode'),
-             tr('Configure controls(Press F1)'),
-			 tr('Skip Text (R)'),
-			 tr('Frameskip'),
-             tr('In-Game Timer'),
-			 tr('Language'),
-             tr('Debug mode(!)'),
-             tr('Freeware Mode(!)'),
-			]
+      tr('BGM Volume'),
+      tr('SFX Volume'),
+      tr('Fullscreen'),
+      tr('Default movement'),
+      tr('Colorblind mode'),
+      tr('Configure controls(Press F1)'),
+      tr('Skip Text (R)'),
+      tr('Frameskip'),
+      tr('In-Game Timer'),
+      tr('Language'),
+      tr('Debug mode(!)'),
+      tr('Freeware Mode(!)'),
+    ]
 
     @index = 0
     # Load our language settings from persistent, stored differently
@@ -98,76 +98,76 @@ class Window_Settings
   end
 
   def redraw_setting(spr, i)
-      if @visible == false
-	    return
-	  end
-      spr.bitmap.clear
-      spr.bitmap.draw_text(0, 0, spr.bitmap.width, spr.bitmap.height, @data[i])
-      spr.bitmap.draw_text(0, 0, spr.bitmap.width, spr.bitmap.height, @data[i])
-	  case i
-	    when 0
-          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, Audio.bgm_volume.to_s)
-		when 1
-          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, Audio.sfx_volume.to_s)
-		when 2 #fullscreen
-		  if(Graphics.fullscreen == true)
-		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
-		  else
-		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
-		  end
-		when 3 #default movement
-		  if($game_switches[251] == true)
-		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("RUN"))
-		  else
-		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("WALK"))
-		  end
-		when 4 #colorblind mode
-		  if($game_switches[252] == true)
-		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
-		  else
-		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
-		  end
-		when 6 #automash
-		  if($game_switches[253] == true)
-		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
-		  else
-		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
-		  end
-		when 7 #frameskip
-		  if(Graphics.frameskip == true)
-		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
-		  else
-		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
-		  end
-        when 8 # In-game timer
-          text = tr($game_temp.igt_timer_visible ? "ON" : "OFF")
-          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, text)
-        when 9 # Language
-          l = Language::LANGUAGES[@lang_index] rescue Language::LANGUAGES[0]
-          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr(l))
-        when 10
-          if(Settings[:debug] == true)
-            spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
-          else
-            spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
-          end
-        when 11
-          if(Settings[:oneshot_mode] == true)
-            spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
-          else
-            spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
-          end
+    if @visible == false
+      return
+    end
+    spr.bitmap.clear
+    spr.bitmap.draw_text(0, 0, spr.bitmap.width, spr.bitmap.height, @data[i])
+    spr.bitmap.draw_text(0, 0, spr.bitmap.width, spr.bitmap.height, @data[i])
+    case i
+      when 0
+        spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, Audio.bgm_volume.to_s)
+      when 1
+        spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, Audio.sfx_volume.to_s)
+      when 2 #fullscreen
+        if(Graphics.fullscreen == true)
+        spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
+        else
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
         end
+      when 3 #default movement
+        if($game_switches[251] == true)
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("RUN"))
+        else
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("WALK"))
+        end
+      when 4 #colorblind mode
+        if($game_switches[252] == true)
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
+        else
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
+        end
+      when 6 #automash
+        if($game_switches[253] == true)
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
+        else
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
+        end
+      when 7 #frameskip
+        if(Graphics.frameskip == true)
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
+        else
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
+        end
+      when 8 # In-game timer
+        text = tr($game_temp.igt_timer_visible ? "ON" : "OFF")
+        spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, text)
+      when 9 # Language
+        l = Language::LANGUAGES[@lang_index] rescue Language::LANGUAGES[0]
+        spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr(l))
+      when 10
+        if(Settings[:debug] == true)
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
+        else
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
+        end
+      when 11
+        if(Settings[:oneshot_mode] == true)
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
+        else
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
+        end
+    end
   end
 
 
   def redraw_setting_index(i)
     if !@data_sprites.kind_of?(Array)
-	  return
-	end
-	if @data_sprites.length - 1 < i
-	  return
-	end
+      return
+    end
+    if @data_sprites.length - 1 < i
+      return
+    end
     redraw_setting(@data_sprites[i], i)
   end
 
