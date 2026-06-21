@@ -87,20 +87,20 @@ class Scene_Title
     @debug.bitmap.draw_text(5, 45, 200, 20, tr("Sunshine #{SunshineVer}"))
     @debug.bitmap.draw_text(5, 65, 200, 20, tr("sec_#{Sunshine::SECURITYSTATE}"))
     if defined?(RubyVM::YJIT)
-    	if RubyVM::YJIT.enabled?
-			@debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: YJIT"))
-		end
+      if RubyVM::YJIT.enabled?
+        @debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: YJIT"))
+      end
     elsif defined?(RubyVM::ZJIT)
-    	if RubyVM::ZJIT.enabled?
-			@debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: ZJIT"))
-		end
+      if RubyVM::ZJIT.enabled?
+        @debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: ZJIT"))
+      end
     elsif defined?(RubyVM::RJIT)
-    	if RubyVM::RJIT.enabled?
-			@debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: RJIT"))
-		end
-	else
-		@debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: unsupported"))
-	end
+      if RubyVM::RJIT.enabled?
+        @debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: RJIT"))
+      end
+    else
+      @debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: unsupported"))
+    end
     if ModLoader::IS_ENABLED
     	@debug.bitmap.draw_text(5, 65, 200, 20, tr("Mods loaded: #{ModLoader::COUNT}"))
     end
@@ -109,7 +109,7 @@ class Scene_Title
         @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
     end
 
-	Language.register_text_sprite(self.class.name + "_contents", @menu.bitmap)
+    Language.register_text_sprite(self.class.name + "_contents", @menu.bitmap)
 
     # Make cursor graphic
     @cursor = Sprite.new
@@ -126,8 +126,7 @@ class Scene_Title
 
     # Play title BGM
     if File.exist?("badend.lock")
-      #TODO: fix audio values
-      Audio.bgm_play("Audio/BGM/MyBurdenIsDead.ogg", bgm_volume, 100)
+      Audio.bgm_play("Audio/BGM/MyBurdenIsDead.ogg", Audio.bgm_volume, 100)
     else
       $game_system.bgm_play($data_system.title_bgm)
     end
