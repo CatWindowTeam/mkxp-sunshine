@@ -1,5 +1,3 @@
-
-
 uniform sampler2D texture;
 
 uniform lowp vec4 tone;
@@ -20,18 +18,15 @@ uniform vec2 texSizeInv;
 const vec3 lumaF = vec3(.299, .587, .114);
 const float WATER_DISTORTION = 0.75;
 
-vec4 mod289(vec4 x)
-{
+vec4 mod289(vec4 x){
   return x - floor(x * (1.0 / 289.0)) * 289.0;
 }
 
-vec4 permute(vec4 x)
-{
+vec4 permute(vec4 x){
   return mod289(((x*34.0)+1.0)*x);
 }
 
-vec4 taylorInvSqrt(vec4 r)
-{
+vec4 taylorInvSqrt(vec4 r){
   return 1.79284291400159 - 0.85373472095314 * r;
 }
 
@@ -39,8 +34,7 @@ vec2 fade(vec2 t) {
   return t*t*t*(t*(t*6.0-15.0)+10.0);
 }
 
-float pnoise(vec2 P)
-{
+float pnoise(vec2 P){
 	vec4 Pi = floor(P.xyxy) + vec4(0.0, 0.0, 1.0, 1.0);
 	vec4 Pf = fract(P.xyxy) - vec4(0.0, 0.0, 1.0, 1.0);
 	Pi = mod289(Pi);        // To avoid truncation effects in permutation

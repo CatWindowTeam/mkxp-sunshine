@@ -29,6 +29,12 @@ begin
 
   # Prepare for transition
   Graphics.freeze
+  gs = Game_Switches.new
+  if Graphics.width == 1280
+  	gs[400] = true
+  else
+	gs[400] = false
+  end
   # Make scene object (title screen)
   $scene = Scene_Title.new
   Oneshot.allow_exit false

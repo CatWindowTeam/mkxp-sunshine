@@ -271,7 +271,6 @@ endforeach()
 source_group("Embedded Source" FILES ${EMBEDDED_INPUT} ${EMBEDDED_SOURCE})
 
 ## Setup binding source ##
-
 list(APPEND DEFINES
 	BINDING_MRI
 )

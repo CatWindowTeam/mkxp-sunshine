@@ -32,6 +32,3 @@ Target of sunshine mod - improve original game.
 * cmake -S . -B build
 * cd build
 * make -jn (n - count of threads for compilation)
-
-# TODOs
-TODOs moved to github Issues
