@@ -134,6 +134,13 @@ class Window_Selectable < Window_Base
     # If cursor is movable
     if self.active and @item_max > 0 and @index >= 0
       self.oy = self.oy * 0.2 + @content_pos * 0.8
+
+      new = (@index - Input.wheel_y.round).clamp(0, @item_max - 1)
+      if new != @index
+        $game_system.se_play($data_system.cursor_se)
+        @index = new
+      end
+      
       # If pressing down on the directional buttons
       if Input.repeat?(Input::DOWN)
         # If column count is 1 and directional button was pressed down with no

@@ -26,8 +26,8 @@ class Window_Settings
     @data_sprites = []
     @viewport.z = 9998
 
-	@left_hold_timer = 0
-	@right_hold_timer = 0
+    @left_hold_timer = 0
+    @right_hold_timer = 0
 
     self.visible = false
     @index = 0
