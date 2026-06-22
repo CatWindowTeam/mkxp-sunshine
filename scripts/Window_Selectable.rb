@@ -22,6 +22,8 @@ class Window_Selectable < Window_Base
     @item_max = 1
     @column_max = 1
     @index = -1
+
+    @content_pos = 0
     RPG::Mod.exec_hooks("hooks/Window_Selectable/init", binding)
   end
   #--------------------------------------------------------------------------
@@ -50,7 +52,7 @@ class Window_Selectable < Window_Base
   def top_row
     # Divide y-coordinate of window contents transfer origin by 1 row
     # height of 32
-    return self.oy / 32
+    return @content_pos / 32
   end
   #--------------------------------------------------------------------------
   # * Set Top Row
@@ -67,7 +69,7 @@ class Window_Selectable < Window_Base
     end
     # Multiply 1 row height by 32 for y-coordinate of window contents
     # transfer origin
-    self.oy = row * 32
+    @content_pos = row * 32
   end
   #--------------------------------------------------------------------------
   # * Get Number of Rows Displayable on 1 Page
@@ -122,7 +124,7 @@ class Window_Selectable < Window_Base
     x = @index % @column_max * (cursor_width + 32)
     y = @index / @column_max * 32 - self.oy
     # Update cursor rectangle
-    self.cursor_rect.set(x, y, cursor_width, 32)
+    self.cursor_rect.set(x * 0.8 + self.cursor_rect.x * 0.2, y * 0.8 + self.cursor_rect.y * 0.2, cursor_width, 32)
   end
   #--------------------------------------------------------------------------
   # * Frame Update
@@ -131,6 +133,7 @@ class Window_Selectable < Window_Base
     super
     # If cursor is movable
     if self.active and @item_max > 0 and @index >= 0
+      self.oy = self.oy * 0.2 + @content_pos * 0.8
       # If pressing down on the directional buttons
       if Input.repeat?(Input::DOWN)
         # If column count is 1 and directional button was pressed down with no

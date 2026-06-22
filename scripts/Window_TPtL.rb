@@ -2,10 +2,11 @@
 class Window_TPtL < Window_Selectable
   def initialize
     super(16, 16, Graphics.width - 32, Graphics.height - 32)
-    @mapinfo = load_data("Data/MapInfos.rxdata")
-		
-    @item_max = 300
-    @column_max = Graphics.width > 600 ? 6 : 2
+    @mapinfos = load_data("Data/MapInfos.rxdata")
+    @tree = []
+    sort
+
+    @item_max = @mapinfos.length;
 
     # Make invisible by default
     self.visible = false
@@ -17,12 +18,84 @@ class Window_TPtL < Window_Selectable
     # Render menu
     self.contents = Bitmap.new(width - 32, @item_max * 32)
     Language.register_text_sprite(self.class.name + "_contents", self.contents)
-    for i in 0...@item_max
-      draw_item(i, normal_color)
+
+    ix = 0
+    @mapinfos.each do |map_id, map_info|
+      draw_item(map_id, ix, normal_color)
+      ix += 1
     end
+    
     self.z = 9998
     RPG::Mod.exec_hooks("hooks/Window_TPtL/init", binding)
   end
+
+  def sort
+    orphans = []
+
+    @mapinfos.each do |map_id, map_info|
+      if map_info.parent_id == 0
+        @tree << [map_id, []]
+      elsif @mapinfos.has_key?(map_info.parent_id)
+        add_item(map_id)
+      else
+        orphans << map_id
+      end
+    end
+
+    result = {}
+    add_items(@tree, result)
+    @mapinfos = result
+  end
+
+  def add_item(map_id)
+    if get_item(@tree, map_id) != nil
+      return
+    end
+    if (@mapinfos[map_id].parent_id == 0)
+      @tree << [map_id, []]
+      return
+    end
+
+    info = @mapinfos[map_id]
+
+    parent = @tree
+    item = get_item(@tree, info.parent_id)
+    if item != nil
+      parent = item
+    else
+      add_item(info.parent_id)
+      item = get_item(@tree, info.parent_id)
+      if item != nil
+        parent = item
+      end
+    end
+
+    parent << [map_id, []]
+  end
+
+  def get_item(parent, map_id)
+    parent.each do |item|
+      if (item[0] == map_id)
+        return item[1]
+      else
+        i = get_item(item[1], map_id)
+        if i != nil
+          return i
+        end
+      end
+    end
+    return nil
+  end
+
+  def add_items(tree, hash)
+    tree.each do |item|
+      hash[item[0]] = @mapinfos[item[0]]
+      unless item[1].length == 0
+        add_items(item[1], hash)
+      end
+    end
+  end
+
   #--------------------------------------------------------------------------
   # * Dispose
   #--------------------------------------------------------------------------
@@ -35,32 +108,34 @@ class Window_TPtL < Window_Selectable
   #     index : item number
   #     color : text color
   #--------------------------------------------------------------------------
-  def draw_item(index, color)
+  def draw_item(index, draw_ix, color)
+    map_info = @mapinfos[index]
+
+    indent = 0;
+    last_map = index
+    while (last_map != 0)
+      indent += 1
+      last_map = @mapinfos[last_map].parent_id
+    end
+
     # Set color
     self.contents.font.color = color
 
-    x = index % @column_max
-    y = index / @column_max
-
     # Update item
-    rect = Rect.new(self.width / @column_max * x, 32 * y, self.width / @column_max - 32, 32)
-    self.contents.fill_rect(rect, Color.new(0, 0, 0, 0))
-    self.contents.draw_text(rect, tr(@mapinfo&.[](index)&.name || "EMPTY"), 1)
-  end
-  #--------------------------------------------------------------------------
-  # * Disable Item
-  #     index : item number
-  #--------------------------------------------------------------------------
-  def disable_item(index)
-    draw_item(index, disabled_color)
+    self.contents.draw_text(Rect.new(indent * 64, 32 * draw_ix, self.width - indent * 64, 32), tr(map_info&.name || "UNKNOWN_MAP"), 0)
+    self.contents.draw_text(Rect.new(0, 32 * draw_ix, self.width - 38, 32), index.to_s, 2)
   end
 
   # Open/show the menu
   def open
     # redraw in case language has been updated
-    for i in 0...@item_max
-      draw_item(i, normal_color)
+    
+    ix = 0
+    @mapinfos.each do |map_id, map_info|
+      draw_item(map_id, ix, normal_color)
+      ix += 1
     end
+    
     self.opacity = 0
     self.contents_opacity = 0
     self.visible = true
