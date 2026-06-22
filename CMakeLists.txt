@@ -226,6 +226,7 @@ set(EMBEDDED_INPUT
 	shader/simpleMatrix.vert
 	assets/icon.png
 	assets/gamecontrollerdb.txt
+	binding-mri/module_rpg1.rb
 )
 
 if (MSVC)

@@ -41,7 +41,7 @@
 
 #include <SDL3/SDL_filesystem.h>
 
-extern const char module_rpg1[];
+extern const char binding_mri_module_rpg1_rb[];
 
 static void mriBindingExecute();
 static void mriBindingTerminate();
@@ -131,7 +131,7 @@ static void mriBindingInit(){
 	rb_define_alias(rb_singleton_class(rb_mKernel), "_mkxp_kernel_caller_alias", "caller");
 	_rb_define_module_function(rb_mKernel, "caller", _kernelCaller);
 
-	rb_eval_string(module_rpg1);
+	rb_eval_string(binding_mri_module_rpg1_rb);
 
 	VALUE mod = rb_define_module("MKXP");
 	_rb_define_module_function(mod, "data_directory", mkxpDataDirectory);
