@@ -37,7 +37,7 @@ class Game_Event < Game_Character
     end
     # Add special event data if it exists
     /!([a-z]+)/.match(event.name) do |name|
-      special = SpecialEventData.get(name.captures.first.to_sym)
+      special = SpecialEventData.get(name.captures[0].to_sym)
       @custom_flags.concat(special.flags)
       @collision = special.collision
     end
