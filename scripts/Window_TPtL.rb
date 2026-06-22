@@ -196,7 +196,7 @@ class Window_TPtL < Window_Selectable
       self.active = false
       self.opacity = 127
       $game_temp.player_transferring = true
-      $game_temp.player_new_map_id = @index
+      $game_temp.player_new_map_id = @mapinfos.keys[@index]
       $game_temp.player_new_x = 0
       $game_temp.player_new_y = 0
       $game_temp.player_new_direction = 0
