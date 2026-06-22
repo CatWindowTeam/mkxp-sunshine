@@ -10,19 +10,16 @@ class Language
   LANGUAGES = []
   class << self
     def set(lc)
-      dbg_print(lc.lang)
       @data = nil
       @tr = nil
       script = nil
       [lc.full.to_s, lc.lang.to_s].each do |name|
         path = "Languages/#{name}.po"
-        dbg_print(path)
         if FileTest.exist?(path)
           load_pot(path)
           loadFontMap
           Font.default_name = @languageFontMap[name]
           Journal.setLang(name)
-          dbg_print(Font.default_name)
           break
         end
       end
@@ -132,7 +129,6 @@ class Language
 
     # Translate some text
     def tr(string)
-      #dbg_print(caller_locations(1, 1).first.tap{|loc| puts "#{loc.path}:#{loc.lineno}"})
       if @data
         rv = @data[Oneshot::crc32(string)] || string
       else
@@ -142,7 +138,6 @@ class Language
       if rv.nil?
         rv = "NULL"
 	  end
-      #dbg_print(string + " -> " + rv)
       return String.new(rv)
     end
 
@@ -176,18 +171,7 @@ class Language
       end
     end
 
-    def dbg_print(str)
-      # dbg = IO.new(STDERR.fileno)
-      # if str.nil?
-      #   dbg.write("null\n")
-      # else
-      #   dbg.write(str.to_s + "\n")
-      # end
-      # dbg.close()
-    end
-
     def register_text_sprite(key, spr)
-      dbg_print(key)
       if @text_sprites.nil?
         @text_sprites = Hash.new()
       end
