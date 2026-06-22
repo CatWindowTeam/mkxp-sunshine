@@ -21,7 +21,7 @@ float pnoise(vec2 P){
 	vec2 uv = P;
 	uv *= 0.025;
 	uv -= floor(uv);
-	return texture2D(noiseTexture, uv);
+	return texture2D(noiseTexture, uv).x;
 }
 
 void main(){
