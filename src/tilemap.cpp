@@ -732,6 +732,9 @@ struct TilemapPrivate {
 			boost::chrono::duration<float> elapsed = currentTime - startTime;
 			tilemapShader.setTime(elapsed.count());
 
+			if (shState->sunshine().noiseBitmap)
+				tilemapShader.setNoiseTexture(shState->sunshine().noiseBitmap->getGLTypes().tex);
+			
 			shaderVar = &tilemapShader;
 		}/*
 		else if(tiles.animated){

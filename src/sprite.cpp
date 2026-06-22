@@ -529,7 +529,10 @@ void Sprite::draw(){
 				defaultSpriteShaderInit(shader);
 
 				base = &shader;
-
+			
+				if (shState->sunshine().noiseBitmap)
+					shader.setNoiseTexture(shState->sunshine().noiseBitmap->getGLTypes().tex);
+			
 				break;
 			}
 		case ShaderType::SHADER_crt:

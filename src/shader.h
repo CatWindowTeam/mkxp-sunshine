@@ -189,6 +189,11 @@ public:
 class WaterShader : public SpriteShaderBase{
 public:
 	WaterShader();
+
+	void setNoiseTexture(TEX::ID texture);
+
+private:
+	GLint u_noiseTexture;
 };
 
 class CRTShader : public SpriteShaderBase{
@@ -202,9 +207,10 @@ public:
 
 	void setAniIndex(int value);
 	void setOffset(const Vec2i &value);
+	void setNoiseTexture(TEX::ID texture);
 
 private:
-	GLint u_aniIndex, u_offset;
+	GLint u_aniIndex, u_offset, u_noiseTexture;
 };
 
 class PlaneShader : public ShaderBase{

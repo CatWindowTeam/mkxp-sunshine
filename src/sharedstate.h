@@ -42,6 +42,7 @@ class Graphics;
 class Input;
 class Audio;
 class Oneshot;
+class Sunshine;
 #ifdef STEAM
 class Steam;
 #endif
@@ -74,6 +75,7 @@ struct SharedState{
 	Audio &audio() const;
 
 	Oneshot &oneshot() const;
+	Sunshine &sunshine() const;
 #ifdef STEAM
 	Steam &steam() const;
 #endif

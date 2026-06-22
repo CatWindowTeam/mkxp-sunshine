@@ -27,6 +27,7 @@
 #include "input.h"
 #include "audio.h"
 #include "oneshot.h"
+#include "sunshine.h"
 #ifdef STEAM
 #include "steam.h"
 #endif
@@ -66,6 +67,7 @@ struct SharedStatePrivate{
 	Audio audio;
 
 	Oneshot oneshot;
+	Sunshine sunshine;
 #ifdef STEAM
 	Steam steam;
 #endif
@@ -102,6 +104,7 @@ struct SharedStatePrivate{
 	      input(*threadData),
 	      audio(*threadData),
 	      oneshot(*threadData),
+	      sunshine(),
 	      _glState(threadData->config),
 	      fontState(threadData->config),
 	      stampCounter(0)
@@ -164,6 +167,8 @@ void SharedState::initInstance(RGSSThreadData *threadData){
 	}
 
 	SharedState::instance->p->defaultFont = defaultFont;
+
+	SharedState::instance->p->sunshine.loadNoise();
 }
 
 void SharedState::finiInstance(){
@@ -195,6 +200,7 @@ GSATT(Graphics&, graphics)
 GSATT(Input&, input)
 GSATT(Audio&, audio)
 GSATT(Oneshot&, oneshot)
+GSATT(Sunshine&, sunshine)
 #ifdef STEAM
 GSATT(Steam&, steam)
 #endif

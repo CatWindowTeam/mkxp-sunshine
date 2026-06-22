@@ -144,6 +144,7 @@ set(MAIN_SOURCE
 	src/i18n.cpp
 	src/meow.cpp
 	src/modloader.cpp
+	src/sunshine.cpp
 )
 
 if(WIN32)

@@ -58,6 +58,7 @@
 #include "obscured.frag.xxd"
 
 #include "meow.h"
+#include "sunshine.h"
 
 #define INIT_SHADER(vert, frag, name){ \
 	Shader::init(shader_##vert##_vert, shader_##vert##_vert_len, shader_##frag##_frag, shader_##frag##_frag_len, \
@@ -428,6 +429,12 @@ WMShader::WMShader(){
 WaterShader::WaterShader(){
 	INIT_SHADER(simple, water, WaterShader);
 	SpriteShaderBase::SpriteShaderInit();
+	
+	GET_U(noiseTexture);
+}
+
+void WaterShader::setNoiseTexture(TEX::ID texture){
+	setTexUniform(u_noiseTexture, 1, texture);
 }
 
 CRTShader::CRTShader(){
@@ -493,6 +500,7 @@ TilemapWaterShader::TilemapWaterShader(){
 
 	GET_U(aniIndex);
 	GET_U(offset);
+	GET_U(noiseTexture);
 }
 
 void TilemapWaterShader::setAniIndex(int value){
@@ -501,6 +509,10 @@ void TilemapWaterShader::setAniIndex(int value){
 
 void TilemapWaterShader::setOffset(const Vec2i &value){
 	gl.Uniform2f(u_offset, value.x, value.y);
+}
+
+void TilemapWaterShader::setNoiseTexture(TEX::ID texture){
+	setTexUniform(u_noiseTexture, 1, texture);
 }
 
 FlashMapShader::FlashMapShader(){

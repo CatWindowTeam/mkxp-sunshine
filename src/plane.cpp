@@ -308,6 +308,9 @@ void Plane::draw(){
 			WaterShader &shader = shState->shaders().water;
 
 			defaultSpriteShaderInit(shader);
+				
+			if (shState->sunshine().noiseBitmap)
+				shader.setNoiseTexture(shState->sunshine().noiseBitmap->getGLTypes().tex);
 
 			base = &shader;
 
