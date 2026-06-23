@@ -11,6 +11,26 @@ at_exit do
 end
 
 begin
+  p RUBY_VERSION
+  if $debug
+  	trace = TracePoint.new(:raise) do |tp|
+  	    p [tp.lineno, tp.event, tp.raised_exception]
+  	end
+  	trace.enable
+  	
+  	0 / 0
+	#tp = TracePoint.new(:call, :return) do |t|
+	#  case t.event
+	#  when :call
+	#    puts "WRAP START (#{start_code}) -> #{t.defined_class}##{t.method_id}"
+	#  when :return
+	#    puts "WRAP END -> #{t.defined_class}##{t.method_id}"
+	#  end
+	#end
+	#tp.enable
+  end
+
+
   RPG::Mod.exec_hooks("hooks/Main/start", binding)
   $console = Graphics.fullscreen
   Graphics.frame_rate = 60
@@ -51,9 +71,16 @@ begin
   if Journal.active?
     Journal.set ''
   end
+
+  if $debug
+	tp.disable
+  end
   
   Oneshot.allow_exit true
 rescue Errno::ENOENT
+  if $debug
+	tp.disable
+  end
   # Supplement Errno::ENOENT exception
   # If unable to open file, display message and end
   filename = $!.message.sub("No such file or directory - ", "")

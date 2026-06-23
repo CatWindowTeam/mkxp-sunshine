@@ -114,9 +114,9 @@ class Game_Party
         if $game_followers.empty?
           $game_followers.push(Game_Follower.new($game_player, actor))
         else
-          $game_followers.push(Game_Follower.new($game_followers.last, actor))
+          $game_followers.push(Game_Follower.new($game_followers[-1], actor))
         end
-        $scene.add_follower($game_followers.last)
+        $scene.add_follower($game_followers[-1])
       end
       # Add actor
       @actors.push(actor)

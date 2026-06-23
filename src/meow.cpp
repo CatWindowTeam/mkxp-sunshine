@@ -17,7 +17,6 @@
 #include <SDL3/SDL_stdinc.h>
 #include <time.h>
 #include <fstream>
-#include <ruby.h>
 #include <ruby/version.h>
 #include <zlib.h>
 #include <AL/al.h>
