@@ -305,7 +305,7 @@ class Scene_Map
     end
     if Settings[:debug] and Input.press?(Input::F5) and 
       $game_temp.player_transferring = true
-      $game_temp.player_new_map_id = $data_system.start_map_id
+      $game_temp.player_new_map_id = 1
       $game_temp.player_new_x = $data_system.start_x
       $game_temp.player_new_y = $data_system.start_y
     end

@@ -257,7 +257,7 @@ class Scene_Title
     # Set up initial party
     $game_party.setup_starting_members
     # Set up initial map position
-    $game_map.setup($data_system.start_map_id)
+    $game_map.setup(1)
     # Move player to initial position
     $game_player.moveto($data_system.start_x, $data_system.start_y)
     # Refresh player

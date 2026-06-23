@@ -7,7 +7,6 @@ class FastTravel
       @name = name
       @maps = maps
       @locations = locations;
-      RPG::Mod.exec_hooks("hooks/FastTravel/init", binding)
     end
   end
 
@@ -29,7 +28,6 @@ class FastTravel
       @next_right = next_right
       @next_bottom = next_bottom
       @next_left = next_left
-      RPG::Mod.exec_hooks("hooks/ZoneLocations/init", binding)
     end
   end
 
