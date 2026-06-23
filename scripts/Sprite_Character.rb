@@ -26,8 +26,6 @@ class Sprite_Character
     @text_sprite.bitmap = Bitmap.new(Graphics.width, 24)
     @text_sprite.bitmap.font.size = 12
     @character = character
-
-    RPG::Mod.exec_hooks("hooks/Sprite_Character/init", binding)
     update
   end
   #--------------------------------------------------------------------------

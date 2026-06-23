@@ -1441,7 +1441,6 @@ module RPG
       @battleback_name = ""
       @battler_name = ""
       @battler_hue = 0
-      @edit_map_id = 1
     end
     attr_accessor :magic_number
     attr_accessor :party_members
@@ -1476,7 +1475,6 @@ module RPG
     attr_accessor :battleback_name
     attr_accessor :battler_name
     attr_accessor :battler_hue
-    attr_accessor :edit_map_id
   end
 
   class AudioFile
