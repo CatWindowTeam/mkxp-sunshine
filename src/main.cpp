@@ -230,7 +230,7 @@ int main(int argc, char *argv[]){
 		#if SDL_VERSION_ATLEAST(3, 4, 10)
 			SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
 		#endif
-	#elif WIN32
+	#elif defined(WIN32)
 		SDL_SetHint(SDL_HINT_WINDOWS_RAW_KEYBOARD, "1");
 	#else
 		SDL_SetHint(SDL_HINT_DOS_ALLOW_DIRECT_FRAMEBUFFER, "1");

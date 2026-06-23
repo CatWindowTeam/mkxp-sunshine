@@ -80,6 +80,9 @@ Data_Item
 Data_Footsteps
 Data_SpecialEventData
 Data_FastTravel
+Data_Settings
+Data_Settings_Classes
+Data_Settings_Setters
 
 # Script Functions
 Script

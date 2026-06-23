@@ -210,6 +210,10 @@ class TrString
     Language.tr(@str)
   end
   alias :to_s :to_str
+
+  def length
+    to_str.length
+  end
 end
 
 def tr(text)

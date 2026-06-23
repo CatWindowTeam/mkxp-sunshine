@@ -3,6 +3,9 @@ set(scripts
   Data_FastTravel.rb
   Data_Footsteps.rb
   Data_Item.rb
+  Data_Settings.rb
+  Data_Settings_Classes.rb
+  Data_Settings_Setters.rb
   Data_SpecialEventData.rb
   Desktop_Message.rb
   Doc_Message.rb
