@@ -153,12 +153,10 @@ module Script
   end
 
   def self.countdown_extend_over
-    equinox = 0 #Time.new(2017, 03, 27)
-	diff = equinox - 0 #Time.now
-	if(diff <= 0)
-	  return true
+	if(Settings[:pre_solstice_update_content])
+	  return false
 	end
-	return false
+	return true
   end
 
   def self.cdown_update(equinox)

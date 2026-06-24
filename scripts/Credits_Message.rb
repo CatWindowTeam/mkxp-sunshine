@@ -32,7 +32,6 @@ class Credits_Message
     # Animation flags
     @fade_in = false
     @fade_out = false
-    RPG::Mod.exec_hooks("hooks/Credits_Message/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose

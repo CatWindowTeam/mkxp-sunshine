@@ -73,7 +73,7 @@ class Sprite_Character
         self.oy = 32
       # If tile ID value is invalid
       else
-        name = @character.character_name == "" && Settings[:debug] ? "debug" : @character.character_name
+        name = @character.character_name == "" && Settings[:debug_character] ? "debug" : @character.character_name
         translation_name = "#{$persistent.langcode}/#{name}"
         if File.exist?("Graphics/Characters/#{translation_name}.png")
           @sprite.bitmap = RPG::Cache.character(translation_name,

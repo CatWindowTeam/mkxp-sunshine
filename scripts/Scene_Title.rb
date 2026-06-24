@@ -77,34 +77,34 @@ class Scene_Title
     @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
-
-	#Debug info like in minecraft Forge :P
-    @debug = Sprite.new
-    @debug.z += @menu.z
-    @debug.bitmap = Bitmap.new(Graphics.width, Graphics.height)
-    @debug.bitmap.draw_text(5, 5, 200, 20, tr("Ruby #{RUBY_VERSION}"))
-    @debug.bitmap.draw_text(5, 25, 200, 20, tr("SDL #{SDLVer}"))
-    @debug.bitmap.draw_text(5, 45, 200, 20, tr("Sunshine #{SunshineVer}"))
-    @debug.bitmap.draw_text(5, 65, 200, 20, tr("sec_#{Sunshine::SECURITYSTATE}"))
-    if defined?(RubyVM::YJIT)
-      if RubyVM::YJIT.enabled?
-        @debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: YJIT"))
-      end
-    elsif defined?(RubyVM::ZJIT)
-      if RubyVM::ZJIT.enabled?
-        @debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: ZJIT"))
-      end
-    elsif defined?(RubyVM::RJIT)
-      if RubyVM::RJIT.enabled?
-        @debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: RJIT"))
-      end
-    else
-      @debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: unsupported"))
-    end
-    if ModLoader::IS_ENABLED
-    	@debug.bitmap.draw_text(5, 65, 200, 20, tr("Mods loaded: #{ModLoader::COUNT}"))
-    end
-
+	if Settings[:debug_text_scene_title]
+		@debug = Sprite.new
+    	@debug.z += @menu.z
+    	@debug.bitmap = Bitmap.new(Graphics.width, Graphics.height)
+    	@debug.bitmap.draw_text(5, 5, 200, 20, tr("Ruby #{RUBY_VERSION}"))
+    	@debug.bitmap.draw_text(5, 25, 200, 20, tr("SDL #{SDLVer}"))
+    	@debug.bitmap.draw_text(5, 45, 200, 20, tr("Sunshine #{SunshineVer}"))
+    	@debug.bitmap.draw_text(5, 65, 200, 20, tr("sec_#{Sunshine::SECURITYSTATE}"))
+    	if defined?(RubyVM::YJIT)
+      		if RubyVM::YJIT.enabled?
+        		@debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: YJIT"))
+      		end
+    	elsif defined?(RubyVM::ZJIT)
+      		if RubyVM::ZJIT.enabled?
+        		@debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: ZJIT"))
+      		end
+    	elsif defined?(RubyVM::RJIT)
+      		if RubyVM::RJIT.enabled?
+        		@debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: RJIT"))
+      		end
+    	else
+      		@debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: unsupported"))
+    	end
+    	if ModLoader::IS_ENABLED
+    		@debug.bitmap.draw_text(5, 65, 200, 20, tr("Mods loaded: #{ModLoader::COUNT}"))
+    	end
+	end
+	
     if $game_switches[160] && $game_switches[152]
         @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
     end

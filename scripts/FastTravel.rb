@@ -5,11 +5,8 @@ class FastTravel
   ITEM_SPACING = 28
   ACTIVE_MARGIN = MARGIN * 2 + 20
 
-  attr_accessor :legacy_ui
 
   def initialize
-    @legacy_ui = false
-    
     @scale_multiplier = Graphics.height > 600 ? 3.0 : 2.0
 
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
@@ -100,7 +97,7 @@ class FastTravel
   
   #WME
   def update_location_name_text
-    if ZONES[$game_fasttravel.zone].locations == nil || ZONES[$game_fasttravel.zone].maps[@selected_location] == nil || @legacy_ui
+    if ZONES[$game_fasttravel.zone].locations == nil || ZONES[$game_fasttravel.zone].maps[@selected_location] == nil || Settings[:fasttravel_ui] == "Original"
       return
     end
     @location_name_text.bitmap.clear
@@ -162,7 +159,7 @@ class FastTravel
     self.opacity = 0
 
     #WME
-    if !@legacy_ui
+    if !Settings[:fasttravel_ui] == "Original"
       @niko_icon.opacity = @location_name_text.opacity =
       @arrow_top.opacity = @arrow_bottom.opacity =
       @arrow_left.opacity = @arrow_right.opacity = 0
@@ -188,7 +185,7 @@ class FastTravel
 
     # Create menu options
     @data.each_with_index do |item, i|
-      if zone.locations != nil && !@legacy_ui
+      if zone.locations != nil && !Settings[:fasttravel_ui] == "Original"
         #WME
         spr = Sprite.new(@viewport)
         spr.bitmap = RPG::Cache.load_bitmap("Graphics/Menus/Minimap/", "#{$game_fasttravel.zone}_#{item}")
@@ -211,7 +208,7 @@ class FastTravel
       end
     end
     
-    if @legacy_ui
+    if Settings[:fasttravel_ui] == "Original"
       return
     end
     
@@ -231,7 +228,7 @@ class FastTravel
   def update
     zone = ZONES[$game_fasttravel.zone]
     zone = zone == nil ? Zone.new("", {}, {}) : zone
-    if zone.locations != nil && !@legacy_ui
+    if zone.locations != nil && !Settings[:fasttravel_ui] == "Original"
       @arrows_timer += 1
       if @arrows_timer >= 30
         @arrows_timer = 0
@@ -242,7 +239,7 @@ class FastTravel
     if @fade_in
       self.opacity += 20
 
-      if zone.locations != nil && !@legacy_ui
+      if zone.locations != nil && !Settings[:fasttravel_ui] == "Original"
         #WME
         @niko_icon.opacity += 20
         @location_name_text.opacity += 20
@@ -261,7 +258,7 @@ class FastTravel
         active_spr = spr if !active_spr && spr.x < MARGIN * 2
       end
       #WME
-      if !@legacy_ui
+      if !Settings[:fasttravel_ui] == "Original"
         @data_locations.each do |name, spr|
           spr.opacity += 20
           spr.opacity = 255 if spr.opacity > 255
@@ -280,7 +277,7 @@ class FastTravel
     if @fade_out
       self.opacity -= 20
 
-      if zone.locations != nil && !@legacy_ui
+      if zone.locations != nil && !Settings[:fasttravel_ui] == "Original"
         #WME
         @niko_icon.opacity -= 20
         @location_name_text.opacity -= 20
@@ -297,7 +294,7 @@ class FastTravel
       end
       
       #WME
-      if !@legacy_ui
+      if !Settings[:fasttravel_ui] == "Original"
         @data_locations.each do |name, spr|
           spr.opacity -= 20
         end
@@ -312,7 +309,7 @@ class FastTravel
         end
         
         #WME
-        if !@legacy_ui
+        if !Settings[:fasttravel_ui] == "Original"
           @data_locations.each do |name, spr|
             spr.dispose
           end
@@ -340,7 +337,7 @@ class FastTravel
     return if !self.visible
 
     #WME noik
-    if zone.locations != nil && !@legacy_ui
+    if zone.locations != nil && !Settings[:fasttravel_ui] == "Original"
       @niko_target_pos_x = (zone.locations[@selected_location].x.to_f + zone.locations[@selected_location].niko_x.to_f)
       @niko_target_pos_y = (zone.locations[@selected_location].y.to_f + zone.locations[@selected_location].niko_y.to_f)
 
@@ -362,7 +359,7 @@ class FastTravel
       @arrow_bottom.opacity += @data.include?(location.next_bottom) ? 40 : -40
       @arrow_left.opacity += @data.include?(location.next_left) ? 40 : -40
       @arrow_right.opacity += @data.include?(location.next_right) ? 40 : -40
-    elsif !@legacy_ui
+    elsif !Settings[:fasttravel_ui] == "Original"
       @niko_icon.opacity = 
       @arrow_top.opacity = @arrow_bottom.opacity =
       @arrow_left.opacity = @arrow_right.opacity = 0
@@ -386,7 +383,7 @@ class FastTravel
       end
     end
 
-    if !@legacy_ui
+    if !Settings[:fasttravel_ui] == "Original"
       #WME
       @data_locations.each do |name, spr|
           set_color(name)
@@ -394,7 +391,7 @@ class FastTravel
     end
 
     if Input.trigger?(Input::UP)
-      if zone.locations != nil && !@legacy_ui
+      if zone.locations != nil && !Settings[:fasttravel_ui] == "Original"
         next_location = zone.locations[@selected_location].next_top
         if @data_locations.has_key?(next_location)
           @selected_location = next_location
@@ -407,7 +404,7 @@ class FastTravel
       end
     end
     if Input.trigger?(Input::DOWN)
-      if zone.locations != nil && !@legacy_ui
+      if zone.locations != nil && !Settings[:fasttravel_ui] == "Original"
         next_location = zone.locations[@selected_location].next_bottom
         if @data_locations.has_key?(next_location)
           @selected_location = next_location
@@ -421,7 +418,7 @@ class FastTravel
     end
     
     if Input.trigger?(Input::LEFT)
-      if zone.locations != nil && !@legacy_ui
+      if zone.locations != nil && !Settings[:fasttravel_ui] == "Original"
         next_location = zone.locations[@selected_location].next_left
         if @data_locations.has_key?(next_location)
           @selected_location = next_location
@@ -431,7 +428,7 @@ class FastTravel
       end
     end
     if Input.trigger?(Input::RIGHT)
-      if zone.locations != nil && !@legacy_ui
+      if zone.locations != nil && !Settings[:fasttravel_ui] == "Original"
         next_location = zone.locations[@selected_location].next_right
         if @data_locations.has_key?(next_location)
           @selected_location = next_location
@@ -444,7 +441,7 @@ class FastTravel
     if Input.trigger?(Input::ACTION)
       $game_system.se_play($data_system.decision_se)
       choice = $game_fasttravel.unlocked_maps[@selected_location]
-      if zone.locations == nil || @legacy_ui
+      if zone.locations == nil || Settings[:fasttravel_ui] == "Original"
         choice = $game_fasttravel.unlocked_maps[@data[@index]]
       end
       if choice.id != $game_map.map_id

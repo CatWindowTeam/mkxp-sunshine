@@ -395,7 +395,7 @@ class Window_Message < Window_Selectable
       else
         if @blip >= BLIP_TIME
         #april fools
-          if $game_temp.message_face != nil && CTime.month == 4 && CTime.day == 1 && $game_temp.message_face.start_with?("niko")
+          if ($game_temp.message_face != nil && CTime.month == 4 && CTime.day == 1) or Settings[:enforce_april_fools] && $game_temp.message_face.start_with?("niko")
             niko_sounds = [ "cat_2"]
             @blipsound = niko_sounds[rand(niko_sounds.length)]
             Audio.se_play("Audio/SE/#{@blipsound}.wav", 50, rand(100..125)) unless @text.empty?
@@ -430,8 +430,7 @@ class Window_Message < Window_Selectable
         # Confirm
         if Input.trigger?(Input::ACTION)
           $game_system.se_play($data_system.decision_se)
-          $game_variables[$game_temp.num_input_variable_id] =
-            @input_number_window.number
+          $game_variables[$game_temp.num_input_variable_id] = @input_number_window.number
           $game_map.need_refresh = true
           # Dispose of number input window
           @input_number_window.dispose
