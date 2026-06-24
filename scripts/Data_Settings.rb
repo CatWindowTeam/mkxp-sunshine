@@ -9,7 +9,8 @@ module Settings
         # Video
         :fullscreen     => false,
         :colorblind     => false,
-        :graphics_lvl   => 2,
+        :frameskip      => true,
+        :twm_shader    => true,
 
         # UI
         :in_game_timer  => false,
@@ -24,11 +25,15 @@ module Settings
         :enforce_april_fools => false,
         :true_memory_mode => false,
 		:pre_solstice_update_content => false,
-
+		:dejavu_mode => false,
+		:demo           => false,
+		:oneshot_mode   => false,
+		
         # Advanced
-        :frameskip      => false,
-        :oneshot_mode   => false,
 
+		#controls
+		:gamepad_led    => true,
+		
         # Debug
         :debug          => false,
         :debug_character          => false,
@@ -69,10 +74,14 @@ class Window_Settings
         :parameter => :colorblind
       },
       {
-        :type => :enum,
-        :name => tr('Graphics Level(WIP)'),
-        :parameter => :graphics_lvl,
-        :values => [tr("Low"), tr("Normal"), tr("High")]
+        :type => :bool,
+        :name => tr('Frameskip'),
+        :parameter => :frameskip
+      },
+      {
+        :type => :bool,
+        :name => tr('World machine shader'),
+        :parameter => :twm_shader
       },
     ],
     tr("UI") => [
@@ -131,6 +140,21 @@ class Window_Settings
         :name => tr('Enable Pre-Solstice update content(WIP)'),
         :parameter => :pre_solstice_update_content
       },
+      {
+        :type => :bool,
+        :name => tr('Dejavu mode(WIP)'),
+        :parameter => :dejavu_mode
+      },
+      {
+        :type => :bool,
+        :name => tr('Demo mode(WIP)'),
+        :parameter => :demo
+      },
+      {
+        :type => :bool,
+        :name => tr('Freeware Mode(!)'),
+        :parameter => :oneshot_mode
+      },
     ],
     tr("Controls") => [
       {
@@ -138,18 +162,18 @@ class Window_Settings
         :name => tr('Configure controls'),
         :default => tr("Press F1")
       },
+      {
+        :type => :bool,
+        :name => tr('Control LED lighting on gamepads'),
+        :parameter => :gamepad_led
+      },
     ],
     tr("Advanced") => [
-      {
-        :type => :bool,
-        :name => tr('Frameskip'),
-        :parameter => :frameskip
-      },
-      {
-        :type => :bool,
-        :name => tr('Freeware Mode(!)'),
-        :parameter => :oneshot_mode
-      },
+	  {
+		:type => :bool,
+		:name => tr('useless option:3'),
+		:parameter => :erfsdgvfdgfgf
+	  },	
     ],
     tr("Debug") => [
       {

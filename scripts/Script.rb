@@ -144,25 +144,24 @@ module Script
   end
 
   def self.countdown_over
-    equinox = 0 #Time.new(2017, 03, 27)
-    diff = equinox - 0 #Time.now
-    if(diff <= 0)
-      return true
+    if Settings[:pre_solstice_update_content]
+      return false
     end
-    return false
+    return true
   end
 
   def self.countdown_extend_over
-	if(Settings[:pre_solstice_update_content])
+	if Settings[:pre_solstice_update_content]
 	  return false
 	end
 	return true
   end
 
   def self.cdown_update(equinox)
-    diff = equinox - 0 #Time.now
-	if(diff < 0)
-	  diff = 0
+  	if Settings[:pre_solstice_update_content]
+		diff = 10000
+	else
+		diff = 0
 	end
 	seconds = diff % 60
 	minutes = ((diff - seconds)/ 60) % 60
@@ -224,18 +223,15 @@ module Script
   end
 
   def self.countdown_update
-    return cdown_update(0) #(Time.new(2017, 03, 27))
+    return cdown_update(0)
   end
 
   def self.countdown_extend_update
-    return cdown_update(0) #(Time.new(2017, 03, 27))
+    return cdown_update(0)
   end
 
   def self.countdown_update_rue
-    if @rue_equinox == nil
-      @rue_equinox = 6 #Time.now + 6
-    end
-    return cdown_update(@rue_equinox)
+    return cdown_update(0)
   end
 
   def self.niko_reflection_update
@@ -647,7 +643,7 @@ def loadQASave(fname)
     $game_followers     = Marshal.load(file)
     $game_oneshot       = Marshal.load(file)
     $game_fasttravel    = Marshal.load(file)
-	  $game_temp.footstep_sfx = Marshal.load(file)
+	$game_temp.footstep_sfx = Marshal.load(file)
 
     # If magic number is different from when saving
     # (if editing was added with editor)
@@ -698,18 +694,6 @@ end
 
 def clear_ambient
   $game_map.ambient.set(0, 0, 0, 0)
-end
-
-def add_light(id, file, intensity, x, y)
-  #$scene.add_light(id, file, intensity, x, y)
-end
-
-def del_light(id)
-  #$scene.del_light(id)
-end
-
-def clear_lights
-  #$scene.clear_lights
 end
 
 def wrap_map

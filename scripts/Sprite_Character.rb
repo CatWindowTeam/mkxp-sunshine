@@ -34,10 +34,10 @@ class Sprite_Character
   def update
     # Choose the appropriate light sprite
     @light_sprite.viewport = ($game_screen.tone.blank?) ? @viewport : @light_viewport
-    @light_sprite.shader = @sprite.shader = @character.character_name.start_with?("en") || (@character.character_name.start_with?("niko") && $game_switches[160]) ? Shader::WorldMachine : Shader::Sprite
+    @light_sprite.shader = @sprite.shader = @character.character_name.start_with?("en") || (Settings[:twm_shader] && @character.character_name.start_with?("niko") && $game_switches[160]) ? Shader::WorldMachine : Shader::Sprite
     
     dir = (@character.direction - 2) / 2
-    if Settings[:debug] && (@last_char_name != character.character_name || dir != @old_dir) 
+    if Settings[:debug_text] && (@last_char_name != character.character_name || dir != @old_dir) 
       @text_sprite.bitmap.clear
       @text_sprite.bitmap.draw_text(0, 0, 256, 12, "#{dir == 0 ? "↓" : dir == 1 ? "←" : dir == 2 ? "→" : "↑"} #{@character.character_name}")
       @last_char_name = character.character_name
@@ -64,8 +64,7 @@ class Sprite_Character
       @character_hue = @character.character_hue
       # If tile ID value is valid
       if @tile_id >= 384
-        @sprite.bitmap = RPG::Cache.tile($game_map.tileset_name,
-          @tile_id, @character.character_hue)
+        @sprite.bitmap = RPG::Cache.tile($game_map.tileset_name, @tile_id, @character.character_hue)
         @light_sprite.visible = false
         @sprite.src_rect.set(0, 0, 32, 32)
         @light_sprite.src_rect.set(0, 0, 32, 32)
