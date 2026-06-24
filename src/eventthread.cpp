@@ -90,6 +90,8 @@ enum{
 };
 
 static uint32_t usrIdStart;
+SDL_Gamepad* gc = nullptr;
+SDL_Joystick* js = nullptr;
 
 bool EventThread::allocUserEvents(){
 	usrIdStart = SDL_RegisterEvents(EVENT_COUNT);
@@ -123,7 +125,7 @@ void EventThread::process(RGSSThreadData &rtData){
 	fps.displayCounter = 0;
 	fps.acc = 0;
 	fps.accDiv = 0;
-
+	
 	if (rtData.config.printFPS)
 		fps.sendUpdates.set();
 
@@ -147,12 +149,12 @@ void EventThread::process(RGSSThreadData &rtData){
 	for (int i = 0; i < tmpstupidshit; ++i) {
 		if (SDL_IsGamepad(i)) {
 			//Load as game controller
-			SDL_Gamepad *gc = SDL_OpenGamepad(i);
+			gc = SDL_OpenGamepad(i);
 			int id = SDL_GetJoystickID(SDL_GetGamepadJoystick(gc));
 			controllers[id] = gc;
 		} else {
 			//Fall back to joystick
-			SDL_Joystick *js = SDL_OpenJoystick(i);
+			js = SDL_OpenJoystick(i);
 			joysticks[SDL_GetJoystickID(js)] = js;
 		}
 	}
@@ -166,8 +168,6 @@ void EventThread::process(RGSSThreadData &rtData){
 	int winW, winH;
 	int i;
 
-	SDL_Joystick *js;
-	SDL_Gamepad *gc;
 	int id;
 	std::map<int, SDL_Joystick*>::iterator jsit;
 	std::map<int, SDL_Gamepad*>::iterator gcit;
