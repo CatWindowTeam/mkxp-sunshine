@@ -231,8 +231,9 @@ class Window_Settings
       @sprite = Sprite.new(@settings_content.viewport)
       @sprite.bitmap = Bitmap.new(PARAMETER_WIDTH, PARAMETER_HEIGHT + 1)
       @sprite.bitmap.font.size = 20
-
-      redraw()
+      
+      update_parameter
+      redraw
     end
     
     def opacity
@@ -248,6 +249,10 @@ class Window_Settings
     end
     def value=(value)
       @value = value
+      update_parameter
+    end
+
+    def update_parameter
       if @parameter != nil && Settings::Setters.respond_to?(@parameter)
         Settings::Setters.send(@parameter, @value)
       end
