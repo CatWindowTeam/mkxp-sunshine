@@ -182,7 +182,6 @@ class Window_Settings
 
     # parameter setting
     current_parameter = @content.get_current_parameter
-    old_val = current_parameter&.value
     if Input.trigger?(Input::LEFT) || (Input.press?(Input::LEFT) && (@left_hold_timer >= 15))
       @left_hold_timer -= 2
       @content.parameter_left

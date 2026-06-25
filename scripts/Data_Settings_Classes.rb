@@ -679,6 +679,8 @@ class Window_Settings
         if key && (!Input.press?(Input::ACTION) || @accept_action)
           if key != Input::key_from_name("Backspace")
             Settings[@parameter][@selection] = KeyBind.key(key)
+          else
+            Settings[@parameter][@selection] = nil
           end
           @waiting_for_key = @settings_content.waiting_for_key = false
           apply
