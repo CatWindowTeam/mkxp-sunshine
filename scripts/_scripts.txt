@@ -28,6 +28,7 @@ Game_FastTravel
 
 # yes.
 Settings
+Input
 
 Sprite_Character
 Sprite_Picture

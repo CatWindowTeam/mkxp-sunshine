@@ -284,6 +284,7 @@ set(BINDING_HEADERS
 	binding-mri/sceneelement-binding.h
 	binding-mri/viewportelement-binding.h
 	binding-mri/flashable-binding.h
+	binding-mri/keybindings-binding.h
 )
 set(BINDING_SOURCE
 	binding-mri/binding-mri.cpp
@@ -311,6 +312,7 @@ set(BINDING_SOURCE
 	binding-mri/time-binding.cpp
 	binding-mri/shader-binging.cpp
 	binding-mri/modloader-binding.cpp
+	binding-mri/keybindings-binding.cpp
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})

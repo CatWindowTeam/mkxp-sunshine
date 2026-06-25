@@ -29,7 +29,6 @@
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_mouse.h>
 
-#include <vector>
 #include <SDL3/SDL_stdinc.h>
 #include <assert.h>
 
@@ -384,6 +383,148 @@ struct InputPrivate {
 			bindings.push_back(&bind[i]);
 	}
 
+	void setBindingDescs(const std::vector<SourceDesc> &descs, const Input::ButtonCode &target){
+		// cleaning
+		kbBindings.erase(
+		    std::remove_if(
+		        kbBindings.begin(),
+		        kbBindings.end(),
+		        [target](const KbBinding& b)
+		        { return b.target == target; }
+		    ),
+		    kbBindings.end()
+		);
+		gcABindings.erase(
+		    std::remove_if(
+		        gcABindings.begin(),
+		        gcABindings.end(),
+		        [target](const GcAxisBinding& b)
+		        { return b.target == target; }
+		    ),
+		    gcABindings.end()
+		);
+		gcBBindings.erase(
+		    std::remove_if(
+		        gcBBindings.begin(),
+		        gcBBindings.end(),
+		        [target](const GcButtonBinding& b)
+		        { return b.target == target; }
+		    ),
+		    gcBBindings.end()
+		);
+		jsABindings.erase(
+		    std::remove_if(
+		        jsABindings.begin(),
+		        jsABindings.end(),
+		        [target](const JsAxisBinding& b)
+		        { return b.target == target; }
+		    ),
+		    jsABindings.end()
+		);
+		jsHBindings.erase(
+		    std::remove_if(
+		        jsHBindings.begin(),
+		        jsHBindings.end(),
+		        [target](const JsHatBinding& b)
+		        { return b.target == target; }
+		    ),
+		    jsHBindings.end()
+		);
+		jsBBindings.erase(
+		    std::remove_if(
+		        jsBBindings.begin(),
+		        jsBBindings.end(),
+		        [target](const JsButtonBinding& b)
+		        { return b.target == target; }
+		    ),
+		    jsBBindings.end()
+		);
+		
+		
+		for (size_t i = 0; i < descs.size(); ++i){
+			const SourceDesc &src = descs[i];
+
+			if (target == Input::None)
+				continue;
+
+			switch (src.type){
+			case Invalid :
+				break;
+			case Key :
+			{
+				KbBinding bind;
+				bind.source = src.d.scan;
+				bind.target = target;
+				kbBindings.push_back(bind);
+
+				break;
+			}
+			case CAxis :
+			{
+				GcAxisBinding bind;
+				bind.source = src.d.ja.axis;
+				bind.dir = src.d.ja.dir;
+				bind.target = target;
+				gcABindings.push_back(bind);
+
+				break;
+			}
+			case CButton :
+			{
+				GcButtonBinding bind;
+				bind.source = src.d.jb;
+				bind.target = target;
+				gcBBindings.push_back(bind);
+
+				break;
+			}
+			case JAxis :
+			{
+				JsAxisBinding bind;
+				bind.source = src.d.ja.axis;
+				bind.dir = src.d.ja.dir;
+				bind.target = target;
+				jsABindings.push_back(bind);
+
+				break;
+			}
+			case JHat :
+			{
+				JsHatBinding bind;
+				bind.source = src.d.jh.hat;
+				bind.pos = src.d.jh.pos;
+				bind.target = target;
+				jsHBindings.push_back(bind);
+
+				break;
+			}
+			case JButton :
+			{
+				JsButtonBinding bind;
+				bind.source = src.d.jb;
+				bind.target = target;
+				jsBBindings.push_back(bind);
+
+				break;
+			}
+			default :
+				assert(!"unreachable");
+			}
+		}
+
+		bindings.clear();
+
+		appendBindings(kbStatBindings);
+		appendBindings(msBindings);
+
+		appendBindings(kbBindings);
+		appendBindings(gcABindings);
+		appendBindings(gcBBindings);
+		appendBindings(jsABindings);
+		appendBindings(jsHBindings);
+		appendBindings(jsBBindings);
+	}
+
 	void applyBindingDesc(const BDescVec &d){
 		kbBindings.clear();
 		gcABindings.clear();
@@ -690,6 +831,10 @@ int Input::mouseY(){
 	RGSSThreadData &rtData = shState->rtData();
 
 	return (EventThread::mouseState.y - rtData.screenOffset.y) * rtData.sizeResoRatio.y;
+}
+
+void Input::setBinding(std::vector<SourceDesc> descs, Input::ButtonCode target){
+	p->setBindingDescs(descs, target);
 }
 
 // wheel support :3

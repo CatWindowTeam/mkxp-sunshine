@@ -24,6 +24,13 @@
 #include "exception.h"
 #include "binding-util.h"
 #include "util.h"
+#include "eventthread.h"
+
+#include "keybindings-binding.h"
+
+#include <SDL3/SDL_keyboard.h>
+#include <SDL3/SDL_gamepad.h>
+#include <vector>
 
 RB_METHOD(inputUpdate){
 	RB_UNUSED_PARAM;
@@ -109,10 +116,167 @@ RB_METHOD(inputWheelFlipped) {
 	return rb_bool_new(shState->input().wheelFlipped());
 }
 
-RB_METHOD(inputQuit){
+RB_METHOD(inputQuit) {
 	RB_UNUSED_PARAM;
 	return rb_bool_new(shState->input().hasQuit());
 }
+
+// keyboard
+RB_METHOD(getKeyName) {
+	RB_UNUSED_PARAM;
+
+	int key = 0;
+	rb_get_args(argc, argv, "i", &key RB_ARG_END);
+
+	if (key >= 0 && key < SDL_Scancode::SDL_SCANCODE_COUNT)
+		return rb_utf8_str_new_cstr(SDL_GetKeyName(SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(key), SDL_KMOD_NONE, false)));
+
+	return rb_utf8_str_new_cstr(SDL_GetKeyName(SDLK_UNKNOWN));
+}
+
+RB_METHOD(keyPress) {
+	RB_UNUSED_PARAM;
+
+	int key = 0;
+	rb_get_args(argc, argv, "i", &key RB_ARG_END);
+
+	if (key >= 0 && key < SDL_Scancode::SDL_SCANCODE_COUNT)
+		return rb_bool_new(EventThread::keyStates[key]);
+	
+	return rb_bool_new(false);
+}
+
+RB_METHOD(getPressedKey) {
+	RB_UNUSED_PARAM;
+	
+	short pressedKey = 0;
+	for(; pressedKey < SDL_Scancode::SDL_SCANCODE_COUNT && !EventThread::keyStates[pressedKey]; pressedKey++);
+	return pressedKey == SDL_Scancode::SDL_SCANCODE_COUNT ? Qnil : rb_fix_new(pressedKey);
+}
+
+RB_METHOD(getKeyFromName) {
+	RB_UNUSED_PARAM;
+
+	const char *name;
+	rb_get_args(argc, argv, "z", &name RB_ARG_END);
+	return rb_fix_new(SDL_GetScancodeFromName(name));
+}
+
+// gamepad buttons
+RB_METHOD(getGamepadButtonName) {
+	RB_UNUSED_PARAM;
+
+	int key = 0;
+	rb_get_args(argc, argv, "i", &key RB_ARG_END);
+
+	if (key >= 0 && key < SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT)
+		return rb_utf8_str_new_cstr(SDL_GetGamepadStringForButton(static_cast<SDL_GamepadButton>(key)));
+
+	return rb_utf8_str_new_cstr("Invalid");
+}
+
+RB_METHOD(gamepadButtonPress) {
+	RB_UNUSED_PARAM;
+
+	int key = 0;
+	rb_get_args(argc, argv, "i", &key RB_ARG_END);
+
+	if (key >= 0 && key < SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT)
+		return rb_bool_new(EventThread::gcState.buttons[key]);
+	
+	return rb_bool_new(false);
+}
+
+RB_METHOD(getPressedGamepadButton) {
+	RB_UNUSED_PARAM;
+
+	short pressedKey = 0;
+	for(; pressedKey < SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT && !EventThread::gcState.buttons[pressedKey]; pressedKey++);
+	return pressedKey == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT ? Qnil : rb_fix_new(pressedKey);
+}
+
+RB_METHOD(getGamepadButtonFromName) {
+	RB_UNUSED_PARAM;
+
+	const char *name;
+	rb_get_args(argc, argv, "z", &name RB_ARG_END);
+	return rb_fix_new(SDL_GetGamepadButtonFromString(name));
+}
+
+// gamepad axes
+RB_METHOD(getGamepadAxisName) {
+	RB_UNUSED_PARAM;
+
+	int key = 0;
+	rb_get_args(argc, argv, "i", &key RB_ARG_END);
+
+	if (key >= 0 && key < SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT)
+		return rb_utf8_str_new_cstr(SDL_GetGamepadStringForAxis(static_cast<SDL_GamepadAxis>(key)));
+
+	return rb_utf8_str_new_cstr("Invalid");
+}
+
+RB_METHOD(getGamepadAxisPressure) {
+	RB_UNUSED_PARAM;
+
+	int key = 0;
+	rb_get_args(argc, argv, "i", &key RB_ARG_END);
+
+	if (key >= 0 && key < SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT)
+		return rb_fix_new(EventThread::gcState.axes[key]);
+	
+	return rb_fix_new(0);
+}
+
+RB_METHOD(getActiveGamepadAxis) {
+	RB_UNUSED_PARAM;
+
+	int deadzone = 16000;
+	rb_get_args(argc, argv, "|i", &deadzone RB_ARG_END);
+
+	short pressedKey = 0;
+	for(; pressedKey < SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT && (EventThread::gcState.axes[pressedKey] <= -32768 || std::abs(EventThread::gcState.axes[pressedKey]) < deadzone); pressedKey++);
+	return pressedKey == SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT ? Qnil : rb_fix_new(pressedKey);
+}
+
+RB_METHOD(getGamepadAxisFromName) {
+	RB_UNUSED_PARAM;
+
+	const char *name;
+	rb_get_args(argc, argv, "z", &name RB_ARG_END);
+	return rb_fix_new(SDL_GetGamepadAxisFromString(name));
+}
+
+static VALUE setBinding(VALUE self, VALUE rb_arr, VALUE rb_target){
+    Check_Type(rb_arr, T_ARRAY);
+
+    int target = FIX2INT(rb_target);
+
+    long count = RARRAY_LEN(rb_arr);
+
+    std::vector<SourceDesc> result;
+    result.reserve(count);
+
+    for (size_t i = 0; i < count; ++i)
+    {
+        VALUE rb_binding = rb_ary_entry(rb_arr, i);
+
+		//printf("bind\n");
+		if (!rb_typeddata_is_kind_of(rb_binding, &sourceDesc_type))
+    		continue;
+		//printf("bind ok\n");
+
+        SourceDesc* src;
+        TypedData_Get_Struct(rb_binding, SourceDesc, &sourceDesc_type, src);
+
+        result.push_back(*src);
+    }
+
+	shState->input().setBinding(result, static_cast<Input::ButtonCode>(target));
+
+    return Qnil;
+}
+
 
 
 struct{
@@ -120,28 +284,30 @@ struct{
 	Input::ButtonCode val;
 }
 static buttonCodes[] = {
-	{ "DOWN",       Input::Down       },
-	{ "LEFT",       Input::Left       },
-	{ "RIGHT",      Input::Right      },
-	{ "UP",         Input::Up         },
+	{ "NONE",        Input::None        },
 
-	{ "ACTION",     Input::Action     },
-	{ "CANCEL",     Input::Cancel     },
-	{ "MENU",       Input::Menu       },
-	{ "ITEMS",      Input::Items      },
-	{ "RUN",        Input::Run        },
-	{ "DEACTIVATE", Input::Deactivate },
-	
-	{ "DEBUGACTION",Input::DebugAction},
+	{ "DOWN",        Input::Down        },
+	{ "LEFT",        Input::Left        },
+	{ "RIGHT",       Input::Right       },
+	{ "UP",          Input::Up          },
 
-	{ "L",          Input::L          },
-	{ "R",          Input::R          },
+	{ "ACTION",      Input::Action      },
+	{ "CANCEL",      Input::Cancel      },
+	{ "MENU",        Input::Menu        },
+	{ "ITEMS",       Input::Items       },
+	{ "RUN",         Input::Run         },
+	{ "DEACTIVATE",  Input::Deactivate  },
 
-	{ "F5",         Input::F5         },
-	{ "F6",         Input::F6         },
-	{ "F7",         Input::F7         },
-	{ "F8",         Input::F8         },
-	{ "F9",         Input::F9         },
+	{ "DEBUGACTION", Input::DebugAction },
+
+	{ "L",           Input::L           },
+	{ "R",           Input::R           },
+
+	{ "F5",          Input::F5          },
+	{ "F6",          Input::F6          },
+	{ "F7",          Input::F7          },
+	{ "F8",          Input::F8          },
+	{ "F9",          Input::F9          },
 
 	{ "MOUSELEFT",   Input::MouseLeft   },
 	{ "MOUSEMIDDLE", Input::MouseMiddle },
@@ -154,6 +320,7 @@ void inputBindingInit(){
 	printf("[inputBindingInit] Initializing Input binding\n");
 	VALUE module = rb_define_module("Input");
 
+	// mkxp's input
 	_rb_define_module_function(module, "update", inputUpdate);
 	_rb_define_module_function(module, "press?", inputPress);
 	_rb_define_module_function(module, "trigger?", inputTrigger);
@@ -161,6 +328,30 @@ void inputBindingInit(){
 	_rb_define_module_function(module, "dir4", inputDir4);
 	_rb_define_module_function(module, "dir8", inputDir8);
 
+	// keyboard keys
+	_rb_define_module_function(module, "key_name", getKeyName);
+	_rb_define_module_function(module, "key_press?", keyPress);
+	_rb_define_module_function(module, "pressed_key", getPressedKey);
+	_rb_define_module_function(module, "key_from_name", getKeyFromName);
+	rb_const_set(module, rb_intern("KEYS_COUNT"), SDL_Scancode::SDL_SCANCODE_COUNT - 1);
+
+	// gamepad buttons
+	_rb_define_module_function(module, "c_button_name", getGamepadButtonName);
+	_rb_define_module_function(module, "c_button_press?", gamepadButtonPress);
+	_rb_define_module_function(module, "pressed_c_button", getPressedGamepadButton);
+	_rb_define_module_function(module, "c_button_from_name", getGamepadButtonFromName);
+	rb_const_set(module, rb_intern("GAMEPAD_BUTTONS_COUNT"), SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT - 1);
+
+	// gamepad axes
+	_rb_define_module_function(module, "c_axis_name", getGamepadAxisName);
+	_rb_define_module_function(module, "c_axis_pressure", getGamepadAxisPressure);
+	_rb_define_module_function(module, "active_c_axis", getActiveGamepadAxis);
+	_rb_define_module_function(module, "c_axis_from_name", getGamepadAxisFromName);
+	rb_const_set(module, rb_intern("GAMEPAD_AXIS_COUNT"), SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT - 1);
+
+	rb_define_module_function(module, "set_binding", RUBY_METHOD_FUNC(setBinding), 2);
+
+	// mouse
 	_rb_define_module_function(module, "mouse_x", inputMouseX);
 	_rb_define_module_function(module, "mouse_y", inputMouseY);
 

@@ -1,8 +1,12 @@
+# Logic of settings UI
 class Window_Settings
   SCREENS_PANELS_MARGIN = 32
   PARAMETER_WIDTH = (Graphics.width - 640) / 2 + 512
   PARAMETER_HEIGHT = 32
-  PARAMETER_VALUE_WIDTH = 200
+  PARAMETER_VALUE_WIDTH = PARAMETER_WIDTH / 2
+  PARAMETER_KEY_WIDTH = PARAMETER_WIDTH / 5
+
+  PARAMETER_CHANGE_AUDIO = "Audio/SE/text_robot.wav"
 
   class SettingsContent
     attr_reader :x
@@ -17,6 +21,8 @@ class Window_Settings
       @index = 0
       @opacity = 255
       @offset = offset_y
+      @waiting_for_key = false
+      @wait_timer = 0
 
       @visible_x = 0
       @visible_y = offset_y
@@ -37,6 +43,22 @@ class Window_Settings
       @screen_panel_selection_sprite.bitmap.gradient_fill_rect(0, 0, @screen_panel_selection_sprite.bitmap.width, @screen_panel_selection_sprite.bitmap.height, Color.new(255, 255, 255, 0), Color.new(255, 255, 255, 128), true)
       @screen_panel_selection_sprite.y = SCREENS_PANELS_MARGIN
       @screen_panel_selection_sprite.x = Graphics.width / 2
+
+      @switch_panels_hint_left = Sprite.new(@viewport)
+      @switch_panels_hint_left.bitmap = Bitmap.new(PARAMETER_WIDTH / 2 - SCREENS_PANELS_MARGIN, @offset / 2)
+      @switch_panels_hint_left.bitmap.font.size = 20
+      @switch_panels_hint_left.x = @x + SCREENS_PANELS_MARGIN
+      @switch_panels_hint_left.zoom_x = @switch_panels_hint_left.zoom_y = 2
+      @switch_panels_hint_left.opacity = 127
+      
+      @switch_panels_hint_right = Sprite.new(@viewport)
+      @switch_panels_hint_right.bitmap = Bitmap.new(PARAMETER_WIDTH / 2 - SCREENS_PANELS_MARGIN, @offset / 2)
+      @switch_panels_hint_right.bitmap.font.size = 20
+      @switch_panels_hint_right.x = @x + SCREENS_PANELS_MARGIN
+      @switch_panels_hint_right.zoom_x = @switch_panels_hint_right.zoom_y = 2
+      @switch_panels_hint_right.opacity = 127
+
+      redraw_panels_hints
 
       @parameters = {}
       @screen_panels = []
@@ -126,6 +148,13 @@ class Window_Settings
       
       @screen_panel_selection_sprite.zoom_x = @screen_panels[@screen].width * 0.3 + @screen_panel_selection_sprite.zoom_x * 0.7
       @screen_panel_selection_sprite.x = (Graphics.width / 2 - @screen_panels[@screen].width * 0.5) * 0.3 + @screen_panel_selection_sprite.x * 0.7
+
+      @switch_panels_hint_left.x = @switch_panels_hint_left.x * 0.8 + (@x + SCREENS_PANELS_MARGIN) * 0.2
+      @switch_panels_hint_right.x = @switch_panels_hint_right.x * 0.8 + (@x + SCREENS_PANELS_MARGIN) * 0.2
+
+      @waiting_for_key2 = @waiting_for_key
+
+      @wait_timer = (@wait_timer + (@waiting_for_key ? 1 : -1)).clamp(0, 3)
     end
 
     def redraw_all
@@ -136,6 +165,11 @@ class Window_Settings
         end
       end
     end
+    
+    def redraw_panels_hints
+      @switch_panels_hint_right.bitmap.draw_text(0, 0, @switch_panels_hint_right.bitmap.width, @switch_panels_hint_right.bitmap.height, "W→", 2)
+      @switch_panels_hint_left.bitmap.draw_text(0, 0, @switch_panels_hint_left.bitmap.width, @switch_panels_hint_left.bitmap.height, "←Q")
+    end
 
     def update_pos()
       center = Graphics.height / 2 - PARAMETER_HEIGHT * 0.5
@@ -144,35 +178,55 @@ class Window_Settings
 
     # Navigation
     def screen_left()
+      previous = @index
+      @parameters.values[@screen]&.[](@index)&.deselect
       @screen = (@screen - 1) % @parameters.length
       @index = @index.clamp(0, @parameters.values[@screen].length - 1)
+      @switch_panels_hint_left.x -= SCREENS_PANELS_MARGIN
+      @parameters.values[@screen]&.[](@index)&.select(previous)
       update_pos
     end
     def screen_right()
+      previous = @index
+      @parameters.values[@screen]&.[](@index)&.deselect
       @screen = (@screen + 1) % @parameters.length
       @index = @index.clamp(0, @parameters.values[@screen].length - 1)
+      @switch_panels_hint_right.x += SCREENS_PANELS_MARGIN
+      @parameters.values[@screen]&.[](@index)&.select(previous)
       update_pos
     end
 
     def parameter_up()
+      previous = @index
+      @parameters.values[@screen]&.[](@index)&.deselect
       offset = 1
       if @parameters.values&.[](@screen)&.[](@index - 1)&.class&.const_get(:TYPE) == :sep
         offset += 1
       end
       @index = (@index - offset) % @parameters.values[@screen].length
+      @parameters.values[@screen]&.[](@index)&.select(previous)
       update_pos
     end
     def parameter_down()
+      previous = @index
+      @parameters.values[@screen]&.[](@index)&.deselect
       offset = 1
       if @parameters.values&.[](@screen)&.[](@index + 1)&.class&.const_get(:TYPE) == :sep
         offset += 1
       end
       @index = (@index + offset) % @parameters.values[@screen].length
+      @parameters.values[@screen]&.[](@index)&.select(previous)
       update_pos
     end
 
     def parameter_select_offset(offset)
+      previous = @index
+      @parameters.values[@screen]&.[](@index)&.deselect
       @index = (@index + offset) % @parameters.values[@screen].length
+      if @parameters.values&.[](@screen)&.[](@index)&.class&.const_get(:TYPE) == :sep
+        @index += offset <=> 0
+      end
+      @parameters.values[@screen]&.[](@index)&.select(previous)
       update_pos
     end
     
@@ -211,7 +265,15 @@ class Window_Settings
       @opacity = value
       @selection_sprite.opacity = value
       @screen_panel_selection_sprite.opacity = value
+      @switch_panels_hint_right.opacity = @switch_panels_hint_left.opacity = (value * 127) / 255
       redraw_all
+    end
+
+    def waiting_for_key=(value)
+      @waiting_for_key = value
+    end
+    def waiting_for_key
+      @wait_timer > 0
     end
   end
 
@@ -281,7 +343,7 @@ class Window_Settings
     end
 
     def update()
-      @sprite.x = @screen_id * Graphics.width - @settings_content.visible_x + @settings_content.x
+      @sprite.x = @screen_id * Graphics.width - @settings_content.visible_x + @settings_content.x + 8
       @sprite.y = @settings_content.visible_y + @position * PARAMETER_HEIGHT
       @sprite.opacity = ((1.0 + ((@sprite.y - @settings_content.offset).to_f / 64.0).clamp(-1.0, 0.0)) * @opacity * (@settings_content.opacity.to_f / 255.0) * 255.0).to_i 
     end
@@ -293,6 +355,8 @@ class Window_Settings
     def value_left() end
     def value_right() end
     def action() end
+    def select(previous) end
+    def deselect() end
   end
 
   # ----------------------------------------------------------------------------------------
@@ -321,6 +385,13 @@ class Window_Settings
       super(settings_content, screen_id, position, name, parameter, bool_value || false)
     end
 
+    def value=(value)
+      if (value != @value)
+        Audio.se_play(PARAMETER_CHANGE_AUDIO, 70, value ? 125 : 75)
+      end
+      super(value)
+    end
+
     def get_display_value
       return @value ? tr("ON") : tr("OFF")
     end
@@ -340,6 +411,26 @@ class Window_Settings
   end
 
   # ----------------------------------------------------------------------------------------
+  class SwitchPatameter < BoolParameter
+    TYPE = :switch
+
+    def initialize(settings_content, screen_id, position, name, parameter, bool_value, switch, invert)
+      @switch = switch
+      @invert = invert
+
+      super(settings_content, screen_id, position, name, parameter, bool_value)
+    end
+    
+    def update_parameter
+      super()
+
+      if @switch
+        $game_switches[@switch] = invert ? !@value : @value
+      end
+    end
+  end
+
+  # ----------------------------------------------------------------------------------------
   class IntParameter < BaseParameter
     TYPE = :int
     
@@ -347,10 +438,17 @@ class Window_Settings
     attr_reader :min_value
 
     def initialize(settings_content, screen_id, position, name, parameter, int_value, min_value, max_value)
-      super(settings_content, screen_id, position, name, parameter, int_value)
-
       @min_value = min_value
       @max_value = max_value
+
+      super(settings_content, screen_id, position, name, parameter, int_value)
+    end
+
+    def value=(value)
+      if (value != @value)
+        Audio.se_play(PARAMETER_CHANGE_AUDIO, 70, ((value.to_f + @min_value.to_f) / (@max_value.to_f + @min_value.to_f) * 50.0).to_i + 75)
+      end
+      super(value)
     end
 
     def value_left()
@@ -364,13 +462,85 @@ class Window_Settings
   end
 
   # ----------------------------------------------------------------------------------------
+  class SliderParameter < IntParameter
+    TYPE = :slider
+
+    def initialize(settings_content, screen_id, position, name, parameter, int_value, min_value, max_value)
+      super(settings_content, screen_id, position, name, parameter, int_value, min_value, max_value)
+    end
+
+    def get_display_value()
+      percent = (@value.to_f - @min_value.to_f) / @max_value.to_f
+      (percent * 100.0).to_i.to_s + "%" 
+    end
+
+    def redraw()
+      @sprite.bitmap.clear
+      @sprite.bitmap.font.color = Color.new(255, 255, 255)
+
+      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - PARAMETER_VALUE_WIDTH, @sprite.bitmap.height, @name)
+
+      percent = (@value.to_f - @min_value.to_f) / @max_value.to_f
+      width = (PARAMETER_VALUE_WIDTH * percent).to_i
+      @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_VALUE_WIDTH, 4, PARAMETER_VALUE_WIDTH, @sprite.bitmap.height - 8), Color.new(255, 255, 255, 64))
+      #@sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_VALUE_WIDTH + 1, 5, PARAMETER_VALUE_WIDTH - 2, @sprite.bitmap.height - 10), Color.new(255, 255, 255, 0))
+      @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_VALUE_WIDTH, 4, width, @sprite.bitmap.height - 8), Color.new(255, 255, 255, 255))
+
+      if percent >= 0.5
+        @sprite.bitmap.font.color = Color.new(0, 0, 0)
+        @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_VALUE_WIDTH, 4, width, @sprite.bitmap.height - 8, get_display_value, 1)
+      else
+        @sprite.bitmap.font.color = Color.new(255, 255, 255)
+        @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_VALUE_WIDTH + width, 4, PARAMETER_VALUE_WIDTH - width, @sprite.bitmap.height - 8, get_display_value, 1)
+      end
+
+      if (@settings_content.need_draw_line(@screen_id, @position))
+        @sprite.bitmap.fill_rect(Rect.new(0, PARAMETER_HEIGHT - 1, PARAMETER_WIDTH, 2), Color.new(255, 255, 255, 24))
+      end
+    end
+  end
+
+  # ----------------------------------------------------------------------------------------
+  class FloatParameter < BaseParameter
+    TYPE = :float
+    
+    attr_reader :max_value
+    attr_reader :min_value
+    attr_reader :step
+
+    def initialize(settings_content, screen_id, position, name, parameter, float_value, step, min_value, max_value)
+      @step = step
+      @min_value = min_value
+      @max_value = max_value
+
+      super(settings_content, screen_id, position, name, parameter, float_value)
+    end
+
+    def value=(value)
+      if (value != @value)
+        Audio.se_play(PARAMETER_CHANGE_AUDIO, 70, ((value + @min_value) / (@max_value + @min_value) * 50.0).to_i + 75)
+      end
+      super(value)
+    end
+
+    def value_left()
+      self.value = (@value - step).clamp(@min_value, @max_value)
+      redraw
+    end
+    def value_right()
+      self.value = (@value + step).clamp(@min_value, @max_value)
+      redraw
+    end
+  end
+
+  # ----------------------------------------------------------------------------------------
   class EnumParameter < IntParameter
     TYPE = :enum
 
     def initialize(settings_content, screen_id, position, name, parameter, int_value, enum_texts)
-      super(settings_content, screen_id, position, name, parameter, int_value, 0, enum_texts.length - 1)
-
       @texts = enum_texts
+
+      super(settings_content, screen_id, position, name, parameter, int_value, 0, enum_texts.length - 1)
     end
 
     def get_display_value
@@ -383,6 +553,161 @@ class Window_Settings
     end
     def value_right()
       self.value = (@value + 1) % [1, @max_value + 1].max
+      redraw
+    end
+  end
+  
+  #----------------------------------------------------------------------------------------
+  class KeyParameter < BaseParameter
+    TYPE = :key
+
+    attr_reader :selection
+
+    def initialize(settings_content, screen_id, position, name, parameter, key_binds, input_bind)
+      @selected = false
+      @selection = 0
+      @key_binds = parameter ? Settings[parameter] : key_binds
+      @bind = input_bind
+      @waiting_for_key = false
+      @accept_action = false
+
+      super(settings_content, screen_id, position, name, parameter, nil)
+
+      apply
+    end
+
+    def get_display_value(bind_id = 0)
+      key_bind = @key_binds[bind_id]
+      
+      if key_bind == nil
+        return tr("None")
+      end
+      
+      case key_bind.type
+
+      when KeyBind::Type::Invalid
+        return tr("Invalid")
+
+      when KeyBind::Type::Key
+        return tr(Input::key_name(key_bind.scancode))
+
+      when KeyBind::Type::CButton
+        return tr(Input::c_button_name(key_bind.button))
+      
+      when KeyBind::Type::CAxis
+        axis_name = Input::c_axis_name(key_bind.axis)
+        dir_vert = axis_name.downcase.include?("y") ? true : false
+        dir_horiz = axis_name.downcase.include?("x") ? true : false
+        return tr(axis_name + (dir_horiz || dir_vert ? (" " + (dir_vert ? (key_bind.dir == 1 ? "Up" : "Down") : (key_bind.dir == 1 ? "Right" : "Left"))) : ""))
+      
+      when KeyBind::Type::JButton
+        return tr("Joystick Button") + " " + key_bind.button.to_s
+        
+      when KeyBind::Type::JAxis
+        return tr("Joystick Axis") + " " + key_bind.axis.to_s + " " + key_bind.dir == 1 ? "Positive" : "Negative"
+        
+      when KeyBind::Type::JHat
+        return tr("Joystick Hat") + " " + key_bind.hat.to_s + " " + key_bind.pos == 1 ? "Positive" : "Negative"
+
+      end
+    end
+    
+    def redraw()
+      @sprite.bitmap.clear
+      
+      if @selected
+        @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - @selection), 0, PARAMETER_KEY_WIDTH, @sprite.bitmap.height), Color.new(255, 255, 255, 48))
+        @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - @selection) + 10, 0, 10, @sprite.bitmap.height, "→", 1)
+        @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (3 - @selection) - 20, 0, 10, @sprite.bitmap.height, "←", 1)
+      end
+      
+      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - PARAMETER_KEY_WIDTH * 4, @sprite.bitmap.height, @name)
+      for i in 0..3
+        if @waiting_for_key && i == selection
+          @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i), 0, PARAMETER_KEY_WIDTH, @sprite.bitmap.height, tr("Press a key"), 1)
+        else
+          @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i), 0, PARAMETER_KEY_WIDTH, @sprite.bitmap.height, get_display_value(i), 1)
+        end
+        @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i) - 1, 1, 2, @sprite.bitmap.height - 2), Color.new(255, 255, 255, 32))
+      end
+
+      if (@settings_content.need_draw_line(@screen_id, @position))
+        @sprite.bitmap.fill_rect(Rect.new(0, PARAMETER_HEIGHT - 1, PARAMETER_WIDTH, 2), Color.new(255, 255, 255, 24))
+      end
+    end
+
+    def value_left()
+      if !@waiting_for_key
+        @selection = (@selection - 1) % 4
+        $game_system.se_play($data_system.cursor_se)
+        redraw
+      end
+    end
+    def value_right()
+      if !@waiting_for_key
+        @selection = (@selection + 1) % 4
+        $game_system.se_play($data_system.cursor_se)
+        redraw
+      end
+    end
+
+    def action()
+      @accept_action = false
+      @waiting_for_key = true
+      @settings_content.waiting_for_key = true
+      redraw
+    end
+
+    def apply()
+      if @bind
+        Input::set_binding(@key_binds, @bind)
+      end
+    end
+
+    def update()
+      super()
+
+      if @waiting_for_key && @settings_content.waiting_for_key
+        key = Input::pressed_key
+        c_button = Input::pressed_c_button
+        c_axis = Input::active_c_axis
+
+        if !Input.press?(Input::ACTION)
+          @accept_action = true
+        end
+
+        if key && (!Input.press?(Input::ACTION) || @accept_action)
+          if key != Input::key_from_name("Backspace")
+            Settings[@parameter][@selection] = KeyBind.key(key)
+          end
+          @waiting_for_key = @settings_content.waiting_for_key = false
+          apply
+          redraw
+        elsif c_button
+          Settings[@parameter][@selection] = KeyBind.cbutton(c_button)
+          @waiting_for_key = @settings_content.waiting_for_key = false
+          apply
+          redraw
+        elsif c_axis
+          Settings[@parameter][@selection] = KeyBind.caxis(c_axis, Input::c_axis_pressure(c_axis) > 0 ? KeyBind::Positive : KeyBind::Negative)
+          @waiting_for_key = @settings_content.waiting_for_key = false
+          apply
+          redraw
+        end
+      end
+    end
+
+    def select(previous)
+      prev = @settings_content.get_parameter_by_sceen_id(@settings_content.screen, previous)
+      if prev&.respond_to?(:selection)
+        @selection = prev.selection
+      end
+
+      @selected = true
+      redraw
+    end
+    def deselect
+      @selected = false
       redraw
     end
   end

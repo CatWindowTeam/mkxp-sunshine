@@ -100,16 +100,16 @@ static const KbBindingData defaultKbBindings[] ={
 static elementsN(defaultKbBindings);
 
 static const GcBindingData defaultGcBindings[] ={
-    { SDL_GAMEPAD_BUTTON_DPAD_LEFT,     Input::Left       },
-    { SDL_GAMEPAD_BUTTON_DPAD_RIGHT,    Input::Right      },
-    { SDL_GAMEPAD_BUTTON_DPAD_UP,       Input::Up         },
-    { SDL_GAMEPAD_BUTTON_DPAD_DOWN,     Input::Down       },
-    { SDL_GAMEPAD_BUTTON_SOUTH,             Input::Action     },
-    { SDL_GAMEPAD_BUTTON_EAST,             Input::Cancel     },
-    { SDL_GAMEPAD_BUTTON_WEST,             Input::Run        },
-    { SDL_GAMEPAD_BUTTON_NORTH,             Input::Items      },
-    { SDL_GAMEPAD_BUTTON_START,         Input::Menu       },
-    { SDL_GAMEPAD_BUTTON_BACK,          Input::Deactivate },
+    { SDL_GAMEPAD_BUTTON_DPAD_LEFT,      Input::Left       },
+    { SDL_GAMEPAD_BUTTON_DPAD_RIGHT,     Input::Right      },
+    { SDL_GAMEPAD_BUTTON_DPAD_UP,        Input::Up         },
+    { SDL_GAMEPAD_BUTTON_DPAD_DOWN,      Input::Down       },
+    { SDL_GAMEPAD_BUTTON_SOUTH,          Input::Action     },
+    { SDL_GAMEPAD_BUTTON_EAST,           Input::Cancel     },
+    { SDL_GAMEPAD_BUTTON_WEST,           Input::Run        },
+    { SDL_GAMEPAD_BUTTON_NORTH,          Input::Items      },
+    { SDL_GAMEPAD_BUTTON_START,          Input::Menu       },
+    { SDL_GAMEPAD_BUTTON_BACK,           Input::Deactivate },
     { SDL_GAMEPAD_BUTTON_LEFT_SHOULDER,  Input::L          },
     { SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER, Input::R          },
 };

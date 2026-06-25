@@ -11,7 +11,7 @@ class Window_Settings
     @viewport.z = 9998
     @bg = Sprite.new(@viewport)
     @bg.bitmap = Bitmap.new(Graphics.width, Graphics.height)
-    @bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(255, 255, 255, 128))
+    @bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(255, 255, 255, 196))
     @bg.blend_type = 2
     @title = Sprite.new(@viewport)
     @title.bitmap = Bitmap.new(320, TITLE_MARGIN)
@@ -37,15 +37,27 @@ class Window_Settings
           when :bool
             @content.add_parameter(screen_title, BoolParameter.new(@content, screen_index, parameter_index,
               parameter_info[:name], parameter_info[:parameter], parameter_info[:default]))
+          when :switch
+            @content.add_parameter(screen_title, BoolParameter.new(@content, screen_index, parameter_index,
+              parameter_info[:name], parameter_info[:parameter], parameter_info[:default], parameter_info[:switch], parameter_info[:invert]))
           when :int
             @content.add_parameter(screen_title, IntParameter.new(@content, screen_index, parameter_index,
               parameter_info[:name], parameter_info[:parameter], parameter_info[:default], parameter_info[:min], parameter_info[:max]))
+          when :slider
+            @content.add_parameter(screen_title, SliderParameter.new(@content, screen_index, parameter_index,
+              parameter_info[:name], parameter_info[:parameter], parameter_info[:default], parameter_info[:min], parameter_info[:max]))
+          when :float
+            @content.add_parameter(screen_title, FloatParameter.new(@content, screen_index, parameter_index,
+              parameter_info[:name], parameter_info[:parameter], parameter_info[:default], parameter_info[:step], parameter_info[:min], parameter_info[:max]))
           when :enum
             @content.add_parameter(screen_title, EnumParameter.new(@content, screen_index, parameter_index,
               parameter_info[:name], parameter_info[:parameter], 0, parameter_info[:values]))
           when :sep
             @content.add_parameter(screen_title, Separator.new(@content, screen_index, parameter_index,
               parameter_info[:name]))
+          when :key
+            @content.add_parameter(screen_title, KeyParameter.new(@content, screen_index, parameter_index,
+              parameter_info[:name], parameter_info[:parameter], parameter_info[:key_binds], parameter_info[:bind]))
           end
         end
       end
@@ -109,11 +121,18 @@ class Window_Settings
     end
 
     return if !self.visible
+    return if @content.waiting_for_key
 
     # navigation
     if Input.wheel_y != 0
-      @content.parameter_select_offset(-Input.wheel_y.round)
-      $game_system.se_play($data_system.cursor_se)
+      if (Input::key_press?(Input::key_from_name("Left Shift")))
+        for i in 0...Input.wheel_y.round.abs
+          Input.wheel_y.round > 0 ? @content.parameter_right : @content.parameter_left
+        end
+      else
+        @content.parameter_select_offset(-Input.wheel_y.round)
+        $game_system.se_play($data_system.cursor_se)
+      end
     end
 
     if (Input.trigger?(Input::L))
@@ -173,15 +192,6 @@ class Window_Settings
     end
     if (Input.trigger?(Input::ACTION))
       current_parameter&.action
-    end
-    current_val = current_parameter&.value
-    if current_val != old_val
-      current_type = current_parameter&.class&.const_get(:TYPE)
-      if current_type == :int || current_type == :enum
-        Audio.se_play("Audio/SE/text_robot.wav", 70, ((current_val.to_f + current_parameter.min_value.to_f) / (current_parameter.max_value.to_f + current_parameter.min_value.to_f) * 50.0).to_i + 75)
-      elsif current_type == :bool
-        Audio.se_play("Audio/SE/text_robot.wav", 70, current_val ? 125 : 75)
-      end
     end
     
     # menu closing

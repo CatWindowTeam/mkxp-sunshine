@@ -19,11 +19,14 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <vector>
+
 #ifndef INPUT_H
 #define INPUT_H
 
 struct InputPrivate;
 struct RGSSThreadData;
+struct SourceDesc;
 
 class Input{
 public:
@@ -61,6 +64,8 @@ public:
 	/* Non-standard extensions */
 	int mouseX();
 	int mouseY();
+
+	void setBinding(std::vector<SourceDesc> descs, Input::ButtonCode target);
 
 	// more non-standard extensions
 	float wheelX();
