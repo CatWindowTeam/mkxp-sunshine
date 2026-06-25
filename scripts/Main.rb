@@ -11,30 +11,11 @@ at_exit do
 end
 
 begin
-  p RUBY_VERSION
-  if $debug
-  	trace = TracePoint.new(:raise) do |tp|
-  	    p [tp.lineno, tp.event, tp.raised_exception]
-  	end
-  	trace.enable
-  	
-  	0 / 0
-	#tp = TracePoint.new(:call, :return) do |t|
-	#  case t.event
-	#  when :call
-	#    puts "WRAP START (#{start_code}) -> #{t.defined_class}##{t.method_id}"
-	#  when :return
-	#    puts "WRAP END -> #{t.defined_class}##{t.method_id}"
-	#  end
-	#end
-	#tp.enable
-  end
-
-
   RPG::Mod.exec_hooks("hooks/Main/start", binding)
   $console = Graphics.fullscreen
   Graphics.frame_rate = 60
   Font.default_size = 20
+  Sunshine.SetLED(0, 255, 0)
 
   if defined?(RubyVM::YJIT)
     RubyVM::YJIT.enable

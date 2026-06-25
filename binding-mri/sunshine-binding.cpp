@@ -1,8 +1,10 @@
 #include <ruby.h>
 #include <SDL3/SDL_version.h>
+#include <SDL3/SDL_gamepad.h>
+#include <SDL3/SDL_joystick.h>
 #include <limits.h>
 #include "security.h"
-#include "config.h"
+#include "eventthread.h"
 //Просто на C реализуем методы мне в падлу ебаться со статической линковкой и прочим дерьмом.
 //Аминь.
 
@@ -32,6 +34,15 @@ static VALUE int_times(VALUE self) {
     return self;
 }
 
+static VALUE SetLED(VALUE self, VALUE r, VALUE g, VALUE b) {
+    if (gc != nullptr) {
+        SDL_SetGamepadLED(gc, NUM2INT(r), NUM2INT(g), NUM2INT(b));
+    } else if (js != nullptr) {
+        SDL_SetJoystickLED(js, NUM2INT(r), NUM2INT(g), NUM2INT(b));
+    }
+    return Qnil;
+}
+
 void SunshineBindingInit(){
     printf("[SunshineBindingInit] Initializing Sunshine binding\n");
     VALUE module = rb_define_module("Sunshine");
@@ -40,6 +51,7 @@ void SunshineBindingInit(){
     rb_const_set(module, rb_intern("SDLVersion_minor"), INT2NUM(SDL_MINOR_VERSION));
     rb_const_set(module, rb_intern("SDLVersion_micro"), INT2NUM(SDL_MICRO_VERSION));
 	rb_const_set(module, rb_intern("SECURITYSTATE"), rb_str_new_cstr(securitystate));
+	rb_define_singleton_method(module, "SetLED", SetLED, 3);
     //если методы доступны то просто не перезаписываем их
 	if (!rb_respond_to(rb_cObject, rb_intern("class"))) {
 	        rb_define_method(rb_cObject, "class", rb_obj_class, 0);
