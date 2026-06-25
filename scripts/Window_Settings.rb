@@ -58,6 +58,10 @@ class Window_Settings
           when :key
             @content.add_parameter(screen_title, KeyParameter.new(@content, screen_index, parameter_index,
               parameter_info[:name], parameter_info[:parameter], parameter_info[:key_binds], parameter_info[:bind]))
+          when :action
+            @content.add_parameter(screen_title, ActionParameter.new(@content, screen_index, parameter_index,
+              parameter_info[:name], parameter_info[:default], parameter_info[:action],
+              parameter_info[:arg1], parameter_info[:arg2], parameter_info[:arg3], parameter_info[:arg4]))
           end
         end
       end

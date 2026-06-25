@@ -613,6 +613,10 @@ class Window_Settings
     end
     
     def redraw()
+      if (@parameter)
+        @key_binds = Settings[@parameter]
+      end
+
       @sprite.bitmap.clear
       
       if @selected
@@ -659,7 +663,7 @@ class Window_Settings
     end
 
     def apply()
-      if @bind
+      if @bind != nil
         Input::set_binding(@key_binds, @bind)
       end
     end
@@ -711,6 +715,34 @@ class Window_Settings
     def deselect
       @selected = false
       redraw
+    end
+  end
+  class ActionParameter < BaseParameter
+    TYPE = :action
+
+    def initialize(settings_content, screen_id, position, name, value_text, func, arg1, arg2, arg3, arg4)
+      @func = func
+      @arg1 = arg1
+      @arg2 = arg2
+      @arg3 = arg3
+      @arg4 = arg4
+
+      super(settings_content, screen_id, position, name, nil, value_text)
+    end
+    
+    def action()
+      if @arg1 == nil && @arg2 == nil && @arg3 == nil && @arg4 == nil
+        @func.call
+      elsif @arg2 == nil && @arg3 == nil && @arg4 == nil
+        @func.call(@arg1)
+      elsif @arg3 == nil && @arg4 == nil
+        @func.call(@arg1, @arg2)
+      elsif @arg4 == nil
+        @func.call(@arg1, @arg2, @arg3)
+      else
+        @func.call(@arg1, @arg2, @arg3, @arg4)
+      end
+      @settings_content.redraw_all
     end
   end
 end

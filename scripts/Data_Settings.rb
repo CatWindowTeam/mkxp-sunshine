@@ -34,6 +34,17 @@ module Settings
         #controls
         :gamepad_led                 => true,
         :gamepad_deadzone            => 5,
+
+        # Debug
+        :debug                       => false,
+        :debug_character             => false,
+        :debug_text                  => false,
+      }
+      reset_controls!
+    end
+
+    def reset_controls!
+      @data.merge!({
         :controls_walk_down                   => [
                                           KeyBind.key(Input::key_from_name("Down")),
                                           KeyBind.caxis(Input::c_axis_from_name("LeftY"), KeyBind::Positive),
@@ -97,12 +108,7 @@ module Settings
                                           KeyBind.key(Input::key_from_name("Left Ctrl")),
                                           KeyBind.cbutton(Input::c_button_from_name("rightstick")),
                                         ],
-
-        # Debug
-        :debug                       => false,
-        :debug_character             => false,
-        :debug_text                  => false,
-      }
+      })
     end
   end
 end
@@ -312,6 +318,11 @@ class Window_Settings
         :name => tr("Debug"),
         :parameter => :controls_debug,
         :bind => Input::DEBUGACTION
+      },
+      {
+        :type => :action,
+        :name => tr("Reset Controls"),
+        :action => Settings.method(:reset_controls!)
       },
     ],
     tr("Advanced") => [
