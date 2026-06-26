@@ -68,7 +68,7 @@ struct OneshotPrivate{
 	bool allowExit;
 
 	// Alpha texture data for portions of window obscured by screen edges
-	int winX, winY;
+	int winX, winY, winW, winH;
 	SDL_Mutex *winMutex;
 	bool winPosChanged;
 	std::vector<uint8_t> obscuredMap;
@@ -170,10 +170,11 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	p = new OneshotPrivate();
 	p->window = threadData.window;
 	p->savePath = threadData.config.commonDataPath.substr(0, threadData.config.commonDataPath.size() - 1);
-	p->obscuredMap.resize(threadData.config.defScreenW * threadData.config.defScreenH, 255);
-	obscuredDirty = true;
 	p->winX = 0;
 	p->winY = 0;
+	SDL_GetWindowSize(p->window, &p->winW, &p->winH);
+	p->obscuredMap.resize(p->winW * p->winH, 255);
+	obscuredDirty = true;
 	p->winPosChanged = false;
 	p->allowExit = true;
 	p->exiting = false;
@@ -335,17 +336,19 @@ void Oneshot::update(){
 		screenRect.x = p->winX;
 		screenRect.y = p->winY;
 		SDL_UnlockMutex(p->winMutex);
-		screenRect.w = conf.defScreenW;
-		screenRect.h = conf.defScreenH;
+		screenRect.w = p->winW;
+		screenRect.h = p->winH;
 
 		//костыль ебучий
 		int num_displays;
 		SDL_DisplayID *displays = SDL_GetDisplays(&num_displays);
-		SDL_free(displays);
+		if (!displays)
+			printf("SDL_GetDisplays failed (oneshot.cpp)\n");
 		//Update obscured map and texture for window portion offscreen
 		for (int i = 0, max = num_displays; i < max; ++i){
 			SDL_Rect bounds;
-			SDL_GetDisplayBounds(i, &bounds);
+			if (!SDL_GetDisplayBounds(displays[i], &bounds))
+				printf("SDL_GetDisplayBounds failed (oneshot.cpp)\n");
 
 			//Get intersection of window and the screen
 			SDL_Rect intersect;
@@ -360,10 +363,11 @@ void Oneshot::update(){
 				return;
 
 			for (int y = intersect.y; y < intersect.y + intersect.h; ++y){
-				int start = y * 640 + intersect.x;
+				int start = y * p->winW + intersect.x;
 				std::fill(obscuredFrame.begin() + start, obscuredFrame.begin() + (start + intersect.w), false);
 			}
 		}
+		SDL_free(displays);
 
 		//Update the obscured map, and return prematurely if we don't have any changes
 		//to make to the texture
