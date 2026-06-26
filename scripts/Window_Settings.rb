@@ -14,12 +14,12 @@ class Window_Settings
     @bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(255, 255, 255, 196))
     @bg.blend_type = 2
     @title = Sprite.new(@viewport)
-    @title.bitmap = Bitmap.new(320, TITLE_MARGIN)
+    @title.bitmap = Bitmap.new(320, 20)
     @title.bitmap.font.size = 20
-    @title.zoom_x = @title.zoom_y = 2
+    #@title.zoom_x = @title.zoom_y = 2
     @title.y = TITLE_TOP_MARGIN
-    @title.x = MARGIN
-    @title.bitmap.draw_text(0, 0, @title.bitmap.width, @title.bitmap.height, tr("Settings"))
+    @title.x = (Graphics.width - @title.bitmap.width) / 2
+    @title.bitmap.draw_text(0, 0, @title.bitmap.width, @title.bitmap.height, tr("Settings"), 1)
     Language.register_text_sprite(self.class.name + "_title", @title)
 
     @content = SettingsContent.new(@viewport, TITLE_TOP_MARGIN + TITLE_MARGIN + 100)

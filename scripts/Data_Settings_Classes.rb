@@ -1,10 +1,13 @@
 # Logic of settings UI
 class Window_Settings
   SCREENS_PANELS_MARGIN = 32
+  SCREENS_PANELS_TOP_MARGIN = 16
   PARAMETER_WIDTH = (Graphics.width - 640) / 2 + 512
   PARAMETER_HEIGHT = 32
   PARAMETER_VALUE_WIDTH = PARAMETER_WIDTH / 2
   PARAMETER_KEY_WIDTH = PARAMETER_WIDTH / 5
+  # typed sizes
+  BOOL_VALUE_WIDTH = 120
 
   PARAMETER_CHANGE_AUDIO = "Audio/SE/text_robot.wav"
 
@@ -26,37 +29,38 @@ class Window_Settings
 
       @visible_x = 0
       @visible_y = offset_y
-      @x = (Graphics.width - PARAMETER_WIDTH) / 2 - 8
+      @x = (Graphics.width - PARAMETER_WIDTH) / 2
       @y = offset_y
 
       @selection_sprite = Sprite.new(@viewport)
       @selection_sprite.bitmap = Bitmap.new(PARAMETER_WIDTH + 16, PARAMETER_HEIGHT)
       @selection_sprite.bitmap.fill_rect(Rect.new(0, 0, PARAMETER_WIDTH + 16, PARAMETER_HEIGHT), Color.new(255, 255, 255, 64))
-      @selection_sprite.x = @x
+      @selection_sprite.x = @x - 8
       @selection_sprite.y = @offset
       @selection_sprite.opacity = 0
       @selection_sprite.blend_type = 1
       @selection_sprite.z = 1
 
       @screen_panel_selection_sprite = Sprite.new(@viewport)
-      @screen_panel_selection_sprite.bitmap = Bitmap.new(1, @offset - SCREENS_PANELS_MARGIN * 2)
+      @screen_panel_selection_sprite.bitmap = Bitmap.new(1, @offset - SCREENS_PANELS_MARGIN * 2 - SCREENS_PANELS_TOP_MARGIN)
       @screen_panel_selection_sprite.bitmap.gradient_fill_rect(0, 0, @screen_panel_selection_sprite.bitmap.width, @screen_panel_selection_sprite.bitmap.height, Color.new(255, 255, 255, 0), Color.new(255, 255, 255, 128), true)
-      @screen_panel_selection_sprite.y = SCREENS_PANELS_MARGIN
+      @screen_panel_selection_sprite.y = SCREENS_PANELS_MARGIN + SCREENS_PANELS_TOP_MARGIN
       @screen_panel_selection_sprite.x = Graphics.width / 2
 
       @switch_panels_hint_left = Sprite.new(@viewport)
-      @switch_panels_hint_left.bitmap = Bitmap.new(PARAMETER_WIDTH / 2 - SCREENS_PANELS_MARGIN, @offset / 2)
-      @switch_panels_hint_left.bitmap.font.size = 20
-      @switch_panels_hint_left.x = @x + SCREENS_PANELS_MARGIN
-      @switch_panels_hint_left.zoom_x = @switch_panels_hint_left.zoom_y = 2
-      @switch_panels_hint_left.opacity = 127
+      @switch_panels_hint_left.bitmap = Bitmap.new(PARAMETER_WIDTH / 2 - SCREENS_PANELS_MARGIN, @screen_panel_selection_sprite.height / 2)
       
       @switch_panels_hint_right = Sprite.new(@viewport)
-      @switch_panels_hint_right.bitmap = Bitmap.new(PARAMETER_WIDTH / 2 - SCREENS_PANELS_MARGIN, @offset / 2)
-      @switch_panels_hint_right.bitmap.font.size = 20
-      @switch_panels_hint_right.x = @x + SCREENS_PANELS_MARGIN
-      @switch_panels_hint_right.zoom_x = @switch_panels_hint_right.zoom_y = 2
-      @switch_panels_hint_right.opacity = 127
+      @switch_panels_hint_right.bitmap = Bitmap.new(@switch_panels_hint_left.bitmap.width, @switch_panels_hint_left.bitmap.height)
+
+      @target_hints_x = @x + SCREENS_PANELS_MARGIN
+
+      @switch_panels_hint_left.bitmap.font.size = @switch_panels_hint_right.bitmap.font.size = 20
+      @switch_panels_hint_left.x = @switch_panels_hint_right.x = @target_hints_x
+      @switch_panels_hint_left.y = @switch_panels_hint_right.y = @screen_panel_selection_sprite.y
+      @switch_panels_hint_left.zoom_x = @switch_panels_hint_right.zoom_x =
+      @switch_panels_hint_left.zoom_y = @switch_panels_hint_right.zoom_y = 2
+      @switch_panels_hint_left.opacity = @switch_panels_hint_right.opacity = 127
 
       redraw_panels_hints
 
@@ -83,9 +87,9 @@ class Window_Settings
       @parameters[name] = []
 
       screen_panel = Sprite.new(@viewport)
-      screen_panel.bitmap = Bitmap.new(name.length * 10 + SCREENS_PANELS_MARGIN, @offset - SCREENS_PANELS_MARGIN * 2)
-      screen_panel.bitmap.draw_text(SCREENS_PANELS_MARGIN / 2, 0, screen_panel.bitmap.width, screen_panel.bitmap.height, name, 1)
-      screen_panel.y = SCREENS_PANELS_MARGIN
+      screen_panel.bitmap = Bitmap.new(name.length * 10 + SCREENS_PANELS_MARGIN, @screen_panel_selection_sprite.height)
+      screen_panel.bitmap.draw_text(SCREENS_PANELS_MARGIN / 2, 0, screen_panel.width, screen_panel.height, name, 1)
+      screen_panel.y = @screen_panel_selection_sprite.y
       screen_panel.x = Graphics.width / 2 + @next_screen_panel_offset - (@screen_panels[0] ? @screen_panels[0].width / 2 : screen_panel.width / 2)
       @next_screen_panel_offset += screen_panel.width
       @screen_panels << screen_panel
@@ -143,14 +147,14 @@ class Window_Settings
         screen_panel.x = res * 0.3 + screen_panel.x * 0.7
         screen_panel_offset += screen_panel.width
 
-        screen_panel.opacity = ((@opacity.to_f / 255.0) * (1.0 - (Graphics.width / 2 - screen_panel.x - screen_panel.width / 2).abs.to_f / 300.0) * 255.0).to_i
+        screen_panel.opacity = ((@opacity.to_f / 255.0) * (1.0 - (screen_panel.x + 16 - (Graphics.width - screen_panel.width) / 2).abs.to_f / (PARAMETER_WIDTH / 2 - 48)) * 255.0).to_i
       end
       
       @screen_panel_selection_sprite.zoom_x = @screen_panels[@screen].width * 0.3 + @screen_panel_selection_sprite.zoom_x * 0.7
-      @screen_panel_selection_sprite.x = (Graphics.width / 2 - @screen_panels[@screen].width * 0.5) * 0.3 + @screen_panel_selection_sprite.x * 0.7
+      @screen_panel_selection_sprite.x = (Graphics.width - @screen_panels[@screen].width) * 0.5 * 0.3 + @screen_panel_selection_sprite.x * 0.7
 
-      @switch_panels_hint_left.x = @switch_panels_hint_left.x * 0.8 + (@x + SCREENS_PANELS_MARGIN) * 0.2
-      @switch_panels_hint_right.x = @switch_panels_hint_right.x * 0.8 + (@x + SCREENS_PANELS_MARGIN) * 0.2
+      @switch_panels_hint_left.x = @switch_panels_hint_left.x * 0.8 + @target_hints_x * 0.2
+      @switch_panels_hint_right.x = @switch_panels_hint_right.x * 0.8 + @target_hints_x * 0.2
 
       @waiting_for_key2 = @waiting_for_key
 
@@ -293,6 +297,8 @@ class Window_Settings
       @sprite = Sprite.new(@settings_content.viewport)
       @sprite.bitmap = Bitmap.new(PARAMETER_WIDTH, PARAMETER_HEIGHT + 1)
       @sprite.bitmap.font.size = 20
+
+      @value_width = PARAMETER_VALUE_WIDTH
       
       update_parameter
       redraw
@@ -335,15 +341,15 @@ class Window_Settings
 
     def redraw()
       @sprite.bitmap.clear
-      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - PARAMETER_VALUE_WIDTH, @sprite.bitmap.height, @name)
-      @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_VALUE_WIDTH, 0, PARAMETER_VALUE_WIDTH, @sprite.bitmap.height, get_display_value, 2)
+      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - @value_width, @sprite.bitmap.height, @name)
+      @sprite.bitmap.draw_text(@sprite.bitmap.width - @value_width, 0, @value_width, @sprite.bitmap.height, get_display_value, 2)
       if (@settings_content.need_draw_line(@screen_id, @position))
         @sprite.bitmap.fill_rect(Rect.new(0, PARAMETER_HEIGHT - 1, PARAMETER_WIDTH, 2), Color.new(255, 255, 255, 24))
       end
     end
 
     def update()
-      @sprite.x = @screen_id * Graphics.width - @settings_content.visible_x + @settings_content.x + 8
+      @sprite.x = @screen_id * Graphics.width - @settings_content.visible_x + @settings_content.x
       @sprite.y = @settings_content.visible_y + @position * PARAMETER_HEIGHT
       @sprite.opacity = ((1.0 + ((@sprite.y - @settings_content.offset).to_f / 64.0).clamp(-1.0, 0.0)) * @opacity * (@settings_content.opacity.to_f / 255.0) * 255.0).to_i 
     end
@@ -383,6 +389,7 @@ class Window_Settings
 
     def initialize(settings_content, screen_id, position, name, parameter, bool_value)
       super(settings_content, screen_id, position, name, parameter, bool_value || false)
+      @value_width = BOOL_VALUE_WIDTH
     end
 
     def value=(value)
@@ -478,20 +485,20 @@ class Window_Settings
       @sprite.bitmap.clear
       @sprite.bitmap.font.color = Color.new(255, 255, 255)
 
-      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - PARAMETER_VALUE_WIDTH, @sprite.bitmap.height, @name)
+      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - @value_width, @sprite.bitmap.height, @name)
 
       percent = (@value.to_f - @min_value.to_f) / @max_value.to_f
-      width = (PARAMETER_VALUE_WIDTH * percent).to_i
-      @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_VALUE_WIDTH, 4, PARAMETER_VALUE_WIDTH, @sprite.bitmap.height - 8), Color.new(255, 255, 255, 64))
-      #@sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_VALUE_WIDTH + 1, 5, PARAMETER_VALUE_WIDTH - 2, @sprite.bitmap.height - 10), Color.new(255, 255, 255, 0))
-      @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_VALUE_WIDTH, 4, width, @sprite.bitmap.height - 8), Color.new(255, 255, 255, 255))
+      width = (@value_width * percent).to_i
+      @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - @value_width, 4, @value_width, @sprite.bitmap.height - 8), Color.new(255, 255, 255, 64))
+      #@sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - @value_width + 1, 5, @value_width - 2, @sprite.bitmap.height - 10), Color.new(255, 255, 255, 0))
+      @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - @value_width, 4, width, @sprite.bitmap.height - 8), Color.new(255, 255, 255, 255))
 
       if percent >= 0.5
         @sprite.bitmap.font.color = Color.new(0, 0, 0)
-        @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_VALUE_WIDTH, 4, width, @sprite.bitmap.height - 8, get_display_value, 1)
+        @sprite.bitmap.draw_text(@sprite.bitmap.width - @value_width, 4, width, @sprite.bitmap.height - 8, get_display_value, 1)
       else
         @sprite.bitmap.font.color = Color.new(255, 255, 255)
-        @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_VALUE_WIDTH + width, 4, PARAMETER_VALUE_WIDTH - width, @sprite.bitmap.height - 8, get_display_value, 1)
+        @sprite.bitmap.draw_text(@sprite.bitmap.width - @value_width + width, 4, @value_width - width, @sprite.bitmap.height - 8, get_display_value, 1)
       end
 
       if (@settings_content.need_draw_line(@screen_id, @position))
@@ -561,6 +568,8 @@ class Window_Settings
   class KeyParameter < BaseParameter
     TYPE = :key
 
+    SELECTED_KEYS_MARGIN = 20
+
     attr_reader :selection
 
     def initialize(settings_content, screen_id, position, name, parameter, key_binds, input_bind)
@@ -596,9 +605,17 @@ class Window_Settings
       
       when KeyBind::Type::CAxis
         axis_name = Input::c_axis_name(key_bind.axis)
-        dir_vert = axis_name.downcase.include?("y") ? true : false
-        dir_horiz = axis_name.downcase.include?("x") ? true : false
-        return tr(axis_name + (dir_horiz || dir_vert ? (" " + (dir_vert ? (key_bind.dir == 1 ? "Up" : "Down") : (key_bind.dir == 1 ? "Right" : "Left"))) : ""))
+        dir_vert = axis_name.downcase.include?("y")
+        dir_horiz = axis_name.downcase.include?("x")
+        return tr(axis_name +
+                  if dir_horiz || dir_vert 
+                    " " + 
+                    if dir_vert
+                      (key_bind.dir == 1 ? "Up" : "Down")
+                    else
+                      (key_bind.dir == 1 ? "Right" : "Left")
+                    end
+                  else "" end)
       
       when KeyBind::Type::JButton
         return tr("Joystick Button") + " " + key_bind.button.to_s
@@ -621,17 +638,15 @@ class Window_Settings
       
       if @selected
         @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - @selection), 0, PARAMETER_KEY_WIDTH, @sprite.bitmap.height), Color.new(255, 255, 255, 48))
-        @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - @selection) + 10, 0, 10, @sprite.bitmap.height, "→", 1)
-        @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (3 - @selection) - 20, 0, 10, @sprite.bitmap.height, "←", 1)
+        @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - @selection), 0, SELECTED_KEYS_MARGIN, @sprite.bitmap.height, "→", 1)
+        @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (3 - @selection) - SELECTED_KEYS_MARGIN, 0, SELECTED_KEYS_MARGIN, @sprite.bitmap.height, "←", 1)
       end
       
       @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - PARAMETER_KEY_WIDTH * 4, @sprite.bitmap.height, @name)
       for i in 0..3
-        if @waiting_for_key && i == selection
-          @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i), 0, PARAMETER_KEY_WIDTH, @sprite.bitmap.height, tr("Press a key"), 1)
-        else
-          @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i), 0, PARAMETER_KEY_WIDTH, @sprite.bitmap.height, get_display_value(i), 1)
-        end
+        offset = (@selected && i == @selection ? SELECTED_KEYS_MARGIN : 4)
+        parameter_x = @sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i) + offset
+        @sprite.bitmap.draw_text(parameter_x, 0, PARAMETER_KEY_WIDTH - offset * 2, @sprite.bitmap.height, @waiting_for_key && i == @selection ? tr("Press a key") : get_display_value(i), 1)
         @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i) - 1, 1, 2, @sprite.bitmap.height - 2), Color.new(255, 255, 255, 32))
       end
 
