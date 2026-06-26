@@ -16,10 +16,10 @@ class Window_Settings
     @title = Sprite.new(@viewport)
     @title.bitmap = Bitmap.new(320, 20)
     @title.bitmap.font.size = 20
-    #@title.zoom_x = @title.zoom_y = 2
     @title.y = TITLE_TOP_MARGIN
     @title.x = (Graphics.width - @title.bitmap.width) / 2
     @title.bitmap.draw_text(0, 0, @title.bitmap.width, @title.bitmap.height, tr("Settings"), 1)
+    @title.opacity = 0
     Language.register_text_sprite(self.class.name + "_title", @title)
 
     @content = SettingsContent.new(@viewport, TITLE_TOP_MARGIN + TITLE_MARGIN + 100)
@@ -109,6 +109,7 @@ class Window_Settings
 
     if @fade_in
       self.opacity += 20
+      @title.opacity += 20
       if self.opacity == 255
         @fade_in = false
       end
@@ -117,6 +118,7 @@ class Window_Settings
 
     if @fade_out
       self.opacity -= 20
+      @title.opacity -= 20
       if self.opacity == 0
         @fade_out = false
         self.visible = false
