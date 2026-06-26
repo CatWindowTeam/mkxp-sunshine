@@ -11,7 +11,7 @@ def fake_save
   Dir.mkdir(Oneshot::GAME_PATH) unless File.exist?(Oneshot::GAME_PATH)
   Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot") unless File.exist?(Oneshot::GAME_PATH + "/Oneshot")
   File.open(FAKE_SAVE_NAME, 'wb+') do |file|
-    # Wrire frame count for measuring play time
+    # Write frame count for measuring play time
     Marshal.dump(Graphics.frame_count, file)
     # Increase save count by 1
     $game_system.save_count += 1
@@ -127,6 +127,7 @@ def load(filename)
     # Read each type of game object
     $game_system        = Marshal.load(file)
     $game_switches      = Marshal.load(file)
+    $game_switches[400] = Graphics.width > 1000
     $game_variables     = Marshal.load(file)
     $game_self_switches = Marshal.load(file)
     $game_screen        = Marshal.load(file)
@@ -137,7 +138,7 @@ def load(filename)
     $game_followers     = Marshal.load(file)
     $game_oneshot       = Marshal.load(file)
     $game_fasttravel    = Marshal.load(file)
-	  $game_temp.footstep_sfx = Marshal.load(file)
+	$game_temp.footstep_sfx = Marshal.load(file)
     # If magic number is different from when saving
     # (if editing was added with editor)
     if $game_system.magic_number != $data_system.magic_number

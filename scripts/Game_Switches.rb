@@ -11,14 +11,12 @@ class Game_Switches
   #--------------------------------------------------------------------------
   def initialize
     @data = []
-    RPG::Mod.exec_hooks("hooks/Game_Switches/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Get Switch
   #     switch_id : switch ID
   #--------------------------------------------------------------------------
   def [](switch_id)
-    assert_not_deprecated(switch_id)
     return true if switch_id == 25
     if switch_id <= 5000 and @data[switch_id] != nil
       return @data[switch_id]
@@ -32,20 +30,8 @@ class Game_Switches
   #     value     : ON (true) / OFF (false)
   #--------------------------------------------------------------------------
   def []=(switch_id, value)
-    assert_not_deprecated(switch_id)
     if switch_id <= 5000
       @data[switch_id] = value
     end
   end
-
-  def assert_not_deprecated(switch_id)
-    if switch_id == 10 || switch_id == 21
-      STDERR.puts "deprecated switch referenced in map #{$game_map.map_id}"
-    end
-  end
 end
-
-# some switches that we know of
-# 101 - Use tower footsplashes i think
-# 112 - Niko in minecart
-# 160 - re-playing game (when Niko is TWM)

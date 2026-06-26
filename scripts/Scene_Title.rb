@@ -28,7 +28,7 @@ class Scene_Title
     $game_temp = Game_Temp.new
     new_game
     $game_system = Game_System.new
-
+	
     Settings.load! # loading settings
 
     load_perma_flags
@@ -244,6 +244,7 @@ class Scene_Title
     # Make each type of game object
     $game_system        = Game_System.new
     $game_switches      = Game_Switches.new
+    $game_switches[400] = Graphics.width > 1000
     $game_variables     = Game_Variables.new
     $game_self_switches = Game_SelfSwitches.new
     $game_screen        = Game_Screen.new

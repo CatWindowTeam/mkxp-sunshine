@@ -6,37 +6,15 @@ include(FindPackageHandleStandardArgs)
 option(STEAM "Build for Steam" OFF)
 option(DEBUG "Debug mode" OFF)
 option(NATIVE "Use native instructions(for local use only)" OFF)
+option(MODLOADER "Build with modloader" ON)
 
+#Configuration
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
 set(VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "5.1.2600.0")
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 set(ZLIB_USE_STATIC_LIBS ON)
 set(OPENSSL_USE_STATIC_LIBS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-if(NATIVE)
-	if (!MSVC)
-    		add_compile_options(-march=native -mtune=native)
-	endif()
-endif()
-
-if(DEBUG)
-	if (MSVC)
-    		add_compile_options(/EHr /fsanitize /validate-charset /DEBUG /RTCu /RTCs /RTCc)
-	else()
-    		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -fcheck-new -gbtf)
-	endif()
-else()
-	if (MSVC)
-		add_compile_options(/O2 /fp:fast /GL /GF /GA)
-	else()
-		add_compile_options(-O2 -ffast-math -fipa-pta -ftree-vectorize -fstdarg-opt -fomit-frame-pointer -frename-registers)
-		if(!WIN32)
-			add_compile_options(-flto)
-		endif()
-		add_link_options(-Wl,-O2)
-	endif()
-endif()
 
 # main stuff
 set(MAIN_HEADERS
@@ -172,9 +150,12 @@ elseif(BSD)
     list(APPEND MAIN_SOURCE src/xdg-user-dir-lookup.c)
     list(APPEND MAIN_HEADERS src/xdg-user-dir-lookup.h)
 	set(STEAM OFF)
+	set(MODLOADER OFF)
 elseif(EMSCRIPTEN)
 	set(STEAM OFF)
-  	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")	
+  	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
+elseif(APPLE)
+  		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
 endif()
 
 if (STEAM)
@@ -229,11 +210,30 @@ set(EMBEDDED_INPUT
 	binding-mri/module_rpg1.rb
 )
 
+# Настройки зависимые от компилятора
 if (MSVC)
 	list(APPEND DEFINES
 		_CRT_SECURE_NO_WARNINGS
 		NOMINMAX
 	)
+	if(DEBUG)
+		add_compile_options(/EHr /fsanitize /validate-charset /DEBUG /RTCu /RTCs /RTCc)
+	else()
+		add_compile_options(/O2 /fp:fast /GL /GF /GA)
+	endif()
+else()
+	if(NATIVE)
+	    add_compile_options(-march=native -mtune=native)
+	endif()
+	if(DEBUG)
+		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -fcheck-new -gbtf)
+	else()
+		add_compile_options(-O2 -ffast-math -fipa-pta -ftree-vectorize -fstdarg-opt -fomit-frame-pointer -frename-registers)
+		add_link_options(-Wl,-O2)
+		if(!WIN32)
+			add_compile_options(-flto)
+		endif()
+	endif()
 endif()
 
 ## Process Embeddeds ##
@@ -329,11 +329,7 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 	${EMBEDDED_SOURCE}
 )
 
-if(LINUX)
-	pkg_check_modules(SECCOMP REQUIRED libseccomp)
-	target_include_directories(${PROJECT_NAME} PRIVATE ${SECCOMP_INCLUDE_DIRS})
-	target_link_libraries(${PROJECT_NAME} PRIVATE ${SECCOMP_LIBRARIES})
-endif()
+
 
 find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)
@@ -350,34 +346,29 @@ find_package(Ruby 3.0 REQUIRED COMPONENTS Development)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
-if(EMSCRIPTEN)
-	
-else()
+if(MODLOADER)
 	find_package(OpenSSL CONFIG REQUIRED COMPONENTS Crypto)
 	pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
 	pkg_check_modules(LIBZIP REQUIRED libzip)
 endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 
-if(EMSCRIPTEN)
-	target_include_directories(${PROJECT_NAME} PRIVATE src include ${PIXMAN_INCLUDE_DIR}
-			${Ruby_INCLUDE_DIRS} Boost::boost ${Boost_INCLUDE_DIRS} ${VORBISFILE_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE src include ${PIXMAN_INCLUDE_DIR} ${SIGC2_INCLUDE_DIRS}
+${Ruby_INCLUDE_DIRS} Boost::boost ${Boost_INCLUDE_DIRS} 
+${VORBISFILE_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 
-	target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_sound::SDL3_sound SDL3_ttf::SDL3_ttf OpenAL::OpenAL 
-		physfs ${PIXMAN_LIBRARY} ${PLATFORM_LIBRARIES} ${Ruby_LIBRARIES} Boost::boost Boost::chrono  ${Boost_LIBRARIES} 
-		${VORBISFILE_LIBRARIES} ZLIB::ZLIB ${PLATFORM_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image 
+SDL3_sound::SDL3_sound SDL3_ttf::SDL3_ttf OpenAL::OpenAL
+physfs ${PIXMAN_LIBRARY} ${SIGC2_LIBRARIES} ${PLATFORM_LIBRARIES} 
+${Ruby_LIBRARIES} Boost::boost Boost::chrono ${Boost_LIBRARIES}
+${VORBISFILE_LIBRARIES} ZLIB::ZLIB ${PLATFORM_LIBS})
+
+if(MODLOADER)
+	target_include_directories(${PROJECT_NAME} PRIVATE ${LIBZIP_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBZIP_LIBRARIES} OpenSSL::Crypto)
 else()
-	target_include_directories(${PROJECT_NAME} PRIVATE src include ${LIBZIP_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${PIXMAN_INCLUDE_DIR} ${SIGC2_INCLUDE_DIRS}
-			${Ruby_INCLUDE_DIRS} Boost::boost ${Boost_INCLUDE_DIRS} ${VORBISFILE_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 
-	target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_sound::SDL3_sound SDL3_ttf::SDL3_ttf OpenSSL::Crypto OpenAL::OpenAL
-			physfs ${LIBZIP_LIBRARIES} ${PIXMAN_LIBRARY} ${SIGC2_LIBRARIES} ${PLATFORM_LIBRARIES} ${Ruby_LIBRARIES} Boost::boost Boost::chrono ${Boost_LIBRARIES}
-			${VORBISFILE_LIBRARIES} ZLIB::ZLIB ${PLATFORM_LIBS})
 endif()
-
-IF(APPLE)
-	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
-ENDIF()
 
 if(STEAM)
 	add_subdirectory(steamshim_parent)

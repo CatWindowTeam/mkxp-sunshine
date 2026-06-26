@@ -256,15 +256,12 @@ class Interpreter
       # Advance index
       @index += 1
     end
-    # Evaluation
-    #result = eval(script)
-    # If return value is false
-    #if result == false
-    #  # End
-    #  return false
-    #end
     # Continue
-    eval(script)
+    begin
+      eval(script)
+    rescue
+      STDERR.puts "[EVENT] Failed to execute script #{script}"
+    end
     return true
   end
 end

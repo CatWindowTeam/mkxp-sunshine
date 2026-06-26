@@ -16,11 +16,6 @@ class Interpreter
   def initialize(depth = 0, main = false)
     @depth = depth
     @main = main
-    # Depth goes up to level 100
-    if depth > 100
-      print("Common event call has exceeded maximum limit.")
-      exit
-    end
     # Clear inner situation of interpreter
     clear
   end

@@ -339,7 +339,11 @@ class Game_Character
         when 44  # Play SE
           $game_system.se_play(command.parameters[0])
         when 45  # Script
-          eval(command.parameters[0])
+          begin
+            eval(command.parameters[0])
+          rescue
+            STDERR.puts "[Game_Character_2.rb] Failed to execute script #{command.parameters[0]}"
+          end
         end
         @move_route_index += 1
       end

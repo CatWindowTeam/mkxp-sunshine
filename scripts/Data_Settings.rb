@@ -222,11 +222,6 @@ class Window_Settings
     ],
     tr("Controls") => [
       {
-        :type => :base,
-        :name => tr('Configure controls'),
-        :default => tr("Press F1")
-      },
-      {
         :type => :bool,
         :name => tr('Control LED lighting on gamepads'),
         :parameter => :gamepad_led

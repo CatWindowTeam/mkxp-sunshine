@@ -83,7 +83,6 @@ class Game_Map
     @map_id = 0
     @display_x = 0
     @display_y = 0
-    RPG::Mod.exec_hooks("hooks/Game_Map/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Setup
@@ -555,3 +554,4 @@ class Game_Map
     end
   end
 end
+Скажи, нужно ли блокирование света стенами (тени/окклюзия). 

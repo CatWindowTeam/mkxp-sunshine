@@ -40,10 +40,7 @@ class Game_Event < Game_Character
       special = SpecialEventData.get(name.captures[0].to_sym)
       @custom_flags.concat(special.flags)
       @collision = special.collision
-    end
-
-	RPG::Mod.exec_hooks("hooks/Game_Event/init", binding)
-    
+    end    
     # Move to starting position
     moveto(@event.x, @event.y)
     refresh
