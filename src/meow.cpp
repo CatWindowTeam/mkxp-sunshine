@@ -29,6 +29,11 @@
 #ifdef __LINUX__
 	#include <gtk/gtk.h>
 	#include "xdg-user-dir-lookup.h"
+#elif __ANDROID__
+	#include <android/trace.h>
+	#include <android/api-level.h>
+#elif __EMSCRIPTEN__
+	#include <emscripten/console.h>
 #endif
 
 SDL_MessageBoxButtonData buttons[] = {
@@ -75,10 +80,11 @@ void crash(Exception::Type t, const char *fmt, ...){
 		std::string time = std::to_string(now->tm_hour) + "." + std::to_string(now->tm_min) + "." + std::to_string(now->tm_sec);
 		out.open("crash_" + time + ".txt");
 		if (out.is_open()){
-				out << "[SUNSHINE CRASHDUMP]" << std::endl;
+				out << "REASON: " << buf << std::endl;
+				out << "[BOOST stacktrace()]" << std::endl;
+				out << boost::stacktrace::stacktrace() << std::endl;
+				out << "[OpenGL]" << std::endl;
 				try{
-					out << boost::stacktrace::stacktrace() << std::endl;
-					out << "REASON: " << buf << std::endl;
 					out << "GL Vendor: " << glGetStringInt(GL_VENDOR) << std::endl;
 					out << "GL Renderer: " << glGetStringInt(GL_RENDERER) << std::endl;
 					out << "GL Version: " << glGetStringInt(GL_VERSION) << std::endl;
@@ -88,6 +94,7 @@ void crash(Exception::Type t, const char *fmt, ...){
 				}catch(const std::exception& e){
 					out << "Crashed before OpenGL initialization: " << e.what() << std::endl;
 				}
+				out << "[Versions of libs]" << std::endl;
 				const int sdlcompiled = SDL_VERSION;
 				const int sdllinked = SDL_GetVersion();
 				out << "SDL(compiled) version: " << SDL_VERSIONNUM_MAJOR(sdlcompiled) << "." << SDL_VERSIONNUM_MINOR(sdlcompiled) << "." << SDL_VERSIONNUM_MICRO(sdlcompiled) << std::endl;
@@ -96,6 +103,11 @@ void crash(Exception::Type t, const char *fmt, ...){
 				out << "SDL_sound(compiled) version: " << SDL_SOUND_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << std::endl;
 				out << "SDL_TTF(compiled) version: " << SDL_TTF_MAJOR_VERSION << "." << SDL_TTF_MINOR_VERSION << "." << SDL_TTF_MICRO_VERSION << std::endl;
 				out << "Ruby version: " << RUBY_API_VERSION_CODE << std::endl;
+				out << "ZLib version: " << ZLIB_VERSION << std::endl;
+				out << "OpenAL version: " << AL_VERSION << std::endl;	
+				out << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << std::endl;
+				out << "Pixman version: " << PIXMAN_VERSION_STRING << std::endl;
+				out << "[Platform specific]" << std::endl;
 				try{
 					out << "Detected OS: " << SDL_GetPlatform() << std::endl;
 				}catch(const std::exception& e){
@@ -104,11 +116,14 @@ void crash(Exception::Type t, const char *fmt, ...){
 				if(!getenv("XDG_CURRENT_DESKTOP") == NULL){
 					out << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << getenv("XDG_CURRENT_DESKTOP") << std::endl;					
 				}
-
-				out << "ZLib version: " << ZLIB_VERSION << std::endl;
-				out << "OpenAL version: " << AL_VERSION << std::endl;	
-				out << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << std::endl;
-				out << "Pixman version: " << PIXMAN_VERSION_STRING << std::endl;
+				#ifdef __ANDROID__
+					out << "Android API version: " << android_get_device_api_level() << std::endl;
+				#elif __EMSCRIPTEN__
+					out << "Emscripten start address of the stack: " << emscripten_stack_get_base() << std::endl;
+					out << "Emscripten end address of the stack: " << emscripten_stack_get_end() << std::endl;
+					out << "Emscripten current stack pointer: " << emscripten_stack_get_current() << std::endl;
+					out << "Emscripten number of free bytes left on the stack: " << emscripten_stack_get_free() << std::endl;
+				#endif
 				out.close();
 		}else{
 			Debug() << "[CRASHLOG] Failed to write crashdump file";
@@ -127,4 +142,3 @@ void ErrorMsg(const char* message){
 void WarnMsg(const char* message){
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", message, NULL); 
 }
-

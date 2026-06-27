@@ -24,7 +24,7 @@
 #include <vector>
 #include <algorithm>
 #include <system_error>
-
+#include <SDL3/SDL_system.h>
 namespace fs = std::filesystem;
 
 // Get directory for storing cached builds
@@ -38,6 +38,8 @@ std::string getCacheDir(){
 	return std::string(SDL_getenv("HOME")) + "/.cache";
 #elif __APPLE__
 	return "~/Library/Caches";
+#elif __ANDROID__
+	return std::string str(SDL_GetAndroidCachePath());
 #else
 	return "idk";
 #endif
