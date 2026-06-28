@@ -6,6 +6,7 @@
 
 #include <boost/algorithm/string/replace.hpp>
 
+#include "sunshine.h"
 #include "etc.h"
 #include "sharedstate.h"
 #include "binding-util.h"
@@ -25,7 +26,7 @@
 	static bool setStyle = false;
 	static bool setTile = false;
 	static bool isCached = false;
-#else
+#elif unix_like
 	#ifdef __APPLE__
 		#include "mac-desktop.h"
 		static bool isCached = false;
@@ -53,9 +54,6 @@
 		static std::map<std::string, bool> defBlurs;
 		// Fallback settings
 		static std::string fallbackPath;
-		//For Standalone Window managwrs desktops
-		bool IsNitrogen = false;
-		bool IsFeh = false;
 	#endif
 #endif
 
@@ -67,27 +65,7 @@
 		
 		desktop = shState->oneshot().desktopEnv;
 		if (desktop != "nope") {
-			#ifdef DEBUG
-				printf("[desktopEnvironmentInit] Running on standalone Window Manager?Trying identify configuration...\n");
-			#endif
-			// If Nitrogen wallpaper manager and feh is aviable we can just use nitrogen --restore command and feh --bg-scale:P
-			if (FILE *file = fopen("/usr/bin/nitrogen", "r")){
-        		IsNitrogen = true;
-        		#ifdef DEBUG
-					printf("[desktopEnvironmentInit] Nitrogen wallpaper manager detected!I will try to use it...\n");
-				#endif
-				fclose(file);
-    		}else{ fclose(file); }
-    		if (FILE *file = fopen("/usr/bin/feh", "r")) {
-        		IsFeh = true;
-        		#ifdef DEBUG
-    				printf("[desktopEnvironmentInit] Feh detected!I will try to use it...\n");
-    			#endif
-    			fclose(file);
-    		} else{ fclose(file); }
-    		if(!IsNitrogen && !IsFeh){
     			return;
-    		}
 		}
 		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
 			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
@@ -380,11 +358,6 @@ end:
 				Debug() << "[wallpaperSet] Wallpaper command:" << command.str();
 				Debug() << "[wallpaperSet ] Result:" << result;
 			#endif
-		} else if (IsFeh == true) {
-			//path
-			printf("[wallpaperSet] Trying set wallpapers via feh\n");
-			std::string cmd = std::string("feh --bg-scale '") + path + "'";
-			std::system(cmd.c_str());
 		} else {
 			std::ifstream srcHint(gameDirStr + path);
 			std::ofstream dstHint(fallbackPath);
@@ -511,8 +484,6 @@ RB_METHOD(wallpaperReset){
 				Debug() << "[wallpaperReset] Reset wallpaper command:" << command.str();
 				Debug() << "[wallpaperReset] Reset result:" << result;
 			#endif
-		} else if (IsNitrogen == true){
-			system("nitrogen --restore");
 		} else {
 			if (remove(fallbackPath.c_str()) != 0) {
 				#ifdef DEBUG

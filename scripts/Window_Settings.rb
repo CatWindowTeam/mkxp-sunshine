@@ -103,6 +103,13 @@ class Window_Settings
   end
 
   def update
+    if Input.key_press?(Input.key_from_name("F1"))
+      if Oneshot.msgbox(Oneshot::Msg::YESNO, tr("Are you sure you want to reset the control settings?"))
+        Settings.reset_controls!
+        @content.redraw_all
+      end
+    end
+
     if self.visible
       @content.update
     end
