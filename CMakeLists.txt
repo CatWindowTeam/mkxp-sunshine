@@ -153,6 +153,7 @@ elseif(BSD)
 	set(MODLOADER OFF)
 elseif(EMSCRIPTEN)
 	set(STEAM OFF)
+	set(MODLOADER OFF)
   	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
 elseif(APPLE)
   		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
@@ -322,7 +323,7 @@ source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
 set(CMAKE_CXX_STANDARD 23)
 
 if(ANDROID)
-	add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
+	add_library(main SHARED
 		${MAIN_HEADERS}
 		${MAIN_SOURCE}
 		${BINDING_HEADERS}
@@ -330,7 +331,7 @@ if(ANDROID)
 		${EMBEDDED_SOURCE}
 	)
 else()
-	add_library(main SHARED
+	add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 		${MAIN_HEADERS}
 		${MAIN_SOURCE}
 		${BINDING_HEADERS}
