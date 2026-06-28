@@ -193,9 +193,6 @@ static void mriBindingInit(){
 	_rb_define_module_function(mod, "puts", mkxpPuts);
 	_rb_define_module_function(mod, "raw_key_states", mkxpRawKeyStates);
 	_rb_define_module_function(mod, "mouse_in_window", mkxpMouseInWindow);
-
-	/* Load global constants */
-	rb_gv_set("MKXP", Qtrue);
 }
 
 static void printP(int argc, VALUE *argv, const char *convMethod, const char *sep){
@@ -215,17 +212,13 @@ static void printP(int argc, VALUE *argv, const char *convMethod, const char *se
 
 RB_METHOD(mriPrint){
 	RB_UNUSED_PARAM;
-
 	printP(argc, argv, "to_s", "");
-
 	return Qnil;
 }
 
 RB_METHOD(mriP){
 	RB_UNUSED_PARAM;
-
 	printP(argc, argv, "inspect", "\n");
-
 	return Qnil;
 }
 
@@ -241,7 +234,6 @@ RB_METHOD(mkxpPuts){
 	RB_UNUSED_PARAM;
 	const char *str;
 	rb_get_args(argc, argv, "z", &str RB_ARG_END);
-
 	Debug() << str;
 
 	return Qnil;
@@ -551,6 +543,7 @@ static void mriBindingExecute(){
 	 * stdio streams on some platforms (eg. Windows) */
 	int argc = 0;
 	char **argv = 0;
+	//options_argv3[] = "--jit"
 	char options_argv1[] = "oneshot", options_argv2[] = "-ev";
 	char* options_argv[] = {options_argv1, options_argv2, NULL};
 	ruby_sysinit(&argc, &argv);

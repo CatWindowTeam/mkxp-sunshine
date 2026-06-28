@@ -17,13 +17,13 @@ begin
   Font.default_size = 20
   Input.set_led(0, 255, 0)
 
-  if defined?(RubyVM::YJIT)
-    RubyVM::YJIT.enable
-  elsif defined?(RubyVM::ZJIT)
-    RubyVM::ZJIT.enable
-  elsif defined?(RubyVM::RJIT)
-    RubyVM::RJIT.enable
-  end
+  #if defined?(RubyVM::YJIT)
+  #  RubyVM::YJIT.enable
+  #elsif defined?(RubyVM::ZJIT)
+  #  RubyVM::ZJIT.enable
+  #elsif defined?(RubyVM::RJIT)
+  #  RubyVM::RJIT.enable
+  #end
   
   # Load persistent data
   Persistent.load

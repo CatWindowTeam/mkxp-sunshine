@@ -123,6 +123,8 @@ void crash(Exception::Type t, const char *fmt, ...){
 					out << "Emscripten end address of the stack: " << emscripten_stack_get_end() << std::endl;
 					out << "Emscripten current stack pointer: " << emscripten_stack_get_current() << std::endl;
 					out << "Emscripten number of free bytes left on the stack: " << emscripten_stack_get_free() << std::endl;
+				#elif __PSP__
+					out << "PSPdev MIPS Stack Trace: " << int pspDebugGetStackTrace() << std::endl;					
 				#endif
 				out.close();
 		}else{

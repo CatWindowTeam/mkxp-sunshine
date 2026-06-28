@@ -60,7 +60,7 @@ public:
 #ifdef __ANDROID__
 		__android_log_write(ANDROID_LOG_DEBUG, "sunshine", buf.str().c_str());
 #elif __EMSCRIPTEN__
-		emscripten_console_log(buf.str().c_str());		
+		emscripten_console_log(buf.str().c_str());				
 #else
 		std::cerr << buf.str() << "\n";
 #endif
