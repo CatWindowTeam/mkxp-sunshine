@@ -1,4 +1,3 @@
-#include <SDL3/SDL_log.h>
 #include <ruby.h>
 #include <SDL3/SDL_version.h>
 #include <SDL3/SDL_gamepad.h>
@@ -39,27 +38,6 @@ static VALUE int_times(VALUE self) {
     return self;
 }
 
-static VALUE SetLED(VALUE self, VALUE r, VALUE g, VALUE b) {
-    if (gc != nullptr) {
-        SDL_SetGamepadLED(gc, NUM2INT(r), NUM2INT(g), NUM2INT(b));
-    } else if (js != nullptr) {
-        SDL_SetJoystickLED(js, NUM2INT(r), NUM2INT(g), NUM2INT(b));
-    }
-    return Qnil;
-}
-
-static VALUE Rumble(VALUE self, VALUE low_frequency_rumble, VALUE high_frequency_rumble, VALUE duration_ms) {
-    Uint16 low_freq = NUM2DBL(low_frequency_rumble) * 65535;
-    Uint16 high_freq = NUM2DBL(high_frequency_rumble) * 65535;
-    
-    if (gc != nullptr) {
-        SDL_RumbleGamepad(gc, low_freq, high_freq, NUM2INT(duration_ms));
-    } else if (js != nullptr) {
-        SDL_RumbleJoystick(js, low_freq, high_freq, NUM2INT(duration_ms));
-    }
-    return Qnil;
-}
-
 void SunshineBindingInit(){
     printf("[SunshineBindingInit] Initializing Sunshine binding\n");
     VALUE module = rb_define_module("Sunshine");
@@ -68,8 +46,6 @@ void SunshineBindingInit(){
     rb_const_set(module, rb_intern("SDLVersion_minor"), INT2NUM(SDL_MINOR_VERSION));
     rb_const_set(module, rb_intern("SDLVersion_micro"), INT2NUM(SDL_MICRO_VERSION));
 	rb_const_set(module, rb_intern("SECURITYSTATE"), rb_str_new_cstr(securitystate));
-	rb_define_singleton_method(module, "SetLED", SetLED, 3);
-    rb_define_singleton_method(module, "Vibrate", Rumble, 3);
     //если методы доступны то просто не перезаписываем их
 	if (!rb_respond_to(rb_cObject, rb_intern("class"))) {
 	        rb_define_method(rb_cObject, "class", rb_obj_class, 0);

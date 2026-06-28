@@ -15,7 +15,7 @@ begin
   $console = Graphics.fullscreen
   Graphics.frame_rate = 60 
   Font.default_size = 20
-  Sunshine.SetLED(0, 255, 0)
+  Input.set_led(0, 255, 0)
 
   if defined?(RubyVM::YJIT)
     RubyVM::YJIT.enable
