@@ -277,7 +277,26 @@ static VALUE setBinding(VALUE self, VALUE rb_arr, VALUE rb_target){
     return Qnil;
 }
 
+static VALUE setLED(VALUE self, VALUE r, VALUE g, VALUE b) {
+    if (gc != nullptr) {
+        SDL_SetGamepadLED(gc, NUM2INT(r), NUM2INT(g), NUM2INT(b));
+    } else if (js != nullptr) {
+        SDL_SetJoystickLED(js, NUM2INT(r), NUM2INT(g), NUM2INT(b));
+    }
+    return Qnil;
+}
 
+static VALUE rumble(VALUE self, VALUE low_frequency_rumble, VALUE high_frequency_rumble, VALUE duration_ms) {
+    Uint16 low_freq = NUM2DBL(low_frequency_rumble) * 65535;
+    Uint16 high_freq = NUM2DBL(high_frequency_rumble) * 65535;
+    
+    if (gc != nullptr) {
+        SDL_RumbleGamepad(gc, low_freq, high_freq, NUM2INT(duration_ms));
+    } else if (js != nullptr) {
+        SDL_RumbleJoystick(js, low_freq, high_freq, NUM2INT(duration_ms));
+    }
+    return Qnil;
+}
 
 struct{
 	const char *str;
@@ -349,7 +368,11 @@ void inputBindingInit(){
 	_rb_define_module_function(module, "c_axis_from_name", getGamepadAxisFromName);
 	rb_const_set(module, rb_intern("GAMEPAD_AXIS_COUNT"), SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT - 1);
 
-	rb_define_module_function(module, "set_binding", RUBY_METHOD_FUNC(setBinding), 2);
+	rb_define_module_function(module, "set_binding", setBinding, 2);
+	
+	// haptic
+	rb_define_singleton_method(module, "set_led", setLED, 3);
+    rb_define_singleton_method(module, "vibrate", rumble, 3);
 
 	// mouse
 	_rb_define_module_function(module, "mouse_x", inputMouseX);
