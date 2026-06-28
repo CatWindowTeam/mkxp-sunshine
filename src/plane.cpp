@@ -82,8 +82,7 @@ struct PlanePrivate{
 	      shader(ShaderType::SHADER_plane)
 	{
 		updateSrcRectCon();
-		prepareCon = shState->prepareDraw.connect
-		        (sigc::mem_fun(this, &PlanePrivate::prepare));
+		prepareCon = shState->prepareDraw.connect(sigc::mem_fun(this, &PlanePrivate::prepare));
 
 		qArray.resize(1);
 	}
@@ -101,8 +100,7 @@ struct PlanePrivate{
 		/* Cut old connection */
 		srcRectCon.disconnect();
 		/* Create new one */
-		srcRectCon = srcRect->valueChanged.connect
-				(sigc::mem_fun(this, &PlanePrivate::onSrcRectChange));
+		srcRectCon = srcRect->valueChanged.connect(sigc::mem_fun(this, &PlanePrivate::onSrcRectChange));
 	}
 
 	void updateQuadSource(){

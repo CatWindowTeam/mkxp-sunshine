@@ -114,8 +114,7 @@ struct SpritePrivate{
 
 		updateSrcRectCon();
 
-		prepareCon = shState->prepareDraw.connect
-		        (sigc::mem_fun(this, &SpritePrivate::prepare));
+		prepareCon = shState->prepareDraw.connect(sigc::mem_fun(this, &SpritePrivate::prepare));
 
 		wave.amp = 0;
 		wave.length = 180;

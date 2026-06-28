@@ -39,7 +39,7 @@ struct GLDebugLoggerPrivate{
 
 	void writeTimestamp(){
 		time(&timestamp);
-		*stream << "[GLDEBUG " << ctime(&timestamp) << "]";
+		*stream << "[GLDEBUG] [" << ctime(&timestamp) << "]";
 	}
 
 	void writeLine(const char *line){

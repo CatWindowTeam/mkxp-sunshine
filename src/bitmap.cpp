@@ -227,7 +227,7 @@ Bitmap::Bitmap(const char *filename){
 
 	if (!imgSurf)
 		crash(Exception::SDLError, "Error loading image '%s': %s", filename, SDL_GetError());
-		
+
 	p->ensureFormat(imgSurf, SDL_PIXELFORMAT_ABGR8888);
 
 	if (imgSurf->w > glState.caps.maxTexSize || imgSurf->h > glState.caps.maxTexSize){
@@ -1072,6 +1072,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 
 		shState->bindTex();
 		TEX::uploadSubImage(0, 0, txtSurf->w, txtSurf->h, txtSurf->pixels, GL_RGBA);
+		//TODO: настройка в зависимости от oneshot.conf
 		TEX::setSmooth(true);
 
 		Quad &quad = shState->gpQuad();
@@ -1142,7 +1143,6 @@ IntRect Bitmap::textSize(const char *str){
 
 	// i don't know if its right migration, i didn't find any other way
 	TTF_Text* text = TTF_CreateText(NULL, font, str, strlen(str));
-	
 	int w, h;
 	TTF_GetTextSize(text, &w, &h);
 

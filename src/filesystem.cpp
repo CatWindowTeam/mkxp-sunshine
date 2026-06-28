@@ -247,11 +247,6 @@ static void initReadOps(PHYSFS_File *handle, SDL_IOStream* &ops){
 	iface.read  = SDL_RWopsRead;
 	iface.write = SDL_RWopsWrite;
 
-	/* useless now :P
-	if (freeOnClose)
-		ops.close = SDL_RWopsCloseFree;
-	else */
-	
 	iface.flush = SDL_RWopsFlush;
 	iface.close = SDL_RWopsClose;
 
