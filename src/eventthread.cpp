@@ -32,7 +32,6 @@
 
 #include "sharedstate.h"
 #include "graphics.h"
-#include "settingsmenu.h"
 #include "al-util.h"
 #include "debugwriter.h"
 
@@ -174,23 +173,10 @@ void EventThread::process(RGSSThreadData &rtData){
 
 	SDL_GetWindowSize(win, &winW, &winH); // SDL_GL_GetDrawableSize(win, &winW, &winH);
 
-	SettingsMenu *sMenu = 0;
-
 	while (true){
 		if (!SDL_WaitEvent(&event)){
 			Debug() << "[EventThread::process] EventThread: Event error";
 			break;
-		}
-
-		if (sMenu && sMenu->onEvent(event, joysticks)){
-			if (sMenu->destroyReq()){
-				delete sMenu;
-				sMenu = 0;
-
-				updateCursorState(cursorInWindow && windowFocused, gameScreen);
-			}
-
-			continue;
 		}
 
 		/* Preselect and discard unwanted events here */
@@ -227,14 +213,14 @@ void EventThread::process(RGSSThreadData &rtData){
 			case SDL_EVENT_WINDOW_MOUSE_ENTER :
 				cursorInWindow = true;
 				mouseState.inWindow = true;
-				updateCursorState(cursorInWindow && windowFocused && !sMenu, gameScreen);
+				updateCursorState(cursorInWindow && windowFocused, gameScreen);
 
 				break;
 
 			case SDL_EVENT_WINDOW_MOUSE_LEAVE :
 				cursorInWindow = false;
 				mouseState.inWindow = false;
-				updateCursorState(cursorInWindow && windowFocused && !sMenu, gameScreen);
+				updateCursorState(cursorInWindow && windowFocused, gameScreen);
 
 				break;
 
@@ -249,13 +235,13 @@ void EventThread::process(RGSSThreadData &rtData){
 
 			case SDL_EVENT_WINDOW_FOCUS_GAINED :
 				windowFocused = true;
-				updateCursorState(cursorInWindow && windowFocused && !sMenu, gameScreen);
+				updateCursorState(cursorInWindow && windowFocused, gameScreen);
 
 				break;
 
 			case SDL_EVENT_WINDOW_FOCUS_LOST :
 				windowFocused = false;
-				updateCursorState(cursorInWindow && windowFocused && !sMenu, gameScreen);
+				updateCursorState(cursorInWindow && windowFocused, gameScreen);
 				resetInputStates();
 
 				break;
@@ -285,15 +271,6 @@ void EventThread::process(RGSSThreadData &rtData){
 			break;
 
 		case SDL_EVENT_KEY_DOWN :
-			if (event.key.scancode == SDL_SCANCODE_F1){
-				if (!sMenu){
-					sMenu = new SettingsMenu(rtData);
-					updateCursorState(false, gameScreen);
-				}
-
-				sMenu->raise();
-			}
-
 			if (event.key.scancode == SDL_SCANCODE_F2){
 				if (!displayingFPS){
 					fps.immInitFlag.set();
@@ -518,8 +495,6 @@ void EventThread::process(RGSSThreadData &rtData){
 		SDL_CloseGamepad(gcit->second);
 	for (jsit = joysticks.begin(); jsit != joysticks.end(); ++jsit)
 		SDL_CloseJoystick(jsit->second);
-
-	delete sMenu;
 }
 
 bool EventThread::eventFilter(void *data, SDL_Event *event){
