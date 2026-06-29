@@ -15,6 +15,7 @@ set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to
 set(ZLIB_USE_STATIC_LIBS ON)
 set(OPENSSL_USE_STATIC_LIBS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_CXX_STANDARD 23)
 
 # main stuff
 set(MAIN_HEADERS
@@ -209,32 +210,6 @@ set(EMBEDDED_INPUT
 	binding-mri/module_rpg1.rb
 )
 
-# Настройки зависимые от компилятора
-if (MSVC)
-	list(APPEND DEFINES
-		_CRT_SECURE_NO_WARNINGS
-		NOMINMAX
-	)
-	if(DEBUG)
-		add_compile_options(/EHr /fsanitize /validate-charset /DEBUG /RTCu /RTCs /RTCc)
-	else()
-		add_compile_options(/O2 /fp:fast /GL /GF /GA)
-	endif()
-else()
-	if(NATIVE)
-	    add_compile_options(-march=native -mtune=native)
-	endif()
-	if(DEBUG)
-		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -fcheck-new -gbtf)
-	else()
-		add_compile_options(-O2 -ffast-math -fipa-pta -ftree-vectorize -fstdarg-opt -fomit-frame-pointer -frename-registers)
-		add_link_options(-Wl,-O2)
-		if(!WIN32)
-			add_compile_options(-flto)
-		endif()
-	endif()
-endif()
-
 ## Process Embeddeds ##
 find_program(XXD_EXE
   NAMES xxd xxd.exe
@@ -316,9 +291,34 @@ set(BINDING_SOURCE
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
 
-## Setup main executable ##
 
-set(CMAKE_CXX_STANDARD 23)
+
+################ 
+# Настройки зависимые от компилятора
+if (MSVC)
+	list(APPEND DEFINES _CRT_SECURE_NO_WARNINGS NOMINMAX )
+	if(DEBUG)
+		add_compile_options(/EHr /fsanitize /validate-charset /DEBUG /RTCu /RTCs /RTCc)
+	else()
+		add_compile_options(/O2 /fp:fast /GL /GF /GA)
+	endif()
+else()
+	if(NATIVE)
+	    add_compile_options(-march=native -mtune=native)
+	endif()
+	if(DEBUG)
+		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -fcheck-new -gbtf)
+	else()
+		add_compile_options(-O2 -ffast-math -fipa-pta -ftree-vectorize -fstdarg-opt -fomit-frame-pointer -frename-registers 
+		-ffunction-sections -fdata-sections -fvisibility=hidden)
+		add_link_options(-Wl,-O2 -Wl,--gc-sections -Wl,--as-needed -Wl,--strip-debug  -Wl,--no-undefined)
+		if(!WIN32)
+			add_compile_options(-flto)
+		endif()
+	endif()
+endif()
+
+###############
 
 if(ANDROID)
 	add_library(main SHARED

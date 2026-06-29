@@ -194,11 +194,7 @@ struct WindowPrivate {
 	struct WindowControls : public ViewportElement{
 		WindowPrivate *p;
 
-		WindowControls(WindowPrivate *p,
-		               Viewport *viewport = 0)
-		    : ViewportElement(viewport),
-		      p(p)
-		{
+		WindowControls(WindowPrivate *p, Viewport *viewport = 0) : ViewportElement(viewport), p(p) {
 			setZ(2);
 		}
 

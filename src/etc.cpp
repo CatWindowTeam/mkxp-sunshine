@@ -26,8 +26,7 @@
 #include "meow.h"
 #include <SDL3/SDL_pixels.h>
 
-Color::Color(double red, double green, double blue, double alpha)
-	: red(red), green(green), blue(blue), alpha(alpha){
+Color::Color(double red, double green, double blue, double alpha) : red(red), green(green), blue(blue), alpha(alpha){
 	updateInternal();
 }
 
