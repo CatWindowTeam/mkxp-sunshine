@@ -4,7 +4,7 @@
 | :--- | :---: | :--- |
 | Windows | 100% | Играбельно |
 | Linux | 90% | В работе, но уже играбельно<br>TODO:<br>&nbsp;* Fix Wallpaper manager |
-| *BSD | 20% | в работе |
+| *BSD | 15% | в работе |
 | GNU/Hurd | 1% | В работе |
 | Solaris/OpenSolaris | 1% | В работе |
 | RedoxOS | 0% | Не хватает библеотек |

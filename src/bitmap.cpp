@@ -526,6 +526,41 @@ void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec
 	p->onModified();
 }
 
+void Bitmap::gradientFillRect(int x, int y, int width, int height, const Vec4 &color1, const Vec4 &color2, const Vec4 &color3, const Vec4 &color4) {
+	gradientFillRect(IntRect(x, y, width, height), color1, color2);
+}
+
+void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec4 &color2, const Vec4 &color3, const Vec4 &color4) {
+	guardDisposed();
+
+	GUARD_MEGA;
+
+	SimpleColorShader &shader = shState->shaders().simpleColor;
+	shader.bind();
+	shader.setTranslation(Vec2i());
+
+	Quad &quad = shState->gpQuad();
+
+	quad.vert[0].color = color1;
+	quad.vert[1].color = color2;
+	quad.vert[2].color = color3;
+	quad.vert[3].color = color4;
+
+	quad.setPosRect(rect);
+
+	p->bindFBO();
+	p->pushSetViewport(shader);
+
+	p->blitQuad(quad);
+
+	p->popViewport();
+
+	p->addTaintedArea(rect);
+
+	p->onModified();
+}
+
+
 void Bitmap::clearRect(int x, int y, int width, int height){
 	clearRect(IntRect(x, y, width, height));
 }

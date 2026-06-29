@@ -60,6 +60,10 @@ public:
 
 	void gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec4 &color2, bool vertical = false);
 
+	void gradientFillRect(int x, int y, int width, int height, const Vec4 &color1, const Vec4 &color2, const Vec4 &color3, const Vec4 &color4);
+
+	void gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec4 &color2, const Vec4 &color3, const Vec4 &color4);
+
 	void clearRect(int x, int y,
 	               int width, int height);
 	void clearRect(const IntRect &rect);

@@ -264,14 +264,10 @@ class Game_Map
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_down(distance)
-    if $game_switches[98] == true
-      if self.height < Graphics.height / 28
-        @display_y = self.height / 2
-      else
-        @display_y = [@display_y + distance, (self.height - Graphics.height / 28) * 128].min
-      end
+  	if self.height < Graphics.height / 28
+    	@display_y = self.height / 2
     else
-      @display_y += distance
+    	@display_y = [@display_y + distance, (self.height - Graphics.height / 28) * 128].min
     end
   end
   #--------------------------------------------------------------------------
@@ -279,36 +275,24 @@ class Game_Map
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_left(distance)
-    if $game_switches[98] == true
-      @display_x = [@display_x - distance, 0].max
-    else
-      @display_x -= distance
-    end
+    @display_x = [@display_x - distance, 0].max
   end
   #--------------------------------------------------------------------------
   # * Scroll Right
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_right(distance)
-    if $game_switches[98] == true
-      @display_x = [@display_x + distance, (self.width - (Graphics.width / 32)) * 128].min
-    else
-      @display_x += distance
-    end
+  	@display_x = [@display_x + distance, (self.width - (Graphics.width / 32)) * 128].min
   end
   #--------------------------------------------------------------------------
   # * Scroll Up
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_up(distance)
-    if $game_switches[98] == true
-      if self.height < Graphics.height / 28
-        @display_y = self.height / 2
-      else
-        @display_y = [@display_y - distance, 0].max
-      end
+  	if self.height < Graphics.height / 28
+    	@display_y = self.height / 2
     else
-      @display_y -= distance
+   		@display_y = [@display_y - distance, 0].max
     end
   end
   #--------------------------------------------------------------------------
