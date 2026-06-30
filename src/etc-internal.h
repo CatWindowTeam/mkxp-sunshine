@@ -62,6 +62,22 @@ struct Vec4{
 	}
 };
 
+struct Vec4i{
+	int x, y, z, w;
+
+	Vec4i()
+	    : x(0), y(0), z(0), w(0)
+	{}
+
+	Vec4i(int x, int y, int z, int w)
+	    : x(x), y(y), z(z), w(w)
+	{}
+
+	bool operator==(const Vec4i &other) const{
+		return (x == other.x && y == other.y && z == other.z && w == other.w);
+	}
+};
+
 struct Vec2i{
 	int x, y;
 

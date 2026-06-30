@@ -11,6 +11,8 @@ module Settings
         :colorblind                  => false,
         :frameskip                   => true,
         :twm_shader                  => true,
+        :light                       => true,
+        :light_shadows               => true,
 
         # UI
         :in_game_timer               => false,
@@ -153,6 +155,17 @@ class Window_Settings
         :name => tr('World machine shader'),
         :parameter => :twm_shader
       },
+      { :type => :sep, :name => tr("Lighting")},
+      {
+        :type => :bool,
+        :name => tr('Dynamic Light'),
+        :parameter => :light,
+      },
+      #{
+      #  :type => :bool,
+      #  :name => tr('Shadows'),
+      #  :parameter => :light_shadows
+      #},
     ],
     tr("UI") => [
       {

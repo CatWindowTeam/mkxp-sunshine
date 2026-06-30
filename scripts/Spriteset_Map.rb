@@ -78,13 +78,16 @@ class Spriteset_Map
     @timer_sprite = Sprite_Timer.new
     # Make lightbulb sprite
     @bulb = Sprite.new(@viewport_lights)
-	@bulb.x = 0
-	if Graphics.width == 1280
-		@bulb.bitmap = RPG::Cache.light('bulb_16')
-	else
-		@bulb.bitmap = RPG::Cache.light('bulb')
-	end
+    @bulb.x = 0
+    if Graphics.width == 1280
+    	@bulb.bitmap = RPG::Cache.light('bulb_16')
+    else
+    	@bulb.bitmap = RPG::Cache.light('bulb')
+    end
     @bulb.opacity = has_lightbulb? ? 255 : 0
+    # Make dynamic light
+    @dynamic_light = DynamicLight.new(@viewport_lights)
+    $light = @dynamic_light
     # Panorama animation timer
     @pan_animate_timer = 0
     RPG::Mod.exec_hooks("hooks/Spriteset_Map/init", binding)
@@ -116,6 +119,8 @@ class Spriteset_Map
     @footprint_sprites.each do |sprite|
       sprite.dispose
     end
+    # Dispose of dynamic light
+    @dynamic_light.dispose
     # Dispose of weather
     @weather.dispose
     # Dispose of picture sprites
@@ -264,9 +269,9 @@ class Spriteset_Map
     @tilemap.oy = $game_map.display_y / 4
     @tilemap.update
     # Update panorama plane
-	if $game_map.always_moving
-	  $game_map.pan_move_offset += 1
-	end
+    if $game_map.always_moving
+      $game_map.pan_move_offset += 1
+    end
     if $game_map.clamped_x
       x = ($game_player.real_x.to_f / (($game_map.width  - 1) * 128)) * (@panorama.bitmap.width * $game_map.pan_zoom - Graphics.width) 
       @panorama.ox = x < 0.0 ? 0.0 : x
@@ -318,25 +323,15 @@ class Spriteset_Map
     @character_sprites.each do |sprite|
       if !sprite.character.is_a?(Game_Event)
         sprite.update
-      elsif
-
       # this is just a check to make sure the sprite is onscreen for game events
       # based on its current width and height
       # no point in updating the sprite if offscreen
       # this greatly increases performance on larger maps
-        if Graphics.width == 1280
-            ((sprite.character.real_x + (sprite.ox*4) > Graphics.width - 128) &&
-                (sprite.character.real_x - (sprite.ox*4) < Graphics.width + (21 * 128)) &&
-                (sprite.character.real_y + (sprite.oy*4) > (Graphics.height) - 128) &&
-                (sprite.character.real_y - (sprite.oy*4) < (Graphics.height) + (17 * 128)))
-            sprite.update
-        else
-            ((sprite.character.real_x + (sprite.ox*4) > Graphics.width - 128) &&
-                (sprite.character.real_x - (sprite.ox*4) < Graphics.width + (10 * 128)) &&
-                (sprite.character.real_y + (sprite.oy*4) > (Graphics.height) - 128) &&
-                (sprite.character.real_y - (sprite.oy*4) < (Graphics.height) + (6 * 128)))
-            sprite.update
-        end
+      elsif ((sprite.character.real_x + (sprite.ox*4) > $game_map.display_x - 128) &&
+             (sprite.character.real_x - (sprite.ox*4) < $game_map.display_x + ((Graphics.width / 32 + 1) * 128)) &&
+             (sprite.character.real_y + (sprite.oy*4) > ($game_map.display_y) - 128) &&
+             (sprite.character.real_y - (sprite.oy*4) < ($game_map.display_y) + (Graphics.height / 32 * 128)))
+        sprite.update
       else
         sprite.update_fast
       end
@@ -367,6 +362,8 @@ class Spriteset_Map
         @bulb.opacity -= 2.125
       end
     end
+    
+    @dynamic_light.update
     # Update particles
     @particles.update if @particles
     # Update timer sprite

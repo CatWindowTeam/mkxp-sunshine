@@ -82,7 +82,8 @@ set(scripts
   i18n_Language.rb
   Window_TPtL.rb
   Settings.rb
-  Input.rb)
+  Input.rb
+  DynamicLight.rb)
 
 find_program(RUBY_EXE ruby
   DOC "Location of the Ruby executable")

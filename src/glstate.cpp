@@ -82,6 +82,12 @@ void GLBlendMode::apply(const BlendType &value){
 		gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE,
 		                     GL_ONE,       GL_ONE);
 		break;
+
+	case BlendMultiply :
+		gl.BlendEquation(GL_FUNC_ADD);
+		gl.BlendFuncSeparate(GL_DST_COLOR, GL_ZERO,
+		                     GL_ZERO,      GL_ONE);
+		break;
 	}
 }
 

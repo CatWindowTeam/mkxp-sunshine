@@ -63,12 +63,6 @@ static const int atAreaW = autotileW * 4;
 static const int atAreaH = autotileH * autotileCount;
 
 static const int tsLaneW = tilesetW / 2;
-/* Map viewport size */
-//TODO: разные значения под разные разрешения экрана для оптимизации
-static const int viewpW = 42;
-static const int viewpH = 26;
-
-static const size_t zlayersMax = viewpH + 5;
 
 /* Vocabulary:
  *
@@ -255,6 +249,9 @@ struct TilemapPrivate {
 		std::vector<uint8_t> animatedATs;
 	} atlas;
 
+	int viewpW, viewpH;
+	size_t zlayersMax;
+
 	/* Map viewport position */
 	Vec2i viewpPos;
 
@@ -262,11 +259,11 @@ struct TilemapPrivate {
 	SVVector groundVert;
 
 	/* ZLayer vertices */
-	SVVector zlayerVert[zlayersMax];
+	std::vector<SVVector> zlayerVert;
 
 	/* Base quad indices of each zlayer
 	 * in the shared buffer */
-	size_t zlayerBases[zlayersMax+1];
+	std::vector<size_t> zlayerBases;
 
 	/* Shared buffers for all tiles */
 	struct{
@@ -285,7 +282,7 @@ struct TilemapPrivate {
 	/* Scene elements */
 	struct{
 		GroundLayer *ground;
-		ZLayer* zlayers[zlayersMax];
+		std::vector<ZLayer*> zlayers;
 		/* Used layers out of 'zlayers' (rest is hidden) */
 		size_t activeLayers;
 		Scene::Geometry sceneGeo;
@@ -330,8 +327,14 @@ struct TilemapPrivate {
 	      buffersDirty(false),
 	      mapViewportDirty(false),
 	      zOrderDirty(false),
-	      tilemapReady(false)
+	      tilemapReady(false),
+		  viewpW(shState->graphics().width() / 32 + 1),
+		  viewpH(shState->graphics().height() / 32 + 2),
+		  zlayersMax(viewpH + 5)
 	{
+		zlayerVert.resize(zlayersMax);
+		zlayerBases.resize(zlayersMax + 1);
+
 		SDL_memset(autotiles, 0, sizeof(autotiles));
 
 		atlas.animatedATs.reserve(autotileCount);
@@ -351,6 +354,7 @@ struct TilemapPrivate {
 		GLMeta::vaoInit(tiles.vao);
 
 		elem.ground = new GroundLayer(this, viewport);
+		elem.zlayers.resize(zlayersMax);
 
 		for (size_t i = 0; i < zlayersMax; ++i)
 			elem.zlayers[i] = new ZLayer(this, viewport);
@@ -363,8 +367,8 @@ struct TilemapPrivate {
 	~TilemapPrivate(){
 		/* Destroy elements */
 		delete elem.ground;
-		for (size_t i = 0; i < zlayersMax; ++i)
-			delete elem.zlayers[i];
+		for (ZLayer* ptr : elem.zlayers)
+		    delete ptr;
 
 		shState->releaseAtlasTex(atlas.gl);
 
@@ -820,7 +824,7 @@ struct TilemapPrivate {
 	 * are muted via the 'batchedFlag'. For simplicity,
 	 * single sized batches are possible. */
 	void prepareZLayerBatches(){
-		ZLayer *const *zlayers = elem.zlayers;
+		ZLayer *const *zlayers = elem.zlayers.data();
 
 		for (size_t i = 0; i < elem.activeLayers; ++i){
 			ZLayer *batchHead = zlayers[i];

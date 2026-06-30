@@ -264,7 +264,7 @@ class Game_Map
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_down(distance)
-  	if self.height < Graphics.height / 28
+    if self.height < Graphics.height / 28
     	@display_y = self.height / 2
     else
     	@display_y = [@display_y + distance, (self.height - Graphics.height / 28) * 128].min
@@ -289,10 +289,10 @@ class Game_Map
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_up(distance)
-  	if self.height < Graphics.height / 28
-    	@display_y = self.height / 2
+    if self.height < Graphics.height / 28
+      @display_y = self.height / 2
     else
-   		@display_y = [@display_y - distance, 0].max
+   	  @display_y = [@display_y - distance, 0].max
     end
   end
   #--------------------------------------------------------------------------

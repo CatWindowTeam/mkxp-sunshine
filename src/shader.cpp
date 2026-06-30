@@ -56,6 +56,7 @@
 #include "blurH.vert.xxd"
 #include "blurV.vert.xxd"
 #include "obscured.frag.xxd"
+#include "dynamicLight.frag.xxd"
 
 #include "meow.h"
 #include "sunshine.h"
@@ -200,7 +201,7 @@ void Shader::setVec4Uniform(GLint location, const Vec4 &vec) {
 
 void Shader::setTexUniform(GLint location, unsigned unitIndex, TEX::ID texture) {
 	GLenum texUnit = GL_TEXTURE0 + unitIndex;
-
+	
 	gl.ActiveTexture(texUnit);
 	gl.BindTexture(GL_TEXTURE_2D, texture.gl);
 	gl.Uniform1i(location, unitIndex);
@@ -272,6 +273,65 @@ SimpleShader::SimpleShader(){
 
 void SimpleShader::setTexOffsetX(int value){
 	gl.Uniform1f(u_texOffsetX, value);
+}
+
+
+DynamicLightShader::DynamicLightShader(){
+	INIT_SHADER(simple, dynamicLight, DynamicLightShader);
+
+	ShaderBase::init();
+	
+	GET_U(wallMapTexture);
+	GET_U(wallMapResolution);
+	GET_U(cameraPosition);
+	GET_U(tileMapOffset);
+	GET_U(lightSourcesCount);
+	GET_U(ambientLight);
+	
+	u_lightSources = gl.GetUniformLocation(program, "lightSources[0]");
+	u_lightSourcesColors = gl.GetUniformLocation(program, "lightSourcesColors[0]");
+}
+
+void DynamicLightShader::setWallMapTexture(TEX::ID texture){
+	setTexUniform(u_wallMapTexture, 1, texture);
+}
+
+void DynamicLightShader::setWallMapResolution(int x, int y){
+	gl.Uniform2f(u_wallMapResolution, x, y);
+}
+
+void DynamicLightShader::setCameraPosition(int x, int y){
+	gl.Uniform2f(u_cameraPosition, x, y);
+}
+
+void DynamicLightShader::setTileMapOffset(int x, int y){
+	gl.Uniform2f(u_tileMapOffset, x, y);
+}
+
+void DynamicLightShader::setLightSources(std::vector<LightSource> sources){
+	gl.Uniform1i(u_lightSourcesCount, sources.size());
+	for(int i = 0; i < sources.size(); i++)
+	{
+		if (!sources[i].hasEffect())
+			continue;
+		
+		gl.Uniform4f(u_lightSources + i,
+			sources[i].x,
+			sources[i].y,
+			sources[i].power,
+			sources[i].radius
+		);
+		gl.Uniform4f(u_lightSourcesColors + i,
+			sources[i].color.red / 255.0,
+			sources[i].color.green / 255.0,
+			sources[i].color.blue / 255.0,
+			sources[i].color.alpha / 255.0
+		);
+	}
+}
+
+void DynamicLightShader::setAmbient(float power){
+	gl.Uniform1f(u_ambientLight, power);
 }
 
 

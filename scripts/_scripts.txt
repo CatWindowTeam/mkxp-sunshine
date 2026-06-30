@@ -101,6 +101,7 @@ Doc_Message
 Desktop_Message
 Credits_Message
 Particles
+DynamicLight
 
 EdText
 Main

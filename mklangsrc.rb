@@ -47,6 +47,22 @@ module RPG
   end
 end
 class Table
+  def each_with_index
+    x = 0
+    y = 0
+    z = 0
+    while z < self.sizez
+      while y < self.sizey
+        while x < self.sizex
+          yield(self[x, y, z], x, y, z)
+          x += 1
+        end
+        y += 1
+      end
+      z += 1
+    end
+  end
+
   def self._load(foo)
   end
 end

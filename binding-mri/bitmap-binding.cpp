@@ -273,8 +273,8 @@ DEF_PROP_OBJ_VAL(Bitmap, Font, Font, "font")
 RB_METHOD(bitmapGradientFillRect){
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
-	VALUE color1Obj, color2Obj;
-	Color *color1, *color2;
+	VALUE color1Obj, color2Obj, color3Obj, color4Obj;
+	Color *color1, *color2, *color3, *color4;
 	bool vertical = false;
 
 	if (argc == 3 || argc == 4){
@@ -289,7 +289,8 @@ RB_METHOD(bitmapGradientFillRect){
 		color2 = getPrivateDataCheck<Color>(color2Obj, ColorType);
 
 		GUARD_EXC( b->gradientFillRect(rect->toIntRect(), color1->norm, color2->norm, vertical); );
-	}else{
+	}
+	else if (argc == 6 || argc == 7){
 		int x, y, width, height;
 
 		rb_get_args(argc, argv, "iiiioo|b", &x, &y, &width, &height,
@@ -300,21 +301,11 @@ RB_METHOD(bitmapGradientFillRect){
 
 		GUARD_EXC( b->gradientFillRect(x, y, width, height, color1->norm, color2->norm, vertical); );
 	}
-
-	return self;
-}
-
-RB_METHOD(bitmapGradientFillRect4){
-	Bitmap *b = getPrivateData<Bitmap>(self);
-
-	VALUE color1Obj, color2Obj, color3Obj, color4Obj;
-	Color *color1, *color2, *color3, *color4;
-
-	if (argc == 4 || argc == 5){
+	else if (argc == 5){
 		VALUE rectObj;
 		Rect *rect;
 
-		rb_get_args(argc, argv, "ooo|b", &rectObj, &color1Obj, &color2Obj, &color3Obj, &color4Obj RB_ARG_END);
+		rb_get_args(argc, argv, "ooooo", &rectObj, &color1Obj, &color2Obj, &color3Obj, &color4Obj RB_ARG_END);
 
 		rect = getPrivateDataCheck<Rect>(rectObj, RectType);
 		color1 = getPrivateDataCheck<Color>(color1Obj, ColorType);
@@ -326,7 +317,7 @@ RB_METHOD(bitmapGradientFillRect4){
 	}else{
 		int x, y, width, height;
 
-		rb_get_args(argc, argv, "iiiioo|b", &x, &y, &width, &height, &color1Obj, &color2Obj, &color3Obj, &color4Obj RB_ARG_END);
+		rb_get_args(argc, argv, "iiiioooo", &x, &y, &width, &height, &color1Obj, &color2Obj, &color3Obj, &color4Obj RB_ARG_END);
 
 		color1 = getPrivateDataCheck<Color>(color1Obj, ColorType);
 		color2 = getPrivateDataCheck<Color>(color2Obj, ColorType);

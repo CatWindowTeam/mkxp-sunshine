@@ -25,6 +25,7 @@
 #include "disposable.h"
 #include "etc-internal.h"
 #include "etc.h"
+#include "debugwriter.h"
 
 // #include <sigc++/signal.h>
 #include <sigc++/signal.h>

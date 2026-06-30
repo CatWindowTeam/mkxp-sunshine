@@ -139,6 +139,7 @@ void steamBindingInit();
 void shaderBindingInit();
 void ModLoaderBindingInit();
 void keybindingsBindingInit();
+void lightmapBindingInit();
 
 RB_METHOD(mriPrint);
 RB_METHOD(mriP);
@@ -176,6 +177,7 @@ static void mriBindingInit(){
 	shaderBindingInit();
 	ModLoaderBindingInit();
 	keybindingsBindingInit();
+	lightmapBindingInit();
 
 	_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
 	_rb_define_module_function(rb_mKernel, "rgss_stop", mriRgssStop);

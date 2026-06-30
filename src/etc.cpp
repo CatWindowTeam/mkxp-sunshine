@@ -68,17 +68,17 @@ void Color::set(double red, double green, double blue, double alpha){
 
 void Color::setRed(double value){
 	red = value;
-	norm.x = clamp<double>(value, 0, 255) / 255;
+	norm.x = value / 255;
 }
 
 void Color::setGreen(double value){
 	green = value;
-	norm.y = clamp<double>(value, 0, 255) / 255;
+	norm.y = value / 255;
 }
 
 void Color::setBlue(double value){
 	blue = value;
-	norm.z = clamp<double>(value, 0, 255) / 255;
+	norm.z = value / 255;
 }
 
 void Color::setAlpha(double value){

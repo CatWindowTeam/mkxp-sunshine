@@ -40,7 +40,9 @@ void main(){
 	float p2 = pow(noise2 + 0.02, 20.0);
 
 	vec4 frag = mix(vec4(color.r, color.g, color.b, 1.0) * color.a, vec4(color.r, color.g, color.b, 1.0) * tone.a, noise1) + vec4(p, p, p, 1.0) * tone;
-	frag += mix(vec4(color.r, color.g, color.b, 1.0) * color.a, vec4(color.r, color.g, color.b, 1.0) * tone.a, noise2) + vec4(p2, p2, p2, 1.0) * tone;
+		frag += mix(vec4(color.r, color.g, color.b, 1.0) * color.a, vec4(color.r, color.g, color.b, 1.0) * tone.a, noise2) + vec4(p2, p2, p2, 1.0) * tone;
+		frag.a = clamp(frag.a / 2.0, 0.0, 1.0);
+		frag.rgb = clamp(frag.rgb, vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));
 
 	/* Apply opacity */
 	frag.a *= opacity;

@@ -4,7 +4,7 @@ include(FindPackageHandleStandardArgs)
 
 # Options
 option(STEAM "Build for Steam" OFF)
-option(DEBUG "Debug mode" OFF)
+option(DEBUG "Debug mode" ON)
 option(NATIVE "Use native instructions(for local use only)" OFF)
 option(MODLOADER "Build with modloader" ON)
 
@@ -77,6 +77,7 @@ set(MAIN_HEADERS
 	src/meow.h
 	src/modloader.h
 	src/sunshine.h
+	src/lightmap.h
 )
 
 set(MAIN_SOURCE
@@ -122,6 +123,7 @@ set(MAIN_SOURCE
 	src/meow.cpp
 	src/modloader.cpp
 	src/sunshine.cpp
+	src/lightmap.cpp
 )
 
 if(WIN32)
@@ -194,6 +196,7 @@ set(EMBEDDED_INPUT
 	shader/simpleColor.frag
 	shader/simpleAlpha.frag
 	shader/simpleAlphaUni.frag
+	shader/dynamicLight.frag
 	shader/flashMap.frag
 	shader/obscured.frag
 	shader/minimal.vert
@@ -287,6 +290,7 @@ set(BINDING_SOURCE
 	binding-mri/shader-binging.cpp
 	binding-mri/modloader-binding.cpp
 	binding-mri/keybindings-binding.cpp
+	binding-mri/lightmap-binding.cpp
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})

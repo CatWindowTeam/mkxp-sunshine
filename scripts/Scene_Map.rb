@@ -438,22 +438,22 @@ class Scene_Map
   def new_footprint(direction, x, y)
     if @spriteset != nil
       @spriteset.new_footprint(direction, x, y)
-	end
+    end
   end
   def new_footsplash(direction, x, y)
     if @spriteset != nil
       @spriteset.new_footsplash(direction, x, y)
-	end
+    end
   end
   def new_maptext(text, x, y)
     if @spriteset != nil
       @spriteset.new_maptext(text, x, y)
-	end
+    end
   end
   def fix_footsplashes(xDelt, yDelt)
     if @spriteset != nil
       @spriteset.fix_footsplashes(xDelt, yDelt)
-	end
+    end
   end
   def menu_open?
     @menu.visible || @item_menu.visible

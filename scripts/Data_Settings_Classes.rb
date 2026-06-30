@@ -34,7 +34,7 @@ class Window_Settings
 
       @selection_sprite = Sprite.new(@viewport)
       @selection_sprite.bitmap = Bitmap.new(PARAMETER_WIDTH + 16, PARAMETER_HEIGHT)
-      @selection_sprite.bitmap.fill_rect(Rect.new(0, 0, PARAMETER_WIDTH + 16, PARAMETER_HEIGHT), Color.new(255, 255, 255, 64))
+      @selection_sprite.bitmap.fill_rect(Rect.new(0, 0, PARAMETER_WIDTH + 16, PARAMETER_HEIGHT), Color.new(255, 255, 255, 128))
       @selection_sprite.x = @x - 8
       @selection_sprite.y = @offset
       @selection_sprite.opacity = 0
@@ -46,6 +46,7 @@ class Window_Settings
       @screen_panel_selection_sprite.bitmap.gradient_fill_rect(0, 0, @screen_panel_selection_sprite.bitmap.width, @screen_panel_selection_sprite.bitmap.height, Color.new(255, 255, 255, 0), Color.new(255, 255, 255, 128), true)
       @screen_panel_selection_sprite.y = SCREENS_PANELS_MARGIN + SCREENS_PANELS_TOP_MARGIN
       @screen_panel_selection_sprite.x = Graphics.width / 2
+      @screen_panel_selection_sprite.blend_type = 1
 
       @switch_panels_hint_left = Sprite.new(@viewport)
       @switch_panels_hint_left.bitmap = Bitmap.new(PARAMETER_WIDTH / 2 - SCREENS_PANELS_MARGIN, @screen_panel_selection_sprite.height / 2)
@@ -61,6 +62,7 @@ class Window_Settings
       @switch_panels_hint_left.zoom_x = @switch_panels_hint_right.zoom_x =
       @switch_panels_hint_left.zoom_y = @switch_panels_hint_right.zoom_y = 2
       @switch_panels_hint_left.opacity = @switch_panels_hint_right.opacity = 127
+      @switch_panels_hint_left.blend_type = @switch_panels_hint_right.blend_type = 1
 
       redraw_panels_hints
 

@@ -48,8 +48,10 @@ void main(){
 	float noise2 = pnoise(uv2 + vec2(WATER_DISTORTION, -WATER_DISTORTION) * noise);
 	float p2 = pow(noise2 + 0.2, 10.0);
 
-	vec4 frag = mix(vec4(waterColor1.rgb, 1.0), vec4(waterColor2.rgb, 1.0), noise1) + vec4(vec3(mix(p, 1.0, textureColor.r)) * waterColor3.rgb, 1.0);
-	    frag += mix(vec4(waterColor1.rgb, 1.0), vec4(waterColor2.rgb, 1.0), noise2) + vec4(vec3(mix(p2, 1.0, textureColor.r)) * waterColor3.rgb, 1.0);
+	vec4 frag = mix(vec4(waterColor1.rgb, 1.0), vec4(waterColor2.rgb, 1.0), noise1) + vec4(vec3(mix(p, 1.0, textureColor.r)) * waterColor3.rgb, 0.0);
+	    frag += mix(vec4(waterColor1.rgb, 1.0), vec4(waterColor2.rgb, 1.0), noise2) + vec4(vec3(mix(p2, 1.0, textureColor.r)) * waterColor3.rgb, 0.0);
+		frag.a = clamp(frag.a / 2.0, 0.0, 1.0);
+		frag.rgb = clamp(frag.rgb, vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));
 	
 	float isWater = float(
 		waterColorCheck == vec4(1, 0, 0, 1)

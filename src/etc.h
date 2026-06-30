@@ -34,7 +34,8 @@ enum BlendType{
 
 	BlendNormal = 0,
 	BlendAddition = 1,
-	BlendSubstraction = 2
+	BlendSubstraction = 2,
+	BlendMultiply = 3
 };
 
 struct Color : public Serializable{
@@ -190,6 +191,27 @@ struct Rect : public Serializable{
 	int height;
 
 	sigc::signal<void> valueChanged;
+};
+
+
+struct LightSource {
+    float x;
+    float y;
+    float power;
+    float radius;
+    Color color;
+
+	LightSource()
+	  : x(0), y(0), power(0), radius(0), color(Color())
+	{};
+	
+	LightSource(float x, float y, float power, float radius, Color color)
+	  : x(x), y(y), power(power), radius(radius), color(color)
+	{};
+
+	bool hasEffect(){
+		return radius > 0.0 && power > 0.0 && color.alpha >= 0.0 && (color.red > 0.0 || color.green > 0.0 || color.blue > 0.0);
+	}
 };
 
 /* For internal use.

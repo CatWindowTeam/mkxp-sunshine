@@ -442,6 +442,9 @@ void Sprite::setBlendType(int type){
 	case BlendSubstraction :
 		p->blendType = BlendSubstraction;
 		return;
+	case BlendMultiply :
+		p->blendType = BlendMultiply;
+		return;
 	}
 }
 

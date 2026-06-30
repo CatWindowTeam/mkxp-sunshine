@@ -62,7 +62,7 @@ public:
 #elif __EMSCRIPTEN__
 		emscripten_console_log(buf.str().c_str());				
 #else
-		std::cerr << buf.str() << "\n";
+		std::cout << buf.str() << "\n";
 #endif
 	}
 

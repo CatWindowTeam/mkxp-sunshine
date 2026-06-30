@@ -103,6 +103,22 @@ private:
 	GLint u_texOffsetX;
 };
 
+
+class DynamicLightShader : public ShaderBase{
+public:
+	DynamicLightShader();
+
+	void setWallMapTexture(TEX::ID texture);
+	void setWallMapResolution(int x, int y);
+	void setCameraPosition(int x, int y);
+	void setTileMapOffset(int x, int y);
+	void setLightSources(std::vector<LightSource> sources);
+	void setAmbient(float power);
+
+private:
+	GLint u_wallMapTexture, u_wallMapResolution, u_cameraPosition, u_tileMapOffset, u_lightSources, u_lightSourcesCount, u_lightSourcesColors, u_ambientLight;
+};
+
 class SimpleColorShader : public ShaderBase{
 public:
 	SimpleColorShader();
@@ -353,7 +369,8 @@ private:
 	X(blt,            BltShader,          Blt) \
 	X(simpleMatrix,   SimpleMatrixShader, SimpleMatrix) \
 	X(blur,           BlurShader,         Blur) \
-	X(obscured,       ObscuredShader,     Obscured)
+	X(obscured,       ObscuredShader,     Obscured) \
+	X(dynamicLight,   DynamicLightShader, DynamicLight)
 
 struct ShaderSet{
 	#define DECLARE_SHADER(name, type, rb) type name;
