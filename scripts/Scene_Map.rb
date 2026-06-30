@@ -256,6 +256,7 @@ class Scene_Map
       $game_temp.transition_processing = false
       # Execute transition
       if $game_temp.transition_name == ""
+        update
         Graphics.transition(20)
       elsif $game_temp.transition_name == "black"
         @blackfade.visible = true
@@ -398,18 +399,6 @@ class Scene_Map
     $game_map.autoplay
     # Frame reset
     Graphics.frame_reset
-  end
-  #--------------------------------------------------------------------------
-  # * Lighting operations
-  #--------------------------------------------------------------------------
-  def add_light(id, filename, intensity, x, y)
-    @spriteset.add_light(id, filename, intensity, x, y)
-  end
-  def del_light(id)
-    @spriteset.del_light(id)
-  end
-  def clear_lights
-    @spriteset.clear_lights
   end
   #--------------------------------------------------------------------------
   # * Particle operations
