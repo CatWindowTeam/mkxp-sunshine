@@ -16,6 +16,13 @@ class DynamicLight
     @plr_light_radius = -1.0
     @plr_light_radius_lerped = 5.0
     @plr_light_color = Color.new(255, 255, 255)
+    @plr_light_table = [
+    # offset_x, offset_y, power_mult, radius mult
+        0.0, -0.5, 1.0, 1.0, # down
+      -0.25, -0.5, 1.0, 0.7, # left
+       0.25, -0.5, 1.0, 0.7, # right
+        0.0,  0.0, 0.0, 1.0  # up
+    ]
 
     @light_sprite = LightMap.new(viewport)
     @light_sprite.wallmap = Bitmap.new($game_map.width, $game_map.height)
@@ -36,24 +43,41 @@ class DynamicLight
   end
 
   def update
-    @plr_light_radius_lerped = @plr_light_radius_lerped * 0.8 + @plr_light_radius * 0.2
-
+    # dont render light if its disabled or not awaked
     @light_sprite.visible = Settings[:light] && @awaked
     if (!Settings[:light] && @awaked)
       return
     end
 
+    # shader uniforms
     @light_sprite.camera_x = $game_map.display_x / 4
     @light_sprite.camera_y = $game_map.display_y / 4
     @light_sprite.tilemap_offset_x = ($game_map.display_x / 128) * 32 - $game_map.display_x / 4
     @light_sprite.tilemap_offset_y = ($game_map.display_y / 128) * 32 - $game_map.display_y / 4
 
+    # clear all npc light
     @light_sprite.clear_dynamic_sources()
-    plr_light = [$game_player.real_x / 128.0, $game_player.real_y / 128.0, @plr_light_power, @plr_light_radius_lerped, @plr_light_color]
+    
+    # player light
+    table_offset = ($game_player.direction - 2) * 2
+    offset_x = @plr_light_table[table_offset]
+    offset_y = @plr_light_table[table_offset + 1]
+    power_mult = @plr_light_table[table_offset + 2]
+    power_radius = @plr_light_table[table_offset + 3]
+    @plr_light_radius_lerped = @plr_light_radius_lerped * 0.8 + @plr_light_radius * 0.2 * power_radius
+    plr_light = [
+      $game_player.real_x / 128.0 + offset_x,
+      $game_player.real_y / 128.0 + offset_y,
+      @plr_light_power * power_mult,
+      @plr_light_radius_lerped,
+      @plr_light_color
+    ]
+    
     if has_effect(plr_light)
-      @light_sprite.add_dynamic_source(plr_light[0], plr_light[1] - 0.5, plr_light[2], plr_light[3], plr_light[4])
+      @light_sprite.add_dynamic_source(plr_light[0], plr_light[1], plr_light[2], plr_light[3], plr_light[4])
     end
 
+    # add npc light
     @light_npc.each { |npc_light_source|
       npc_light = [npc_light_source[0].real_x / 128.0, npc_light_source[0].real_y / 128.0, npc_light_source[1], npc_light_source[2], npc_light_source[3]]
       if has_effect(npc_light)
@@ -119,5 +143,29 @@ class DynamicLight
       @plr_light_radius_lerped = val
     end
     @plr_light_radius = val
+  end
+
+  def plr_light_table
+    @plr_light_table
+  end
+  def plr_light_table=(val)
+    puts "aboba"
+    @plr_light_table[0]  = val&.[](0)  || 0
+    @plr_light_table[1]  = val&.[](1)  || 0
+    @plr_light_table[2]  = val&.[](2)  || 1
+    @plr_light_table[3]  = val&.[](3)  || 1
+    @plr_light_table[4]  = val&.[](4)  || 0
+    @plr_light_table[5]  = val&.[](5)  || 0
+    @plr_light_table[6]  = val&.[](6)  || 1
+    @plr_light_table[7]  = val&.[](7)  || 1
+    @plr_light_table[8]  = val&.[](8)  || 0
+    @plr_light_table[9]  = val&.[](9)  || 0
+    @plr_light_table[10] = val&.[](10) || 1
+    @plr_light_table[11] = val&.[](11) || 1
+    @plr_light_table[12] = val&.[](12) || 0
+    @plr_light_table[13] = val&.[](13) || 0
+    @plr_light_table[14] = val&.[](14) || 1
+    @plr_light_table[15] = val&.[](15) || 1
+    puts "aboba2"
   end
 end

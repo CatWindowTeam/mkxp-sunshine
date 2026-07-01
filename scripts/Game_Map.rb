@@ -537,4 +537,11 @@ class Game_Map
       @fog_opacity_duration -= 1
     end
   end
+
+  def set_tile(x, y, z, tile)
+    if z < 0 || z > 2 || x < 0 || x >= width || y < 0 || y >= height
+      return
+    end
+    @map.data[x, y, z] = tile
+  end
 end
