@@ -264,7 +264,7 @@ class Game_Character
     # If character
     else
       # If height exceeds 32, then add 31
-      return z + ((height > 32) ? 31 : 0)
+      return z + (((height || 0) > 32) ? 31 : 0)
     end
   end
   #--------------------------------------------------------------------------
