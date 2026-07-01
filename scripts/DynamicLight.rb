@@ -81,7 +81,7 @@ class DynamicLight
   end
 
   def has_effect(source)
-    source[2] > 0 && source[3] > 0 && source[4].alpha >= 0 && (source[4].red > 0 || source[4].green > 0 || source[4].blue > 0)
+    source[2] != 0 && source[3] > 0 && source[4].alpha >= 0 && (source[4].red != 0 || source[4].green != 0 || source[4].blue != 0)
   end
 
   #def remove(x, y)

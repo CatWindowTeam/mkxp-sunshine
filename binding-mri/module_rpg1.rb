@@ -72,8 +72,8 @@ module RPG
       self.load_bitmap("Graphics/Icons/", filename)
     end
     def self.panorama(filename, hue)
-	  if Graphics.width == 1280 && File.exist?("Graphics/Panoramas/" + filename + "_16.png")
-		self.load_bitmap("Graphics/Panoramas/", filename + "_16", hue)
+      if Graphics.width == 1280 && File.exist?("Graphics/Panoramas/" + filename + "_16.png")
+        self.load_bitmap("Graphics/Panoramas/", filename + "_16", hue)
       else
       	self.load_bitmap("Graphics/Panoramas/", filename, hue)
       end
@@ -223,7 +223,7 @@ module RPG
       end
       @_animation_sprites = []
       if @_animation.position != 3 or not @@_animations.include?(animation)
-        for i in 0..15
+        for _ in 0..15
           sprite = ::Sprite.new(self.viewport)
           sprite.bitmap = bitmap
           sprite.visible = false
@@ -250,7 +250,7 @@ module RPG
         @@_reference_count[bitmap] = 1
       end
       @_loop_animation_sprites = []
-      for i in 0..15
+      for _ in 0..15
         sprite = ::Sprite.new(self.viewport)
         sprite.bitmap = bitmap
         sprite.visible = false

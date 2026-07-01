@@ -210,7 +210,7 @@ struct LightSource {
 	{};
 
 	bool hasEffect(){
-		return radius > 0.0 && power > 0.0 && color.alpha >= 0.0 && (color.red > 0.0 || color.green > 0.0 || color.blue > 0.0);
+		return radius > 0.0 && power != 0.0 && color.alpha >= 0.0 && (color.red != 0.0 || color.green != 0.0 || color.blue != 0.0);
 	}
 };
 
