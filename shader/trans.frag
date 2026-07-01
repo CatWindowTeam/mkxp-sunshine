@@ -11,7 +11,7 @@ uniform float vague;
 varying vec2 v_texCoord;
 
 void main(){
-    float transV = texture2D(transMap, v_texCoord).r;
+    float transV = 1.0 - (1.0 - texture2D(transMap, v_texCoord).r) * (1.0 - vague);
     float cTransV = clamp(transV, prog, prog+vague);
     lowp float alpha = (cTransV - prog) / vague;
     
