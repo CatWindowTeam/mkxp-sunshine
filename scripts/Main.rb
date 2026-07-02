@@ -15,15 +15,8 @@ begin
   $console = Graphics.fullscreen
   Graphics.frame_rate = 60 
   Font.default_size = 20
+  #debug shit 
   Input.set_led(0, 255, 0)
-
-  #if defined?(RubyVM::YJIT)
-  #  RubyVM::YJIT.enable
-  #elsif defined?(RubyVM::ZJIT)
-  #  RubyVM::ZJIT.enable
-  #elsif defined?(RubyVM::RJIT)
-  #  RubyVM::RJIT.enable
-  #end
   
   # Load persistent data
   Persistent.load
@@ -45,10 +38,6 @@ begin
 
   if Journal.active?
     Journal.set ''
-  end
-
-  if $debug
-	tp.disable
   end
   
   Oneshot.allow_exit true
