@@ -165,13 +165,16 @@ void Config::read(int argc, char *argv[]){
 #undef PO_DESC_ALL
 
 	SE.sourceCount = clamp(SE.sourceCount, 1, 64);
-
+	#ifdef __ANDROID__
+	commonDataPath = prefPath(SDL_GetAndroidInternalStoragePath(), "/Sunshine");
+	#else
 	commonDataPath = prefPath(".", "Sunshine");
+	#endif
 
 	if(windowTitle == "")
 		game.title = "OneShot: Sunshine";
 	game.scripts = "Data/xScripts.rxdata";
-	
+
 	if(defScreenW == 640 || defScreenH == 480){
 		if (EnableSixteenByNine){
 			defScreenW = 1280;

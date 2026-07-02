@@ -6,7 +6,6 @@
 #include <SDL3_sound/SDL_sound.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3/SDL_video.h>
-
 #include "meow.h"
 #include "eventthread.h"
 #include "exception.h"
@@ -23,7 +22,7 @@
 #include <boost/version.hpp>
 #include <physfs.h>
 #include <pixman.h>
-
+#include <SDL3/SDL_system.h>
 #include <boost/stacktrace.hpp>
 
 #ifdef __LINUX__
@@ -56,7 +55,6 @@ void crash(Exception::Type t, const char *fmt, ...){
 	char *buf = (char*)SDL_malloc((size_t)len + 1);
 	SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
 	va_end(args);
-	
 	SDL_snprintf(msg, sizeof msg, "Error occured! Error message: %s\n\n Want to create a crash log? You can share the crash log with the developers and help resolve the issue.", buf);
 	SDL_MessageBoxData messageboxdata = {
 	    .flags = SDL_MESSAGEBOX_ERROR,
@@ -104,7 +102,7 @@ void crash(Exception::Type t, const char *fmt, ...){
 				out << "SDL_TTF(compiled) version: " << SDL_TTF_MAJOR_VERSION << "." << SDL_TTF_MINOR_VERSION << "." << SDL_TTF_MICRO_VERSION << std::endl;
 				out << "Ruby version: " << RUBY_API_VERSION_CODE << std::endl;
 				out << "ZLib version: " << ZLIB_VERSION << std::endl;
-				out << "OpenAL version: " << AL_VERSION << std::endl;	
+				out << "OpenAL version: " << AL_VERSION << std::endl;
 				out << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << std::endl;
 				out << "Pixman version: " << PIXMAN_VERSION_STRING << std::endl;
 				out << "[Platform specific]" << std::endl;
@@ -114,18 +112,28 @@ void crash(Exception::Type t, const char *fmt, ...){
 					out << "Detected OS: " << e.what() << std::endl;
 				}
 				if(!getenv("XDG_CURRENT_DESKTOP") == NULL){
-					out << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << getenv("XDG_CURRENT_DESKTOP") << std::endl;					
+					out << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << getenv("XDG_CURRENT_DESKTOP") << std::endl;
 				}
 				#ifdef __ANDROID__
-					out << "Android API version: " << android_get_device_api_level() << std::endl;
+					out << "Android API version: " << android_get_device_api_level() << std::endl;					      out << "External storage State: " << SDL_GetAndroidExternalStorageState() << std::endl;
+					out << "Internal storage path: " << SDL_GetAndroidInternalStoragePath() << std::endl;
+					out << "External Storage path: " << SDL_GetAndroidExternalStoragePath() << ats::endl;
+					out << "Cache path: " << SDL_GetAndroidCachePath() << std::endl;
+					out << "
 				#elif __EMSCRIPTEN__
 					out << "Emscripten start address of the stack: " << emscripten_stack_get_base() << std::endl;
 					out << "Emscripten end address of the stack: " << emscripten_stack_get_end() << std::endl;
 					out << "Emscripten current stack pointer: " << emscripten_stack_get_current() << std::endl;
 					out << "Emscripten number of free bytes left on the stack: " << emscripten_stack_get_free() << std::endl;
 				#elif __PSP__
-					out << "PSPdev MIPS Stack Trace: " << int pspDebugGetStackTrace() << std::endl;					
+					out << "PSPdev MIPS Stack Trace: " << int pspDebugGetStackTrace() << std::endl;
 				#endif
+				out << "Is ChromeBook? " << SDL_IsChromebook() << std::endl;
+				out << "Is Phone? " << SDL_IsPhone() << std::endl;
+				out << "Is Tablet? " << SDL_IsTablet() << std::endl;
+				out << "Is Samsung DeX? " << SDL_IsDeXMode() << std::endl;
+				out << "Is TV? " << SDL_IsTV() << std::endl;
+				out << "Is Ubuntu Touch? " << SDL_IsUbuntuTouch() << std::endl;
 				out.close();
 		}else{
 			Debug() << "[CRASHLOG] Failed to write crashdump file";

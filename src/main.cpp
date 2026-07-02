@@ -280,7 +280,6 @@ int main(int argc, char *argv[]){
 		}
 	#endif
 
-	
 	if (!conf.gameFolder.empty()){
 		if (chdir(conf.gameFolder.c_str()) != 0){
 			crash(Exception::MEOW, "Unable to switch into gameFolder %s", conf.gameFolder);
@@ -289,12 +288,11 @@ int main(int argc, char *argv[]){
 	}
 
 	std::string new_path = ModLoader(conf);
-	
 	if(new_path != ""){
 		if (chdir(new_path.c_str()) != 0){
 			crash(Exception::MEOW, "Unable to switch into new gameFolder %s", new_path);
 			return 0;
-		}	
+		}
 	}
 
 	extern int screenMain(Config &conf);
