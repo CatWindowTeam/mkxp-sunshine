@@ -348,7 +348,6 @@ int main(int argc, char *argv[]){
 		crash(Exception::MEOW, "Error opening OpenAL device");
 		TTF_Quit();
 		SDL_Quit();
-
 		return 0;
 	}
 
