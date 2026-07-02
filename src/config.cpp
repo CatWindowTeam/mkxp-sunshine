@@ -34,7 +34,7 @@
 #include "debugwriter.h"
 #include "util.h"
 #include "sdl-util.h"
-
+#include <SDL3/SDL_system.h>
 namespace std{
 	std::ostream& operator<<(std::ostream &os, const std::vector<std::string> &vec){
 		for (auto item : vec){
@@ -166,7 +166,9 @@ void Config::read(int argc, char *argv[]){
 
 	SE.sourceCount = clamp(SE.sourceCount, 1, 64);
 	#ifdef __ANDROID__
-	commonDataPath = prefPath(SDL_GetAndroidInternalStoragePath(), "/Sunshine");
+	commonDataPath = prefPath(SDL_GetAndroidInternalStoragePath(), "/SunshineSaves");
+	gameFolder = "";
+	gameFolder.append(SDL_GetAndroidInternalStoragePath()).append("/Sunshine");
 	#else
 	commonDataPath = prefPath(".", "Sunshine");
 	#endif

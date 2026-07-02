@@ -58,7 +58,7 @@
 #include "binding.h"
 
 #include "icon.png.xxd"
-
+#include <SDL3/SDL_system.h>
 #ifdef STEAM
 	#include "steamshim/steamshim_child.h"
 #else
@@ -121,7 +121,6 @@ int rgssThreadFun(void *userdata){
 
 	bool vsync = conf.vsync || conf.syncToRefreshrate;
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
-	
 #ifndef NDEBUG
 	GLDebugLogger dLogger;
 #endif
@@ -230,12 +229,13 @@ int main(int argc, char *argv[]){
 		#if SDL_VERSION_ATLEAST(3, 4, 10)
 			SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
 		#endif
-	#elif defined(WIN32)
+	#elif WIN32
 		SDL_SetHint(SDL_HINT_WINDOWS_RAW_KEYBOARD, "1");
-	#else
+	#elif __ANDROID__
+		SDL_SetHint(SDL_HINT_ANDROID_ALLOW_PERSISTENT_FOLDER_ACCESS, "1");
+	#elif defined(__DJGPP__) || defined(__DOS__) || defined(__MSDOS__)
 		SDL_SetHint(SDL_HINT_DOS_ALLOW_DIRECT_FRAMEBUFFER, "1");
 	#endif
-	
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
 		crash(Exception::MEOW, "Error initializing SDL: %s", SDL_GetError());
