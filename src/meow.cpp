@@ -76,65 +76,66 @@ void crash(Exception::Type t, const char *fmt, ...){
 		time_t mtime = time(NULL);
 		struct tm *now = localtime(&mtime);
 		std::string time = std::to_string(now->tm_hour) + "." + std::to_string(now->tm_min) + "." + std::to_string(now->tm_sec);
-		out.open("crash_" + time + ".txt");
-		if (out.is_open()){
-				out << "REASON: " << buf << std::endl;
-				out << "[BOOST stacktrace()]" << std::endl;
-				out << boost::stacktrace::stacktrace() << std::endl;
-				out << "[OpenGL]" << std::endl;
+		o.open("crash_" + time + ".txt");
+		if (o.is_open()){
+				o << "REASON: " << buf << std::endl;
+				o << "[BOOST stacktrace()]" << std::endl;
+				o << boost::stacktrace::stacktrace() << std::endl;
+				o << "[OpenGL]" << std::endl;
 				try{
-					out << "GL Vendor: " << glGetStringInt(GL_VENDOR) << std::endl;
-					out << "GL Renderer: " << glGetStringInt(GL_RENDERER) << std::endl;
-					out << "GL Version: " << glGetStringInt(GL_VERSION) << std::endl;
-					out << "GLSL Version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-					out << "Shading language version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-					out << "GL Extensions: " << glGetStringInt(GL_EXTENSIONS) << std::endl;
+					o << "GL Vendor: " << glGetStringInt(GL_VENDOR) << std::endl;
+					o << "GL Renderer: " << glGetStringInt(GL_RENDERER) << std::endl;
+					o << "GL Version: " << glGetStringInt(GL_VERSION) << std::endl;
+					o << "GLSL Version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+					o << "Shading language version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+					o << "GL Extensions: " << glGetStringInt(GL_EXTENSIONS) << std::endl;
 				}catch(const std::exception& e){
-					out << "Crashed before OpenGL initialization: " << e.what() << std::endl;
+					o << "Crashed before OpenGL initialization: " << e.what() << std::endl;
 				}
 				out << "[Versions of libs]" << std::endl;
 				const int sdlcompiled = SDL_VERSION;
 				const int sdllinked = SDL_GetVersion();
-				out << "SDL(compiled) version: " << SDL_VERSIONNUM_MAJOR(sdlcompiled) << "." << SDL_VERSIONNUM_MINOR(sdlcompiled) << "." << SDL_VERSIONNUM_MICRO(sdlcompiled) << std::endl;
-				out << "SDL(linked) version: " << SDL_VERSIONNUM_MAJOR(sdllinked) << "." << SDL_VERSIONNUM_MINOR(sdllinked) << "." << SDL_VERSIONNUM_MICRO(sdllinked) << std::endl;
-				out << "SDL_image(compiled) version: " << SDL_IMAGE_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << std::endl;
-				out << "SDL_sound(compiled) version: " << SDL_SOUND_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << std::endl;
-				out << "SDL_TTF(compiled) version: " << SDL_TTF_MAJOR_VERSION << "." << SDL_TTF_MINOR_VERSION << "." << SDL_TTF_MICRO_VERSION << std::endl;
-				out << "Ruby version: " << RUBY_API_VERSION_CODE << std::endl;
-				out << "ZLib version: " << ZLIB_VERSION << std::endl;
-				out << "OpenAL version: " << AL_VERSION << std::endl;
-				out << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << std::endl;
-				out << "Pixman version: " << PIXMAN_VERSION_STRING << std::endl;
-				out << "[Platform specific]" << std::endl;
+				o << "SDL(compiled) version: " << SDL_VERSIONNUM_MAJOR(sdlcompiled) << "." << SDL_VERSIONNUM_MINOR(sdlcompiled) << "." << SDL_VERSIONNUM_MICRO(sdlcompiled) << std::endl;
+				o << "SDL(linked) version: " << SDL_VERSIONNUM_MAJOR(sdllinked) << "." << SDL_VERSIONNUM_MINOR(sdllinked) << "." << SDL_VERSIONNUM_MICRO(sdllinked) << std::endl;
+				o << "SDL_image(compiled) version: " << SDL_IMAGE_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << std::endl;
+				o << "SDL_sound(compiled) version: " << SDL_SOUND_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << std::endl;
+				o << "SDL_TTF(compiled) version: " << SDL_TTF_MAJOR_VERSION << "." << SDL_TTF_MINOR_VERSION << "." << SDL_TTF_MICRO_VERSION << std::endl;
+				o << "Ruby version: " << RUBY_API_VERSION_CODE << std::endl;
+				o << "ZLib version: " << ZLIB_VERSION << std::endl;
+				o << "OpenAL version: " << AL_VERSION << std::endl;
+				o << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << std::endl;
+				o << "Pixman version: " << PIXMAN_VERSION_STRING << std::endl;
+				o << "[Platform specific]" << std::endl;
 				try{
-					out << "Detected OS: " << SDL_GetPlatform() << std::endl;
+					o << "Detected OS: " << SDL_GetPlatform() << std::endl;
 				}catch(const std::exception& e){
-					out << "Detected OS: " << e.what() << std::endl;
+					o << "Detected OS: " << e.what() << std::endl;
 				}
 				if(!getenv("XDG_CURRENT_DESKTOP") == NULL){
-					out << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << getenv("XDG_CURRENT_DESKTOP") << std::endl;
+					o << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << getenv("XDG_CURRENT_DESKTOP") << std::endl;
 				}
 				#ifdef __ANDROID__
-					out << "Android API version: " << android_get_device_api_level() << std::endl;					      out << "External storage State: " << SDL_GetAndroidExternalStorageState() << std::endl;
-					out << "Internal storage path: " << SDL_GetAndroidInternalStoragePath() << std::endl;
-					out << "External Storage path: " << SDL_GetAndroidExternalStoragePath() << ats::endl;
-					out << "Cache path: " << SDL_GetAndroidCachePath() << std::endl;
-					out << "
+					o << "Android API version: " << android_get_device_api_level() << std::endl;					      o << "External storage State: " << SDL_GetAndroidExternalStorageState() << std::endl;
+					o << "Internal storage path: " << SDL_GetAndroidInternalStoragePath() << std::endl;
+					o << "External Storage path: " << SDL_GetAndroidExternalStoragePath() << ats::endl;
+					o << "Cache path: " << SDL_GetAndroidCachePath() << std::endl;
 				#elif __EMSCRIPTEN__
-					out << "Emscripten start address of the stack: " << emscripten_stack_get_base() << std::endl;
-					out << "Emscripten end address of the stack: " << emscripten_stack_get_end() << std::endl;
-					out << "Emscripten current stack pointer: " << emscripten_stack_get_current() << std::endl;
-					out << "Emscripten number of free bytes left on the stack: " << emscripten_stack_get_free() << std::endl;
+					o << "Emscripten start address of the stack: " << emscripten_stack_get_base() << std::endl;
+					o << "Emscripten end address of the stack: " << emscripten_stack_get_end() << std::endl;
+					o << "Emscripten current stack pointer: " << emscripten_stack_get_current() << std::endl;
+					o << "Emscripten number of free bytes left on the stack: " << emscripten_stack_get_free() << std::endl;
 				#elif __PSP__
-					out << "PSPdev MIPS Stack Trace: " << int pspDebugGetStackTrace() << std::endl;
+					o << "PSPdev MIPS Stack Trace: " << int pspDebugGetStackTrace() << std::endl;
 				#endif
-				out << "Is ChromeBook? " << SDL_IsChromebook() << std::endl;
-				out << "Is Phone? " << SDL_IsPhone() << std::endl;
-				out << "Is Tablet? " << SDL_IsTablet() << std::endl;
-				out << "Is Samsung DeX? " << SDL_IsDeXMode() << std::endl;
-				out << "Is TV? " << SDL_IsTV() << std::endl;
-				out << "Is Ubuntu Touch? " << SDL_IsUbuntuTouch() << std::endl;
-				out.close();
+				o << "Is ChromeBook? " << SDL_IsChromebook() << std::endl;
+				o << "Is Phone? " << SDL_IsPhone() << std::endl;
+				o << "Is Tablet? " << SDL_IsTablet() << std::endl;
+				o << "Is Samsung DeX? " << SDL_IsDeXMode() << std::endl;
+				o << "Is TV? " << SDL_IsTV() << std::endl;
+				o << "Is Ubuntu Touch? " << SDL_IsUbuntuTouch() << std::endl;
+				o << "[Hardware]" << std::endl;
+				o << "PowerPC Altivec intrinsics: ";
+				o.close();
 		}else{
 			Debug() << "[CRASHLOG] Failed to write crashdump file";
 		}
