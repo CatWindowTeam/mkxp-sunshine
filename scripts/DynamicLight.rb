@@ -149,7 +149,6 @@ class DynamicLight
     @plr_light_table
   end
   def plr_light_table=(val)
-    puts "aboba"
     @plr_light_table[0]  = val&.[](0)  || 0
     @plr_light_table[1]  = val&.[](1)  || 0
     @plr_light_table[2]  = val&.[](2)  || 1
@@ -166,6 +165,5 @@ class DynamicLight
     @plr_light_table[13] = val&.[](13) || 0
     @plr_light_table[14] = val&.[](14) || 1
     @plr_light_table[15] = val&.[](15) || 1
-    puts "aboba2"
   end
 end

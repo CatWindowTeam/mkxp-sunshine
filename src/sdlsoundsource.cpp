@@ -34,11 +34,17 @@ struct SDLSoundSource : ALDataSource{
 	ALenum alFormat;
 	ALsizei alFreq;
 
+	SDL_AudioSpec spec;
+	
 	SDLSoundSource(SDL_IOStream &ops, const char *extension, uint32_t maxBufSize, bool looped)
 	    : srcOps(ops),
 	      looped(looped)
 	{
-		sample = Sound_NewSample(&srcOps, extension, 0, maxBufSize);
+		spec.format = SDL_AUDIO_S16LE;
+		spec.channels = 2;
+		spec.freq = 44100;
+
+		sample = Sound_NewSample(&srcOps, extension, &spec, maxBufSize);
 
 		if (!sample){
 			SDL_CloseIO(&ops);

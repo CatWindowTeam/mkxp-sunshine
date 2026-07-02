@@ -26,6 +26,11 @@
 #include <AL/alc.h>
 #include <SDL3/SDL_audio.h>
 #include "meow.h"
+
+#ifndef AL_DIRECT_CHANNELS_SOFT
+#define AL_DIRECT_CHANNELS_SOFT 0x1033
+#endif
+
 namespace AL{
 
 #define DEF_AL_ID \
@@ -90,6 +95,7 @@ namespace Source{
 	inline Source::ID gen(){
 		Source::ID id;
 		alGenSources(1, &id.al);
+		alSourcei(id.al, AL_DIRECT_CHANNELS_SOFT, AL_TRUE);
 
 		return id;
 	}

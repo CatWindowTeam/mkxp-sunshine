@@ -174,12 +174,18 @@ void SoundEmitter::stop(){
 struct SoundOpenHandler : FileSystem::OpenHandler{
 	SoundBuffer *buffer;
 
+	SDL_AudioSpec spec;
+
 	SoundOpenHandler()
 	    : buffer(0)
-	{}
+	{
+		spec.format = SDL_AUDIO_S16LE;
+		spec.channels = 2;
+		spec.freq = 44100;
+	}
 
 	bool tryRead(SDL_IOStream* &ops, const char *ext){
-		Sound_Sample *sample = Sound_NewSample(ops, ext, 0, STREAM_BUF_SIZE);
+		Sound_Sample *sample = Sound_NewSample(ops, ext, &spec, STREAM_BUF_SIZE); // df;lkjdsfl;kjgt;sjhdlhljkk;ljhgds;ljkglk;jdsl;fjgg;lhkjdsgklhjsdhl;jkg
 
 		if (!sample){
 			SDL_CloseIO(ops);
