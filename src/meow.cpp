@@ -119,7 +119,13 @@ void crash(Exception::Type t, const char *fmt, ...){
 					out << "Internal storage path: " << SDL_GetAndroidInternalStoragePath() << std::endl;
 					out << "External Storage path: " << SDL_GetAndroidExternalStoragePath() << ats::endl;
 					out << "Cache path: " << SDL_GetAndroidCachePath() << std::endl;
-					out << "
+					
+					out << "Is ChromeBook? " << SDL_IsChromebook() << std::endl;
+					out << "Is Phone? " << SDL_IsPhone() << std::endl;
+					out << "Is Tablet? " << SDL_IsTablet() << std::endl;
+					out << "Is Samsung DeX? " << SDL_IsDeXMode() << std::endl;
+					out << "Is TV? " << SDL_IsTV() << std::endl;
+					out << "Is Ubuntu Touch? " << SDL_IsUbuntuTouch() << std::endl;
 				#elif __EMSCRIPTEN__
 					out << "Emscripten start address of the stack: " << emscripten_stack_get_base() << std::endl;
 					out << "Emscripten end address of the stack: " << emscripten_stack_get_end() << std::endl;
@@ -128,12 +134,6 @@ void crash(Exception::Type t, const char *fmt, ...){
 				#elif __PSP__
 					out << "PSPdev MIPS Stack Trace: " << int pspDebugGetStackTrace() << std::endl;
 				#endif
-				out << "Is ChromeBook? " << SDL_IsChromebook() << std::endl;
-				out << "Is Phone? " << SDL_IsPhone() << std::endl;
-				out << "Is Tablet? " << SDL_IsTablet() << std::endl;
-				out << "Is Samsung DeX? " << SDL_IsDeXMode() << std::endl;
-				out << "Is TV? " << SDL_IsTV() << std::endl;
-				out << "Is Ubuntu Touch? " << SDL_IsUbuntuTouch() << std::endl;
 				out.close();
 		}else{
 			Debug() << "[CRASHLOG] Failed to write crashdump file";
