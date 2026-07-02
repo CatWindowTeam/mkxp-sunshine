@@ -24,7 +24,7 @@
 #include <pixman.h>
 #include <SDL3/SDL_system.h>
 #include <boost/stacktrace.hpp>
-
+#include <SDL3/SDL_cpuinfo.h>
 #ifdef __LINUX__
 	#include <gtk/gtk.h>
 	#include "xdg-user-dir-lookup.h"
@@ -72,7 +72,7 @@ void crash(Exception::Type t, const char *fmt, ...){
 	}
 
 	if(buttonid == 1){
-		std::ofstream out;
+		std::ofstream o;
 		time_t mtime = time(NULL);
 		struct tm *now = localtime(&mtime);
 		std::string time = std::to_string(now->tm_hour) + "." + std::to_string(now->tm_min) + "." + std::to_string(now->tm_sec);
@@ -115,26 +115,30 @@ void crash(Exception::Type t, const char *fmt, ...){
 					o << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << getenv("XDG_CURRENT_DESKTOP") << std::endl;
 				}
 				#ifdef __ANDROID__
-					o << "Android API version: " << android_get_device_api_level() << std::endl;					      o << "External storage State: " << SDL_GetAndroidExternalStorageState() << std::endl;
+					o << "Android API version: " << android_get_device_api_level() << std::endl;
+					o << "External storage State: " << SDL_GetAndroidExternalStorageState() << std::endl;
 					o << "Internal storage path: " << SDL_GetAndroidInternalStoragePath() << std::endl;
 					o << "External Storage path: " << SDL_GetAndroidExternalStoragePath() << ats::endl;
 					o << "Cache path: " << SDL_GetAndroidCachePath() << std::endl;
+					o << "Is ChromeBook? " << SDL_IsChromebook() << std::endl;
+					o << "Is Phone? " << SDL_IsPhone() << std::endl;
+					o << "Is Tablet? " << SDL_IsTablet() << std::endl;
+					o << "Is Samsung DeX? " << SDL_IsDeXMode() << std::endl;
+					o << "Is TV? " << SDL_IsTV() << std::endl;
+					o << "Is Ubuntu Touch? " << SDL_IsUbuntuTouch() << std::endl;
 				#elif __EMSCRIPTEN__
 					o << "Emscripten start address of the stack: " << emscripten_stack_get_base() << std::endl;
 					o << "Emscripten end address of the stack: " << emscripten_stack_get_end() << std::endl;
 					o << "Emscripten current stack pointer: " << emscripten_stack_get_current() << std::endl;
-					o << "Emscripten number of free bytes left on the stack: " << emscripten_stack_get_free() << std::endl;
+					o << "Emscripten number of free bytes left on stack: " << emscripten_stack_get_free() << std::endl;
 				#elif __PSP__
 					o << "PSPdev MIPS Stack Trace: " << int pspDebugGetStackTrace() << std::endl;
 				#endif
-				o << "Is ChromeBook? " << SDL_IsChromebook() << std::endl;
-				o << "Is Phone? " << SDL_IsPhone() << std::endl;
-				o << "Is Tablet? " << SDL_IsTablet() << std::endl;
-				o << "Is Samsung DeX? " << SDL_IsDeXMode() << std::endl;
-				o << "Is TV? " << SDL_IsTV() << std::endl;
-				o << "Is Ubuntu Touch? " << SDL_IsUbuntuTouch() << std::endl;
 				o << "[Hardware]" << std::endl;
-				o << "PowerPC Altivec intrinsics: ";
+				o << "L1 cache line size: " << SDL_GetCPUCacheLineSize() << std::endl;
+				o << "number of logical CPU cores: " << SDL_GetNumLogicalCPUCores() << std::endl;
+				o << "System page size: " << SDL_GetSystemPageSize() << " bytes" << std::endl;
+				o << "System RAM size: " << SDL_GetSystemRAM() << " MiB" << std::endl;
 				o.close();
 		}else{
 			Debug() << "[CRASHLOG] Failed to write crashdump file";
