@@ -61,5 +61,7 @@ void main(){
 	lowp float underBush = float(v_texCoord.y < bushDepth);
 	frag.a *= clamp(bushOpacity + underBush, 0.0, 1.0);
 
+	frag.a = clamp(frag.a, 0.0, 1.0);
+
 	gl_FragColor = frag;
 }

@@ -34,7 +34,10 @@ class Sprite_Character
   def update
     # Choose the appropriate light sprite
     @light_sprite.viewport = ($game_screen.tone.blank?) ? @viewport : @light_viewport
-    @light_sprite.shader = @sprite.shader = @character.character_name.start_with?("en") || (Settings[:twm_shader] && @character.character_name.start_with?("niko") && $game_switches[160]) ? Shader::WorldMachine : Shader::Sprite
+    @light_sprite.shader = @sprite.shader =
+    #idk what is this, maybe later i remake this
+    @character.character_name.start_with?("en") || (Settings[:twm_shader] && @character.character_name.start_with?("niko") && $game_switches[160]) ? Shader::WorldMachine :
+    @character.shader || Shader::Sprite
     
     dir = (@character.direction - 2) / 2
     if Settings[:debug_text] && (@last_char_name != character.character_name || dir != @old_dir) 

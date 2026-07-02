@@ -25,6 +25,7 @@ class Game_Character
   attr_reader   :through                  # through
   attr_accessor :animation_id             # animation ID
   attr_accessor :transparent              # transparent flag
+  attr_accessor :shader
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
@@ -65,6 +66,7 @@ class Game_Character
     @locked = false
     @prelock_direction = 0
     @custom_flags = []
+    @shader = Shader::Sprite
   end
   #--------------------------------------------------------------------------
   # * Determine if Moving
