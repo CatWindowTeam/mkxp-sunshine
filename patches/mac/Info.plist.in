@@ -3,9 +3,9 @@
 <plist version="1.0">
 	<dict>
 		<key>CFBundleName</key>
-		<string>OneShot</string>
+		<string>OneShot_sunshine</string>
 		<key>CFBundleDisplayName</key>
-		<string>OneShot</string>
+		<string>OneShot: Sunshine</string>
 		<key>CFBundleGetInfoString</key>
 		<string>You only have one shot.</string>
 		<key>CFBundleIdentifier</key>
