@@ -1,0 +1,36 @@
+Rewrired to SDL3, Ruby3, GTK3
+Added Freeware and Debug mode
+WME Fasttravel UI
+16:9 support
+Water shaders
+World machine shader
+Messagebox-es for Steamshim
+Removed conan
+added crashlog creation option
+Maps fix
+New arts
+Xfce4 patch
+Added In-Game timer
+Removed unused GDC and Demo variables
+Changed audio codec
+Added CTime
+Changes ported from ModShot-core
+Wallhack in debug mode
+Disabled in source builds
+Extended oneshot.conf options list
+Linux messagebox fix
+nearest scaling
+rpgscripts.rb fix
+Added BSD build option in CMake
+Invisible entity's indication in debug mode
+FPS in Window title
+GCC/Clang optimizations
+MSVC optimizations
+ONESHOT_hint.png moved in user home
+Translations parser security fix
+Added SecurityEngine
+Debug info in main menu
+Smooth animations in menu's
+Added Modloader
+Hooks system
+SECCOMP filters for SecurityEngine

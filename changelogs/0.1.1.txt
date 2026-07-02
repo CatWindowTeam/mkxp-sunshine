@@ -1,0 +1,42 @@
+Added 16:9 panorams support
+Added Panorams/skyline_16.png
+Added Panorams/green/maize_16.png
+mri-bindings cleanup
+RAM usage optimizations
+*BSD and emscriptein specific fixes
+On windows use of RAW input events by default
+Maps changes
+Added JIT support
+Reload on F5
+Scene_Map optimization
+TPtL aray limit set to 300
+New 16:9 arts
+Optimized and extended debugwriter.h
+Water shader optimized
+Mouse scrolling support
+Small ruby optimizations
+Boost+Ruby sprintf error fix
+New settings menu
+Extended debug mode configuration
+Added TracePoimt based profiler
+Added April fools enforce mode
+Added way to control WM shader via settings
+Optimized game loading
+Fasttravel settings
+Removed useless hooks
+Added way to set Led color on gamepads
+Switches code optimized
+Added eval protection for events interpritator and for Characters scripts
+Added in-game keybindings settings
+Added switch 400(defines 4:3 or 16:9 is used)
+Removed depth limit for common events
+Fixed bug "Андрей"
+Fixed film
+Added gamepad vibration support
+Enabled Camera map block by default
+Added helpers
+Dynamic map viewport sizes
+Govnocode fix naxui
+Added dynamic light system
+Added script function to change tiles in relatime
+Fixed audio bug
