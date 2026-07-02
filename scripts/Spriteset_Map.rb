@@ -87,7 +87,6 @@ class Spriteset_Map
     @bulb.opacity = has_lightbulb? ? 255 : 0
     # Make dynamic light
     @dynamic_light = DynamicLight.new(@viewport_lights)
-    $light = @dynamic_light
     # Panorama animation timer
     @pan_animate_timer = 0
     RPG::Mod.exec_hooks("hooks/Spriteset_Map/init", binding)

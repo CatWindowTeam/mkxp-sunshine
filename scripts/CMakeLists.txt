@@ -36,6 +36,7 @@ set(scripts
   Game_System.rb
   Game_Temp.rb
   Game_Variables.rb
+  Game_Light.rb
   Interpreter_1.rb
   Interpreter_2.rb
   Interpreter_3.rb

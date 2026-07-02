@@ -223,8 +223,10 @@ void LightMap::draw(){
 	shader.applyViewportProj();
 
 	if (p->wallMap)
+	{
 		shader.setWallMapTexture(p->wallMap->getGLTypes().tex);
-	shader.setWallMapResolution(p->wallMap->width(), p->wallMap->height());
+		shader.setWallMapResolution(p->wallMap->width(), p->wallMap->height());
+	}
 	shader.setCameraPosition(p->cameraX, p->cameraY);
 	shader.setTileMapOffset(p->tilemapOffsetX, p->tilemapOffsetY);
 

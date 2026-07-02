@@ -97,7 +97,8 @@ def write_save(filename)
     Marshal.dump($game_followers, file)
     Marshal.dump($game_oneshot, file)
     Marshal.dump($game_fasttravel, file)
-    Marshal.dump($game_temp.footstep_sfx , file)
+    Marshal.dump($game_temp.footstep_sfx, file)
+    Marshal.dump($light, file)
   end
 end
 
@@ -138,7 +139,8 @@ def load(filename)
     $game_followers     = Marshal.load(file)
     $game_oneshot       = Marshal.load(file)
     $game_fasttravel    = Marshal.load(file)
-	$game_temp.footstep_sfx = Marshal.load(file)
+    $game_temp.footstep_sfx = Marshal.load(file)
+    $light              = Marshal.load(file)
     # If magic number is different from when saving
     # (if editing was added with editor)
     if $game_system.magic_number != $data_system.magic_number
@@ -210,28 +212,28 @@ end
 def real_load
 
 #load save data
-	begin
-      load(SAVE_FILE_NAME)
-	rescue TypeError, ArgumentError => e
-	  puts "oops: #{e.message}"
-	  EdText.err("save.dat corrupt. Attempting to load backup.")
-	  for i in 1..6
-	    if !File.exist?(Oneshot::SAVE_PATH + "/save_backups/save" + (i).to_s + ".bk")
-	      EdText.err("All save backups corrupt!  Deleting corrupt save and shutting down.")
-		  File.delete(SAVE_FILE_NAME)
-          Oneshot.allow_exit true
-          Kernel.abort("All save backups corrupt!  Deleting corrupt save file and shutting down.")
-		  break
-		end
-	    begin
-	      load(Oneshot::SAVE_PATH + "/save_backups/save" + (i).to_s + ".bk")
-		  break
-	    rescue TypeError, ArgumentError => e2
-	      puts "oops: #{e2.message}"
-	      EdText.err("save" + (i).to_s + ".bk corrupt. Attempting to load backup.")
-		end
-	  end
-	end
+  begin
+    load(SAVE_FILE_NAME)
+  rescue TypeError, ArgumentError => e
+    puts "oops: #{e.message}"
+    EdText.err("save.dat corrupt. Attempting to load backup.")
+    for i in 1..6
+      if !File.exist?(Oneshot::SAVE_PATH + "/save_backups/save" + (i).to_s + ".bk")
+        EdText.err("All save backups corrupt!  Deleting corrupt save and shutting down.")
+        File.delete(SAVE_FILE_NAME)
+        Oneshot.allow_exit true
+        Kernel.abort("All save backups corrupt!  Deleting corrupt save file and shutting down.")
+        break
+      end
+      begin
+        load(Oneshot::SAVE_PATH + "/save_backups/save" + (i).to_s + ".bk")
+        break
+      rescue TypeError, ArgumentError => e2
+        puts "oops: #{e2.message}"
+        EdText.err("save" + (i).to_s + ".bk corrupt. Attempting to load backup.")
+      end
+    end
+  end
 	
 	load_perma_flags
 	

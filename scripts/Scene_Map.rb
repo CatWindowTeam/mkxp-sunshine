@@ -59,7 +59,7 @@ class Scene_Map
     @blackfade.visible = false
     @blackfade.z = 9999
 
-	RPG::Mod.exec_hooks("hooks/Scene_Map/main", binding)
+    RPG::Mod.exec_hooks("hooks/Scene_Map/main", binding)
     
     # Transition run
     Graphics.transition
@@ -136,6 +136,9 @@ class Scene_Map
         end
       end
     end
+
+    $light.update
+
     # Loop
     while true
       if $game_temp.prompt_wait > 0
@@ -370,6 +373,7 @@ class Scene_Map
     # If move destination is different than current map
     if $game_map.map_id != $game_temp.player_new_map_id
       # Set up a new map
+      $light&.clear_lights_no_signal
       $game_map.setup($game_temp.player_new_map_id)
     end
     # Set up player/follower positions
