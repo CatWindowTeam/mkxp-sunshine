@@ -86,6 +86,11 @@ class DynamicLight
     }
   end
 
+  def clear_lights
+    @light_sprite.clear_static_sources()
+    @light_sprite.clear_dynamic_sources()
+  end
+
   def light_passable(tile_id)
     $game_map.passages[tile_id] & 15 == 0
   end
@@ -102,6 +107,18 @@ class DynamicLight
   def add_npc(npc_id, power, radius, color = Color.new(255, 255, 255))
     @awaked = true
     @light_npc << [$game_map.events[npc_id], power, radius, color]
+  end
+
+  def remove(x, y)
+    @light_sprite.remove_static_source(x, y)
+  end
+
+  def remove_npc(npc_id)
+    @light_npc.each do |npc|
+      if npc[0] == $game_map.events[npc_id]
+        @light_npc.delete(npc)
+      end
+    end
   end
 
   def has_effect(source)

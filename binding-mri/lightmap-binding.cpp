@@ -65,6 +65,12 @@ static VALUE addDynamicSource(VALUE self, VALUE rb_x, VALUE rb_y, VALUE rb_power
 	return Qnil;
 }
 
+static VALUE removeStaticSource(VALUE self, VALUE rb_x, VALUE rb_y) {
+	LightMap *k = getPrivateData<LightMap>(self);
+	k->removeStaticLightSource(NUM2DBL(rb_x), NUM2DBL(rb_y));
+	return Qnil;
+}
+
 static VALUE setAmbient(VALUE self, VALUE var){
 	LightMap *k = getPrivateData<LightMap>(self);
 	k->setAmbient(NUM2DBL(var));
@@ -91,5 +97,6 @@ void lightmapBindingInit(){
 	rb_define_method(klass, "clear_dynamic_sources", clearDynamicSources, 0);
 	rb_define_method(klass, "add_static_source", addStaticSource, 5);
 	rb_define_method(klass, "add_dynamic_source", addDynamicSource, 5);
+	rb_define_method(klass, "remove_static_source", removeStaticSource, 2);
 	rb_define_method(klass, "ambient=", setAmbient, 1);
 }

@@ -33,6 +33,7 @@ public:
 	void clearDynamicLightSources();
 	void addStaticLightSource(LightSource source);
 	void addDynamicLightSource(LightSource source);
+	void removeStaticLightSource(float x, float y);
 	void initDynAttribs();
 
 private:

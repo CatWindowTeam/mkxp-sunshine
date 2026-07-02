@@ -202,6 +202,13 @@ void LightMap::addStaticLightSource(LightSource source){
 void LightMap::addDynamicLightSource(LightSource source){
 	p->dynamicLightSources.push_back(source);
 }
+void LightMap::removeStaticLightSource(float x, float y){
+	for (int i = 0; i < p->staticLightSources.size(); i++)
+		if (p->staticLightSources[i].x == x && p->staticLightSources[i].y == y){
+			p->staticLightSources.erase(p->staticLightSources.begin() + i);
+			return;
+		}
+}
 
 /* SceneElement */
 void LightMap::draw(){
