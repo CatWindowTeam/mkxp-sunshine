@@ -374,6 +374,7 @@ class Scene_Map
     if $game_map.map_id != $game_temp.player_new_map_id
       # Set up a new map
       $light&.clear_lights_no_signal
+      $light.sleep
       $game_map.setup($game_temp.player_new_map_id)
     end
     # Set up player/follower positions
