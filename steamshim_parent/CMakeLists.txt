@@ -5,8 +5,14 @@ set(GAME_LAUNCH_NAME "oneshot" CACHE STRING "Game launch name")
 option(DEBUG "Debug" OFF)
 
 if(DEBUG)
-	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3 -O0 -fno-omit-frame-pointer -ggdb")
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3 -O0 -fno-omit-frame-pointer -ggdb")
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g")
+else()
+        add_compile_options(-O2 -ffast-math -fipa-pta -ftree-vectorize -fstdarg-opt -fomit-frame-pointer -frename-registers -ffunction-sections -fdata-sections -fvisibility=hidden)
+        add_link_options(-Wl,-O2 -Wl,--gc-sections -Wl,--as-needed -Wl,--strip-debug -Wl,--no-undefined)
+        if(!WIN32)
+            add_compile_options(-flto)
+        endif()
 endif()
 
 set(SOURCES
