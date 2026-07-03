@@ -92,7 +92,7 @@ void crash(Exception::Type t, const char *fmt, ...){
 				}catch(const std::exception& e){
 					o << "Crashed before OpenGL initialization: " << e.what() << std::endl;
 				}
-				out << "[Versions of libs]" << std::endl;
+				o << "[Versions of libs]" << std::endl;
 				const int sdlcompiled = SDL_VERSION;
 				const int sdllinked = SDL_GetVersion();
 				o << "SDL(compiled) version: " << SDL_VERSIONNUM_MAJOR(sdlcompiled) << "." << SDL_VERSIONNUM_MINOR(sdlcompiled) << "." << SDL_VERSIONNUM_MICRO(sdlcompiled) << std::endl;
