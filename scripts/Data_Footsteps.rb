@@ -68,6 +68,9 @@ FOOTSTEP_SFX = [
   ['step_gravel',
    'step_wood',
    'step_boat'],
+   # shkep this
+   ["step_gravel",
+    "step_tile"],
 ]
 
 FOOTSTEP_AMT = {

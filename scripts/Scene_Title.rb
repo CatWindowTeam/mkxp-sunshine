@@ -255,6 +255,7 @@ class Scene_Title
     $game_followers     = []
     $game_oneshot       = Game_Oneshot.new
     $game_fasttravel    = Game_FastTravel.new
+    $light              = Game_Light.new
     # Set up initial party
     $game_party.setup_starting_members
     # Set up initial map position

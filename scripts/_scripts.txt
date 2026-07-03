@@ -25,6 +25,7 @@ Game_Player
 Game_Oneshot
 Game_Follower
 Game_FastTravel
+Game_Light
 
 # yes.
 Settings

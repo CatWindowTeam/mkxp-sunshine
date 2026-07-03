@@ -310,23 +310,28 @@ void DynamicLightShader::setTileMapOffset(int x, int y){
 
 void DynamicLightShader::setLightSources(std::vector<LightSource> sources){
 	gl.Uniform1i(u_lightSourcesCount, sources.size());
-	for(int i = 0; i < sources.size(); i++)
-	{
-		if (!sources[i].hasEffect())
-			continue;
-		
-		gl.Uniform4f(u_lightSources + i,
-			sources[i].x,
-			sources[i].y,
-			sources[i].power,
-			sources[i].radius
-		);
-		gl.Uniform4f(u_lightSourcesColors + i,
-			sources[i].color.red / 255.0,
-			sources[i].color.green / 255.0,
-			sources[i].color.blue / 255.0,
-			sources[i].color.alpha / 255.0
-		);
+	for(int i = 0; i < sources.size(); i++) {
+		if (i < 64) {
+			if (!sources[i].hasEffect())
+				continue;
+			
+			gl.Uniform4f(u_lightSources + i,
+				sources[i].x,
+				sources[i].y,
+				sources[i].power,
+				sources[i].radius
+			);
+			gl.Uniform4f(u_lightSourcesColors + i,
+				sources[i].color.red / 255.0,
+				sources[i].color.green / 255.0,
+				sources[i].color.blue / 255.0,
+				sources[i].color.alpha / 255.0
+			);
+		}
+		else {
+			Debug() << "The limit of light sources has been reached! (" << sources.size() << "/ 64 )";
+			break;
+		}
 	}
 }
 
