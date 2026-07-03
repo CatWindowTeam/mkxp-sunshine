@@ -385,7 +385,7 @@ int main(int argc, char *argv[]){
 	for (int i = 0; i < 1000; ++i){
 		/* We can stop waiting when the request was ack'd */
 		if (rtData.rqTermAck){
-			Debug() << "[main]RGSS thread ack'd request after" << i*10 << "ms";
+			Debug() << "[main] RGSS thread ack'd request after" << i*10 << "ms";
 			break;
 		}
 
