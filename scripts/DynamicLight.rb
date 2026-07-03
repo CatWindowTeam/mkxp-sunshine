@@ -17,7 +17,6 @@ class DynamicLight
       return
     end
 
-    @light_sprite.ambient = $light.ambient_light
     $light.static_lights.each do |source|
       @light_sprite.add_static_source(
         source[0],
@@ -27,6 +26,7 @@ class DynamicLight
         source[4]
       )
     end
+    @light_sprite.ambient = $light.ambient_light
   end
 
   def dispose

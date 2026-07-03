@@ -10,6 +10,7 @@ class Game_Light
   attr_accessor :update_remove_static_light
   attr_reader :dynamic_lights
   attr_reader :static_lights
+  attr_reader :ambient_light
 
   def initialize
     @done = false # deprecated
@@ -104,9 +105,6 @@ class Game_Light
     @awaked = false
   end
   
-  def ambient_light
-    @ambient_light
-  end
   def ambient_light=(val)
     @ambient_light = val
     @update_ambient_light = true
