@@ -13,9 +13,6 @@ Testers:
 * Rubik
 * Prime 223432
 
-External artists:
-* "Ргинша"
-
 Donators:
 * Kodu
 

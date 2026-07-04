@@ -137,7 +137,7 @@ void crash(Exception::Type t, const char *fmt, ...){
 				o << "[Hardware]" << std::endl;
 				o << "L1 cache line size: " << SDL_GetCPUCacheLineSize() << std::endl;
 				o << "number of logical CPU cores: " << SDL_GetNumLogicalCPUCores() << std::endl;
-				o << "System page size: " << SDL_GetSystemPageSize() << " bytes" << std::endl;
+				//o << "System page size: " << SDL_GetSystemPageSize() << " bytes" << std::endl;
 				o << "System RAM size: " << SDL_GetSystemRAM() << " MiB" << std::endl;
 				o.close();
 		}else{
