@@ -11,8 +11,7 @@ class Window_Settings
     @viewport.z = 9998
     @bg = Sprite.new(@viewport)
     @bg.bitmap = Bitmap.new(Graphics.width, Graphics.height)
-    @bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(255, 255, 255, 196))
-    @bg.blend_type = 2
+    @bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0, 196))
     @title = Sprite.new(@viewport)
     @title.bitmap = Bitmap.new(320, 20)
     @title.bitmap.font.size = 20

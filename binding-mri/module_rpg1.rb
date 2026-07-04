@@ -1,8 +1,37 @@
+module Graphics
+  RESOLUTION_ASPECT =
+  if Graphics.width == 1280 && Graphics.height == 720
+    "_16_9_hd"
+  elsif Graphics.width == 1920 / 2 && Graphics.height == 1080 / 2
+    "_16_9"
+  elsif Graphics.width == 640 && Graphics.height == 480
+    "_4_3"
+  end
+end
+
+module Kernel
+  alias_method :original_puts, :puts
+
+  def puts(*args)
+    string = ""
+    args.each do |arg|
+      string << arg.to_s
+    end
+    MKXP.puts string
+    return nil
+  end
+  
+  module_function :puts
+end
+
 module RPG
   module Cache
     @cache = {}
     def self.load_bitmap(folder_name, filename, hue = 0)
       path = folder_name + filename
+      if File.exist?(folder_name + filename + Graphics::RESOLUTION_ASPECT + ".png")
+        path += Graphics::RESOLUTION_ASPECT
+      end
       if not @cache.include?(path) or @cache[path].disposed?
         if filename != ""
           @cache[path] = Bitmap.new(path)
@@ -72,18 +101,10 @@ module RPG
       self.load_bitmap("Graphics/Icons/", filename)
     end
     def self.panorama(filename, hue)
-      if Graphics.width == 1280 && File.exist?("Graphics/Panoramas/" + filename + "_16.png")
-        self.load_bitmap("Graphics/Panoramas/", filename + "_16", hue)
-      else
-      	self.load_bitmap("Graphics/Panoramas/", filename, hue)
-      end
+      self.load_bitmap("Graphics/Panoramas/", filename, hue)
     end
     def self.picture(filename)
-      if Graphics.width == 1280 && File.exist?("Graphics/Pictures/" + filename + "_16.png")
-        self.load_bitmap("Graphics/Pictures/", filename + "_16")
-      else
-        self.load_bitmap("Graphics/Pictures/", filename)
-      end
+      self.load_bitmap("Graphics/Pictures/", filename)
     end
     def self.tileset(filename)
       self.load_bitmap("Graphics/Tilesets/", filename)

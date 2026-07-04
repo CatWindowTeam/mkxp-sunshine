@@ -34,7 +34,7 @@ class Window_Settings
 
       @selection_sprite = Sprite.new(@viewport)
       @selection_sprite.bitmap = Bitmap.new(PARAMETER_WIDTH + 16, PARAMETER_HEIGHT)
-      @selection_sprite.bitmap.fill_rect(Rect.new(0, 0, PARAMETER_WIDTH + 16, PARAMETER_HEIGHT), Color.new(255, 255, 255, 128))
+      @selection_sprite.bitmap.fill_rect(Rect.new(0, 0, PARAMETER_WIDTH + 16, PARAMETER_HEIGHT), Color.new(255, 255, 255, 64))
       @selection_sprite.x = @x - 8
       @selection_sprite.y = @offset
       @selection_sprite.opacity = 0

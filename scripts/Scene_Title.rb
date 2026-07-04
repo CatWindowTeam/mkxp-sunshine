@@ -36,8 +36,10 @@ class Scene_Title
 	
     @window_settings_title = Window_Settings.new
 
+    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+
     # Make title graphic
-    @sprite = Sprite.new
+    @sprite = Sprite.new(@viewport)
 	
     # chinese has its own special title screen so check for it
     translation_name = "#{$persistent.langcode}/#{$data_system.title_name}"
@@ -45,65 +47,55 @@ class Scene_Title
       @sprite.bitmap = RPG::Cache.title(translation_name)
     else
       if File.exist?("badend.lock")
-        if Graphics.width == 1280
-          @sprite.bitmap = RPG::Cache.title("badend_16")
-        else
-          @sprite.bitmap = RPG::Cache.title("badend")
-        end
+        @sprite.bitmap = RPG::Cache.title("badend")
       else
-        if Graphics.width == 1280
-          @sprite.bitmap = RPG::Cache.title("normal_16")
-        else
-          @sprite.bitmap = RPG::Cache.title($data_system.title_name)
-        end
+        @sprite.bitmap = RPG::Cache.title($data_system.title_name)
       end
     end
+    @sprite.x = Graphics.width / 2
+    @sprite.y = Graphics.height / 2
+    @sprite.ox = @sprite.bitmap.width / 2
+    @sprite.oy = @sprite.bitmap.height / 2
 
-	RPG::Mod.exec_hooks("hooks/Scene_Title/init", binding)
-	
-	# check for debug file to add debug items
-	if Settings[:debug]
-		$game_party.gain_item(54, 1) # debug save
-	    $game_party.gain_item(82, 1) # plight skip
-		$game_party.gain_item(81, 1) # George reroler
-	end 
+    RPG::Mod.exec_hooks("hooks/Scene_Title/init", binding)
+
+    # check for debug file to add debug items
+    if Settings[:debug]
+      $game_party.gain_item(54, 1) # debug save
+        $game_party.gain_item(82, 1) # plight skip
+      $game_party.gain_item(81, 1) # George reroler
+    end 
 
     @sprite.zoom_x = 2.0
     @sprite.zoom_y = 2.0
     # Create/render menu options
-    @menu = Sprite.new
+    @menu = Sprite.new(@viewport)
     @menu.z += 1
     @menu.bitmap = Bitmap.new(Graphics.width, Graphics.height)
     @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
-	if Settings[:debug_text_scene_title]
-		@debug = Sprite.new
-    	@debug.z += @menu.z
-    	@debug.bitmap = Bitmap.new(Graphics.width, Graphics.height)
-    	@debug.bitmap.draw_text(5, 5, 200, 20, tr("Ruby #{RUBY_VERSION}"))
-    	@debug.bitmap.draw_text(5, 25, 200, 20, tr("SDL #{SDLVer}"))
-    	@debug.bitmap.draw_text(5, 45, 200, 20, tr("Sunshine #{SunshineVer}"))
-    	@debug.bitmap.draw_text(5, 65, 200, 20, tr("sec_#{Sunshine::SECURITYSTATE}"))
-    	if defined?(RubyVM::YJIT)
-      		if RubyVM::YJIT.enabled?
-        		@debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: YJIT"))
-      		end
-    	elsif defined?(RubyVM::ZJIT)
-      		if RubyVM::ZJIT.enabled?
-        		@debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: ZJIT"))
-      		end
-    	elsif defined?(RubyVM::RJIT)
-      		if RubyVM::RJIT.enabled?
-        		@debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: RJIT"))
-      		end
-    	else
-      		@debug.bitmap.draw_text(5, 85, 200, 20, tr("JIT: unsupported"))
-    	end
-    	if ModLoader::IS_ENABLED
-    		@debug.bitmap.draw_text(5, 65, 200, 20, tr("Mods loaded: #{ModLoader::COUNT}"))
-    	end
-	end
+    
+    @debug = Sprite.new(@viewport)
+    @debug.z += 1
+    @debug.visible = Settings[:debug_text_scene_title] || false
+    @debug.bitmap = Bitmap.new(Graphics.width, Graphics.height)
+    @debug.bitmap.draw_text(5, 5, 200, 20, tr("Ruby #{RUBY_VERSION}"))
+    @debug.bitmap.draw_text(5, 25, 200, 20, tr("SDL #{SDLVer}"))
+    @debug.bitmap.draw_text(5, 45, 200, 20, tr("Sunshine #{SunshineVer}"))
+    @debug.bitmap.draw_text(5, 65, 200, 20, tr("sec_#{Sunshine::SECURITYSTATE}"))
+    jit_text = "JIT: unsupported"
+    if defined?(RubyVM::YJIT) && RubyVM::YJIT.enabled?
+      jit_text = "JIT: YJIT"
+    elsif defined?(RubyVM::ZJIT) && RubyVM::ZJIT.enabled?
+      jit_text = "JIT: ZJIT"
+    elsif defined?(RubyVM::RJIT) && RubyVM::RJIT.enabled?
+      jit_text = "JIT: RJIT"
+    end
+    @debug.bitmap.draw_text(5, 85, 200, 20, tr(jit_text))
+    if ModLoader::IS_ENABLED
+      @debug.bitmap.draw_text(5, 65, 200, 20, tr("Mods loaded: #{ModLoader::COUNT}"))
+    end
 	
     if $game_switches[160] && $game_switches[152]
         @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
@@ -112,7 +104,7 @@ class Scene_Title
     Language.register_text_sprite(self.class.name + "_contents", @menu.bitmap)
 
     # Make cursor graphic
-    @cursor = Sprite.new
+    @cursor = Sprite.new(@viewport)
     @cursor.zoom_x = @cursor.zoom_y = 2
     @cursor.bitmap
     @cursor.z += 2
@@ -159,7 +151,10 @@ class Scene_Title
     @menu.dispose
     @cursor.bitmap.dispose
     @cursor.dispose
-	@window_settings_title.dispose
+    @debug.bitmap.dispose
+    @debug.dispose
+    @viewport.dispose
+    @window_settings_title.dispose
     Audio.bgm_fade(60)
     Graphics.transition(60)
     # Run automatic change for BGM and BGS set with map
@@ -169,6 +164,8 @@ class Scene_Title
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
+    @debug.visible = Settings[:debug_text_scene_title] || false # if undefined don't render
+    
     # Handle cursor movement
     if !@window_settings_title.visible
       @cursor.y = (MENU_Y.to_f + (20.0 - @cursor.bitmap.height.to_f) / 2.0 + 25.5 * @cursor_pos) * 0.65 + @cursor.y.to_f * 0.35

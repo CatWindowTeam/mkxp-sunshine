@@ -18,7 +18,6 @@ module Settings
         :in_game_timer               => false,
         :language                    => 0,
         :fasttravel_ui               => 0,
-        :debug_text_scene_title      => true,
 
         # Gameplay
         :movement                    => 0,
@@ -41,6 +40,8 @@ module Settings
         :debug                       => false,
         :debug_character             => false,
         :debug_text                  => false,
+        :debug_text_scene_title      => true,
+        :debug_picture_names         => false,
       }
       reset_controls!
     end
@@ -185,11 +186,6 @@ class Window_Settings
         :parameter => :fasttravel_ui,
         :values => [tr("Original"), tr("WME")]
       },
-      {
-        :type => :bool,
-        :name => tr('Draw debug text in main menu(RR)'),
-        :parameter => :debug_text_scene_title
-      },
     ],
     tr("Gameplay") => [
       {
@@ -320,13 +316,7 @@ class Window_Settings
         :parameter => :controls_nav_right,
         :bind => Input::R
       },
-      { :type => :sep, :name => tr("Other") },
-      {
-        :type => :key,
-        :name => tr("Debug"),
-        :parameter => :controls_debug,
-        :bind => Input::DEBUGACTION
-      },
+      #{ :type => :sep, :name => tr("Other") },
       {
         :type => :action,
         :name => tr("Reset Controls"),
@@ -353,8 +343,25 @@ class Window_Settings
       },
       {
         :type => :bool,
+        :name => tr('Draw debug text in main menu'),
+        :parameter => :debug_text_scene_title
+      },
+      {
+        :type => :bool,
         :name => tr('Show debug text'),
         :parameter => :debug_text
+      },
+      {
+        :type => :bool,
+        :name => tr('Show picture names'),
+        :parameter => :debug_picture_names
+      },
+      { :type => :sep },
+      {
+        :type => :key,
+        :name => tr("Debug"),
+        :parameter => :controls_debug,
+        :bind => Input::DEBUGACTION
       },
     ],
   }

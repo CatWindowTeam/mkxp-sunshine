@@ -39,7 +39,7 @@ class Sprite_Picture < Sprite
       if @picture_name != ""
         # Get picture graphic
         self.bitmap = RPG::Cache.picture(@picture_name)
-        if Settings[:debug]
+        if Settings[:debug_picture_names]
           self.bitmap.draw_text(0, 0, 500, 20, @picture_name)
         end
         if @picture_name == "cg_desktop_no_effects"
