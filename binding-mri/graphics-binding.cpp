@@ -21,9 +21,11 @@
 
 #include "graphics.h"
 #include "sharedstate.h"
+#include "eventthread.h"
 #include "binding-util.h"
 #include "binding-types.h"
 #include "exception.h"
+#include "config.h"
 
 RB_METHOD(graphicsUpdate){
 	RB_UNUSED_PARAM;
@@ -186,7 +188,6 @@ DEF_GRA_PROP_B(Frameskip)
 
 void graphicsBindingInit(){
 	VALUE module = rb_define_module("Graphics");
-
 	_rb_define_module_function(module, "update", graphicsUpdate);
 	_rb_define_module_function(module, "freeze", graphicsFreeze);
 	_rb_define_module_function(module, "transition", graphicsTransition);
@@ -199,6 +200,8 @@ void graphicsBindingInit(){
 
 	_rb_define_module_function(module, "width", graphicsWidth);
 	_rb_define_module_function(module, "height", graphicsHeight);
+	const Config &conf = shState->rtData().config;
+	rb_define_const(module, "ASPECT", rb_str_new_cstr(conf.AspectPreset.c_str()));
 	_rb_define_module_function(module, "wait", graphicsWait);
 	_rb_define_module_function(module, "fadeout", graphicsFadeout);
 	_rb_define_module_function(module, "fadein", graphicsFadein);

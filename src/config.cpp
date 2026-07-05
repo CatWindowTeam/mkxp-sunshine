@@ -71,9 +71,9 @@ void Config::read(int argc, char *argv[]){
 	PO_DESC(debugMode, bool, false) \
 	PO_DESC(screenMode, bool, false) \
 	PO_DESC(printFPS, bool, false) \
-	PO_DESC(EnableSixteenByNine, bool, false) \
 	PO_DESC(fullscreen, bool, false) \
 	PO_DESC(fixedAspectRatio, bool, true) \
+	PO_DESC(AspectPreset, std::string, "_4_3") \
 	PO_DESC(smoothScaling, bool, false) \
 	PO_DESC(vsync, bool, true) \
 	PO_DESC(defScreenW, int, 640) \
@@ -176,13 +176,6 @@ void Config::read(int argc, char *argv[]){
 	if(windowTitle == "")
 		game.title = "OneShot: Sunshine";
 	game.scripts = "Data/xScripts.rxdata";
-
-	if(defScreenW == 640 || defScreenH == 480){
-		if (EnableSixteenByNine){
-			defScreenW = 1280;
-			defScreenH = 720;	
-		}
-	}
 
 #ifdef STEAM
 	/* Override fullscreen config if Big Picture */

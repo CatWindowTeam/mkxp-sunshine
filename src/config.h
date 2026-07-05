@@ -35,7 +35,6 @@ struct Config{
 	bool Windows_AllocConsole;
 	bool smoothScaling;
 	bool vsync;
-	bool EnableSixteenByNine;
 	int defScreenW;
 	int defScreenH;
 	std::string windowTitle;
@@ -51,6 +50,7 @@ struct Config{
 	int maxTextureSize;
 
 	std::string gameFolder;
+	std::string AspectPreset;
 	bool allowSymlinks;
 	bool pathCache;
 
