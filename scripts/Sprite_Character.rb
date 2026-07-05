@@ -33,26 +33,28 @@ class Sprite_Character
   #--------------------------------------------------------------------------
   def update
     # Choose the appropriate light sprite
-    @light_sprite.viewport = ($game_screen.tone.blank?) ? @viewport : @light_viewport
+    @light_sprite.viewport = @character.light_ignore_transition ? @viewport : (($game_screen.tone.blank?) ? @viewport : @light_viewport)
     @light_sprite.shader = @sprite.shader =
     #idk what is this, maybe later i remake this
     @character.character_name.start_with?("en") || (Settings[:twm_shader] && @character.character_name.start_with?("niko") && $game_switches[160]) ? Shader::WorldMachine :
     @character.shader || Shader::Sprite
+    @light_sprite.mirror_x = @sprite.mirror_x = @character.mirror_x
+    @light_sprite.mirror_y = @sprite.mirror_y = @character.mirror_y
     
     dir = (@character.direction - 2) / 2
     if Settings[:debug_text] && (@last_char_name != character.character_name || dir != @old_dir) 
       @text_sprite.bitmap.clear
       @text_sprite.bitmap.draw_text(0, 0, 256, 12, "#{dir == 0 ? "↓" : dir == 1 ? "←" : dir == 2 ? "→" : "↑"} #{@character.character_name}")
-      @last_char_name = character.character_name
+      @last_char_name = @character.character_name
       @old_dir = dir
-    elsif !Settings[:debug] && @last_char_name != "мямямя :3"
+    elsif !Settings[:debug_text] && @last_char_name != "мямямя :3"
       @text_sprite.bitmap.clear
       @last_char_name = "мямямя :3"
     end
-    if Settings[:debug]
+    if Settings[:debug_text]
       @text_sprite.x = @character.screen_x
       @text_sprite.y = @character.screen_y
-      @text_sprite.z = @character.screen_z + 2
+      @text_sprite.z = 100
     end
     # Update sprites
     @sprite.update
@@ -208,7 +210,6 @@ class Sprite_Character
   sprite_attr :ox, :oy
   sprite_attr :zoom_x, :zoom_y
   sprite_attr :angle
-  sprite_attr :mirror
   sprite_attr :bush_depth
   sprite_attr :opacity
   sprite_attr :color

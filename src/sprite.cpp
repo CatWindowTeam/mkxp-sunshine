@@ -54,7 +54,8 @@ struct SpritePrivate{
 	Rect *srcRect;
 	sigc::connection srcRectCon;
 
-	bool mirrored;
+	bool mirrorX;
+	bool mirrorY;
 	int bushDepth;
 	float efBushDepth;
 	NormValue bushOpacity;
@@ -96,7 +97,8 @@ struct SpritePrivate{
 	SpritePrivate()
 	    : bitmap(0),
 	      srcRect(&tmp.rect),
-	      mirrored(false),
+	      mirrorX(false),
+	      mirrorY(false),
 	      bushDepth(0),
 	      efBushDepth(0),
 	      bushOpacity(128),
@@ -150,7 +152,8 @@ struct SpritePrivate{
 		rect.w = clamp<int>(rect.w, 0, bmSize.x-rect.x);
 		rect.h = clamp<int>(rect.h, 0, bmSize.y-rect.y);
 
-		quad.setTexRect(mirrored ? rect.hFlipped() : rect);
+		quad.setTexRect(mirrorX ? rect.wFlipped() : rect);
+		quad.setTexRect(mirrorY ? rect.hFlipped() : rect);
 
 		quad.setPosRect(FloatRect(0, 0, rect.w, rect.h));
 		recomputeBushDepth();
@@ -305,7 +308,8 @@ DEF_ATTR_RD_SIMPLE(Sprite, OY,           int,     p->trans.getOrigin().y)
 DEF_ATTR_RD_SIMPLE(Sprite, ZoomX,        float,   p->trans.getScale().x)
 DEF_ATTR_RD_SIMPLE(Sprite, ZoomY,        float,   p->trans.getScale().y)
 DEF_ATTR_RD_SIMPLE(Sprite, Angle,        float,   p->trans.getRotation())
-DEF_ATTR_RD_SIMPLE(Sprite, Mirror,       bool,    p->mirrored)
+DEF_ATTR_RD_SIMPLE(Sprite, MirrorX,      bool,    p->mirrorX)
+DEF_ATTR_RD_SIMPLE(Sprite, MirrorY,      bool,    p->mirrorY)
 DEF_ATTR_RD_SIMPLE(Sprite, BushDepth,    int,     p->bushDepth)
 DEF_ATTR_RD_SIMPLE(Sprite, BlendType,    int,     p->blendType)
 DEF_ATTR_RD_SIMPLE(Sprite, Width,        int,     p->srcRect->width)
@@ -408,13 +412,23 @@ void Sprite::setAngle(float value){
 	p->trans.setRotation(value);
 }
 
-void Sprite::setMirror(bool mirrored){
+void Sprite::setMirrorX(bool mirrored){
 	guardDisposed();
 
-	if (p->mirrored == mirrored)
+	if (p->mirrorX == mirrored)
 		return;
 
-	p->mirrored = mirrored;
+	p->mirrorX = mirrored;
+	p->onSrcRectChange();
+}
+
+void Sprite::setMirrorY(bool mirrored){
+	guardDisposed();
+
+	if (p->mirrorY == mirrored)
+		return;
+
+	p->mirrorY = mirrored;
 	p->onSrcRectChange();
 }
 

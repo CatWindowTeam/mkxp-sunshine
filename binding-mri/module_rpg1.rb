@@ -1,11 +1,23 @@
+# aspects, resolutions and filenames
+# 4:3      - 640x480 - "_4_3"
+# 16:9     - 960x540 - "_16_9"
+# 16:10    - 960x600 - "_16_10"
+# 
+# extra (not recomendated)
+# 16:9 HD  - 1280x720  - "_16_9_hd"
+# 16:9 FHD - 1920x1080 - "_16_9_fhd"
 module Graphics
   RESOLUTION_ASPECT =
-  if Graphics.width == 1280 && Graphics.height == 720
+  if Graphics.width == 1920 && Graphics.height == 1080
+    "_16_9_fhd"
+  elsif Graphics.width == 1280 && Graphics.height == 720
     "_16_9_hd"
   elsif Graphics.width == 1920 / 2 && Graphics.height == 1080 / 2
     "_16_9"
   elsif Graphics.width == 640 && Graphics.height == 480
     "_4_3"
+  else
+    ""
   end
 end
 
@@ -455,7 +467,7 @@ module RPG
         sprite.zoom_x = cell_data[i, 3] / 100.0
         sprite.zoom_y = cell_data[i, 3] / 100.0
         sprite.angle = cell_data[i, 4]
-        sprite.mirror = (cell_data[i, 5] == 1)
+        sprite.mirror_x = (cell_data[i, 5] == 1)
         sprite.opacity = cell_data[i, 6] * self.opacity / 255.0
         sprite.blend_type = cell_data[i, 7]
       end

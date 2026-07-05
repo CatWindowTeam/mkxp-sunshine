@@ -258,9 +258,28 @@ class Interpreter
     end
     # Continue
     begin
-      eval(script)
-    rescue
-      STDERR.puts "[EVENT] Failed to execute script #{script}"
+      eval(script, binding, "event")
+    rescue => e
+      event = get_character(0)
+      event_info = "Event ID:#{event&.id || "???"} #{event&.name || "Unknown Event"}"
+      error_line = e.backtrace.find { |line| line.include?("event") }
+      line_number = error_line&.split(":")[1]
+      
+      formated_script = ""
+      script.each_line.with_index(1) do |line, index|
+        if line_number.to_i == index
+          formated_script << "%3d > %s\n" % [index, line.chomp]
+        else
+          formated_script << "%3d | %s\n" % [index, line.chomp]
+        end
+      end
+      result = "[EVENT] Failed to execute event script | " + event_info
+      result << "\n-----------------------------------------\n"
+      result << formated_script
+      result << "-----------------------------------------\n"
+      result << e.message
+      result << "\n-----------------------------------------\n"
+      STDERR.puts result
     end
     return true
   end
