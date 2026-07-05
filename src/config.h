@@ -98,7 +98,7 @@ struct Config{
 	void read(int argc, char *argv[]);
 };
 
-// 0 - 2:3      - 640x960
+// 0 - 3:2      - 720:480
 // 1 - 4:3      - 640x480 (default)
 // 2 - 16:9     - 960x540
 // 3 - 16:10    - 960x600
@@ -107,7 +107,7 @@ struct Config{
 
 //  Value X    Y    Ruby const
 #define RESOLUTIONS_LIST(X) \
-	X(0,  640,  960,  _2_3) \
+	X(0,  720,  480,  _3_2) \
 	X(1,  640,  480,  _4_3) \
 	X(2,  960,  540,  _16_9) \
 	X(3,  960,  600,  _16_10) \
