@@ -214,7 +214,7 @@ class Window_Message < Window_Selectable
     # Don't do anything if we're done
     return if !@drawing_text
 	
-	autoMash = (Input.press?(Input::R) && $game_switches[253])
+    autoMash = (Input.press?(Input::R) && $game_switches[253]) || (Settings[:debug] && Input.press?(Input::DEBUGACTION))
 
     # Get 1 text character in c (loop until unable to get text)
     while ((c = @text.slice!(0)) != nil)
@@ -236,13 +236,13 @@ class Window_Message < Window_Selectable
         next
       end
       # \.
-      if c == "\001" && !(Input.press?(Input::DEBUGACTION) && Settings[:debug])
+      if c == "\001"
         # Pause
         @text_pause = autoMash ? 0 : 10
         return
       end
       # \|
-      if c == "\002" && !(Input.press?(Input::DEBUGACTION) && Settings[:debug])
+      if c == "\002"
         # Pause
         @text_pause = autoMash ? 0 : 10*4
         return
