@@ -8,7 +8,7 @@ class Scene_Title
   MENU_X = Graphics.width - 150
   MENU_Y = Graphics.height - 100
   SDLVer = "#{Sunshine::SDLVersion_major}.#{Sunshine::SDLVersion_minor}.#{Sunshine::SDLVersion_micro}"
-  SunshineVer = "0.1.1-dev"
+  SunshineVer = "0.1.4-dev"
   
   #--------------------------------------------------------------------------
   # * Main Processing

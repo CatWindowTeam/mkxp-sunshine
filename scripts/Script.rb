@@ -5,6 +5,24 @@ RUE_TEXT = "put me in the big portal"
 SUPPORTED_DE = ["cinnamon", "mate", "kde", "xfce", "gnome", "lxde", "lxqt"]
 
 module Script
+  #For Pancake episode support###
+  def self.start_plight_timer
+    $game_oneshot.bruteforce_start = Graphics.frame_count
+  end
+
+  def self.plight_timer_vars
+    if($game_oneshot.bruteforce_start == nil)
+      $game_oneshot.bruteforce_start = Graphics.frame_count
+    end
+    time_passed = Graphics.frame_count - $game_oneshot.bruteforce_start
+    seconds = time_passed / 60
+    digit1 = seconds % 60
+    digit2 = (seconds - digit1) / 60
+    $game_variables[29] = digit2
+    $game_variables[30] = digit1
+  end
+  ################################	
+
   def self.px
     logpos($game_player.x, $game_player.real_x, $game_player.direction == 6)
   end
@@ -777,4 +795,9 @@ def activate_balcony?(ypos)
   $game_player.y == ypos &&
   $game_player.direction == 8 &&
   Input.trigger?(Input::ACTION) && !$game_system.map_interpreter.running? && !$game_temp.menus_visible
+end
+
+def stop_igt
+  $game_temp.igt_timer_stopped = true
+  $game_temp.igt_timer_final_time = Graphics.frame_count
 end
