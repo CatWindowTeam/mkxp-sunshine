@@ -35,6 +35,7 @@ struct Config{
 	bool Windows_AllocConsole;
 	bool smoothScaling;
 	bool vsync;
+	bool pancakes;
 	int defScreenW;
 	int defScreenH;
 	std::string windowTitle;
