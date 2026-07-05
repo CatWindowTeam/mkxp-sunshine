@@ -7,14 +7,11 @@ Programmers:
 Artists:
 * Issac332
 * Creature_of_steel1
-* Dess
+* DesMo
 
 Testers:
 * Rubik
 * Prime 223432
-
-External artists:
-* "Ргинша"
 
 Donators:
 * Kodu
