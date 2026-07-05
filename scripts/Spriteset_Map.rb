@@ -6,6 +6,7 @@
 #==============================================================================
 
 class Spriteset_Map
+  attr_reader :character_sprites
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
@@ -76,15 +77,6 @@ class Spriteset_Map
     end
     # Make timer sprite
     @timer_sprite = Sprite_Timer.new
-    # Make lightbulb sprite
-    @bulb = Sprite.new(@viewport_lights)
-    @bulb.x = 0
-    if Graphics.width == 1280
-    	@bulb.bitmap = RPG::Cache.light('bulb_16')
-    else
-    	@bulb.bitmap = RPG::Cache.light('bulb')
-    end
-    @bulb.opacity = has_lightbulb? ? 255 : 0
     # Make dynamic light
     @dynamic_light = DynamicLight.new(@viewport_lights)
     # Panorama animation timer
@@ -350,17 +342,6 @@ class Spriteset_Map
     for sprite in @picture_sprites
       sprite.update
     end
-    # Update bulb if fading in
-    @bulb.tone = $game_map.ambient
-    if has_lightbulb?
-      if @bulb.opacity < 255
-        @bulb.opacity += 2.125
-      end
-    else
-      if @bulb.opacity > 0
-        @bulb.opacity -= 2.125
-      end
-    end
     
     @dynamic_light.update
     # Update particles
@@ -368,7 +349,7 @@ class Spriteset_Map
     # Update timer sprite
     @timer_sprite.update
     # Set screen color tone and shake position
-    @viewport.tone = $game_screen.tone + $game_map.ambient * (1.0 - @bulb.opacity / 255.0)
+    @viewport.tone = $game_screen.tone + $game_map.ambient
     @viewport.ox = $game_screen.shake
     @viewport_lights.ox = $game_screen.shake
     # Set screen flash color

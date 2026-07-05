@@ -10,22 +10,26 @@ class Game_Character
   # * Public Instance Variables
   #--------------------------------------------------------------------------
   attr_reader   :id                       # ID
-  attr_accessor   :x                        # map x-coordinate (logical)
-  attr_accessor   :y                        # map y-coordinate (logical)
-  attr_accessor   :real_x                   # map x-coordinate (real * 128)
-  attr_accessor   :real_y                   # map y-coordinate (real * 128)
+  attr_accessor :x                        # map x-coordinate (logical)
+  attr_accessor :y                        # map y-coordinate (logical)
+  attr_accessor :z
+  attr_accessor :real_x                   # map x-coordinate (real * 128)
+  attr_accessor :real_y                   # map y-coordinate (real * 128)
+  attr_accessor :mirror_x
+  attr_accessor :mirror_y
   attr_reader   :tile_id                  # tile ID (invalid if 0)
   attr_reader   :character_name           # character file name
   attr_reader   :character_hue            # character hue
   attr_reader   :opacity                  # opacity level
   attr_reader   :blend_type               # blending method
-  attr_accessor   :direction                # direction
-  attr_accessor   :pattern                  # pattern
+  attr_accessor :direction                # direction
+  attr_accessor :pattern                  # pattern
   attr_reader   :move_route_forcing       # forced move route flag
   attr_reader   :through                  # through
   attr_accessor :animation_id             # animation ID
   attr_accessor :transparent              # transparent flag
   attr_accessor :shader
+  attr_accessor :light_ignore_transition
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
@@ -33,6 +37,7 @@ class Game_Character
     @id = 0
     @x = 0
     @y = 0
+    @z = 0
     @real_x = 0
     @real_y = 0
     @tile_id = 0
@@ -66,7 +71,11 @@ class Game_Character
     @locked = false
     @prelock_direction = 0
     @custom_flags = []
+    @sprite = nil;
     @shader = Shader::Sprite
+    @light_ignore_transition = false
+    @mirror_x = false
+    @mirror_y = false
   end
   #--------------------------------------------------------------------------
   # * Determine if Moving
@@ -258,7 +267,7 @@ class Game_Character
       return 0
     end
     # Get screen coordinates from real coordinates and map display position
-    z = (@real_y - $game_map.display_y + 3) / 4 + 32
+    z = (@real_y - $game_map.display_y + 3) / 4 + 32 + @z
     # If tile
     if @tile_id > 0
       # Add tile priority * 32

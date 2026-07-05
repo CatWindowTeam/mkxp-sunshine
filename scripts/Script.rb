@@ -234,28 +234,28 @@ module Script
     return cdown_update(0)
   end
 
-  def self.niko_reflection_update
-    for event in $game_map.events.values
-      if event.name == "niko reflection"
-        event.real_y = 27*128/2 - ($game_player.real_y - 27*128/2)
-        event.real_x = $game_player.real_x
-        event.y = 14 - (($game_player.y - 13))
-        event.x = $game_player.x
-        if event.y > 14
-          event.y = 14
-        end
-        if event.real_y > 14*128
-          event.real_y = 14*128
-        end
-        event.direction = $game_player.direction
-        event.pattern = $game_player.pattern
-        case event.direction
-          when 2
-            event.direction = 8
-          when 8
-            event.direction = 2
-        end
-        return
+  def self.reflection_update(npc_id, offset_x = 0, offset_y = 0, reverse_x = false, reverse_y = false)
+    event = $game_map.events[npc_id]
+    event.real_x = reverse_x ? offset_x * 128 - $game_player.real_x : $game_player.real_x + offset_x * 128
+    event.real_y = reverse_y ? offset_y * 128 - $game_player.real_y : $game_player.real_y + offset_y * 128
+    event.x = reverse_x ? offset_x - $game_player.x : $game_player.x + offset_x
+    event.y = reverse_y ? offset_y - $game_player.y : $game_player.y + offset_y
+    event.direction = $game_player.direction
+    event.pattern = $game_player.pattern
+    if reverse_x
+      case event.direction
+        when 4
+          event.direction = 6
+        when 6
+          event.direction = 4
+      end
+    end
+    if reverse_y
+      case event.direction
+        when 2
+          event.direction = 8
+        when 8
+          event.direction = 2
       end
     end
   end
