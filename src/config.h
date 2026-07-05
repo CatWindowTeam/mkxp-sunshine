@@ -50,7 +50,8 @@ struct Config{
 	int maxTextureSize;
 
 	std::string gameFolder;
-	std::string AspectPreset;
+	int AspectPreset;
+	std::string AspectPresetRubyConst;
 	bool allowSymlinks;
 	bool pathCache;
 
@@ -95,5 +96,21 @@ struct Config{
 
 	void read(int argc, char *argv[]);
 };
+
+// 0 - 2:3      - 640x960
+// 1 - 4:3      - 640x480 (default)
+// 2 - 16:9     - 960x540
+// 3 - 16:10    - 960x600
+// 4 - 16:9 HD  - 1280x720 X
+// 5 - 16:9 FHD - 1920x1080 X
+
+//  Value X    Y    Ruby const
+#define RESOLUTIONS_LIST(X) \
+	X(0,  640,  960,  _2_3) \
+	X(1,  640,  480,  _4_3) \
+	X(2,  960,  540,  _16_9) \
+	X(3,  960,  600,  _16_10) \
+	X(4,  1280, 720,  _16_9_hd) \
+	X(5,  1920, 1080, _16_9_fhd)
 
 #endif // CONFIG_H

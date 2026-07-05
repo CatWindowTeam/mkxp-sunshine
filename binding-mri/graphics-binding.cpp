@@ -188,6 +188,7 @@ DEF_GRA_PROP_B(Frameskip)
 
 void graphicsBindingInit(){
 	VALUE module = rb_define_module("Graphics");
+
 	_rb_define_module_function(module, "update", graphicsUpdate);
 	_rb_define_module_function(module, "freeze", graphicsFreeze);
 	_rb_define_module_function(module, "transition", graphicsTransition);
@@ -200,8 +201,6 @@ void graphicsBindingInit(){
 
 	_rb_define_module_function(module, "width", graphicsWidth);
 	_rb_define_module_function(module, "height", graphicsHeight);
-	const Config &conf = shState->rtData().config;
-	rb_define_const(module, "ASPECT", rb_str_new_cstr(conf.AspectPreset.c_str()));
 	_rb_define_module_function(module, "wait", graphicsWait);
 	_rb_define_module_function(module, "fadeout", graphicsFadeout);
 	_rb_define_module_function(module, "fadein", graphicsFadein);
@@ -209,9 +208,11 @@ void graphicsBindingInit(){
 	_rb_define_module_function(module, "resize_screen", graphicsResizeScreen);
 
 	INIT_GRA_PROP_BIND( Brightness, "brightness" );
-
 	INIT_GRA_PROP_BIND( Fullscreen, "fullscreen"  );
 	INIT_GRA_PROP_BIND( ShowCursor, "show_cursor" );
 	INIT_GRA_PROP_BIND( Smooth,     "smooth"      );
-	INIT_GRA_PROP_BIND( Frameskip,  "frameskip"      );
+	INIT_GRA_PROP_BIND( Frameskip,  "frameskip"   );
+	
+	const Config &conf = shState->rtData().config;
+	rb_define_const(module, "RESOLUTION_ASPECT", rb_str_new_cstr(conf.AspectPresetRubyConst.c_str()));
 }

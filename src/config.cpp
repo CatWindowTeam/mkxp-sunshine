@@ -63,8 +63,7 @@ namespace po = boost::program_options;
 
 #define CONF_FILE "oneshot.conf"
 
-Config::Config()
-{}
+Config::Config() {}
 
 void Config::read(int argc, char *argv[]){
 #define PO_DESC_ALL \
@@ -73,7 +72,7 @@ void Config::read(int argc, char *argv[]){
 	PO_DESC(printFPS, bool, false) \
 	PO_DESC(fullscreen, bool, false) \
 	PO_DESC(fixedAspectRatio, bool, true) \
-	PO_DESC(AspectPreset, std::string, "_4_3") \
+	PO_DESC(AspectPreset, int, 1) \
 	PO_DESC(smoothScaling, bool, false) \
 	PO_DESC(vsync, bool, true) \
 	PO_DESC(defScreenW, int, 640) \
@@ -176,6 +175,28 @@ void Config::read(int argc, char *argv[]){
 	if(windowTitle == "")
 		game.title = "OneShot: Sunshine";
 	game.scripts = "Data/xScripts.rxdata";
+
+	#define ASPECT_SELECT(id, x, y, rubyConst) \
+		case id: { \
+			defScreenW = x; \
+			defScreenH = y; \
+			AspectPresetRubyConst = #rubyConst;\
+			break; \
+		}
+	
+	if (defScreenW == 640 && defScreenH == 480)
+		switch (AspectPreset) {
+			RESOLUTIONS_LIST(ASPECT_SELECT)
+		default: {
+				AspectPreset = 1;
+				AspectPresetRubyConst = "_4_3";
+				defScreenW = 640;
+				defScreenH = 480;
+				break;
+			}
+		}
+
+	#undef ASPECT_SELECT
 
 #ifdef STEAM
 	/* Override fullscreen config if Big Picture */
