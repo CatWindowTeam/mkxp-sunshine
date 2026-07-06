@@ -45,7 +45,6 @@ union SDL_Event;
 #define MAX_FINGERS 4
 
 extern SDL_Gamepad* gc;
-extern SDL_Joystick* js;
 
 class EventThread{
 public:

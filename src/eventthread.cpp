@@ -21,10 +21,13 @@
 
 #include "eventthread.h"
 
+#include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_gamepad.h>
+#include <SDL3/SDL_log.h>
 #include <SDL3/SDL_messagebox.h>
+#include <SDL3/SDL_properties.h>
 #include <SDL3/SDL_timer.h>
 #include <SDL3/SDL_thread.h>
 #include <SDL3/SDL_touch.h>
@@ -39,6 +42,7 @@
 
 #include <SDL3/SDL_stdinc.h>
 
+#include <cstdio>
 #include <map>
 
 #include <iostream>
@@ -90,7 +94,6 @@ enum{
 
 static uint32_t usrIdStart;
 SDL_Gamepad* gc = nullptr;
-SDL_Joystick* js = nullptr;
 
 bool EventThread::allocUserEvents(){
 	usrIdStart = SDL_RegisterEvents(EVENT_COUNT);
@@ -139,24 +142,26 @@ void EventThread::process(RGSSThreadData &rtData){
 
 	bool terminate = false;
 
-	std::map<int, SDL_Gamepad*> controllers;
-	std::map<int, SDL_Joystick*> joysticks;
+	std::map<int, SDL_Gamepad*> gamepads;
 
-	int tmpstupidshit;
-	SDL_GetJoysticks(&tmpstupidshit);
+	int count = 0;
+  	int jId = 0;
+  	SDL_JoystickID *ids = SDL_GetGamepads(&count);
 
-	for (int i = 0; i < tmpstupidshit; ++i) {
-		if (SDL_IsGamepad(i)) {
-			//Load as game controller
-			gc = SDL_OpenGamepad(i);
-			int id = SDL_GetJoystickID(SDL_GetGamepadJoystick(gc));
-			controllers[id] = gc;
-		} else {
-			//Fall back to joystick
-			js = SDL_OpenJoystick(i);
-			joysticks[SDL_GetJoystickID(js)] = js;
+  	for(int i = 0; i < count; i++) {
+    	SDL_Gamepad* gamepd = SDL_OpenGamepad(ids[i]);
+
+    	if (gc == nullptr) {
+      		gc = gamepd;
+      		jId = ids[i];
 		}
-	}
+
+		printf("Gamepad connected: %s", SDL_GetGamepadName(gc));
+
+    	if (i > 0) {
+      		SDL_CloseGamepad(gamepd);
+    	}
+  	}
 
 	char buffer[128];
 
@@ -168,18 +173,16 @@ void EventThread::process(RGSSThreadData &rtData){
 	int i;
 
 	int id;
-	std::map<int, SDL_Joystick*>::iterator jsit;
 	std::map<int, SDL_Gamepad*>::iterator gcit;
 
 	SDL_GetWindowSize(win, &winW, &winH); // SDL_GL_GetDrawableSize(win, &winW, &winH);
 
-	while (true){
-		if (!SDL_WaitEvent(&event)){
+	while (true) {
+		if (!SDL_WaitEvent(&event)) {
 			Debug() << "[EventThread::process] EventThread: Event error";
 			break;
 		}
 
-		/* Preselect and discard unwanted events here */
 		switch (event.type){
 		case SDL_EVENT_MOUSE_BUTTON_DOWN :
 		case SDL_EVENT_MOUSE_BUTTON_UP :
@@ -345,51 +348,15 @@ void EventThread::process(RGSSThreadData &rtData){
 			break;
 
 		case SDL_EVENT_GAMEPAD_ADDED:
-			gc = SDL_OpenGamepad(event.jdevice.which);
+			gc = SDL_OpenGamepad(event.gdevice.which);
 			id = SDL_GetJoystickID(SDL_GetGamepadJoystick(gc));
-			controllers[id] = gc;
+			gamepads[id] = gc;
 			break;
 
 		case SDL_EVENT_GAMEPAD_REMOVED:
-			gcit = controllers.find(event.jdevice.which);
+			gcit = gamepads.find(event.gdevice.which);
 			SDL_CloseGamepad(gcit->second);
-			controllers.erase(gcit);
-			break;
-
-		case SDL_EVENT_JOYSTICK_BUTTON_DOWN :
-			if (joysticks.find(event.jbutton.which) != joysticks.end())
-				joyState.buttons[event.jbutton.button] = true;
-			break;
-
-		case SDL_EVENT_JOYSTICK_BUTTON_UP :
-			if (joysticks.find(event.jbutton.which) != joysticks.end())
-				joyState.buttons[event.jbutton.button] = false;
-			break;
-
-		case SDL_EVENT_JOYSTICK_HAT_MOTION :
-			if (joysticks.find(event.jbutton.which) != joysticks.end())
-				joyState.hats[event.jhat.hat] = event.jhat.value;
-			break;
-
-		case SDL_EVENT_JOYSTICK_AXIS_MOTION :
-			if (joysticks.find(event.jbutton.which) != joysticks.end())
-				joyState.axes[event.jaxis.axis] = event.jaxis.value;
-			break;
-
-		case SDL_EVENT_JOYSTICK_ADDED :
-			if (SDL_IsGamepad(event.jdevice.which))
-				break;
-			js = SDL_OpenJoystick(event.jdevice.which);
-			joysticks[SDL_GetJoystickID(js)] = js;
-			break;
-
-		case SDL_EVENT_JOYSTICK_REMOVED :
-			jsit = joysticks.find(event.jdevice.which);
-			if (jsit != joysticks.end()) {
-				SDL_CloseJoystick(jsit->second);
-				joysticks.erase(jsit);
-				resetInputStates();
-			}
+			gamepads.erase(gcit);
 			break;
 
 		case SDL_EVENT_MOUSE_BUTTON_DOWN :
@@ -491,10 +458,8 @@ void EventThread::process(RGSSThreadData &rtData){
 	/* Just in case */
 	rtData.syncPoint.resumeThreads();
 
-	for (gcit = controllers.begin(); gcit != controllers.end(); ++gcit)
+	for (gcit = gamepads.begin(); gcit != gamepads.end(); ++gcit)
 		SDL_CloseGamepad(gcit->second);
-	for (jsit = joysticks.begin(); jsit != joysticks.end(); ++jsit)
-		SDL_CloseJoystick(jsit->second);
 }
 
 bool EventThread::eventFilter(void *data, SDL_Event *event){

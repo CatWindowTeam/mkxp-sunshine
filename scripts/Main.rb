@@ -16,7 +16,7 @@ begin
   Graphics.frame_rate = 60 
   Font.default_size = 20
   #debug shit 
-  Input.set_led(0, 255, 0)
+  Input.set_led(255, 150, 30)
   
   # Load persistent data
   Persistent.load

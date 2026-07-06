@@ -50,3 +50,5 @@ Mirrors!
 Nice eror formating in Events script command
 Optimizations for steamshim
 crash() function update
+removed SDL joystick support
+fixed SECCOMP blocking UDEV sockets
