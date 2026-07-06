@@ -40,3 +40,13 @@ Govnocode fix naxui
 Added dynamic light system
 Added script function to change tiles in relatime
 Fixed audio bug
+Добавлены отражения от плитки в стартовом доме
+Игра переведена на другое разрешение экрана и поддержку большего кол-во аспектов мониторов
+Fixed performance issues
+Android support patches
+Some Pancake episode specific changes
+squares when dialog skipping fixed
+Mirrors!
+Nice eror formating in Events script command
+Optimizations for steamshim
+crash() function update
