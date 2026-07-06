@@ -27,7 +27,7 @@ static void start(){
 	CreateProcessW(path, args, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 	delete [] args;
 #else
-#if defined __linux
+#if defined unix_like
 	char path[PATH_MAX];
 	ssize_t len = readlink("/proc/self/exe", path, PATH_MAX);
 	if (len == -1)

@@ -38,7 +38,7 @@
 #include "binding.h"
 #include "debugwriter.h"
 #include "oneshot.h"
-
+#include "define.h"
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_timer.h>
 #include <SDL3_image/SDL_image.h>
@@ -730,7 +730,7 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 			simpleShader.setProg(prog);
 		}
 
-		#if !defined(__linux__) && !defined(BSD) && !defined(__unix__)
+		#if !unix_like
 			if (p->threadData->exiting) SDL_SetWindowOpacity(p->threadData->window, 1.0f - prog);
 		#endif
 

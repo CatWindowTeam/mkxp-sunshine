@@ -31,6 +31,7 @@
 #include "audio.h"
 #include "boost-hash.h"
 #include "meow.h"
+#include "sunshine.h"
 
 #include <ruby.h>
 #include <ruby/debug.h>
@@ -129,7 +130,7 @@ void fileIntBindingInit();
 
 void journalBindingInit();
 void wallpaperBindingInit();
-#ifdef __linux__
+#ifdef unix_like
 void wallpaperBindingTerminate();
 #endif
 void nikoBindingInit();
@@ -591,7 +592,7 @@ static void mriBindingExecute(){
 
 static void mriBindingTerminate(){
 	rb_raise(rb_eSystemExit, " ");
-#ifdef __linux__
+#ifdef unix_like
 	wallpaperBindingTerminate();
 #endif
 }

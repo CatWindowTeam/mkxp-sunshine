@@ -27,7 +27,6 @@
 #include "input.h"
 #include "audio.h"
 #include "oneshot.h"
-#include "sunshine.h"
 #ifdef STEAM
 #include "steam.h"
 #endif
@@ -41,6 +40,7 @@
 #include "quad.h"
 #include "binding.h"
 #include "exception.h"
+#include "sunshine.h"
 
 #ifndef _MSC_VER
 #include <unistd.h>

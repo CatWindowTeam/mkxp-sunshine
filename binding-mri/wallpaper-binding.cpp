@@ -3,10 +3,8 @@
 #include <fstream>
 #include <vector>
 #include <map>
-
 #include <boost/algorithm/string/replace.hpp>
 
-#include "sunshine.h"
 #include "etc.h"
 #include "sharedstate.h"
 #include "binding-util.h"
@@ -14,6 +12,7 @@
 #include "config.h"
 #include "oneshot.h"
 #include "debugwriter.h"
+#include "define.h"
 
 #ifdef _WIN32
 	#include <windows.h>
@@ -38,6 +37,7 @@
 		#include <iostream>
 		#include <string>
 		#include <sstream>
+		#include <cstdlib>
 		static std::string desktop = "uninitialized";
 		// GNOME settings
 		static GSettings *bgsetting;
@@ -52,20 +52,65 @@
 		// KDE settings
 		static std::map<std::string, std::string> defPlugins, defPictures, defColors, defModes;
 		static std::map<std::string, bool> defBlurs;
+		// LXDE settings
+		static std::string originalBgPath = "";
+		static std::string originalBgMode = "";
 		// Fallback settings
 		static std::string fallbackPath;
 	#endif
 #endif
 
-#ifdef __linux__
+#ifdef unix_like
 	void desktopEnvironmentInit(){
 		printf("[desktopEnvironmentInit] desktopEnvironmentInit()\n");
 		if (desktop != "uninitialized")
     		return;
 		
 		desktop = shState->oneshot().desktopEnv;
-		if (desktop != "nope") {
+		if (desktop == "nope") {
     			return;
+		}
+		if (desktop == "lxde"){
+			const char* homeC = std::getenv("HOME");
+			if (!homeC) return;
+			std::string home(homeC);
+			std::string path = home + "/.config/pcmanfm/LXDE/desktop-items-0.conf";
+
+			std::ifstream infile(path);
+			if (!infile) {
+			   Debug() << "Can't open LXDE settings";
+			   return;
+			}
+			//https://ru.stackoverflow.com/questions/888292/%D0%A0%D0%B0%D0%B7%D0%B4%D0%B5%D0%BB%D0%B8%D1%82%D1%8C-%D0%BE%D0%B4%D0%BD%D1%83-%D1%81%D1%82%D1%80%D0%BE%D0%BA%D1%83-%D0%BD%D0%B0-%D0%B4%D0%B2%D0%B5
+			std::string line;
+			unsigned int lineNumber = 0;
+			static bool first_found = false;
+			static bool second_found = false;
+			while (getline(infile, line)) {
+				lineNumber++;
+				if (line.find("wallpaper=") != std::string::npos) {
+					Debug() << "[LXDEPrepare] " << line;
+					auto pos = line.find("=");
+					if (pos != std::string::npos){
+					    originalBgPath = line.substr(pos+1);
+					    first_found = true;
+					}
+			    }
+			    if (line.find("wallpaper_mode=") != std::string::npos) {
+			    	Debug() << "[LXDEPrepare] " << line;
+			    	auto pos = line.find("=");
+			    	if (pos != std::string::npos){
+			    	    originalBgMode = line.substr(pos+1);
+			    	    second_found = true;
+			    	}
+			    }
+			    if(first_found && second_found){
+			    	Debug() << originalBgPath;
+			    	Debug() << originalBgMode;
+			    	break;
+			    }
+			}
+			infile.close();
 		}
 		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
 			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
@@ -356,8 +401,15 @@ end:
 			int result = system(command.str().c_str());
 			#ifdef DEBUG
 				Debug() << "[wallpaperSet] Wallpaper command:" << command.str();
-				Debug() << "[wallpaperSet ] Result:" << result;
+				Debug() << "[wallpaperSet] Result:" << result;
 			#endif
+		} else if (desktop == "lxde") {
+				std::string concatPath = gameDirStr + path;
+				std::string cmd = "pcmanfm -w \"" + concatPath + "\"" + " --wallpaper-mode=center";
+				int status = std::system(cmd.c_str());
+				if (status != 0) {
+				    std::printf("bliat ono slomalos\n");
+				}
 		} else {
 			std::ifstream srcHint(gameDirStr + path);
 			std::ofstream dstHint(fallbackPath);
@@ -484,6 +536,17 @@ RB_METHOD(wallpaperReset){
 				Debug() << "[wallpaperReset] Reset wallpaper command:" << command.str();
 				Debug() << "[wallpaperReset] Reset result:" << result;
 			#endif
+		} else if(desktop == "lxde"){
+			if (originalBgPath != "" && originalBgMode != ""){
+				std::string cmd = "pcmanfm -w \"" + originalBgPath + "\"" + " --wallpaper-mode=" + originalBgMode;
+				Debug() << cmd;
+				int status = std::system(cmd.c_str());
+				if (status != 0) {
+					std::printf("bliat ono slomalos\n");
+				}
+			}else{
+				Debug() << "BRUH";
+			}
 		} else {
 			if (remove(fallbackPath.c_str()) != 0) {
 				#ifdef DEBUG
@@ -505,7 +568,7 @@ void wallpaperBindingInit(){
 	_rb_define_module_function(module, "reset", wallpaperReset);
 }
 
-#ifdef __linux__
+#ifdef unix_like
 void wallpaperBindingTerminate(){
 	// Clean up.
 	if (desktop == "xfce") {

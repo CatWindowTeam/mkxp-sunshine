@@ -4,11 +4,10 @@
 #  After defining each class, actual processing begins here.
 #==============================================================================
 
-at_exit do
-  RPG::Mod.exec_hooks("hooks/Main/at_exit", binding)
-  Wallpaper.reset
-  save unless $game_switches[99] || ($game_system.map_interpreter.running? || !$scene.is_a?(Scene_Map))
-end
+#at_exit do
+#  Wallpaper.reset
+#  save unless $game_switches[99] || ($game_system.map_interpreter.running? || !$scene.is_a?(Scene_Map))
+#end
 
 begin
   RPG::Mod.exec_hooks("hooks/Main/start", binding)
@@ -41,10 +40,9 @@ begin
   end
   
   Oneshot.allow_exit true
+  Wallpaper.reset
+  save unless $game_switches[99] || ($game_system.map_interpreter.running? || !$scene.is_a?(Scene_Map))
 rescue Errno::ENOENT
-  if $debug
-	tp.disable
-  end
   # Supplement Errno::ENOENT exception
   # If unable to open file, display message and end
   filename = $!.message.sub("No such file or directory - ", "")

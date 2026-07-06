@@ -3,11 +3,12 @@
 #include "sharedstate.h"
 #include "debugwriter.h"
 #include "eventthread.h"
+#include "define.h"
 
 #if defined _WIN32
 #define OS_W32
 #include <shlwapi.h>
-#elif defined __APPLE__ || __linux__
+#elif unix_like
 	#define LINUX
 	#ifdef __APPLE__
 		#define OS_OSX
@@ -42,7 +43,7 @@ static volatile char message_buffer[BUFFER_SIZE];
 static volatile bool active = false;
 static volatile int message_len = 0;
 
-#ifdef LINUX
+#ifdef unix_like
 	static std::string NIKO_PIPE_PATH = std::string(getpwuid(getuid())->pw_dir) + "/.oneshot-niko-pipe";
 	static volatile int out_pipe = -1;
 	void niko_cleanup_pipe(){
@@ -97,7 +98,7 @@ RB_METHOD(nikoPrepare){
 	//SDL_VERSION(&syswindow.version);
 	//SDL_GetWindowWMInfo(shState->rtData().window, &syswindow);
 
-#ifdef LINUX
+#ifdef unix_like
 	char path[PATH_MAX];
 	std::string journal;
 
@@ -196,7 +197,7 @@ RB_METHOD(nikoStart){
 
 void nikoBindingInit(){
 	mutex = SDL_CreateMutex();
-#if defined __linux
+#if unix_like
 	mkfifo(NIKO_PIPE_PATH.c_str(), 0666);
 	atexit(niko_cleanup_pipe);
 #endif

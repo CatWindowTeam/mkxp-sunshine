@@ -9,6 +9,7 @@
 #include "bitmap.h"
 #include "font.h"
 #include "config.h"
+#include "define.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
@@ -29,7 +30,7 @@
     #include <pwd.h>
     #include <dlfcn.h>
     #include <dispatch/dispatch.h>
-#elif defined(__linux__) || defined(__unix__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#elif unix_like
     #include <stdlib.h>
     #include <unistd.h>
     #include <pwd.h>
@@ -86,7 +87,7 @@ struct OneshotPrivate{
 };
 
 //OS-SPECIFIC FUNCTIONS
-#if defined(__linux__) || defined(__unix__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#if unix_like
 struct linux_DialogData{
 	// Input
 	int type;
@@ -182,9 +183,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 		p->os = "windows";
 	#elif __APPLE__
 		p->os = "macos";
-	#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(BSD)
-		p->os = "BSD";
-	#elif __LINUX__
+	#elif unix_like
 		p->os = "linux";
 	#endif
 
@@ -242,7 +241,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	// Get user's name
 	#ifdef OS_OSX
 		struct passwd *pwd = getpwuid(geteuid());
-	#elif defined(__linux__) || defined(__unix__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+	#elif unix_like
 		struct passwd *pwd = getpwuid(getuid());
 	#endif
 	if (pwd){
@@ -261,7 +260,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 		p->docsPath = path.c_str();
 		p->gamePath = path.c_str();
 		p->journal = "_______.app";
-	#elif defined(__linux__) || defined(__unix__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+	#elif unix_like
 		char * path = xdg_user_dir_lookup("DOCUMENTS");
 		p->docsPath = path;
 		p->gamePath = path;
@@ -272,7 +271,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	Debug() << "[oneshot] Game path    :" << p->gamePath;
 	Debug() << "[oneshot] Docs path    :" << p->docsPath;
 
-#ifdef defined(__linux__) || defined(__unix__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#ifdef unix_like
 	char const* xdg_current_desktop = getenv("XDG_CURRENT_DESKTOP");
 	gtk_init(0, 0);
 
@@ -464,7 +463,7 @@ void Oneshot::setAllowExit(bool allowExit){
 bool Oneshot::msgbox(int type, const char *body, const char *title){
 	if (!title)
 		title = "";
-#ifdef defined(__linux__) || defined(__unix__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#ifdef unix_like
 	linux_DialogData data = {type, body, title, 0};
 	gdk_threads_add_idle(linux_dialog, &data);
 	gtk_main();

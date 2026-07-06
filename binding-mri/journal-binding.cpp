@@ -3,11 +3,12 @@
 #include "pipe.h"
 #include "debugwriter.h"
 #include "i18n.h"
+#include "define.h"
 
 //OS-Specific code
 #if defined _WIN32
 	#define OS_W32
-#elif defined __APPLE__ || __linux__
+#elif unix_like
 	#define LINUX
 	#ifdef __APPLE__
 		#define OS_OSX
@@ -38,7 +39,7 @@ static volatile char message_buffer[BUFFER_SIZE];
 static volatile bool active = false;
 static volatile int message_len = 0;
 
-#ifdef LINUX
+#ifdef unix_like
 	static std::string PIPE_PATH = std::string(getpwuid(getuid())->pw_dir) + "/.oneshot-pipe";
 	static volatile int out_pipe = -1;
 	void cleanup_pipe(){

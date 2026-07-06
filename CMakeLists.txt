@@ -78,6 +78,7 @@ set(MAIN_HEADERS
 	src/modloader.h
 	src/sunshine.h
 	src/lightmap.h
+	src/define.h
 )
 
 set(MAIN_SOURCE
@@ -311,7 +312,8 @@ else()
 	    add_compile_options(-march=native -mtune=native)
 	endif()
 	if(DEBUG)
-		add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -fcheck-new -gbtf)
+		add_compile_options(-g3 -fno-omit-frame-pointer)
+		#add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -fcheck-new -gbtf)
 	else()
 		add_compile_options(-O2 -ffast-math -fipa-pta -ftree-vectorize -fstdarg-opt -fomit-frame-pointer -frename-registers 
 		-ffunction-sections -fdata-sections -fvisibility=hidden)

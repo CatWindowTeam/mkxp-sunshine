@@ -98,7 +98,7 @@ void oneshotBindingInit(){
 
 	// Constants
 	rb_const_set(module, rb_intern("OS"), rb_str_new2(shState->oneshot().os().c_str()));
-	#ifdef __linux__
+	#ifdef unix_like
 	rb_const_set(module, rb_intern("DE"), rb_str_new2(shState->oneshot().desktopEnv.c_str()));
 	#endif
 	rb_const_set(module, rb_intern("USER_NAME"), rb_str_new2(shState->oneshot().userName().c_str()));

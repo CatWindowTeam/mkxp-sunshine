@@ -7,7 +7,7 @@
 
 #include "etc-internal.h"
 #include <string>
-
+#include "define.h"
 struct OneshotPrivate;
 struct RGSSThreadData;
 
@@ -71,7 +71,7 @@ public:
 	//Dirty flag for obscured texture
 	bool obscuredDirty;
 
-#ifdef __linux__
+#ifdef unix_like
 	std::string desktopEnv;
 #endif
 

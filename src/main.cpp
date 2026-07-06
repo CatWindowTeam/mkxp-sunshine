@@ -53,6 +53,7 @@
 #include "modloader.h"
 #include "sunshine.h"
 
+#include "define.h"
 #include "meow.h"
 
 #include "binding.h"
@@ -224,7 +225,7 @@ int main(int argc, char *argv[]){
 	SDL_SetHint(SDL_HINT_AUDIO_DEVICE_STREAM_NAME, "Oneshot: sunshine");
 	SDL_SetHint(SDL_HINT_AUDIO_DEVICE_STREAM_ROLE, "Game");
 	//X11 work on *BSD,Solaris too!
-	#if defined(__linux__) || defined(BSD) || defined(__sun)
+	#if unix_like
 		SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
 		#if SDL_VERSION_ATLEAST(3, 4, 10)
 			SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
@@ -333,7 +334,7 @@ int main(int argc, char *argv[]){
 
 	/* OSX and Windows have their own native ways of
 	 * dealing with icons; don't interfere with them */
-#ifdef defined(__linux__) || defined(BSD)
+#ifdef unix_like
 	setupWindowIcon(conf, win);
 #elif __EMSCRIPTEN__
 	Debug() << "meow";
