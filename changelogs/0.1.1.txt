@@ -52,3 +52,5 @@ Optimizations for steamshim
 crash() function update
 *NIX support patches
 Start house reworked
+removed SDL joystick support
+fixed SECCOMP blocking UDEV sockets

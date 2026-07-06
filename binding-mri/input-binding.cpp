@@ -28,8 +28,10 @@
 
 #include "keybindings-binding.h"
 
+#include <SDL3/SDL_error.h>
 #include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_gamepad.h>
+#include <cstdio>
 #include <vector>
 
 RB_METHOD(inputUpdate){
@@ -279,10 +281,11 @@ static VALUE setBinding(VALUE self, VALUE rb_arr, VALUE rb_target){
 
 static VALUE setLED(VALUE self, VALUE r, VALUE g, VALUE b) {
     if (gc != nullptr) {
-        SDL_SetGamepadLED(gc, NUM2INT(r), NUM2INT(g), NUM2INT(b));
-    } else if (js != nullptr) {
-        SDL_SetJoystickLED(js, NUM2INT(r), NUM2INT(g), NUM2INT(b));
+        if (!SDL_SetGamepadLED(gc, NUM2INT(r), NUM2INT(g), NUM2INT(b))) {
+			printf("failed to set gamepad led for gamepad %s: %s\n", SDL_GetGamepadName(gc), SDL_GetError());
+		}
     }
+
     return Qnil;
 }
 
@@ -291,10 +294,12 @@ static VALUE rumble(VALUE self, VALUE low_frequency_rumble, VALUE high_frequency
     Uint16 high_freq = NUM2DBL(high_frequency_rumble) * 65535;
     
     if (gc != nullptr) {
-        SDL_RumbleGamepad(gc, low_freq, high_freq, NUM2INT(duration_ms));
-    } else if (js != nullptr) {
-        SDL_RumbleJoystick(js, low_freq, high_freq, NUM2INT(duration_ms));
+		printf("low freq: %d, high freq: %d, duration: %d", low_freq, high_freq, NUM2INT(duration_ms));
+        if (!SDL_RumbleGamepad(gc, low_freq, high_freq, NUM2INT(duration_ms))) {
+			printf("failed to rumble gamepad %s: %s\n", SDL_GetGamepadName(gc), SDL_GetError());
+		}
     }
+
     return Qnil;
 }
 

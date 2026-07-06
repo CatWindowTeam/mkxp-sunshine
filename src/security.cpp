@@ -38,11 +38,16 @@ void SecurityManagerInit(){
 
 			//Extra rules
 			//Deny all network connections
-			if(seccomp_rule_add(ctx, SCMP_ACT_ERRNO(EPERM), SCMP_SYS(socket), 1, SCMP_CMP(0, SCMP_CMP_NE, AF_UNIX))){
-				Debug() << "seccomp_rule_add failed for extra rules";
+			if(seccomp_rule_add(ctx, SCMP_ACT_ERRNO(EPERM), SCMP_SYS(socket), 1, SCMP_CMP(0, SCMP_CMP_EQ, AF_INET))){
+				Debug() << "seccomp_rule_add failed for extra rules (socket AF_INET)";
 			}
+
+			if(seccomp_rule_add(ctx, SCMP_ACT_ERRNO(EPERM), SCMP_SYS(socket), 1, SCMP_CMP(0, SCMP_CMP_EQ, AF_INET6))){
+				Debug() << "seccomp_rule_add failed for extra rules (socket AF_INET6)";
+			}
+
 			if(seccomp_rule_add(ctx, SCMP_ACT_ERRNO(EPERM), SCMP_SYS(socketpair), 1, SCMP_CMP(0, SCMP_CMP_NE, AF_UNIX))){
-				Debug() << "seccomp_rule_add failed for extra rules";				
+				Debug() << "seccomp_rule_add failed for extra rules (socketpair)";				
 			}
 			
 			
