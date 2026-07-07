@@ -1,5 +1,4 @@
 Added 16:9 panorams support
-Added Panorams/skyline_16.png
 Added Panorams/green/maize_16.png
 mri-bindings cleanup
 RAM usage optimizations
@@ -7,7 +6,7 @@ RAM usage optimizations
 On windows use of RAW input events by default
 Maps changes
 Added JIT support
-Reload on F5
+Reload on F5(in debug)
 Scene_Map optimization
 TPtL aray limit set to 300
 New 16:9 arts
@@ -57,3 +56,6 @@ fixed SECCOMP blocking UDEV sockets
 Some Barens changes
 dev room!
 MacOS support in SecurityManager
+Changed default 16:9 window resolution
+Added 16:10 support
+SecurityManager can detect Flatpak and Snap now
