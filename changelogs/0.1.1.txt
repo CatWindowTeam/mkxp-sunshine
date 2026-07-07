@@ -59,3 +59,5 @@ MacOS support in SecurityManager
 Changed default 16:9 window resolution
 Added 16:10 support
 SecurityManager can detect Flatpak and Snap now
+Added 3:2 support
+Modloader settings

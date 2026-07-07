@@ -16,13 +16,13 @@ color_reset="\033[0m"   # Reset Colors
 
 use_qmake=True
 
-echo "${white}Compiling ${bold}SyngleChance v${mac_version} ${white}engine for macOS...${color_reset}\n"
+echo "${white}Compiling ${bold}Sunshine ${white}engine for macOS...${color_reset}\n"
 
 # Generate makefile and build main + journal
 if [[ $use_qmake == True ]]
 	then
 	echo "-> ${cyan}Generate makefile...${color_reset}"
-	qmake MRIVERSION=2.5
+	qmake MRIVERSION=3.3
 	echo "-> ${cyan}Compile engine...${color_reset}"
 	make -j${make_threads}
 	echo "-> ${cyan}Compile steamshim...${color_reset}"
@@ -89,4 +89,4 @@ rm -rf journal/unix/__pycache__
 rm -rf build
 rm -rf dist
 
-echo "\n${green}Complete!  ${white}Please report any issues to https://github.com/GooborgStudios/synglechance/issues${color_reset}"
+echo "\n${green}Complete!"
