@@ -54,3 +54,6 @@ crash() function update
 Start house reworked
 removed SDL joystick support
 fixed SECCOMP blocking UDEV sockets
+Some Barens changes
+dev room!
+MacOS support in SecurityManager

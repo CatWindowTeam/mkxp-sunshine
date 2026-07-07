@@ -3,7 +3,7 @@
 #include "meow.h"
 #include "debugwriter.h"
 #include <stdio.h>
-
+#include <SDL3/SDL_system.h>
 // In the future, we plan to add a mod loader, so this component is needed to protect users from mod attacks.
 
 #ifdef __linux__
@@ -34,7 +34,7 @@ void SecurityManagerInit(){
 			    if(seccomp_rule_add(ctx, SCMP_ACT_KILL, seccomplist[i], 0) < 0) {
 			        printf("seccomp_rule_add failed for %i", seccomplist[i]);
 			    }
-			}				
+			}
 
 			//Extra rules
 			//Deny all network connections
@@ -47,18 +47,22 @@ void SecurityManagerInit(){
 			}
 
 			if(seccomp_rule_add(ctx, SCMP_ACT_ERRNO(EPERM), SCMP_SYS(socketpair), 1, SCMP_CMP(0, SCMP_CMP_NE, AF_UNIX))){
-				Debug() << "seccomp_rule_add failed for extra rules (socketpair)";				
+				Debug() << "seccomp_rule_add failed for extra rules (socketpair)";
 			}
-			
-			
 			if(seccomp_load(ctx) < 0) {
 			    WarnMsg("Warning: Failed to load SECCOMP! If you receive this warning, IT IS NOT RECOMMENDED to add any third-party modifications to Sunshine!");
 			    seccomp_release(ctx);
 			}
 		}
-
+		SDL_Sandbox Sandbox = SDL_GetSandbox();
 		securitystate = "sandboxed_SECCOMP";
-		
+		if(Sandbox == SDL_SANDBOX_FLATPAK)
+			securitystate = "sandboxed_FLATPAK";
+		if(Sandbox == SDL_SANDBOX_SNAP)
+			securitystate = "sandboxed_SNAP";
+	#elif __APPLE__
+    		if(SDL_GetSandbox() == SDL_SANDBOX_MACOS)
+			securitystate = "sandboxed_MacOS";
 	#else
 		Debug() << "[SECURITY] SecurityManager doesn't support this platform.";
 	#endif
@@ -67,5 +71,5 @@ void SecurityManagerInit(){
 void SecurityManagerDeInit(){
 	#ifdef __linux__
 		seccomp_release(ctx);
-	#endif	
+	#endif
 }

@@ -19,18 +19,17 @@
 | ChromeOS/ChromiumOS | 0.4% | Неизвестное |
 | MacOS | 10% | Неизвестное, но работа ведётся |
 
-
 # Окружения рабочего стола
 | Окружение | Завершено |
 | LXDE | 100% |
-| XFCE | 0% |
-| GNOME | 0% |
-| KDE | 0% |
+| XFCE | 10% |
+| GNOME | 10% |
+| KDE | 10% |
 | LXQt | 0% |
 | MATE | 0% |
-| Cinnamon | 0% |
+| Cinnamon | 10% |
 | Budgie | 0% |
-| Deepin | 0% |
+| Deepin | 10% |
 | COSMIC | 0% |
 | Pantheon | 0% |
 | Enlightenment | 0% |
