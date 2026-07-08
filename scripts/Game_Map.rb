@@ -538,9 +538,15 @@ class Game_Map
   end
 
   def set_tile(x, y, z, tile)
-    if z < 0 || z > 2 || x < 0 || x >= width || y < 0 || y >= height
+    if z < 0 || z > 2 || !valid?(x, y)
       return
     end
     @map.data[x, y, z] = tile
+  end
+  def get_tile(x, y, z)
+    if z < 0 || z > 2 || !valid?(x, y)
+      return 0
+    end
+    @map.data[x, y, z]
   end
 end

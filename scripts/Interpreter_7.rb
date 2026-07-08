@@ -245,7 +245,7 @@ class Interpreter
     # Loop
     while true
       # If next event command is second line of script or after
-      if @list[@index+1].code == 655
+      if @list[@index+1].code == 655 || @list[@index+1].code == 355
         # Add second line or after to script
         script += @list[@index+1].parameters[0] + "\n"
       # If event command is not second line or after
