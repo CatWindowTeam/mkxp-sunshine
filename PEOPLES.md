@@ -30,5 +30,8 @@ Matrix moderators:
 Discord moderators:
 * referr
 
+Servers administrators
+* DepressedTWM
+
 Special thanks to:
 * my mom and dad:3
