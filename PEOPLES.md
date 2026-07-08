@@ -9,11 +9,11 @@ Artists:
 * Creature_of_steel1
 * DesMo
 * Обси
+* DepressedTWM
 
 Testers:
 * Rubik
 * Prime 223432
-* subs:)
 
 Donators:
 * Kodu
