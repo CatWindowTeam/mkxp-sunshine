@@ -62,6 +62,7 @@ class Particle
   end
   def opacity=(val)
     @sprite.opacity = val
+    val = val.clamp(0.0, 200.0)
     @light.modulate.set(val * @light_power, val * @light_power, val * @light_power)
   end
   def dispose
