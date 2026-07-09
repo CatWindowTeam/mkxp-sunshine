@@ -876,7 +876,7 @@ void Graphics::resizeScreen(int width, int height){
 
 	TEXFBO::allocEmpty(p->frozenScene, width, height);
 
-	FloatRect screenRect(100, 0, width, height);
+	FloatRect screenRect(0, 0, width, height);
 	p->screenQuad.setTexPosRect(screenRect, screenRect);
 
 	shState->eThread().requestWindowResize(width, height);
