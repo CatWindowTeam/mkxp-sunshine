@@ -4,8 +4,23 @@ class Particle
     @sprite.bitmap = bitmap
     @sprite.ox = bitmap.width / 2
     @sprite.oy = bitmap.height / 2
+    @light = Sprite.new(viewport)
+    @light.bitmap = RPG::Cache.light("light")
+    @light.ox = @light.bitmap.width / 2
+    @light.oy = @light.bitmap.height / 2
+    @light.z -= 1
+    @light.blend_type = 3
+    @light.tone = Tone.new(512, 512, 512)
+    @light_power = 1.0
     self.x = rand(Graphics.width)
     self.y = rand(Graphics.height)
+  end
+
+  def light_scale
+    @light.zoom_x
+  end
+  def light_scale=(val)
+    @light.zoom_x = @light.zoom_y = val
   end
 
   # Link various things to the sprite
@@ -14,26 +29,26 @@ class Particle
   end
   def x=(val)
     @x = val
-    width = @sprite.bitmap.width * @sprite.zoom_x
+    width = [@sprite.bitmap.width * @sprite.zoom_x, @light.bitmap.width * @light.zoom_x].max
     if @x < -width
       @x = Graphics.width + width
     elsif @x > Graphics.width + width
       @x = -width
     end
-    @sprite.x = @x
+    @light.x = @sprite.x = @x
   end
   def y
     @y
   end
   def y=(val)
     @y = val
-    height = @sprite.bitmap.height * @sprite.zoom_y
+    height = [@sprite.bitmap.height * @sprite.zoom_y, @light.bitmap.height * @light.zoom_y].max
     if @y < -height
       @y = Graphics.height + height
     elsif @y > Graphics.height + height
       @y = -height
     end
-    @sprite.y = @y
+    @light.y = @sprite.y = @y
   end
   def scale
     @sprite.zoom_x
@@ -47,6 +62,7 @@ class Particle
   end
   def opacity=(val)
     @sprite.opacity = val
+    @light.modulate.set(val * @light_power, val * @light_power, val * @light_power)
   end
   def dispose
     @sprite.dispose
@@ -63,6 +79,8 @@ class Particle_Firefly < Particle
     @wavelength = rand(120..240)
     @vx = rand(0.2..1.5) * (rand(2) * 2 - 1)
     @vy = rand(0.2..1.5) * (rand(2) * 2 - 1)
+    @light_power = 0.5
+    self.light_scale = 0.2
     self.scale = rand(0.02..0.08)
     @sprite.blend_type = 1
   end
@@ -116,6 +134,7 @@ class Particle_Shrimp < Particle
     super(viewport, @@bitmap)
     @angle = rand(0..TAU)
     @speed = rand(0.2..4.0)
+    self.light_scale = 0.2
     self.scale = rand(0.04..0.08)
   end
 

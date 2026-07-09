@@ -862,8 +862,8 @@ int Graphics::height() const{
 }
 
 void Graphics::resizeScreen(int width, int height){
-	width = clamp(width, 1, p->scRes.x);
-	height = clamp(height, 1, p->scRes.y);
+	width = clamp(width, 1, 65000);
+	height = clamp(height, 1, 65000);
 
 	Vec2i size(width, height);
 
@@ -876,7 +876,7 @@ void Graphics::resizeScreen(int width, int height){
 
 	TEXFBO::allocEmpty(p->frozenScene, width, height);
 
-	FloatRect screenRect(0, 0, width, height);
+	FloatRect screenRect(100, 0, width, height);
 	p->screenQuad.setTexPosRect(screenRect, screenRect);
 
 	shState->eThread().requestWindowResize(width, height);

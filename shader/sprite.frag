@@ -21,6 +21,9 @@ void main(){
 	/* Apply gray */
 	float luma = dot(frag.rgb, lumaF);
 	frag.rgb = mix(frag.rgb, vec3(luma), tone.w);
+
+	/* Apply modulation */
+	frag *= modulate;
 	
 	/* Apply tone */
 	frag.rgb += tone.rgb;
@@ -30,10 +33,6 @@ void main(){
 	
 	/* Apply color */
 	frag.rgb = mix(frag.rgb, color.rgb, color.a);
-
-	/* Apply modulation */
-	frag *= modulate;
-
 	/* Apply bush alpha by mathematical if */
 	lowp float underBush = float(v_texCoord.y < bushDepth);
 	frag.a *= clamp(bushOpacity + underBush, 0.0, 1.0);
