@@ -79,7 +79,7 @@ class Particle_Firefly < Particle
     @wavelength = rand(120..240)
     @vx = rand(0.2..1.5) * (rand(2) * 2 - 1)
     @vy = rand(0.2..1.5) * (rand(2) * 2 - 1)
-    @light_power = 0.5
+    @light_power = 1.0
     self.light_scale = 0.2
     self.scale = rand(0.02..0.08)
     @sprite.blend_type = 1

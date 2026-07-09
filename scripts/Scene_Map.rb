@@ -259,7 +259,6 @@ class Scene_Map
       $game_temp.transition_processing = false
       # Execute transition
       if $game_temp.transition_name == ""
-        update
         Graphics.transition(20)
       elsif $game_temp.transition_name == "black"
         @blackfade.visible = true

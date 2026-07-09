@@ -363,6 +363,12 @@ class Window_Settings
         :parameter => :controls_debug,
         :bind => Input::DEBUGACTION
       },
+      { :type => :sep },
+      {
+        :type => :action,
+        :name => tr("Clear image cache"),
+        :action => Proc.new { RPG::Cache.clear }
+      }
     ],
   }
 end

@@ -118,7 +118,7 @@ module RPG
     end
     def self.clear
       @cache = {}
-      GC.start
+      __send__(:gc) if respond_to?(:gc, true)
     end
   end
 

@@ -80,5 +80,8 @@ class Sprite_Picture < Sprite
     # Set rotation angle and color tone
     self.angle = @picture.angle
     self.tone = @picture.tone
+
+    @picture.width = self.width * self.zoom_x
+    @picture.height = self.height * self.zoom_y
   end
 end

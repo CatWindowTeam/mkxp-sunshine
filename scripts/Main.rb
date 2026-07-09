@@ -9,10 +9,16 @@
 #  save unless $game_switches[99] || ($game_system.map_interpreter.running? || !$scene.is_a?(Scene_Map))
 #end
 
+class Float
+  def to_f
+    return self
+  end
+end
+
 begin
   RPG::Mod.exec_hooks("hooks/Main/start", binding)
   $console = Graphics.fullscreen
-  Graphics.frame_rate = 60 
+  Graphics.frame_rate = 60
   Font.default_size = 20
   #debug shit 
   Input.set_led(255, 150, 30)

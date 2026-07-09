@@ -20,6 +20,9 @@ class Game_Picture
   attr_reader   :blend_type               # blend method
   attr_reader   :tone                     # color tone
   attr_reader   :angle                    # rotation angle
+
+  attr_accessor   :width
+  attr_accessor   :height
   #--------------------------------------------------------------------------
   # * Object Initialization
   #     number : picture number
@@ -45,6 +48,9 @@ class Game_Picture
     @tone_duration = 0
     @angle = 0
     @rotate_speed = 0
+
+    @width = 0
+    @height = 0
     RPG::Mod.exec_hooks("hooks/Game_Picture/init", binding)
   end
   #--------------------------------------------------------------------------

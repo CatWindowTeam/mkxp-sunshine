@@ -273,12 +273,16 @@ class Interpreter
           formated_script << "%3d | %s\n" % [index, line.chomp]
         end
       end
-      result = "[EVENT] Failed to execute event script | " + event_info
-      result << "\n-----------------------------------------\n"
+      result = "\n[EVENT] Failed to execute event script | " + event_info
+      result << "\n------------------------------------------\n"
       result << formated_script
-      result << "-----------------------------------------\n"
+      result << "------------------------------------------\n"
       result << e.message
-      result << "\n-----------------------------------------\n"
+      result << "\n----------------Backtrace-----------------\n"
+      e.backtrace.each do |line|
+        result << "#{line}\n"
+      end
+      result << "------------------------------------------\n"
       STDERR.puts result
     end
     return true

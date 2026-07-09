@@ -760,6 +760,7 @@ class Window_Settings
         @func.call(@arg1, @arg2, @arg3, @arg4)
       end
       @settings_content.redraw_all
+      $game_system.se_play($data_system.buzzer_se)
     end
   end
 end
