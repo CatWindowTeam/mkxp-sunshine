@@ -301,8 +301,7 @@ class Window_Settings
       @sprite.bitmap.font.size = 20
 
       @value_width = PARAMETER_VALUE_WIDTH
-      
-      update_parameter
+      self.value = self.value # appling init settings
       redraw
     end
     
@@ -315,18 +314,19 @@ class Window_Settings
     end
 
     def value
+      if (Settings.has?(@parameter))
+        @value = Settings[@parameter]
+      end
       @value
     end
     def value=(value)
-      @value = value
-      update_parameter
-    end
-
-    def update_parameter
-      if @parameter != nil && Settings::Setters.respond_to?(@parameter)
-        Settings::Setters.send(@parameter, @value)
+      if @parameter && (Settings.has?(@parameter))
+        Settings[@parameter] = value
+        if Settings::Setters.respond_to?(@parameter)
+          Settings::Setters.send(@parameter, value)
+        end
       end
-      Settings[@parameter] = @value
+      @value = value
     end
 
     def name
@@ -338,7 +338,7 @@ class Window_Settings
     end
 
     def get_display_value()
-      @value.to_s || "null"
+      self.value.to_s || "null"
     end
 
     def redraw()
@@ -395,26 +395,26 @@ class Window_Settings
     end
 
     def value=(value)
-      if (value != @value)
+      if (value != self.value)
         Audio.se_play(PARAMETER_CHANGE_AUDIO, 70, value ? 125 : 75)
       end
       super(value)
     end
 
     def get_display_value
-      return @value ? tr("ON") : tr("OFF")
+      return self.value ? tr("ON") : tr("OFF")
     end
     
     def value_left()
-      self.value = !@value
+      self.value = !self.value
       redraw
     end
     def value_right()
-      self.value = !@value
+      self.value = !self.value
       redraw
     end
     def action()
-      self.value = !@value
+      self.value = !self.value
       redraw
     end
   end
@@ -430,11 +430,11 @@ class Window_Settings
       super(settings_content, screen_id, position, name, parameter, bool_value)
     end
     
-    def update_parameter
+    def value=(value)
       super()
 
-      if @switch
-        $game_switches[@switch] = invert ? !@value : @value
+      if $game_switches[@switch]
+        $game_switches[@switch] = @invert ? !@value : @value
       end
     end
   end
@@ -454,18 +454,18 @@ class Window_Settings
     end
 
     def value=(value)
-      if (value != @value)
+      if (value != self.value)
         Audio.se_play(PARAMETER_CHANGE_AUDIO, 70, ((value.to_f + @min_value.to_f) / (@max_value.to_f + @min_value.to_f) * 50.0).to_i + 75)
       end
       super(value)
     end
 
     def value_left()
-      self.value = (@value - 1).clamp(@min_value, @max_value)
+      self.value = (self.value - 1).clamp(@min_value, @max_value)
       redraw
     end
     def value_right()
-      self.value = (@value + 1).clamp(@min_value, @max_value)
+      self.value = (self.value + 1).clamp(@min_value, @max_value)
       redraw
     end
   end
@@ -479,7 +479,7 @@ class Window_Settings
     end
 
     def get_display_value()
-      percent = (@value.to_f - @min_value.to_f) / @max_value.to_f
+      percent = (self.value.to_f - @min_value.to_f) / @max_value.to_f
       (percent * 100.0).to_i.to_s + "%" 
     end
 
@@ -489,7 +489,7 @@ class Window_Settings
 
       @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - @value_width, @sprite.bitmap.height, @name)
 
-      percent = (@value.to_f - @min_value.to_f) / @max_value.to_f
+      percent = (self.value.to_f - @min_value.to_f) / @max_value.to_f
       width = (@value_width * percent).to_i
       @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - @value_width, 4, @value_width, @sprite.bitmap.height - 8), Color.new(255, 255, 255, 64))
       #@sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - @value_width + 1, 5, @value_width - 2, @sprite.bitmap.height - 10), Color.new(255, 255, 255, 0))
@@ -533,11 +533,11 @@ class Window_Settings
     end
 
     def value_left()
-      self.value = (@value - step).clamp(@min_value, @max_value)
+      self.value = (self.value - @step).clamp(@min_value, @max_value)
       redraw
     end
     def value_right()
-      self.value = (@value + step).clamp(@min_value, @max_value)
+      self.value = (self.value + @step).clamp(@min_value, @max_value)
       redraw
     end
   end
@@ -553,15 +553,15 @@ class Window_Settings
     end
 
     def get_display_value
-      @texts&.[](@value) || @value.to_s || "null"
+      @texts&.[](self.value) || "Unknown value #{self.value}"
     end
 
     def value_left()
-      self.value = (@value - 1) % [1, @max_value + 1].max
+      self.value = (self.value - 1) % [1, @max_value + 1].max
       redraw
     end
     def value_right()
-      self.value = (@value + 1) % [1, @max_value + 1].max
+      self.value = (self.value + 1) % [1, @max_value + 1].max
       redraw
     end
   end

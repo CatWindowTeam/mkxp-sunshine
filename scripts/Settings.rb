@@ -20,6 +20,10 @@ module Settings
       @data[k] = v;
     end
 
+    def has?(parameter)
+      @data.has_key?(parameter)
+    end
+
     def load!
       #Settings::Legacy.load!
       Settings.reset!

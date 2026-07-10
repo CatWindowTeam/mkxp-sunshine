@@ -38,5 +38,7 @@ void main(){
 				 pow(clamp(1.0 - distance(screenPoint, lightScreenPoint) / 32.0 / sourceInfo.w, 0.0, 1.0), sourceColor.a * 2.0);
 	}
 
-	gl_FragColor = vec4(light + ambientLight / powerBase, 1.0);
+	light += ambientLight / powerBase;
+
+	gl_FragColor = vec4(light, 1.0);
 }

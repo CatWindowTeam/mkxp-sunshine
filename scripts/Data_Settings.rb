@@ -42,6 +42,7 @@ module Settings
         :debug_text                  => false,
         :debug_text_scene_title      => true,
         :debug_picture_names         => false,
+        :debug_lightmap              => false,
       }
       reset_controls!
     end
@@ -355,6 +356,11 @@ class Window_Settings
         :type => :bool,
         :name => tr('Show picture names'),
         :parameter => :debug_picture_names
+      },
+      {
+        :type => :bool,
+        :name => tr('Debug lightmap'),
+        :parameter => :debug_lightmap
       },
       { :type => :sep },
       {

@@ -166,6 +166,14 @@ class Scene_Title
   def update
     @debug.visible = Settings[:debug_text_scene_title] || false # if undefined don't render
     
+    if Input.trigger?(Input::F8)
+      Graphics.fullscreen = $console = !Settings[:fullscreen]
+      Settings[:fullscreen] = !Settings[:fullscreen]
+      if @window_settings_title.visible
+        @window_settings_title.redraw_setting(1, 0)
+      end
+    end
+
     # Handle cursor movement
     if !@window_settings_title.visible
       @cursor.y = (MENU_Y.to_f + (20.0 - @cursor.bitmap.height.to_f) / 2.0 + 25.5 * @cursor_pos) * 0.65 + @cursor.y.to_f * 0.35
@@ -189,21 +197,10 @@ class Scene_Title
           end
         end
       end
-      if Input.trigger?(Input::F8)
-        if Graphics.fullscreen == true
-          Graphics.fullscreen = false
-          $console = false
-        else
-          Graphics.fullscreen = true
-          $console = true
-        end
-      end
       if update_cursor
         Audio.se_play('Audio/SE/title_cursor.wav', 40)
       end
-    end
-
-    if !@window_settings_title.visible
+      
       # Handle confirmation
       if Input.trigger?(Input::ACTION)
         if File.exist?("badend.lock")

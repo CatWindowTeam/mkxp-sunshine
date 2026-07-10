@@ -18,7 +18,7 @@ module Settings
       
       # Video
       def fullscreen(value)
-        Graphics.fullscreen = value
+        Graphics.fullscreen = $console = value
       end
       def colorblind(value)
         $game_switches[252] = value

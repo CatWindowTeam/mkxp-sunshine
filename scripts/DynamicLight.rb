@@ -1,5 +1,9 @@
 class DynamicLight
   def initialize(viewport)
+    @debug_sprite = Sprite.new(viewport)
+    @debug_sprite.bitmap = Bitmap.new(Graphics.width, Graphics.height)
+    @debug_sprite.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(255, 255, 255))
+    @debug_sprite.visible = false
     @light_sprite = LightMap.new(viewport)
     #@light_sprite.wallmap = Bitmap.new($game_map.width, $game_map.height)
     
@@ -39,6 +43,8 @@ class DynamicLight
     if (!Settings[:light] && $light.awaked)
       return
     end
+
+    @debug_sprite.visible = Settings[:debug_lightmap]
 
     if $light.update_clear_lights
       @light_sprite.clear_static_sources()

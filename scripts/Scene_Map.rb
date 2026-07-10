@@ -277,17 +277,10 @@ class Scene_Map
     @window_debug.update
 
     if Input.trigger?(Input::F8) && !$game_switches[123]
-      if Graphics.fullscreen == true
-      Graphics.fullscreen = false
-      $console = false
-      else
-        Graphics.fullscreen = true
-    	$console = true
-      end
-      sleep(0.500)
+        Graphics.fullscreen = $console = !Settings[:fullscreen]
+        Settings[:fullscreen] = !Settings[:fullscreen]
       if @window_settings.visible
-        @window_settings.redraw_setting_index(2)
-        sleep(0.500)
+        @window_settings.redraw_setting(1, 0)
       end
     end
     # If showing message window
