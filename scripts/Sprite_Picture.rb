@@ -68,8 +68,8 @@ class Sprite_Picture < Sprite
       self.ox = self.bitmap.width / 2
       self.oy = self.bitmap.height / 2
       # Set sprite coordinates
-      self.x = Graphics.width + @picture.x
-      self.y = Graphics.height + @picture.y
+      self.x = Graphics.width / 2 + @picture.x
+      self.y = Graphics.height / 2 + @picture.y
     end
     self.z = @picture.number
     # Set zoom rate, opacity level, and blend method
