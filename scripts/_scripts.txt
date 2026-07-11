@@ -30,6 +30,7 @@ Game_Light
 # yes.
 Settings
 Input
+Gamepad_Colors
 
 Sprite_Character
 Sprite_Picture

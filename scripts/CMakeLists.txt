@@ -84,7 +84,8 @@ set(scripts
   Window_TPtL.rb
   Settings.rb
   Input.rb
-  DynamicLight.rb)
+  DynamicLight.rb
+  Gamepad_Colors.rb)
 
 find_program(RUBY_EXE ruby
   DOC "Location of the Ruby executable")
