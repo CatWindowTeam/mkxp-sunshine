@@ -1,0 +1,221 @@
+# =======================  COLORS  =======================
+#  i DO NOT know how these colors will look on other
+#  controllers, but on PS4 DualShock 4 controller these
+#  colors look somewhat close to the original colors.
+#  all of these colors are defined in RGB format.
+# --------------------------------------------------------
+# start house/tower/world machine = (75, 30, 255)
+# sun                             = (255, 150, 30)
+# barrens/mineshaft               = (1, 1, 15)
+# glen                            = (5, 15, 10)
+# glen ruins                      = (1, 5, 1)
+# glen village                    = (0, 6, 6)
+# refuge                          = (255, 36, 89)
+# refuge ground                   = (25, 2, 9)
+# ========================================================
+
+# each map ID corresponds to color
+module GamepadMapColors
+  WORLD_MACHINE = Color.new(75, 30, 255)
+  SUN = Color.new(255, 150, 30)
+  BARRENS = Color.new(1, 1, 15)
+  GLEN = Color.new(5, 15, 10)
+  GLEN_RUINS = Color.new(1, 5, 1)
+  GLEN_VILLAGE = Color.new(0, 6, 6)
+  REFUGE = Color.new(255, 36, 89)
+  REFUGE_GROUND = Color.new(25, 2, 9)
+
+  COLORS = {
+    # Start House
+    2 => WORLD_MACHINE,
+    3 => WORLD_MACHINE,
+    4 => WORLD_MACHINE,
+    5 => WORLD_MACHINE,
+    20 => WORLD_MACHINE,
+
+    # Barrens
+    7 => BARRENS,
+    12 => BARRENS,
+    13 => BARRENS,
+    14 => BARRENS,
+    15 => BARRENS,
+    16 => BARRENS,
+    17 => BARRENS,
+    18 => BARRENS,
+    19 => BARRENS,
+    21 => BARRENS,
+    23 => BARRENS,
+    24 => BARRENS,
+    69 => BARRENS,
+    70 => BARRENS,
+    71 => BARRENS,
+    73 => BARRENS,
+    75 => BARRENS,
+    76 => BARRENS,
+    78 => BARRENS,
+    79 => BARRENS,
+    80 => BARRENS,
+    81 => BARRENS,
+    82 => BARRENS,
+    92 => BARRENS,
+    93 => BARRENS,
+    94 => BARRENS,
+    101 => BARRENS,
+    102 => BARRENS,
+    194 => BARRENS,
+    195 => BARRENS,
+    196 => BARRENS,
+    197 => BARRENS,
+    210 => BARRENS,
+
+    # Glen
+    8 => GLEN,
+    27 => GLEN,
+    28 => GLEN,
+    29 => GLEN_VILLAGE,
+    30 => GLEN_VILLAGE,
+    31 => GLEN_VILLAGE,
+    32 => GLEN_VILLAGE,
+    33 => GLEN_VILLAGE,
+    34 => GLEN_VILLAGE,
+    35 => GLEN_VILLAGE,
+    36 => GLEN_VILLAGE,
+    37 => GLEN,
+    38 => GLEN_RUINS,
+    39 => GLEN_RUINS,
+    40 => GLEN_RUINS,
+    41 => GLEN_RUINS,
+    42 => GLEN_RUINS,
+    44 => GLEN,
+    45 => GLEN,
+    46 => GLEN,
+    57 => GLEN_RUINS,
+    65 => GLEN_RUINS,
+    66 => GLEN,
+    107 => GLEN,
+    126 => GLEN_RUINS,
+    128 => GLEN,
+    133 => GLEN,
+    136 => GLEN,
+    177 => GLEN,
+    178 => GLEN,
+    191 => GLEN,
+    192 => GLEN,
+    193 => GLEN,
+
+    # Refuge Sky
+    9 => REFUGE,
+    22 => REFUGE,
+    25 => REFUGE,
+    47 => REFUGE,
+    48 => REFUGE,
+    49 => REFUGE,
+    52 => REFUGE,
+    53 => REFUGE,
+    54 => REFUGE,
+    59 => REFUGE,
+    74 => REFUGE,
+    95 => REFUGE,
+    108 => REFUGE,
+    109 => REFUGE,
+    111 => REFUGE,
+    116 => REFUGE,
+    117 => REFUGE,
+    119 => REFUGE,
+    120 => REFUGE,
+    121 => REFUGE,
+    122 => REFUGE,
+    124 => REFUGE,
+    125 => REFUGE,
+    129 => REFUGE,
+    130 => REFUGE,
+    132 => REFUGE,
+    186 => REFUGE,
+    260 => REFUGE,
+
+    # Refuge Ground
+    50 => REFUGE_GROUND,
+    51 => REFUGE_GROUND,
+    72 => REFUGE_GROUND,
+    83 => REFUGE_GROUND,
+    84 => REFUGE_GROUND,
+    85 => REFUGE_GROUND,
+    86 => REFUGE_GROUND,
+    87 => REFUGE_GROUND,
+    90 => REFUGE_GROUND,
+    91 => REFUGE_GROUND,
+    97 => WORLD_MACHINE,
+    98 => REFUGE_GROUND,
+    99 => REFUGE_GROUND,
+    104 => REFUGE_GROUND,
+    105 => REFUGE_GROUND,
+    106 => REFUGE_GROUND,
+    112 => REFUGE_GROUND,
+    113 => REFUGE_GROUND,
+    114 => REFUGE_GROUND,
+    115 => REFUGE_GROUND,
+    134 => REFUGE_GROUND,
+    135 => REFUGE_GROUND,
+    137 => REFUGE_GROUND,
+    176 => REFUGE_GROUND,
+    187 => REFUGE_GROUND,
+
+    # Tower
+    10 => WORLD_MACHINE,
+    155 => WORLD_MACHINE,
+    167 => WORLD_MACHINE,
+    173 => WORLD_MACHINE,
+    174 => WORLD_MACHINE,
+    175 => WORLD_MACHINE,
+    55 => WORLD_MACHINE,
+    164 => WORLD_MACHINE,
+    166 => WORLD_MACHINE,
+    168 => WORLD_MACHINE,
+    169 => WORLD_MACHINE,
+    170 => WORLD_MACHINE,
+    171 => WORLD_MACHINE,
+    172 => WORLD_MACHINE,
+    56 => WORLD_MACHINE,
+    139 => WORLD_MACHINE,
+    140 => WORLD_MACHINE,
+    141 => WORLD_MACHINE,
+    142 => WORLD_MACHINE,
+    143 => WORLD_MACHINE,
+    144 => WORLD_MACHINE,
+    145 => WORLD_MACHINE,
+    146 => WORLD_MACHINE,
+    147 => WORLD_MACHINE,
+    148 => WORLD_MACHINE,
+    149 => WORLD_MACHINE,
+    150 => WORLD_MACHINE,
+    151 => WORLD_MACHINE,
+    152 => WORLD_MACHINE,
+    153 => WORLD_MACHINE,
+    154 => WORLD_MACHINE,
+    63 => WORLD_MACHINE,
+    179 => WORLD_MACHINE,
+    156 => WORLD_MACHINE,
+    180 => WORLD_MACHINE,
+    181 => WORLD_MACHINE,
+    182 => WORLD_MACHINE,
+    183 => WORLD_MACHINE,
+    184 => WORLD_MACHINE,
+    185 => WORLD_MACHINE,
+    190 => WORLD_MACHINE,
+    60 => WORLD_MACHINE,
+    61 => WORLD_MACHINE,
+    62 => WORLD_MACHINE,
+
+    # Finale (Solstice)
+    224 => WORLD_MACHINE,
+    226 => WORLD_MACHINE,
+    241 => WORLD_MACHINE,
+    242 => WORLD_MACHINE,
+    243 => WORLD_MACHINE,
+    245 => WORLD_MACHINE,
+    249 => WORLD_MACHINE,
+    255 => WORLD_MACHINE,
+    258 => WORLD_MACHINE,
+    259 => WORLD_MACHINE,
+  }
+end
