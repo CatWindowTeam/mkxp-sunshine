@@ -52,11 +52,22 @@ public:
 
 	/* <internal */
 	inline int16_t &at(int x, int y = 0, int z = 0){
-		return data[xs*ys*z + xs*y + x];
+		int pos = xs*ys*z + xs*y + x; 
+    	if (pos >= 0 && pos < data.size()) {
+    	    return data[pos];
+    	}
+    	static int16_t dummy = 0;
+    	dummy = 0;
+    	return dummy; 
 	}
 
 	inline const int16_t &at(int x, int y = 0, int z = 0) const{
-		return data[xs*ys*z + xs*y + x];
+		int pos = xs*ys*z + xs*y + x;
+    	if (pos >= 0 && pos < data.size()) {
+    	    return data[pos];
+    	}
+    	static const int16_t fallback = 0;
+    	return fallback;
 	}
 
 	sigc::signal<void> modified;

@@ -422,7 +422,7 @@ class Game_Map
         tile_id = data[x, y, i]
         if tile_id == nil
           next #return 0
-        elsif @terrain_tags[tile_id] > 0
+        elsif @terrain_tags[tile_id] && @terrain_tags[tile_id] > 0
           return @terrain_tags[tile_id]
         end
       end
@@ -548,5 +548,10 @@ class Game_Map
       return 0
     end
     @map.data[x, y, z]
+  end
+  def resize(x, y, z)
+    @map.data.resize(x, y, z)
+    @map.width = x
+    @map.height = y
   end
 end

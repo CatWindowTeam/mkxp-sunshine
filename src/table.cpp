@@ -62,9 +62,9 @@ void Table::resize(int x, int y, int z){
 
 	std::vector<int16_t> newData(x*y*z);
 
-	for (int k = 0; k < std::min(z, zs); ++k)
-		for (int j = 0; j < std::min(y, ys); ++j)
-			for (int i = 0; i < std::min(x, xs); ++i)
+	for (int k = 0; k < z; ++k)
+		for (int j = 0; j < y; ++j)
+			for (int i = 0; i < x; ++i)
 				newData[x*y*k + x*j + i] = at(i, j, k);
 
 	data.swap(newData);

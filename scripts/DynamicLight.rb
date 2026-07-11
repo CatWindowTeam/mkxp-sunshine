@@ -40,7 +40,7 @@ class DynamicLight
   def update
     # dont render light if its disabled or not awaked
     @light_sprite.visible = Settings[:light] && $light.awaked
-    if (!Settings[:light] && $light.awaked)
+    if !Settings[:light] || !$light.awaked
       return
     end
 
