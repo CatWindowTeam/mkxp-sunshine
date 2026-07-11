@@ -392,7 +392,8 @@ class Scene_Map
     @spriteset = Spriteset_Map.new
     # Update map (run parallel process event)
     $game_map.update
-    Input.set_led(GamepadMapColors::COLORS[$game_map.map_id].red, GamepadMapColors::COLORS[$game_map.map_id].green, GamepadMapColors::COLORS[$game_map.map_id].blue)
+    color = GamepadMapColors::COLORS[$game_map.map_id] || GamepadMapColors::SUN
+    Input.set_led(color.red, color.green, color.blue)
     @spriteset.update
     # Run automatic change for BGM and BGS set on the map
     $game_map.autoplay
