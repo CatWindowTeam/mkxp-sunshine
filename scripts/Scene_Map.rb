@@ -58,7 +58,8 @@ class Scene_Map
     @blackfade.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0))
     @blackfade.visible = false
     @blackfade.z = 9999
-
+    color = GamepadMapColors::COLORS[$game_map.map_id] || GamepadMapColors::SUN
+    Input.set_led(color.red, color.green, color.blue)
     RPG::Mod.exec_hooks("hooks/Scene_Map/main", binding)
     
     # Transition run
@@ -391,6 +392,7 @@ class Scene_Map
     @spriteset = Spriteset_Map.new
     # Update map (run parallel process event)
     $game_map.update
+    Input.set_led(GamepadMapColors::COLORS[$game_map.map_id].red, GamepadMapColors::COLORS[$game_map.map_id].green, GamepadMapColors::COLORS[$game_map.map_id].blue)
     @spriteset.update
     # Run automatic change for BGM and BGS set on the map
     $game_map.autoplay
