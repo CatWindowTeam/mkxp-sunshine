@@ -22,10 +22,10 @@
 #ifndef TABLE_H
 #define TABLE_H
 
+#include "signals/signal.h"
 #include "serializable.h"
 
 #include <stdint.h>
-#include <sigc++/signal.h>
 #include <vector>
 
 class Table : public Serializable{
@@ -70,7 +70,7 @@ public:
     	return fallback;
 	}
 
-	sigc::signal<void> modified;
+	Signal<void> modified;
 
 private:
 	int xs, ys, zs;

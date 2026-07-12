@@ -49,9 +49,12 @@ public:
 
 	Bitmap *snapToBitmap();
 
+	int x() const;
+	int y() const;
 	int width() const;
 	int height() const;
 	void resizeScreen(int width, int height);
+	void moveScreen(int x, int y);
 
 	void reset();
 

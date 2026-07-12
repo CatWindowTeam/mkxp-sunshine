@@ -27,17 +27,16 @@
 #include "quad.h"
 #include "glstate.h"
 #include "graphics.h"
+#include "signals/signal.h"
 
 #include <SDL3/SDL_rect.h>
-
-#include <sigc++/connection.h>
 
 struct ViewportPrivate{
 	/* Needed for geometry changes */
 	Viewport *self;
 
 	Rect *rect;
-	sigc::connection rectCon;
+	SignalConnection rectCon;
 
 	Color *color;
 	Tone *tone;
@@ -59,7 +58,7 @@ struct ViewportPrivate{
 	}
 
 	~ViewportPrivate(){
-		rectCon.disconnect();
+		rectCon.Disconnect();
 	}
 
 	void onRectChange(){
@@ -69,9 +68,9 @@ struct ViewportPrivate{
 	}
 
 	void updateRectCon(){
-		rectCon.disconnect();
-		rectCon = rect->valueChanged.connect
-		        (sigc::mem_fun(this, &ViewportPrivate::onRectChange));
+		rectCon.Disconnect();
+		rectCon = rect->valueChanged.Connect
+		        (*this, &ViewportPrivate::onRectChange);
 	}
 
 	void recomputeOnScreen(){

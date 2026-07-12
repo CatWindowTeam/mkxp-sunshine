@@ -34,7 +34,7 @@
 #include "texpool.h"
 #include "glstate.h"
 
-#include <sigc++/connection.h>
+#include "signals/signal.h"
 
 template<typename T>
 struct Sides{
@@ -165,7 +165,7 @@ struct WindowPrivate {
 	bool active;
 	bool pause;
 
-	sigc::connection cursorRectCon;
+	SignalConnection cursorRectCon;
 
 	Vec2i sceneOffset;
 
@@ -227,7 +227,7 @@ struct WindowPrivate {
 
 	EtcTemps tmp;
 
-	sigc::connection prepareCon;
+	SignalConnection prepareCon;
 
 	WindowPrivate(Viewport *viewport = 0)
 	    : windowskin(0),
@@ -254,13 +254,13 @@ struct WindowPrivate {
 		cursorVert.count = 9;
 		pauseAniVert.count = 1;
 
-		prepareCon = shState->prepareDraw.connect(sigc::mem_fun(this, &WindowPrivate::prepare));
+		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &WindowPrivate::prepare);
 	}
 
 	~WindowPrivate(){
 		shState->texPool().release(baseTex);
-		cursorRectCon.disconnect();
-		prepareCon.disconnect();
+		cursorRectCon.Disconnect();
+		prepareCon.Disconnect();
 	}
 
 	void markControlVertDirty(){
@@ -268,8 +268,8 @@ struct WindowPrivate {
 	}
 
 	void refreshCursorRectCon(){
-		cursorRectCon.disconnect();
-		cursorRectCon = cursorRect->valueChanged.connect(sigc::mem_fun(this, &WindowPrivate::markControlVertDirty));
+		cursorRectCon.Disconnect();
+		cursorRectCon = cursorRect->valueChanged.Connect(*this, &WindowPrivate::markControlVertDirty);
 	}
 
 	void buildBaseVert(){

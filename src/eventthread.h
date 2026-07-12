@@ -93,10 +93,13 @@ public:
 
 	/* Called from RGSS thread */
 	void requestFullscreenMode(bool mode);
+	void requestWindowMove(int x, int y);
 	void requestWindowResize(int width, int height);
 	void requestShowCursor(bool mode);
 
 	void requestTerminate();
+
+	Vec2i getWindowPosition() const;
 
 	bool getFullscreen() const;
 	bool getShowCursor() const;
@@ -115,7 +118,9 @@ private:
 	void resetInputStates();
 	void setFullscreen(SDL_Window *, bool mode);
 	void updateCursorState(bool inWindow, const SDL_Rect &screen);
+	void updateWindowPosition(int x, int y);  
 
+	int winX, winY;
 	bool fullscreen;
 	bool showCursor;
 	AtomicFlag msgBoxDone;

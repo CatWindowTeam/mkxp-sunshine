@@ -134,7 +134,7 @@ public:
 		const int w = geometry.rect.w;
 		const int h = geometry.rect.h;
 
-		shState->prepareDraw();
+		shState->graphicsSignals.prepareDraw();
 
 		pp.startRender();
 
@@ -412,6 +412,7 @@ struct GraphicsPrivate{
 	/* Screen resolution, ie. the resolution at which
 	 * RGSS renders at (settable with Graphics.resize_screen).
 	 * Can only be changed from within RGSS */
+	Vec2i scPos;
 	Vec2i scRes;
 
 	/* Screen size, to which the rendered frames are scaled up.
@@ -477,6 +478,8 @@ struct GraphicsPrivate{
 		TEX::setRepeat(false);
 		TEX::setSmooth(false);
 		gl.TexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, scRes.x, scRes.y, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
+
+		scPos = rtData->ethread->getWindowPosition();
 	}
 
 	~GraphicsPrivate(){
@@ -642,6 +645,7 @@ void Graphics::update(bool limitFps){
 
 	p->checkResize();
 	p->redrawScreen();
+	p->scPos = shState->rtData().ethread->getWindowPosition();
 }
 
 void Graphics::freeze(){
@@ -853,12 +857,31 @@ Bitmap *Graphics::snapToBitmap(){
 	return bitmap;
 }
 
+int Graphics::x() const{
+	return p->scPos.x;
+}
+
+int Graphics::y() const{
+	return p->scPos.y;
+}
+
 int Graphics::width() const{
 	return p->scRes.x;
 }
 
 int Graphics::height() const{
 	return p->scRes.y;
+}
+
+void Graphics::moveScreen(int x, int y){
+	Vec2i pos(x, y);
+
+	if (p->scPos == pos)
+		return;
+
+	p->scPos = pos;
+
+	shState->eThread().requestWindowMove(x, y);
 }
 
 void Graphics::resizeScreen(int width, int height){

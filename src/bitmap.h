@@ -27,8 +27,7 @@
 #include "etc.h"
 #include "debugwriter.h"
 
-// #include <sigc++/signal.h>
-#include <sigc++/signal.h>
+#include "signals/signal.h"
 
 class Font;
 class ShaderBase;
@@ -109,7 +108,7 @@ public:
 	/* Adds 'rect' to tainted area */
 	void taintArea(const IntRect &rect);
 
-	sigc::signal<void> modified;
+	Signal<void> modified;
 
 private:
 	void releaseResources();

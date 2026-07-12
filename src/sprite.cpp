@@ -26,6 +26,7 @@
 #include "etc.h"
 #include "etc-internal.h"
 #include "util.h"
+#include "signals/signal.h"
 
 #include "gl-util.h"
 #include "quad.h"
@@ -41,7 +42,6 @@
 
 #include <SDL3/SDL_rect.h>
 
-#include <sigc++/connection.h>
 #include <boost/chrono.hpp>
 
 struct SpritePrivate{
@@ -52,7 +52,7 @@ struct SpritePrivate{
 	Transform trans;
 
 	Rect *srcRect;
-	sigc::connection srcRectCon;
+	SignalConnection srcRectCon;
 
 	bool mirrorX;
 	bool mirrorY;
@@ -92,7 +92,7 @@ struct SpritePrivate{
 
 	EtcTemps tmp;
 
-	sigc::connection prepareCon;
+	SignalConnection prepareCon;
 
 	SpritePrivate()
 	    : bitmap(0),
@@ -116,7 +116,7 @@ struct SpritePrivate{
 
 		updateSrcRectCon();
 
-		prepareCon = shState->prepareDraw.connect(sigc::mem_fun(this, &SpritePrivate::prepare));
+		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &SpritePrivate::prepare);
 
 		wave.amp = 0;
 		wave.length = 180;
@@ -126,8 +126,8 @@ struct SpritePrivate{
 	}
 
 	~SpritePrivate(){
-		srcRectCon.disconnect();
-		prepareCon.disconnect();
+		srcRectCon.Disconnect();
+		prepareCon.Disconnect();
 	}
 
 	void recomputeBushDepth(){
@@ -163,9 +163,9 @@ struct SpritePrivate{
 
 	void updateSrcRectCon(){
 		/* Cut old connection */
-		srcRectCon.disconnect();
+		srcRectCon.Disconnect();
 		/* Create new one */
-		srcRectCon = srcRect->valueChanged.connect(sigc::mem_fun(this, &SpritePrivate::onSrcRectChange));
+		srcRectCon = srcRect->valueChanged.Connect(*this, &SpritePrivate::onSrcRectChange);
 	}
 
 	void updateVisibility(){

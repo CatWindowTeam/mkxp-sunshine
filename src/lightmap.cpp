@@ -5,6 +5,7 @@
 #include "etc.h"
 #include "etc-internal.h"
 #include "util.h"
+#include "signals/signal.h"
 
 #include "gl-util.h"
 #include "quad.h"
@@ -19,8 +20,6 @@
 #include <math.h>
 
 #include <SDL3/SDL_rect.h>
-
-#include <sigc++/connection.h>
 #include <boost/chrono.hpp>
 
 struct LightMapPrivate{
@@ -38,7 +37,7 @@ struct LightMapPrivate{
 	Transform trans;
 
 	Rect *srcRect;
-	sigc::connection srcRectCon;
+	SignalConnection srcRectCon;
 
 	IntRect sceneRect;
 	Vec2i sceneOrig;
@@ -49,7 +48,7 @@ struct LightMapPrivate{
 
 	EtcTemps tmp;
 
-	sigc::connection prepareCon;
+	SignalConnection prepareCon;
 
 	LightMapPrivate()
 	    : bitmap(new Bitmap(shState->graphics().width(), shState->graphics().height())),
@@ -67,7 +66,7 @@ struct LightMapPrivate{
 
 		updateSrcRectCon();
 
-		prepareCon = shState->prepareDraw.connect(sigc::mem_fun(this, &LightMapPrivate::prepare));
+		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &LightMapPrivate::prepare);
 		
 		bitmap->ensureNonMega();
 		//bitmap->fillRect(0, 0, shState->graphics().width(), shState->graphics().height(), Vec4(0, 0, 0, 1));
@@ -78,8 +77,8 @@ struct LightMapPrivate{
 	}
 
 	~LightMapPrivate(){
-		srcRectCon.disconnect();
-		prepareCon.disconnect();
+		srcRectCon.Disconnect();
+		prepareCon.Disconnect();
 	}
 
 	void onSrcRectChange(){
@@ -101,9 +100,9 @@ struct LightMapPrivate{
 
 	void updateSrcRectCon(){
 		/* Cut old connection */
-		srcRectCon.disconnect();
+		srcRectCon.Disconnect();
 		/* Create new one */
-		srcRectCon = srcRect->valueChanged.connect(sigc::mem_fun(this, &LightMapPrivate::onSrcRectChange));
+		srcRectCon = srcRect->valueChanged.Connect(*this, &LightMapPrivate::onSrcRectChange);
 	}
 
 	void updateVisibility(){

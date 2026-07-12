@@ -22,7 +22,7 @@
 #ifndef ETC_H
 #define ETC_H
 
-#include <sigc++-2.0/sigc++/signal.h>
+#include "signals/signal.h"
 
 #include "serializable.h"
 #include "etc-internal.h"
@@ -139,7 +139,7 @@ struct Tone : public Serializable{
 	/* Normalized (-1.0 ~ 1.0) */
 	Vec4 norm;
 
-	sigc::signal<void> valueChanged;
+	Signal<void> valueChanged;
 };
 
 struct Rect : public Serializable{
@@ -190,7 +190,7 @@ struct Rect : public Serializable{
 	int width;
 	int height;
 
-	sigc::signal<void> valueChanged;
+	Signal<void> valueChanged;
 };
 
 

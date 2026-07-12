@@ -94,6 +94,17 @@ RB_METHOD(graphicsFrameReset){
 		shState->graphics().set##PropName(value); \
 		return rb_bool_new(value); \
 	}
+	
+
+RB_METHOD(graphicsPosX){
+	RB_UNUSED_PARAM;
+	return INT2FIX(shState->graphics().x());
+}
+
+RB_METHOD(graphicsPosY){
+	RB_UNUSED_PARAM;
+	return INT2FIX(shState->graphics().y());
+}
 
 RB_METHOD(graphicsWidth){
 	RB_UNUSED_PARAM;
@@ -163,6 +174,17 @@ RB_METHOD(graphicsResizeScreen){
 	return Qnil;
 }
 
+RB_METHOD(graphicsMoveScreen){
+	RB_UNUSED_PARAM;
+
+	int x, y;
+	rb_get_args(argc, argv, "ii", &x, &y RB_ARG_END);
+
+	shState->graphics().moveScreen(x, y);
+
+	return Qnil;
+}
+
 RB_METHOD(graphicsReset){
 	RB_UNUSED_PARAM;
 
@@ -199,6 +221,8 @@ void graphicsBindingInit(){
 	INIT_GRA_PROP_BIND( FrameRate,  "frame_rate"  );
 	INIT_GRA_PROP_BIND( FrameCount, "frame_count" );
 
+	_rb_define_module_function(module, "x", graphicsPosX);
+	_rb_define_module_function(module, "y", graphicsPosY);
 	_rb_define_module_function(module, "width", graphicsWidth);
 	_rb_define_module_function(module, "height", graphicsHeight);
 	_rb_define_module_function(module, "wait", graphicsWait);
@@ -206,6 +230,7 @@ void graphicsBindingInit(){
 	_rb_define_module_function(module, "fadein", graphicsFadein);
 	_rb_define_module_function(module, "snap_to_bitmap", graphicsSnapToBitmap);
 	_rb_define_module_function(module, "resize_screen", graphicsResizeScreen);
+	_rb_define_module_function(module, "move_screen", graphicsMoveScreen);
 
 	INIT_GRA_PROP_BIND( Brightness, "brightness" );
 	INIT_GRA_PROP_BIND( Fullscreen, "fullscreen"  );

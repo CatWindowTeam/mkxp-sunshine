@@ -83,6 +83,7 @@ EventThread::TouchState EventThread::touchState;
 enum{
 	REQUEST_SETFULLSCREEN = 0,
 	REQUEST_WINRESIZE,
+	REQUEST_WINMOVETO,
 	REQUEST_MESSAGEBOX,
 	REQUEST_SETCURSORVISIBLE,
 
@@ -176,10 +177,11 @@ void EventThread::process(RGSSThreadData &rtData){
 	std::map<int, SDL_Gamepad*>::iterator gcit;
 
 	SDL_GetWindowSize(win, &winW, &winH); // SDL_GL_GetDrawableSize(win, &winW, &winH);
+	SDL_GetWindowPosition(win, &rtData.ethread->winX, &rtData.ethread->winY);
 
 	while (true) {
 		if (!SDL_WaitEvent(&event)) {
-			Debug() << "[EventThread::process] EventThread: Event error";
+			Debug() << "[EventThread::process] Event error:\n" << SDL_GetError();
 			break;
 		}
 
@@ -250,8 +252,11 @@ void EventThread::process(RGSSThreadData &rtData){
 				break;
 		#ifdef __APPLE__
 			case SDL_EVENT_WINDOW_MOVED:
-				if (shState != NULL && event.window.data1 && event.window.data2)
-					shState->oneshot().setWindowPos(event.window.data1, event.window.data2);
+				if (shState != NULL && event.window.data1 && event.window.data2){
+					rtData.ethread->winX = event.window.data1;
+					rtData.ethread->winY = event.window.data2;
+					shState->windowSignals.moved.Emit(event.window.data1, event.window.data2);
+				}
 				break;
 		#endif
 		}
@@ -412,7 +417,11 @@ void EventThread::process(RGSSThreadData &rtData){
 			case REQUEST_WINRESIZE :
 				SDL_SetWindowSize(win, event.window.data1, event.window.data2);
 				break;
-
+			case REQUEST_WINMOVETO :
+				rtData.ethread->winX = event.window.data1;
+				rtData.ethread->winY = event.window.data2;
+				SDL_SetWindowPosition(win, event.window.data1, event.window.data2);
+				break;
 			case REQUEST_MESSAGEBOX :
 				SDL_ShowSimpleMessageBox(event.user.code, rtData.config.windowTitle.c_str(), (const char*) event.user.data1, win);
 				SDL_free(event.user.data1);
@@ -506,7 +515,9 @@ bool EventThread::eventFilter(void *data, SDL_Event *event){
 	default:
 		if (event->window.type == SDL_EVENT_WINDOW_MOVED){
 			if (shState != NULL){
-				shState->oneshot().setWindowPos(event->window.data1, event->window.data2);
+				rtData.ethread->winX = event->window.data1;
+				rtData.ethread->winY = event->window.data2;
+				shState->windowSignals.moved.Emit(event->window.data1, event->window.data2);
 				shState->graphics().update(false);
 			}
 			return 0;
@@ -564,6 +575,14 @@ void EventThread::requestFullscreenMode(bool mode){
 	SDL_PushEvent(&event);
 }
 
+void EventThread::requestWindowMove(int x, int y){
+	SDL_Event event;
+	event.type = usrIdStart + REQUEST_WINMOVETO;
+	event.window.data1 = x;
+	event.window.data2 = y;
+	SDL_PushEvent(&event);
+}
+
 void EventThread::requestWindowResize(int width, int height){
 	SDL_Event event;
 	event.type = usrIdStart + REQUEST_WINRESIZE;
@@ -592,6 +611,10 @@ void EventThread::showMessageBox(const char *body, int flags){
 	shState->graphics().repaintWait(msgBoxDone);
 	/* Prevent endless loops */
 	resetInputStates();
+}
+
+Vec2i EventThread::getWindowPosition() const{
+	return Vec2i(winX, winY);
 }
 
 bool EventThread::getFullscreen() const{

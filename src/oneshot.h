@@ -59,9 +59,9 @@ public:
 
 	//Mutators
 	void setYesNo(const char *yes, const char *no);
-	void setWindowPos(int x, int y);
 	void setExiting(bool exiting);
 	void setAllowExit(bool allowExit);
+	void updateObscured(int winX, int winY);
 	void resetObscured();
 
 	//Functions

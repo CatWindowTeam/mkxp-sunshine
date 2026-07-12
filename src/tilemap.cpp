@@ -24,6 +24,7 @@
 #include "viewport.h"
 #include "bitmap.h"
 #include "table.h"
+#include "signals/signal.h"
 
 #include "sharedstate.h"
 #include "config.h"
@@ -40,7 +41,6 @@
 #include "tilemap-common.h"
 #include "sunshine.h"
 
-#include <sigc++/connection.h>
 #include <boost/chrono.hpp>
 
 #include <SDL3/SDL_stdinc.h>
@@ -303,16 +303,16 @@ struct TilemapPrivate {
 	bool tilemapReady;
 
 	/* Change watches */
-	sigc::connection tilesetCon;
-	sigc::connection autotilesCon[autotileCount];
-	sigc::connection mapDataCon;
-	sigc::connection prioritiesCon;
+	SignalConnection tilesetCon;
+	SignalConnection autotilesCon[autotileCount];
+	SignalConnection mapDataCon;
+	SignalConnection prioritiesCon;
 
 	/* Dispose watches */
-	sigc::connection autotilesDispCon[autotileCount];
+	SignalConnection autotilesDispCon[autotileCount];
 
 	/* Draw prepare call */
-	sigc::connection prepareCon;
+	SignalConnection prepareCon;
 
 	TilemapPrivate(Viewport *viewport)
 	    : viewport(viewport),
@@ -359,7 +359,7 @@ struct TilemapPrivate {
 		for (size_t i = 0; i < zlayersMax; ++i)
 			elem.zlayers[i] = new ZLayer(this, viewport);
 
-		prepareCon = shState->prepareDraw.connect(sigc::mem_fun(this, &TilemapPrivate::prepare));
+		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &TilemapPrivate::prepare);
 
 		updateFlashMapViewport();
 	}
@@ -377,15 +377,15 @@ struct TilemapPrivate {
 		VBO::del(tiles.vbo);
 
 		/* Disconnect signal handlers */
-		tilesetCon.disconnect();
+		tilesetCon.Disconnect();
 		for (int i = 0; i < autotileCount; ++i){
-			autotilesCon[i].disconnect();
-			autotilesDispCon[i].disconnect();
+			autotilesCon[i].Disconnect();
+			autotilesDispCon[i].Disconnect();
 		}
-		mapDataCon.disconnect();
-		prioritiesCon.disconnect();
+		mapDataCon.Disconnect();
+		prioritiesCon.Disconnect();
 
-		prepareCon.disconnect();
+		prepareCon.Disconnect();
 	}
 
 	void updateFlashMapViewport(){
@@ -1019,11 +1019,11 @@ void Tilemap::Autotiles::set(int i, Bitmap *bitmap){
 
 	p->invalidateAtlasContents();
 
-	p->autotilesCon[i].disconnect();
-	p->autotilesCon[i] = bitmap->modified.connect(sigc::mem_fun(p, &TilemapPrivate::invalidateAtlasContents));
+	p->autotilesCon[i].Disconnect();
+	p->autotilesCon[i] = bitmap->modified.Connect(p, &TilemapPrivate::invalidateAtlasContents);
 
-	p->autotilesDispCon[i].disconnect();
-	p->autotilesDispCon[i] = bitmap->wasDisposed.connect(sigc::mem_fun(p, &TilemapPrivate::invalidateAtlasContents));
+	p->autotilesDispCon[i].Disconnect();
+	p->autotilesDispCon[i] = bitmap->wasDisposed.Connect(p, &TilemapPrivate::invalidateAtlasContents);
 
 	p->updateAutotileInfo();
 }
@@ -1095,9 +1095,8 @@ void Tilemap::setTileset(Bitmap *value){
 		return;
 
 	p->invalidateAtlasSize();
-	p->tilesetCon.disconnect();
-	p->tilesetCon = value->modified.connect
-	        (sigc::mem_fun(p, &TilemapPrivate::invalidateAtlasSize));
+	p->tilesetCon.Disconnect();
+	p->tilesetCon = value->modified.Connect(p, &TilemapPrivate::invalidateAtlasSize);
 
 	p->updateAtlasInfo();
 }
@@ -1114,9 +1113,8 @@ void Tilemap::setMapData(Table *value){
 		return;
 
 	p->invalidateBuffers();
-	p->mapDataCon.disconnect();
-	p->mapDataCon = value->modified.connect
-	        (sigc::mem_fun(p, &TilemapPrivate::invalidateBuffers));
+	p->mapDataCon.Disconnect();
+	p->mapDataCon = value->modified.Connect(p, &TilemapPrivate::invalidateBuffers);
 }
 
 void Tilemap::setFlashData(Table *value){
@@ -1137,8 +1135,8 @@ void Tilemap::setPriorities(Table *value){
 		return;
 
 	p->invalidateBuffers();
-	p->prioritiesCon.disconnect();
-	p->prioritiesCon = value->modified.connect(sigc::mem_fun(p, &TilemapPrivate::invalidateBuffers));
+	p->prioritiesCon.Disconnect();
+	p->prioritiesCon = value->modified.Connect(p, &TilemapPrivate::invalidateBuffers);
 }
 
 void Tilemap::setVisible(bool value){

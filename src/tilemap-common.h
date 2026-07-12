@@ -32,12 +32,11 @@
 #include "vertex.h"
 #include "quad.h"
 #include "etc-internal.h"
+#include "signals/signal.h"
 
 #include <stdint.h>
 #include <assert.h>
 #include <vector>
-
-#include <sigc++/connection.h>
 
 static inline int wrap(int value, int range){
 	int res = value % range;
@@ -111,7 +110,7 @@ struct FlashMap{
 	~FlashMap(){
 		GLMeta::vaoFini(vao);
 		VBO::del(vao.vbo);
-		dataCon.disconnect();
+		dataCon.Disconnect();
 	}
 
 	Table *getData() const{
@@ -123,14 +122,13 @@ struct FlashMap{
 			return;
 
 		data = value;
-		dataCon.disconnect();
+		dataCon.Disconnect();
 		dirty = true;
 
 		if (!data)
 			return;
 
-		dataCon = data->modified.connect
-			(sigc::mem_fun(this, &FlashMap::setDirty));
+		dataCon = data->modified.Connect(*this, &FlashMap::setDirty);
 	}
 
 	void setViewport(const IntRect &value){
@@ -238,7 +236,7 @@ private:
 	bool dirty;
 
 	Table *data;
-	sigc::connection dataCon;
+	SignalConnection dataCon;
 
 	IntRect viewp;
 

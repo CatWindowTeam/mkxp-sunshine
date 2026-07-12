@@ -169,6 +169,8 @@ void SharedState::initInstance(RGSSThreadData *threadData){
 	SharedState::instance->p->defaultFont = defaultFont;
 
 	SharedState::instance->p->sunshine.loadNoise();
+
+	SharedState::instance->windowSignals.moved.Connect(SharedState::instance->p->oneshot, &Oneshot::updateObscured);
 }
 
 void SharedState::finiInstance(){

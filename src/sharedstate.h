@@ -22,7 +22,7 @@
 #ifndef SHAREDSTATE_H
 #define SHAREDSTATE_H
 
-#include <sigc++-2.0/sigc++/signal.h>
+#include "signals/signal.h"
 
 #define shState SharedState::instance
 #define glState shState->_glState()
@@ -55,7 +55,21 @@ struct Config;
 struct Vec2i;
 struct SharedMidiState;
 
+struct WindowSignals{
+    Signal<void(int, int)> moved;
+    Signal<void(int, int)> resized;
+};
+
+struct GraphicsSignals{
+	Signal<void> prepareDraw;
+};
+
 struct SharedState{
+	// signals
+	WindowSignals windowSignals;
+	GraphicsSignals graphicsSignals;
+
+	// other shit idk
 	void *bindingData() const;
 	void setBindingData(void *data);
 
@@ -88,8 +102,6 @@ struct SharedState{
 
 	SharedFontState &fontState() const;
 	Font &defaultFont() const;
-
-	sigc::signal<void> prepareDraw;
 
 	unsigned int genTimeStamp();
 
@@ -133,3 +145,28 @@ private:
 };
 
 #endif // SHAREDSTATE_H
+
+
+
+/* this is not part of mkxp :|
+          meow                               meow
+          meow                               meow
+          meow meow                     meow meow
+          meow meow                     meow meow
+          meow meow meow           meow meow meow
+          meow meow meow           meow meow meow
+          meow meow meow meow meow meow meow meow
+          meow meow meow meow meow meow meow meow
+          meow meow meow meow meow meow meow meow
+          meow meow meow meow meow meow meow meow
+          meow meow      meow meow      meow meow
+          meow meow      meow meow      meow meow
+meow      meow meow meow meow meow meow meow meow      meow
+meow      meow meow meow meow meow meow meow meow      meow
+     meow meow      meow      meow meow      meow meow
+     meow meow      meow      meow meow      meow meow
+meow      meow meow      meow           meow meow      meow
+meow      meow meow      meow           meow meow      meow
+          meow meow meow meow meow meow meow meow
+          meow meow meow meow meow meow meow meow
+*/

@@ -36,7 +36,7 @@
 #include "glstate.h"
 #include "sunshine.h"
 
-#include <sigc++/connection.h>
+#include "signals/signal.h"
 
 static float fwrap(float value, float range){
 	float res = fmod(value, range);
@@ -66,8 +66,8 @@ struct PlanePrivate{
 
 	EtcTemps tmp;
 
-	sigc::connection prepareCon;
-	sigc::connection srcRectCon;
+	SignalConnection prepareCon;
+	SignalConnection srcRectCon;
 
 	PlanePrivate()
 	    : bitmap(0),
@@ -82,14 +82,14 @@ struct PlanePrivate{
 	      shader(ShaderType::SHADER_plane)
 	{
 		updateSrcRectCon();
-		prepareCon = shState->prepareDraw.connect(sigc::mem_fun(this, &PlanePrivate::prepare));
+		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &PlanePrivate::prepare);
 
 		qArray.resize(1);
 	}
 
 	~PlanePrivate(){
-		srcRectCon.disconnect();
-		prepareCon.disconnect();
+		srcRectCon.Disconnect();
+		prepareCon.Disconnect();
 	}
 
 	void onSrcRectChange(){
@@ -98,9 +98,9 @@ struct PlanePrivate{
 
 	void updateSrcRectCon(){
 		/* Cut old connection */
-		srcRectCon.disconnect();
+		srcRectCon.Disconnect();
 		/* Create new one */
-		srcRectCon = srcRect->valueChanged.connect(sigc::mem_fun(this, &PlanePrivate::onSrcRectChange));
+		srcRectCon = srcRect->valueChanged.Connect(*this, &PlanePrivate::onSrcRectChange);
 	}
 
 	void updateQuadSource(){
