@@ -69,6 +69,8 @@ protected:
 	IntruList<SceneElement> elements;
 	Geometry geometry;
 
+	SignalConnection resizeConnection;
+
 	friend class SceneElement;
 	friend class Window;
 	friend class WindowVX;

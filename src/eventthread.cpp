@@ -212,9 +212,11 @@ void EventThread::process(RGSSThreadData &rtData){
 				//SDL_GL_GetDrawableSize(win, &winW, &winH);
 
 				windowSizeMsg.post(Vec2i(winW, winH));
+				if (shState != nullptr)
+					shState->windowSignals.resized.Emit(event.window.data1, event.window.data2);
 				resetInputStates();
 				break;
-
+// random meow
 			case SDL_EVENT_WINDOW_MOUSE_ENTER :
 				cursorInWindow = true;
 				mouseState.inWindow = true;

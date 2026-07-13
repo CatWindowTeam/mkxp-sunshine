@@ -53,7 +53,6 @@ private:
 	void composite();
 	void draw();
 	void onGeometryChange(const Geometry &);
-	bool isEffectiveViewport(Rect *&, Color *&, Tone *&) const;
 
 	void releaseResources();
 	const char *klassName() const { return "viewport"; }

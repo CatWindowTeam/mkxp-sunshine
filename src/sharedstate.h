@@ -23,6 +23,8 @@
 #define SHAREDSTATE_H
 
 #include "signals/signal.h"
+#include "signals/rubydispatcher.h"
+#include "signals/renderdispatcher.h"
 
 #define shState SharedState::instance
 #define glState shState->_glState()
@@ -68,6 +70,10 @@ struct SharedState{
 	// signals
 	WindowSignals windowSignals;
 	GraphicsSignals graphicsSignals;
+
+	// dispatchers, they redirect signals from another thread to their own
+	RubyDispatcher &rubyDispatcher() const;
+	RenderDispatcher &renderDispatcher() const;
 
 	// other shit idk
 	void *bindingData() const;

@@ -40,6 +40,7 @@
 #include "tileatlas.h"
 #include "tilemap-common.h"
 #include "sunshine.h"
+#include "signals/rubydispatcher.h"
 
 #include <boost/chrono.hpp>
 
@@ -48,6 +49,7 @@
 #include <vector>
 
 #include <SDL3/SDL_surface.h>
+#include <SDL3/SDL_thread.h>
 
 extern const StaticRect autotileRects[];
 
@@ -250,6 +252,7 @@ struct TilemapPrivate {
 	} atlas;
 
 	int viewpW, viewpH;
+	SignalConnection viewpUpdateConnection;
 	size_t zlayersMax;
 
 	/* Map viewport position */
@@ -328,8 +331,8 @@ struct TilemapPrivate {
 	      mapViewportDirty(false),
 	      zOrderDirty(false),
 	      tilemapReady(false),
-		  viewpW(shState->graphics().width() / 32 + 1),
-		  viewpH(shState->graphics().height() / 32 + 2),
+		  viewpW(shState->graphics().width() / 31 + 2),
+		  viewpH(shState->graphics().height() / 31 + 2),
 		  zlayersMax(viewpH + 5)
 	{
 		zlayerVert.resize(zlayersMax);
@@ -360,6 +363,34 @@ struct TilemapPrivate {
 			elem.zlayers[i] = new ZLayer(this, viewport);
 
 		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &TilemapPrivate::prepare);
+		viewpUpdateConnection = shState->windowSignals.resized.Connect([&](int w, int h){
+			shState->rubyDispatcher().invoke([&, w, h]{
+				if (this->viewport->isDisposed()){
+					Debug() << "Warning: resize updating of disposed tilemap, disconnecting";
+					this->viewpUpdateConnection.Disconnect();
+					return;
+				}
+
+				int oldZLayersCount = zlayersMax;
+				viewpW = w / 31 + 2;
+				viewpH = h / 31 + 2;
+				zlayersMax = viewpH + 5;
+				zlayerVert.resize(zlayersMax);
+				zlayerBases.resize(zlayersMax + 1);
+				if (zlayersMax > oldZLayersCount){
+					elem.zlayers.resize(zlayersMax);
+					for (size_t i = oldZLayersCount; i < zlayersMax; ++i)
+						if (elem.zlayers[i] == nullptr)
+							elem.zlayers[i] = new ZLayer(this, this->viewport);
+				}
+				else{
+					for (size_t i = zlayersMax; i < oldZLayersCount; ++i)
+						if (elem.zlayers[i] != nullptr)
+							delete elem.zlayers[i];
+					elem.zlayers.resize(zlayersMax);
+				}
+			});
+		});
 
 		updateFlashMapViewport();
 	}
@@ -377,6 +408,7 @@ struct TilemapPrivate {
 		VBO::del(tiles.vbo);
 
 		/* Disconnect signal handlers */
+		viewpUpdateConnection.Disconnect();
 		tilesetCon.Disconnect();
 		for (int i = 0; i < autotileCount; ++i){
 			autotilesCon[i].Disconnect();

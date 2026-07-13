@@ -39,6 +39,7 @@
 #include "debugwriter.h"
 #include "oneshot.h"
 #include "define.h"
+#include "signals/rubydispatcher.h"
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_timer.h>
 #include <SDL3_image/SDL_image.h>
@@ -616,6 +617,9 @@ Graphics::~Graphics(){
 }
 
 void Graphics::update(bool limitFps){
+	// TODO: move this to ruby thread update, idk where it is
+	shState->rubyDispatcher().process();
+
 	p->checkShutDownReset();
 	p->checkSyncLock();
 
@@ -902,6 +906,7 @@ void Graphics::resizeScreen(int width, int height){
 	FloatRect screenRect(0, 0, width, height);
 	p->screenQuad.setTexPosRect(screenRect, screenRect);
 
+	glState.scissorBox.set(IntRect(0, 0, width, height));
 	shState->eThread().requestWindowResize(width, height);
 }
 

@@ -121,6 +121,7 @@ void tilemapBindingInit();
 void windowVXBindingInit();
 void tilemapVXBindingInit();
 void TimeBindingInit();
+void SignalConnectionBindingInit();
 
 void inputBindingInit();
 void audioBindingInit();
@@ -165,6 +166,7 @@ static void mriBindingInit(){
 	windowBindingInit();
 	tilemapBindingInit();
 	TimeBindingInit();
+	SignalConnectionBindingInit();
 	inputBindingInit();
 	audioBindingInit();
 	graphicsBindingInit();

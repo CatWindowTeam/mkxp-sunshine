@@ -56,6 +56,9 @@ struct SharedStatePrivate{
 	SDL_Window *sdlWindow;
 	Scene *screen;
 
+	RubyDispatcher rubyDispatcher;
+	RenderDispatcher renderDispatcher;
+
 	FileSystem fileSystem;
 
 	EventThread &eThread;
@@ -96,6 +99,8 @@ struct SharedStatePrivate{
 	SharedStatePrivate(RGSSThreadData *threadData)
 	    : bindingData(0),
 	      sdlWindow(threadData->window),
+		  rubyDispatcher(),
+		  renderDispatcher(),
 	      fileSystem(threadData->config.allowSymlinks),
 	      eThread(*threadData->ethread),
 	      rtData(*threadData),
@@ -194,6 +199,8 @@ void SharedState::setScreen(Scene &screen){
 GSATT(void*, bindingData)
 GSATT(SDL_Window*, sdlWindow)
 GSATT(Scene*, screen)
+GSATT(RubyDispatcher&, rubyDispatcher)
+GSATT(RenderDispatcher&, renderDispatcher)
 GSATT(FileSystem&, fileSystem)
 GSATT(EventThread&, eThread)
 GSATT(RGSSThreadData&, rtData)

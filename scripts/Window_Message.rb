@@ -18,6 +18,18 @@ class Window_Message < Window_Selectable
     self.z = 9999
     self.back_opacity = 210
 
+    @update_connection = Graphics.window_resized do |w, h|
+      self.x = Graphics.width / 2 - 304
+      case $game_system.message_position
+      when 0  # up
+        self.y = 16
+      when 1  # middle
+        self.y = Graphics.height / 2 - height / 2
+      when 2  # down
+        self.y = Graphics.height - height - 16
+      end
+    end
+
     # Animation flags
     @fade_in = false
     @fade_out = false

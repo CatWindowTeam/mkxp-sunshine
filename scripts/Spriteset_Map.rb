@@ -19,6 +19,26 @@ class Spriteset_Map
     @viewport_lights = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @viewport_flash = Viewport.new(0, 0, Graphics.width, Graphics.height)
 
+    @update_connection = Graphics.window_resized do |w, h|
+      @viewport.rect.width = w
+      @viewport.rect.height = h
+
+      @viewport_bg.rect.width = w
+      @viewport_bg.rect.height = h
+
+      @viewport_pics.rect.width = w
+      @viewport_pics.rect.height = h
+
+      @viewport_particles.rect.width = w
+      @viewport_particles.rect.height = h
+
+      @viewport_lights.rect.width = w
+      @viewport_lights.rect.height = h
+
+      @viewport_flash.rect.width = w
+      @viewport_flash.rect.height = h
+    end
+
     @viewport_bg.z = -500
     @viewport_lights.z = 200
     @viewport_pics.z = 500
@@ -89,6 +109,7 @@ class Spriteset_Map
   # * Dispose
   #--------------------------------------------------------------------------
   def dispose
+    @update_connection.disconnect
     # Dispose of tilemap
     @tilemap.tileset.dispose if @tilemap.tileset
     for i in 0..6

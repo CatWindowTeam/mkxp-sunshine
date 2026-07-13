@@ -9,7 +9,6 @@
 
 #include "gl-util.h"
 #include "quad.h"
-#include "transform.h"
 #include "shader.h"
 #include "glstate.h"
 #include "quadarray.h"
@@ -33,8 +32,9 @@ struct LightMapPrivate{
 	std::vector<LightSource> dynamicLightSources;
 	std::vector<LightSource> gpuBuffer;
 
+	SignalConnection bitmapUpdateConnection;
+
 	Quad quad;
-	Transform trans;
 
 	Rect *srcRect;
 	SignalConnection srcRectCon;
@@ -67,6 +67,15 @@ struct LightMapPrivate{
 		updateSrcRectCon();
 
 		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &LightMapPrivate::prepare);
+		bitmapUpdateConnection = shState->windowSignals.resized.Connect([&](int w, int h){
+			shState->rubyDispatcher().invoke([&, w, h]{
+				bitmap = new Bitmap(w, h);
+				bitmap->ensureNonMega();
+				*srcRect = bitmap->rect();
+				onSrcRectChange();
+				quad.setPosRect(srcRect->toFloatRect());
+			});
+		});
 		
 		bitmap->ensureNonMega();
 		//bitmap->fillRect(0, 0, shState->graphics().width(), shState->graphics().height(), Vec4(0, 0, 0, 1));
@@ -79,6 +88,7 @@ struct LightMapPrivate{
 	~LightMapPrivate(){
 		srcRectCon.Disconnect();
 		prepareCon.Disconnect();
+		bitmapUpdateConnection.Disconnect();
 	}
 
 	void onSrcRectChange(){
@@ -112,17 +122,8 @@ struct LightMapPrivate{
 			return;
 
 		/* Compare sprite bounding box against the scene */
-
-		/* If sprite is zoomed/rotated, just opt out for now
-		 * for simplicity's sake */
-		const Vec2 &scale = trans.getScale();
-		if (scale.x != 1 || scale.y != 1 || trans.getRotation() != 0){
-			isVisible = true;
-			return;
-		}
-
 		IntRect self;
-		self.setPos(trans.getPositionI() - (trans.getOriginI() + sceneOrig));
+		self.setPos(Vec2i(0, 0));
 		self.w = bitmap->width();
 		self.h = bitmap->height();
 
@@ -249,10 +250,6 @@ void LightMap::draw(){
 }
 
 void LightMap::onGeometryChange(const Scene::Geometry &geo){
-	/* Offset at which the sprite will be drawn
-	 * relative to screen origin */
-	p->trans.setGlobalOffset(geo.offset());
-
 	p->sceneRect.setSize(geo.rect.size());
 	p->sceneOrig = geo.orig;
 }

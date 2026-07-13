@@ -81,6 +81,7 @@ set(MAIN_HEADERS
 	src/define.h
 	src/signals/signal.h
 	src/signals/signalconnection.h
+	src/signals/rubyDispatcher.h
 )
 
 set(MAIN_SOURCE
@@ -127,6 +128,7 @@ set(MAIN_SOURCE
 	src/modloader.cpp
 	src/sunshine.cpp
 	src/lightmap.cpp
+	src/signals/rubyDispatcher.cpp
 )
 
 if(WIN32)
@@ -265,6 +267,7 @@ set(BINDING_HEADERS
 	binding-mri/viewportelement-binding.h
 	binding-mri/flashable-binding.h
 	binding-mri/keybindings-binding.h
+	binding-mri/signalconnection-binding.h
 )
 set(BINDING_SOURCE
 	binding-mri/binding-mri.cpp
@@ -294,6 +297,7 @@ set(BINDING_SOURCE
 	binding-mri/modloader-binding.cpp
 	binding-mri/keybindings-binding.cpp
 	binding-mri/lightmap-binding.cpp
+	binding-mri/signalconnection-binding.cpp
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})

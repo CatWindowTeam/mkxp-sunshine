@@ -26,6 +26,12 @@
 #include "binding-types.h"
 #include "exception.h"
 #include "config.h"
+#include "debugwriter.h"
+#include "signals/rubydispatcher.h"
+
+#include "signalconnection-binding.h"
+
+#include <vector>
 
 RB_METHOD(graphicsUpdate){
 	RB_UNUSED_PARAM;
@@ -208,19 +214,35 @@ DEF_GRA_PROP_B(Frameskip)
 	_rb_define_module_function(module, prop_name_s "=", graphics##Set##PropName); \
 }
 
+static VALUE graphicsWindowMoved(VALUE self){
+	RUBY_CONNECTION
+	conn->connection = shState->windowSignals.moved.Connect([conn](int x, int y){
+		shState->rubyDispatcher().invoke([conn, x, y]{
+			rb_funcall(conn->proc, rb_intern("call"), 2, INT2NUM(x), INT2NUM(y));
+		});
+	});
+	return TypedData_Wrap_Struct(rb_cRubyConnection, &rubyConnection_type, conn);
+}
+
+static VALUE graphicsWindowResized(VALUE self){
+	RUBY_CONNECTION
+	conn->connection = shState->windowSignals.resized.Connect([conn](int w, int h){
+		shState->rubyDispatcher().invoke([conn, w, h]{
+			rb_funcall(conn->proc, rb_intern("call"), 2, INT2NUM(w), INT2NUM(h));
+		});
+	});
+	return TypedData_Wrap_Struct(rb_cRubyConnection, &rubyConnection_type, conn);
+}
+
 void graphicsBindingInit(){
 	VALUE module = rb_define_module("Graphics");
 
-	_rb_define_module_function(module, "update", graphicsUpdate);
-	_rb_define_module_function(module, "freeze", graphicsFreeze);
-	_rb_define_module_function(module, "transition", graphicsTransition);
-	_rb_define_module_function(module, "frame_reset", graphicsFrameReset);
+	// Signals
 
-	_rb_define_module_function(module, "__reset__", graphicsReset);
+	rb_define_module_function(module, "window_moved", RUBY_METHOD_FUNC(graphicsWindowMoved), 0);
+	rb_define_module_function(module, "window_resized", RUBY_METHOD_FUNC(graphicsWindowResized), 0);
 
-	INIT_GRA_PROP_BIND( FrameRate,  "frame_rate"  );
-	INIT_GRA_PROP_BIND( FrameCount, "frame_count" );
-
+	// Functions
 	_rb_define_module_function(module, "x", graphicsPosX);
 	_rb_define_module_function(module, "y", graphicsPosY);
 	_rb_define_module_function(module, "width", graphicsWidth);
@@ -231,7 +253,16 @@ void graphicsBindingInit(){
 	_rb_define_module_function(module, "snap_to_bitmap", graphicsSnapToBitmap);
 	_rb_define_module_function(module, "resize_screen", graphicsResizeScreen);
 	_rb_define_module_function(module, "move_screen", graphicsMoveScreen);
+	_rb_define_module_function(module, "update", graphicsUpdate);
+	_rb_define_module_function(module, "freeze", graphicsFreeze);
+	_rb_define_module_function(module, "transition", graphicsTransition);
+	_rb_define_module_function(module, "frame_reset", graphicsFrameReset);
 
+	_rb_define_module_function(module, "__reset__", graphicsReset);
+
+	// Variables
+	INIT_GRA_PROP_BIND( FrameRate,  "frame_rate"  );
+	INIT_GRA_PROP_BIND( FrameCount, "frame_count" );
 	INIT_GRA_PROP_BIND( Brightness, "brightness" );
 	INIT_GRA_PROP_BIND( Fullscreen, "fullscreen"  );
 	INIT_GRA_PROP_BIND( ShowCursor, "show_cursor" );

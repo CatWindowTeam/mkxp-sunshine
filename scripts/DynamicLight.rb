@@ -2,7 +2,6 @@ class DynamicLight
   def initialize(viewport)
     @debug_sprite = Sprite.new(viewport)
     @debug_sprite.bitmap = Bitmap.new(Graphics.width, Graphics.height)
-    @debug_sprite.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(255, 255, 255))
     @debug_sprite.visible = false
     @light_sprite = LightMap.new(viewport)
     #@light_sprite.wallmap = Bitmap.new($game_map.width, $game_map.height)
@@ -16,6 +15,13 @@ class DynamicLight
     #    ))
     #  end
     #end
+    
+    @update_connection = Graphics.window_resized do |w, h|
+      @debug_sprite.bitmap.rect.width = w;
+      @debug_sprite.bitmap.rect.height = h;
+      #@debug_sprite.bitmap.dispose
+      #@debug_sprite.bitmap = Bitmap.new(w, h)
+    end
     
     if $light == nil
       return
@@ -34,6 +40,7 @@ class DynamicLight
   end
 
   def dispose
+    @update_connection.disconnect
     @light_sprite.dispose
   end
 
