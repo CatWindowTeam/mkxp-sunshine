@@ -79,6 +79,8 @@ set(MAIN_HEADERS
 	src/sunshine.h
 	src/lightmap.h
 	src/define.h
+	src/signals/signal.h
+	src/signals/signalconnection.h
 )
 
 set(MAIN_SOURCE
