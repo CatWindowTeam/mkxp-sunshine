@@ -20,6 +20,10 @@ class Window_Item < Window_Selectable
     self.z = 9998
     self.visible = false
     self.active = false
+    @update_connection = Graphics.viewport_resized do |w, h|
+      self.x = w / 2 - 304
+      self.y = h > 600 ? h / 2 - 80 : 96
+    end
 
     @fade_in = false
     @fade_out = false
@@ -230,5 +234,6 @@ class Window_Item < Window_Selectable
   def dispose
     super
     @help_window.dispose
+    @update_connection.disconnect
   end
 end

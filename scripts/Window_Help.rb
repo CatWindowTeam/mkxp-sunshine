@@ -15,6 +15,12 @@ class Window_Help < Window_Base
     self.visible = false
     self.back_opacity = 230
     self.z = 9998
+    
+    @update_connection = Graphics.viewport_resized do |w, h|
+      self.x = Graphics.width / 2 - 304
+      self.y = Graphics.height > 600 ? Graphics.height / 2 - 160 : 16
+    end
+
     RPG::Mod.exec_hooks("hooks/Window_Help/init", binding)
   end
   #--------------------------------------------------------------------------
@@ -30,5 +36,10 @@ class Window_Help < Window_Base
     @text = text
     @align = align
     @actor = nil
+  end
+
+  def dispose
+    super
+    @update_connection.disconnect
   end
 end

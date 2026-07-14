@@ -18,7 +18,7 @@ class Window_Message < Window_Selectable
     self.z = 9999
     self.back_opacity = 210
 
-    @update_connection = Graphics.window_resized do |w, h|
+    @update_connection = Graphics.viewport_resized do |w, h|
       self.x = Graphics.width / 2 - 304
       case $game_system.message_position
       when 0  # up
@@ -60,6 +60,7 @@ class Window_Message < Window_Selectable
   # * Dispose
   #--------------------------------------------------------------------------
   def dispose
+    @update_connection.disconnect
     terminate_message
     $game_temp.message_window_showing = false
     if @input_number_window != nil

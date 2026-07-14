@@ -173,9 +173,10 @@ RB_METHOD(graphicsResizeScreen){
 	RB_UNUSED_PARAM;
 
 	int width, height;
-	rb_get_args(argc, argv, "ii", &width, &height RB_ARG_END);
+	bool emitSignal = true;
+	rb_get_args(argc, argv, "ii|b", &width, &height, &emitSignal RB_ARG_END);
 
-	shState->graphics().resizeScreen(width, height);
+	shState->graphics().resizeScreen(width, height, emitSignal);
 
 	return Qnil;
 }
@@ -218,6 +219,11 @@ static VALUE graphicsWindowMoved(VALUE self){
 	RUBY_CONNECTION
 	conn->connection = shState->windowSignals.moved.Connect([conn](int x, int y){
 		shState->rubyDispatcher().invoke([conn, x, y]{
+			if (NIL_P(conn->proc)){
+				Debug() << "Unable to call non-existent proc! (Graphics.window_moved connection, disconnecting)";
+				conn->connection.Disconnect();
+				return;
+			}
 			rb_funcall(conn->proc, rb_intern("call"), 2, INT2NUM(x), INT2NUM(y));
 		});
 	});
@@ -228,8 +234,28 @@ static VALUE graphicsWindowResized(VALUE self){
 	RUBY_CONNECTION
 	conn->connection = shState->windowSignals.resized.Connect([conn](int w, int h){
 		shState->rubyDispatcher().invoke([conn, w, h]{
+			if (NIL_P(conn->proc)){
+				Debug() << "Unable to call non-existent proc! (Graphics.window_resized connection, disconnecting)";
+				conn->connection.Disconnect();
+				return;
+			}
 			rb_funcall(conn->proc, rb_intern("call"), 2, INT2NUM(w), INT2NUM(h));
 		});
+	});
+	return TypedData_Wrap_Struct(rb_cRubyConnection, &rubyConnection_type, conn);
+}
+
+static VALUE graphicsViewportResized(VALUE self){
+	RUBY_CONNECTION
+	conn->connection = shState->graphicsSignals.resized.Connect([conn](int w, int h){
+		//shState->rubyDispatcher().invoke([conn, w, h]{
+			if (NIL_P(conn->proc)){
+				Debug() << "Unable to call non-existent proc! (Graphics.viewport_resized connection, disconnecting)";
+				conn->connection.Disconnect();
+				return;
+			}
+			rb_funcall(conn->proc, rb_intern("call"), 2, INT2NUM(w), INT2NUM(h));
+		//});
 	});
 	return TypedData_Wrap_Struct(rb_cRubyConnection, &rubyConnection_type, conn);
 }
@@ -241,6 +267,7 @@ void graphicsBindingInit(){
 
 	rb_define_module_function(module, "window_moved", RUBY_METHOD_FUNC(graphicsWindowMoved), 0);
 	rb_define_module_function(module, "window_resized", RUBY_METHOD_FUNC(graphicsWindowResized), 0);
+	rb_define_module_function(module, "viewport_resized", RUBY_METHOD_FUNC(graphicsViewportResized), 0);
 
 	// Functions
 	_rb_define_module_function(module, "x", graphicsPosX);

@@ -37,7 +37,6 @@ class Window_Settings
       @selection_sprite.bitmap.fill_rect(Rect.new(0, 0, PARAMETER_WIDTH + 16, PARAMETER_HEIGHT), Color.new(255, 255, 255, 64))
       @selection_sprite.x = @x - 8
       @selection_sprite.y = @offset
-      @selection_sprite.opacity = 0
       @selection_sprite.blend_type = 1
       @selection_sprite.z = 1
 
@@ -82,6 +81,8 @@ class Window_Settings
       @screen_panels.each do |screen_panel|
         screen_panel.dispose
       end
+      @switch_panels_hint_left.dispose
+      @switch_panels_hint_right.dispose
     end
 
     # registering

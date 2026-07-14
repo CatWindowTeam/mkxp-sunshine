@@ -645,8 +645,6 @@ void Graphics::update(bool limitFps){
 			return;
 	}
 
-	shState->oneshot().update();
-
 	p->checkResize();
 	p->redrawScreen();
 	p->scPos = shState->rtData().ethread->getWindowPosition();
@@ -888,7 +886,7 @@ void Graphics::moveScreen(int x, int y){
 	shState->eThread().requestWindowMove(x, y);
 }
 
-void Graphics::resizeScreen(int width, int height){
+void Graphics::resizeScreen(int width, int height, bool emitSignal){
 	width = clamp(width, 1, 65000);
 	height = clamp(height, 1, 65000);
 
@@ -908,6 +906,8 @@ void Graphics::resizeScreen(int width, int height){
 
 	glState.scissorBox.set(IntRect(0, 0, width, height));
 	shState->eThread().requestWindowResize(width, height);
+	if (emitSignal)
+		shState->graphicsSignals.resized.Emit(width, height);
 }
 
 DEF_ATTR_RD_SIMPLE(Graphics, Brightness, int, p->brightness)

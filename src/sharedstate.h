@@ -64,6 +64,7 @@ struct WindowSignals{
 
 struct GraphicsSignals{
 	Signal<void> prepareDraw;
+    Signal<void(int, int)> resized;
 };
 
 struct SharedState{

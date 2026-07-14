@@ -21,6 +21,39 @@ class Window_Settings
     @title.opacity = 0
     Language.register_text_sprite(self.class.name + "_title", @title)
 
+    @resized = false
+
+    @update_connection = Graphics.viewport_resized do |w, h|
+      if self.visible
+        @viewport.rect.width = w
+        @viewport.rect.height = h
+        @bg.bitmap.dispose
+        @bg.bitmap = Bitmap.new(w, h)
+        @bg.bitmap.fill_rect(0, 0, w, h, Color.new(0, 0, 0, 196))
+        @title.x = (w - @title.bitmap.width) / 2
+        init_content
+      else
+        @resized = true
+      end
+    end
+
+    init_content
+
+	  @left_hold_timer = 0
+	  @right_hold_timer = 0
+
+	  @up_hold_timer = 0
+	  @down_hold_timer = 0
+
+    @visible = self.visible = false
+    RPG::Mod.exec_hooks("hooks/Window_Settings/init", binding)
+  end
+
+  def init_content
+    if (@content)
+      @content.dispose
+    end
+
     @content = SettingsContent.new(@viewport, TITLE_TOP_MARGIN + TITLE_MARGIN + 100)
 
     DATA.each_with_index do |(screen_title, parameters_info), screen_index|
@@ -66,21 +99,13 @@ class Window_Settings
       end
     end
     @content.redraw_all
-
-	  @left_hold_timer = 0
-	  @right_hold_timer = 0
-
-	  @up_hold_timer = 0
-	  @down_hold_timer = 0
-
-    @visible = self.visible = false
-    RPG::Mod.exec_hooks("hooks/Window_Settings/init", binding)
   end
 
   def dispose
     @bg.dispose
     @title.dispose
     @content.dispose
+    @update_connection.disconnect
   end
 
   def open
@@ -102,6 +127,17 @@ class Window_Settings
   end
 
   def update
+    if @resized
+      @viewport.rect.width = Graphics.width
+      @viewport.rect.height = Graphics.height
+      @bg.bitmap.dispose
+      @bg.bitmap = Bitmap.new(Graphics.width, Graphics.height)
+      @bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0, 196))
+      @title.x = (Graphics.width - @title.bitmap.width) / 2
+      init_content
+      @resized = false
+    end
+
     if Input.key_press?(Input.key_from_name("F1"))
       if Oneshot.msgbox(Oneshot::Msg::YESNO, tr("Are you sure you want to reset the control settings?"))
         Settings.reset_controls!

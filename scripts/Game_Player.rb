@@ -9,11 +9,11 @@
 class Game_Player < Game_Character
   attr_reader :move_speed
 
-  #--------------------------------------------------------------------------
-  # * Invariables
-  #--------------------------------------------------------------------------
-  CENTER_X = ((Graphics.width / 2) - 16) * 4   # Center screen x-coordinate * 4
-  CENTER_Y = ((Graphics.height / 2) - 16) * 4   # Center screen y-coordinate * 4
+  def initialize
+    @center_x = ((Graphics.width / 2) - 16) * 4   # Center screen x-coordinate * 4
+    @center_y = ((Graphics.height / 2) - 16) * 4   # Center screen y-coordinate * 4
+    super
+  end
   #--------------------------------------------------------------------------
   # * Passable Determinants
   #     x : x-coordinate
@@ -41,8 +41,8 @@ class Game_Player < Game_Character
   def center(x, y)
   	max_x = ($game_map.width - (Graphics.width / 32)) * 128
     max_y = ($game_map.height - (Graphics.height / 28)) * 128
-    $game_map.display_x = [0, [x * 128 - CENTER_X, max_x].min].max
-    $game_map.display_y = [0, [y * 128 - CENTER_Y, max_y].min].max
+    $game_map.display_x = [0, [x * 128 - @center_x, max_x].min].max
+    $game_map.display_y = [0, [y * 128 - @center_y, max_y].min].max
   end
   #--------------------------------------------------------------------------
   # * Move to Designated Position
@@ -164,6 +164,16 @@ class Game_Player < Game_Character
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
+    old_center_x = @center_x
+    old_center_y = @center_y
+    @center_x = ((Graphics.width / 2) - 16) * 4   # Center screen x-coordinate * 4
+    @center_y = ((Graphics.height / 2) - 16) * 4   # Center screen y-coordinate * 4
+    if (@center_x != old_center_x)
+      $game_map.display_x = @real_x - @center_x
+    end
+    if (@center_y != old_center_y)
+      $game_map.display_y = @real_y - @center_y
+    end
     # Remember whether or not moving in local variables
     last_moving = moving?
     # If moving, event running, move route forcing, and message window
@@ -217,25 +227,25 @@ class Game_Player < Game_Character
     if !$game_switches[100]
       # If character moves down and is positioned lower than the center
       # of the screen
-      if @real_y > last_real_y and @real_y - $game_map.display_y > CENTER_Y
+      if @real_y > last_real_y and @real_y - $game_map.display_y > @center_y
         # Scroll map down
         $game_map.scroll_down(@real_y - last_real_y)
       end
       # If character moves left and is positioned more let on-screen than
       # center
-      if @real_x < last_real_x and @real_x - $game_map.display_x < CENTER_X
+      if @real_x < last_real_x and @real_x - $game_map.display_x < @center_x
         # Scroll map left
         $game_map.scroll_left(last_real_x - @real_x)
       end
       # If character moves right and is positioned more right on-screen than
       # center
-      if @real_x > last_real_x and @real_x - $game_map.display_x > CENTER_X
+      if @real_x > last_real_x and @real_x - $game_map.display_x > @center_x
         # Scroll map right
         $game_map.scroll_right(@real_x - last_real_x)
       end
       # If character moves up and is positioned higher than the center
       # of the screen
-      if @real_y < last_real_y and @real_y - $game_map.display_y < CENTER_Y
+      if @real_y < last_real_y and @real_y - $game_map.display_y < @center_y
         # Scroll map up
         $game_map.scroll_up(last_real_y - @real_y)
       end

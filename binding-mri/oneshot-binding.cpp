@@ -92,6 +92,13 @@ RB_METHOD(oneshotCRC32){
 	return UINT2NUM(result.checksum());
 }
 
+static VALUE oneshotSetObscuredUpdating(VALUE self, VALUE rb_bool){
+	bool value;
+	rb_bool_arg(rb_bool, &value);
+	shState->oneshot().setObscuredUpdating(value);
+	return Qnil;
+}
+
 void oneshotBindingInit(){
 	VALUE module = rb_define_module("Oneshot");
 	VALUE msg = rb_define_module_under(module, "Msg");
@@ -122,4 +129,6 @@ void oneshotBindingInit(){
 	_rb_define_module_function(module, "exiting", oneshotExiting);
 	_rb_define_module_function(module, "shake", oneshotShake);
 	_rb_define_module_function(module, "crc32", oneshotCRC32);
+
+	rb_define_module_function(module, "obscured_updating=", RUBY_METHOD_FUNC(oneshotSetObscuredUpdating), 1);
 }

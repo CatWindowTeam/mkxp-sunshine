@@ -42,8 +42,6 @@ public:
 		GRADIENT_VERTICAL,
 	};
 
-	void update();
-
 	//Accessors
 	const std::string &os() const;
 	const std::string &lang() const;
@@ -61,6 +59,7 @@ public:
 	void setYesNo(const char *yes, const char *no);
 	void setExiting(bool exiting);
 	void setAllowExit(bool allowExit);
+	void setObscuredUpdating(bool enabled);
 	void updateObscured(int winX, int winY);
 	void resetObscured();
 

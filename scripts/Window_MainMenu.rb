@@ -2,6 +2,10 @@
 class Window_MainMenu < Window_Selectable
   def initialize
     super(Graphics.width / 2 - 304, 16, 608, 64)
+    
+    @update_connection = Graphics.viewport_resized do |w, h|
+      self.x = w / 2 - 304
+    end
 
     # Set up menu options
     @commands = Array.new
@@ -157,5 +161,10 @@ class Window_MainMenu < Window_Selectable
       end
       return
     end
+  end
+
+  def dispose
+    super
+    @update_connection.disconnect
   end
 end

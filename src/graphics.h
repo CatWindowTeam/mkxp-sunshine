@@ -53,7 +53,7 @@ public:
 	int y() const;
 	int width() const;
 	int height() const;
-	void resizeScreen(int width, int height);
+	void resizeScreen(int width, int height, bool emitSignal = true);
 	void moveScreen(int x, int y);
 
 	void reset();

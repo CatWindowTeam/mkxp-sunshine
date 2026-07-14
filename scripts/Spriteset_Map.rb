@@ -19,7 +19,7 @@ class Spriteset_Map
     @viewport_lights = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @viewport_flash = Viewport.new(0, 0, Graphics.width, Graphics.height)
 
-    @update_connection = Graphics.window_resized do |w, h|
+    @update_connection = Graphics.viewport_resized do |w, h|
       @viewport.rect.width = w
       @viewport.rect.height = h
 

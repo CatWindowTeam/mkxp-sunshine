@@ -360,11 +360,6 @@ Oneshot::~Oneshot()
 	delete p;
 }
 
-void Oneshot::update()
-{
-	p->obscuredNeedToUpdate = true;
-}
-
 const std::string &Oneshot::os() const
 {
 	return p->os;
@@ -589,11 +584,16 @@ std::string Oneshot::textinput(const char *prompt, int char_limit, const char *f
 	return threadData.inputText;
 }
 
+void Oneshot::setObscuredUpdating(bool enabled){
+	p->obscuredNeedToUpdate = enabled;
+}
+
 void Oneshot::updateObscured(int winX, int winY)
 {
+	SDL_LockMutex(p->winMutex);
 	p->winX = winX;
 	p->winY = winY;
-
+	SDL_UnlockMutex(p->winMutex);
 	if (!p->obscuredNeedToUpdate) return;
 
 	// Map of unobscured pixels in this frame

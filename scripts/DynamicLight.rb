@@ -16,7 +16,7 @@ class DynamicLight
     #  end
     #end
     
-    @update_connection = Graphics.window_resized do |w, h|
+    @update_connection = Graphics.viewport_resized do |w, h|
       @debug_sprite.bitmap.rect.width = w;
       @debug_sprite.bitmap.rect.height = h;
       #@debug_sprite.bitmap.dispose
