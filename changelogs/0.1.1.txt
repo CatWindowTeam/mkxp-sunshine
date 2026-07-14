@@ -65,3 +65,5 @@ supported gamepads can now change LED color based on map
 sigc is wrapped in signal.h, added the ability to move window from ruby
 main viewport resize, main window resize and move signals bindings for ruby
 Dynamic resolution support (WIP)
+Rewrited to use SDL3 libc methods instead default
+Removed useless debug logs

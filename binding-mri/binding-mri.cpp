@@ -472,9 +472,6 @@ static void runRMXPScripts(BacktraceData &btData){
 
 			fname = newStringUTF8(buf, len);
 			btData.scriptNames.insert(buf, scriptName);
-
-			printf("%s\n", scriptName);
-
 			int state;
 			evalString(string, fname, &state);
 			if (state)

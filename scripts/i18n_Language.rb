@@ -73,7 +73,7 @@ class Language
       lastLineWasMsgId = false
       lastLineWasMsgStr = false
       if FileTest.exist?(path)
-        File.readlines(path).each do |line|
+        File.readlines(path, encoding: "UTF-8").each do |line|
           if line.start_with?("msgid ")
             line = line[6..-1]
             #unescape the string
@@ -129,16 +129,10 @@ class Language
 
     # Translate some text
     def tr(string)
-      if @data
-        rv = @data[Oneshot::crc32(string)] || string
-      else
-        rv = string
-      end
-	  
-      if rv.nil?
-        rv = "NULL"
-	  end
-      return String.new(rv)
+      return string unless @data
+      s = string.to_s.encode("UTF-8")
+      rv = @data[Oneshot::crc32(s)] || s
+      rv.nil? ? "NULL" : String.new(rv)
     end
 
     def loadFontMap
@@ -146,8 +140,9 @@ class Language
         @languageFontMap = Hash.new
         path = "Languages/language_fonts.ini"
         if FileTest.exist?(path)
-          File.readlines(path).each do |line|
+          File.readlines(path, encoding: "UTF-8").each do |line|
             parts = line.split("=", 2)
+            #print(parts[0].inspect)
             if parts.length == 2
               LANGUAGES.push(parts[0])
               @languageFontMap[parts[0]] = parts[1].strip

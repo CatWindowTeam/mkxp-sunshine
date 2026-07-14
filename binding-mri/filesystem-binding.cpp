@@ -176,7 +176,6 @@ RB_METHOD(_marshalLoad){
 	RB_UNUSED_PARAM;
 	VALUE port, proc = Qnil;
 	rb_scan_args(argc, argv, "01", &port, &proc);
-	rb_p(proc);
 	VALUE utf8Proc;
 	if (NIL_P(proc)) {
 	    utf8Proc = rb_proc_new(RUBY_METHOD_FUNC(stringForceUTF8), Qnil);
