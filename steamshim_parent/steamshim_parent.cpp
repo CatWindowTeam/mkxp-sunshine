@@ -259,8 +259,7 @@ static AppId_t GAppID = 0;
 static uint64 GUserID = 0;
 static SteamBridge *GSteamBridge = NULL;
 
-class SteamBridge
-{
+class SteamBridge{
 public:
     SteamBridge(PipeType _fd);
 	STEAM_CALLBACK(SteamBridge, OnUserStatsReceived, UserStatsReceived_t, m_CallbackUserStatsReceived);
@@ -270,8 +269,7 @@ private:
     PipeType fd;
 };
 
-typedef enum ShimCmd
-{
+typedef enum ShimCmd{
     SHIMCMD_BYE,
     SHIMCMD_PUMP,
     SHIMCMD_REQUESTSTATS,
@@ -287,8 +285,7 @@ typedef enum ShimCmd
     SHIMCMD_GETCURRENTGAMELANGUAGE,
 } ShimCmd;
 
-typedef enum ShimEvent
-{
+typedef enum ShimEvent{
     SHIMEVENT_BYE,
     SHIMEVENT_STATSRECEIVED,
     SHIMEVENT_STATSSTORED,
@@ -454,8 +451,7 @@ static bool processCommand(const uint8 *buf, unsigned int buflen, PipeType fd){
     else printf("Parent got unknown shimcmd %d.\n", (int) cmd);
     #endif
 
-    switch (cmd)
-    {
+    switch (cmd){
         case SHIMCMD_PUMP:
             SteamAPI_RunCallbacks();
             break;
@@ -598,11 +594,11 @@ static void processCommands(PipeType pipeParentRead, PipeType pipeParentWrite){
 
 static bool setEnvironmentVars(PipeType pipeChildRead, PipeType pipeChildWrite){
     char buf[64];
-    SDL_snprintf(buf, sizeof (buf), LLUFMT, (unsigned long long) pipeChildRead);
+    SDL_snprintf(buf, sizeof(buf), LLUFMT, (unsigned long long) pipeChildRead);
     if (!setEnvVar("STEAMSHIM_READHANDLE", buf))
         return false;
 
-    SDL_snprintf(buf, sizeof (buf), LLUFMT, (unsigned long long) pipeChildWrite);
+    SDL_snprintf(buf, sizeof(buf), LLUFMT, (unsigned long long) pipeChildWrite);
     if (!setEnvVar("STEAMSHIM_WRITEHANDLE", buf))
         return false;
 
