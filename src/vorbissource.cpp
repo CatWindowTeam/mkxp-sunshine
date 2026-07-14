@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2014 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is free software: you can redistribute it and/or modify
+** mkxp is SDL_free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -107,7 +107,7 @@ struct VorbisSource : ALDataSource{
 		/* Try to extract loop info */
 		for (int i = 0; i < vf.vc->comments; ++i){
 			char *comment = vf.vc->user_comments[i];
-			char *sep = strstr(comment, "=");
+			char *sep = SDL_strstr(comment, "=");
 
 			/* No '=' found */
 			if (!sep)
@@ -119,11 +119,11 @@ struct VorbisSource : ALDataSource{
 
 			*sep = '\0';
 
-			if (!strcmp(comment, "LOOPSTART"))
-				loop.start = strtol(sep+1, 0, 10);
+			if (!SDL_strcmp(comment, "LOOPSTART"))
+				loop.start = SDL_strtol(sep+1, 0, 10);
 
-			if (!strcmp(comment, "LOOPLENGTH"))
-				loop.length = strtol(sep+1, 0, 10);
+			if (!SDL_strcmp(comment, "LOOPLENGTH"))
+				loop.length = SDL_strtol(sep+1, 0, 10);
 
 			*sep = '=';
 		}

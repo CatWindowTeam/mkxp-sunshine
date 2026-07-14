@@ -92,7 +92,7 @@ std::string sha256_file(const std::string &fn) {
     out.reserve(SHA256_DIGEST_LENGTH * 2);
     char hex[3] = {0};
     for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-        snprintf(hex, sizeof hex, "%02x", hash[i]);
+        SDL_snprintf(hex, sizeof hex, "%02x", hash[i]);
         out += hex;
     }
     return out;

@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is free software: you can redistribute it and/or modify
+** mkxp is SDL_free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -61,7 +61,7 @@ struct ALCFunctions{
 } static alc;
 
 static void initALCFunctions(ALCdevice *alcDev){
-	if (!strstr(alcGetString(alcDev, ALC_EXTENSIONS), "ALC_SOFT_pause_device"))
+	if (!SDL_strstr(alcGetString(alcDev, ALC_EXTENSIONS), "ALC_SOFT_pause_device"))
 		return;
 
 	Debug() << "ALC_SOFT_pause_device present";
@@ -605,7 +605,7 @@ void EventThread::showMessageBox(const char *body, int flags){
 
 	SDL_Event event;
 	event.user.code = flags;
-	event.user.data1 = strdup(body);
+	event.user.data1 = SDL_strdup(body);
 	event.type = usrIdStart + REQUEST_MESSAGEBOX;
 	SDL_PushEvent(&event);
 

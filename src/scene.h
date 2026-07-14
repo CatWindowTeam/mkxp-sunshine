@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is free software: you can redistribute it and/or modify
+** mkxp is SDL_free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -93,7 +93,7 @@ protected:
 	/* A bit about OpenGL state:
 	 *
 	 *   If we're not inside the draw cycle (ie. the 'draw()'
-	 * handle), you're free to change any GL state through
+	 * handle), you're SDL_free to change any GL state through
 	 * gl-util, except for those in GLState which you should
 	 * push/pop as needed.
 	 *
@@ -101,7 +101,7 @@ protected:
 	 * things in GLState. For scissored rendering, use push with
 	 * setIntersect(), and then pop afterwards.
 	 * Blendmode you can push/pop as you like. Do NOT touch viewport.
-	 * Texture/Shader bindings you're free to modify without
+	 * Texture/Shader bindings you're SDL_free to modify without
 	 * cleanup (and therefore you should expect dirty state).
 	 * Do NOT touch the FBO::Draw binding. If you have to do work
 	 * immediately before drawing that touches this (such as flushing

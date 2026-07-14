@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is free software: you can redistribute it and/or modify
+** mkxp is SDL_free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -115,12 +115,12 @@ public:
 private:
 	void updateMatrix(){
 		if (rotation >= 360 || rotation < -360)
-			rotation = (float) fmod(rotation, 360);
+			rotation = (float) SDL_fmod(rotation, 360);
 		if (rotation < 0)
 			rotation += 360;
 
 		float angle  = rotation * 3.141592654f / 180.0f;
-		float cosine = (float) cos(angle);
+		float cosine = (float) SDL_cos(angle);
 		float sine   = (float) sin(angle);
 		float sxc    = scale.x * cosine;
 		float syc    = scale.y * cosine;

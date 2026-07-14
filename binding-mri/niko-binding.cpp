@@ -155,7 +155,7 @@ RB_METHOD(nikoStart){
 	wcscat(path, L"\\_______.exe");
 	wsprintfW(args, L"_______.exe %d %d", pos.x, pos.y);
 	STARTUPINFOW si;
-	memset(&si, 0, sizeof(si));
+	SDL_memset(&si, 0, sizeof(si));
 	si.cb = sizeof(si);
 	PROCESS_INFORMATION pi;
 	CreateProcessW(path, args, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
@@ -169,7 +169,7 @@ RB_METHOD(nikoStart){
 	sprintf(message, "%d,%d\n", x, y);
 
 	SDL_LockMutex(mutex);
-	message_len = strlen(message);
+	message_len = SDL_strlen(message);
 	strcpy((char*)message_buffer, message);
 	SDL_UnlockMutex(mutex);
 

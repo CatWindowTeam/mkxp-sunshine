@@ -4,7 +4,7 @@
 
   Copyright (c) 2007 Red Hat, Inc.
 
-  Permission is hereby granted, free of charge, to any person
+  Permission is hereby granted, SDL_free of charge, to any person
   obtaining a copy of this software and associated documentation files
   (the "Software"), to deal in the Software without restriction,
   including without limitation the rights to use, copy, modify, merge,
@@ -43,7 +43,7 @@
  * type the value returned is @fallback.
  *
  * The return value is newly allocated and must be freed with
- * free(). The return value is never NULL if @fallback != NULL, unless
+ * SDL_free(). The return value is never NULL if @fallback != NULL, unless
  * out of memory.
  **/
 char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback) {
@@ -178,7 +178,7 @@ error2:
  * to ~/Desktop.
  *
  * The return value is newly allocated and must be freed with
- * free().
+ * SDL_free().
  **/
 char *xdg_user_dir_lookup (const char *type){
   char *dir, *home_dir, *user_dir;

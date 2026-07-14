@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2014 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is free software: you can redistribute it and/or modify
+** mkxp is SDL_free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -22,8 +22,7 @@
 #include "rgssad.h"
 #include "boost-hash.h"
 
-#include <stdint.h>
-#include <string.h>
+#include <SDL3/SDL_stdinc.h>
 
 struct RGSS_entryData{
 	int64_t offset;
@@ -143,7 +142,7 @@ static PHYSFS_sint64 RGSS_ioRead(PHYSFS_Io *self, void *buffer, PHYSFS_uint64 le
 
 		/* Shift them back to normal */
 		dword >>= 8 * (offs % 4);
-		memcpy(bBufferP, &dword, preAlign);
+		SDL_memcpy(bBufferP, &dword, preAlign);
 
 		bBufferP += preAlign;
 
@@ -173,7 +172,7 @@ static PHYSFS_sint64 RGSS_ioRead(PHYSFS_Io *self, void *buffer, PHYSFS_uint64 le
 
 		/* Bytes are already aligned with magic */
 		dword ^= entry->currentMagic;
-		memcpy(bBufferP, &dword, postAlign);
+		SDL_memcpy(bBufferP, &dword, postAlign);
 	}
 
 	entry->currentOffset += toRead;
@@ -291,7 +290,7 @@ static bool verifyHeader(PHYSFS_Io *io, char version){
 	if (!IO_READ(io, header, sizeof(header)))
 		return false;
 
-	if (strcmp(header, RGSS_HEADER))
+	if (SDL_strcmp(header, RGSS_HEADER))
 		return false;
 
 	if (header[7] != version)

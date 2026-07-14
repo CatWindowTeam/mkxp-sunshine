@@ -130,15 +130,15 @@ static LPWSTR genCommandLine(){
 
     // Create the new string
     // (`".\.exe" ` == +9
-    LPWSTR newcmdline = (LPWSTR)malloc(sizeof(TEXT(GAME_LAUNCH_NAME))
-                                       + sizeof(WCHAR) * (wcslen(cmdline) - iFirstArg + 9));
+    LPWSTR newcmdline = (LPWSTR)SDL_malloc(sizeof(TEXT(GAME_LAUNCH_NAME))
+                                       + sizeof(WCHAR) * (SDL_wcslen(cmdline) - iFirstArg + 9));
     wsprintf(newcmdline, TEXT("\".\\" GAME_LAUNCH_NAME ".exe\" %s"), cmdline + iFirstArg);
     return newcmdline;
 }
 
 static bool launchChild(ProcessType *pid){
     STARTUPINFOW si;
-    memset(&si, 0, sizeof(si));
+    SDL_memset(&si, 0, sizeof(si));
     return CreateProcessW(TEXT(".\\" GAME_LAUNCH_NAME ".exe"),
                           genCommandLine(), NULL, NULL, TRUE, 0, NULL,
                           NULL, &si, pid);
@@ -221,7 +221,7 @@ static bool launchChild(ProcessType *pid){
         return true;  // we'll let the pipe fail if this didn't work.
 
     // we're the child.
-    GArgv[0] = strdup("./" GAME_LAUNCH_NAME);
+    GArgv[0] = SDL_strdup("./" GAME_LAUNCH_NAME);
     dbgpipe("Starting %s\n", GArgv[0]);
     execvp(GArgv[0], GArgv);
     // still here? It failed! Terminate, closing child's ends of the pipes.
@@ -320,7 +320,7 @@ static bool write3ByteCmd(PipeType fd, const uint8 b1, const uint8 b2, const uin
 
 static bool writeString(PipeType fd, ShimEvent event, const char *str){
     uint8 buf[256];
-    buf[0] = strlen(str) + 2;
+    buf[0] = SDL_strlen(str) + 2;
     buf[1] = (uint8) event;
     strcpy((char *) buf + 2, str);
     return writePipe(fd, buf, buf[0] + 1);
@@ -349,7 +349,7 @@ static bool writeAchievementSet(PipeType fd, const char *name, const bool enable
     *(ptr++) = enable ? 1 : 0;
     *(ptr++) = okay ? 1 : 0;
     strcpy((char *) ptr, name);
-    ptr += strlen(name) + 1;
+    ptr += SDL_strlen(name) + 1;
     buf[0] = (uint8) ((ptr-1) - buf);
     return writePipe(fd, buf, buf[0] + 1);
 } // writeAchievementSet
@@ -360,10 +360,10 @@ static bool writeAchievementGet(PipeType fd, const char *name, const int status,
     dbgpipe("Parent sending SHIMEVENT_GETACHIEVEMENT('%s', status %d, time " LLUFMT ").\n", name, status, (unsigned long long) time);
     *(ptr++) = (uint8) SHIMEVENT_GETACHIEVEMENT;
     *(ptr++) = (uint8) status;
-    memcpy(ptr, &time, sizeof (time));
+    SDL_memcpy(ptr, &time, sizeof (time));
     ptr += sizeof (time);
     strcpy((char *) ptr, name);
-    ptr += strlen(name) + 1;
+    ptr += SDL_strlen(name) + 1;
     buf[0] = (uint8) ((ptr-1) - buf);
     return writePipe(fd, buf, buf[0] + 1);
 } // writeAchievementGet
@@ -378,10 +378,10 @@ static bool writeStatThing(PipeType fd, const ShimEvent ev, const char *name, co
     uint8 *ptr = buf+1;
     *(ptr++) = (uint8) ev;
     *(ptr++) = okay ? 1 : 0;
-    memcpy(ptr, val, vallen);
+    SDL_memcpy(ptr, val, vallen);
     ptr += vallen;
     strcpy((char *) ptr, name);
-    ptr += strlen(name) + 1;
+    ptr += SDL_strlen(name) + 1;
     buf[0] = (uint8) ((ptr-1) - buf);
     return writePipe(fd, buf, buf[0] + 1);
 } // writeStatThing
@@ -581,7 +581,7 @@ static void processCommands(PipeType pipeParentRead, PipeType pipeParentWrite){
 
                 br -= cmdlen + 1;
                 if (br > 0)
-                    memmove(buf, buf+cmdlen+1, br);
+                    SDL_memmove(buf, buf+cmdlen+1, br);
             } // if
             else  // get more data.
             {
@@ -598,11 +598,11 @@ static void processCommands(PipeType pipeParentRead, PipeType pipeParentWrite){
 
 static bool setEnvironmentVars(PipeType pipeChildRead, PipeType pipeChildWrite){
     char buf[64];
-    snprintf(buf, sizeof (buf), LLUFMT, (unsigned long long) pipeChildRead);
+    SDL_snprintf(buf, sizeof (buf), LLUFMT, (unsigned long long) pipeChildRead);
     if (!setEnvVar("STEAMSHIM_READHANDLE", buf))
         return false;
 
-    snprintf(buf, sizeof (buf), LLUFMT, (unsigned long long) pipeChildWrite);
+    SDL_snprintf(buf, sizeof (buf), LLUFMT, (unsigned long long) pipeChildWrite);
     if (!setEnvVar("STEAMSHIM_WRITEHANDLE", buf))
         return false;
 

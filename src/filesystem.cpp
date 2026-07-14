@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is free software: you can redistribute it and/or modify
+** mkxp is SDL_free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -255,7 +255,7 @@ static void initReadOps(PHYSFS_File *handle, SDL_IOStream* &ops){
 
 static void strTolower(std::string &str){
 	for (size_t i = 0; i < str.size(); ++i)
-		str[i] = tolower(str[i]);
+		str[i] = SDL_tolower(str[i]);
 }
 
 // const Uint32 SDL_RWOPS_PHYSFS = SDL_RWOPS_UNKNOWN+10;
@@ -416,7 +416,7 @@ static PHYSFS_EnumerateCallbackResult fontSetEnumCB (void *data, const char *dir
 	size_t i;
 
 	for (i = 0; i < sizeof(lowExt)-1 && ext[i]; ++i)
-		lowExt[i] = tolower(ext[i]);
+		lowExt[i] = SDL_tolower(ext[i]);
 	lowExt[i] = '\0';
 
 	if (SDL_strcmp(lowExt, "ttf") && SDL_strcmp(lowExt, "otf") && SDL_strcmp(lowExt, "ttc"))
@@ -536,7 +536,7 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 
 	if (p->havePathCache)
 		for (size_t i = 0; i < len; ++i)
-			buffer[i] = tolower(buffer[i]);
+			buffer[i] = SDL_tolower(buffer[i]);
 
 	/* Find the deliminator separating directory and file name */
 	for (delim = buffer + len; delim > buffer; --delim)

@@ -34,7 +34,7 @@ static void loadImage(const char *name) {
     }
 
     // handle default as a special case, since we'll keep that image internally
-    if (strcmp(name, "default") == 0) {
+    if (SDL_strcmp(name, "default") == 0) {
         image_handle = LoadBitmapA(GetModuleHandleW(NULL), "default");
     }
     else {
@@ -46,7 +46,7 @@ static void loadImage(const char *name) {
         char* langCode = 0;
         char* emptyString = "\0";
         strcpy(imageName, name);
-        langCode = strchr(imageName, '_');
+        langCode = SDL_strchr(imageName, '_');
         if (langCode > 0) {
             // replace the code with 0 to null terminate the image name where this is
             // then use the rest of the string as the language code
@@ -169,8 +169,8 @@ void init_check_save(WCHAR* save_path) {
     fread(langbuf, 1, 16, savefile);
     fclose(savefile);
 
-    openbrace = strchr(langbuf, '[');
-    closebrace = strchr(langbuf, ']');
+    openbrace = SDL_strchr(langbuf, '[');
+    closebrace = SDL_strchr(langbuf, ']');
     if (openbrace && closebrace && openbrace < closebrace) {
       //we very probably have a language code here.
       //so, lets do some hacky string manipulation to
@@ -189,7 +189,7 @@ void init_check_save(WCHAR* save_path) {
 // so we need a gamepath, which should be saved in the registry
 boolean readGamePath() {
     // clear data path
-    memset(&DataPath[0], 0, sizeof(DataPath));
+    SDL_memset(&DataPath[0], 0, sizeof(DataPath));
     DWORD dataPathSize = sizeof(DataPath);
     
     HKEY key;

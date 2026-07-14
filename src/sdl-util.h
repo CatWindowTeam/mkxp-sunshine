@@ -101,7 +101,7 @@ private:
 		char *start = base;
 
 		if (eback() == base){
-			memmove(base, egptr() - pbSize, pbSize);
+			SDL_memmove(base, egptr() - pbSize, pbSize);
 			start += pbSize;
 		}
 		//size_t SDL_ReadIO(SDL_IOStream *context, void *ptr, size_t size);

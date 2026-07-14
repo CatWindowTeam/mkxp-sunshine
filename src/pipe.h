@@ -95,7 +95,7 @@ public:
 	{
 #ifdef _WIN32
 	OVERLAPPED overlapped;
-	memset(&overlapped, 0, sizeof(overlapped));
+	SDL_memset(&overlapped, 0, sizeof(overlapped));
 	if (!ReadFile(handle, buf, 1, NULL, &overlapped)){
 		if (GetLastError() == ERROR_IO_PENDING)
 			CancelIo(handle);

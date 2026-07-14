@@ -96,8 +96,8 @@ static void closePipe(PipeType fd){
 } /* closePipe */
 
 static char *getEnvVar(const char *key, char *buf, const size_t buflen){
-    const char *envr = getenv(key);
-    if (!envr || (strlen(envr) >= buflen))
+    const char *envr = SDL_getenv(key);
+    if (!envr || (SDL_strlen(envr) >= buflen))
         return NULL;
     strcpy(buf, envr);
     return buf;
@@ -145,11 +145,11 @@ static int initPipes(void){
 
     if (!getEnvVar("STEAMSHIM_READHANDLE", buf, sizeof (buf)))
         return 0;
-    GPipeRead = (PipeType) strtoull(buf, 0, 10);
+    GPipeRead = (PipeType) SDL_strtoull(buf, 0, 10);
 
     if (!getEnvVar("STEAMSHIM_WRITEHANDLE", buf, sizeof (buf)))
         return 0;
-    GPipeWrite = (PipeType) strtoull(buf, 0, 10);
+    GPipeWrite = (PipeType) SDL_strtoull(buf, 0, 10);
 
     return ((GPipeRead != NULLPIPE) && (GPipeWrite != NULLPIPE));
 } /* initPipes */
@@ -204,7 +204,7 @@ static const STEAMSHIM_Event *processEvent(const uint8 *buf, size_t buflen){
     const STEAMSHIM_EventType type = (STEAMSHIM_EventType) *(buf++);
     buflen--;
 
-    memset(&event, '\0', sizeof (event));
+    SDL_memset(&event, '\0', sizeof (event));
     event.type = type;
     event.okay = 1;
 
@@ -316,7 +316,7 @@ const STEAMSHIM_Event *STEAMSHIM_pump(void){
         const STEAMSHIM_Event *retval = processEvent(buf+1, evlen);
         br -= evlen + 1;
         if (br > 0)
-            memmove(buf, buf+evlen+1, br);
+            SDL_memmove(buf, buf+evlen+1, br);
         return retval;
     } /* if */
 
@@ -349,7 +349,7 @@ void STEAMSHIM_setAchievement(const char *name, const int enable){
     *(ptr++) = (uint8) SHIMCMD_SETACHIEVEMENT;
     *(ptr++) = enable ? 1 : 0;
     strcpy((char *) ptr, name);
-    ptr += strlen(name) + 1;
+    ptr += SDL_strlen(name) + 1;
     buf[0] = (uint8) ((ptr-1) - buf);
     writePipe(GPipeWrite, buf, buf[0] + 1);
 } /* STEAMSHIM_setAchievement */
@@ -361,7 +361,7 @@ void STEAMSHIM_getAchievement(const char *name){
     dbgpipe("Child sending SHIMCMD_GETACHIEVEMENT('%s').\n", name);
     *(ptr++) = (uint8) SHIMCMD_GETACHIEVEMENT;
     strcpy((char *) ptr, name);
-    ptr += strlen(name) + 1;
+    ptr += SDL_strlen(name) + 1;
     buf[0] = (uint8) ((ptr-1) - buf);
     writePipe(GPipeWrite, buf, buf[0] + 1);
 } /* STEAMSHIM_getAchievement */
@@ -379,11 +379,11 @@ static void writeStatThing(const ShimCmd cmd, const char *name, const void *val,
     *(ptr++) = (uint8) cmd;
     if (vallen)
     {
-        memcpy(ptr, val, vallen);
+        SDL_memcpy(ptr, val, vallen);
         ptr += vallen;
     } /* if */
     strcpy((char *) ptr, name);
-    ptr += strlen(name) + 1;
+    ptr += SDL_strlen(name) + 1;
     buf[0] = (uint8) ((ptr-1) - buf);
     writePipe(GPipeWrite, buf, buf[0] + 1);
 } /* writeStatThing */

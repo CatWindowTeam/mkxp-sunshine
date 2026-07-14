@@ -239,8 +239,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
 	p->journal = "_______.exe";
 #else
 	// Get language code
-	const char *lc_all = getenv("LC_ALL");
-	const char *lang = getenv("LANG");
+	const char *lc_all = SDL_getenv("LC_ALL");
+	const char *lang = SDL_getenv("LANG");
 	const char *code = (lc_all ? lc_all : lang);
 	if (code)
 	{
@@ -277,7 +277,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
 
 // Get documents path
 #ifdef __APPLE__
-	std::string path = std::string(getenv("HOME")) + "/Documents";
+	std::string path = std::string(SDL_getenv("HOME")) + "/Documents";
 	p->docsPath = path.c_str();
 	p->gamePath = path.c_str();
 	p->journal = "_______.app";
@@ -293,7 +293,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
 	Debug() << "[oneshot] Docs path    :" << p->docsPath;
 
 #ifdef unix_like
-	char const *xdg_current_desktop = getenv("XDG_CURRENT_DESKTOP");
+	char const *xdg_current_desktop = SDL_getenv("XDG_CURRENT_DESKTOP");
 	gtk_init(0, 0);
 
 	if (xdg_current_desktop == NULL)
@@ -303,7 +303,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
 	else
 	{
 		std::string desktop(xdg_current_desktop);
-		std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::tolower);
+		std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::SDL_tolower);
 		if (desktop.find("cinnamon") != std::string::npos)
 		{
 			desktopEnv = "cinnamon";

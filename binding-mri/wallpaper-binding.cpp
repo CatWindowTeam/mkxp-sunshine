@@ -5,6 +5,7 @@
 #include <map>
 #include <boost/algorithm/string/replace.hpp>
 
+#include <SDL3/SDL_stdinc.h>
 #include "etc.h"
 #include "sharedstate.h"
 #include "binding-util.h"
@@ -71,7 +72,7 @@
     			return;
 		}
 		if (desktop == "lxde"){
-			const char* homeC = std::getenv("HOME");
+			const char* homeC = SDL_getenv("HOME");
 			if (!homeC) return;
 			std::string home(homeC);
 			std::string path = home + "/.config/pcmanfm/LXDE/desktop-items-0.conf";
@@ -146,7 +147,7 @@
 			}
 		} else if (desktop == "kde") {
 			std::ifstream configFile;
-			configFile.open(std::string(getenv("HOME")) + "/.config/plasma-org.kde.plasma.desktop-appletsrc", std::ios::in);
+			configFile.open(std::string(SDL_getenv("HOME")) + "/.config/plasma-org.kde.plasma.desktop-appletsrc", std::ios::in);
 			if (configFile.is_open()) {
 				std::string line;
 				std::vector<std::string> sections;
@@ -211,7 +212,7 @@
 				desktop = "kde_error";
 			}
 		} else {
-			fallbackPath = std::string(getenv("HOME")) + "/Desktop/ONESHOT_hint.png";
+			fallbackPath = std::string(SDL_getenv("HOME")) + "/Desktop/ONESHOT_hint.png";
 		}
 	}
 #endif

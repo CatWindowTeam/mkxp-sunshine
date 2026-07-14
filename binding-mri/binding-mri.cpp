@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is free software: you can redistribute it and/or modify
+** mkxp is SDL_free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -248,7 +248,7 @@ RB_METHOD(mkxpRawKeyStates){
 	RB_UNUSED_PARAM;
 
 	VALUE str = rb_str_new(0, sizeof(EventThread::keyStates));
-	memcpy(RSTRING_PTR(str), EventThread::keyStates, sizeof(EventThread::keyStates));
+	SDL_memcpy(RSTRING_PTR(str), EventThread::keyStates, sizeof(EventThread::keyStates));
 
 	return str;
 }
@@ -468,7 +468,7 @@ static void runRMXPScripts(BacktraceData &btData){
 			char buf[512];
 			int len;
 
-			len = snprintf(buf, sizeof(buf), "%03ld:%s", i, scriptName);
+			len = SDL_snprintf(buf, sizeof(buf), "%03ld:%s", i, scriptName);
 
 			fname = newStringUTF8(buf, len);
 			btData.scriptNames.insert(buf, scriptName);
@@ -505,7 +505,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	char line[16];
 	std::string file(512, '\0');
 
-	char *p = s + strlen(s);
+	char *p = s + SDL_strlen(s);
 	char *e;
 
 	while (p != s)
@@ -535,7 +535,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	*e = ':';
 
 	/* Shrink to fit */
-	file.resize(strlen(file.c_str()));
+	file.resize(SDL_strlen(file.c_str()));
 	file = btData.scriptNames.value(file, file);
 
 	crash(Exception::MEOW, "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));

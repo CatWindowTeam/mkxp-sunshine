@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is free software: you can redistribute it and/or modify
+** mkxp is SDL_free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -72,20 +72,20 @@ static void printShaderLog(GLuint shader){
 	GLint logLength;
 	gl.GetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
 
-	std::string log(logLength, '\0');
-	gl.GetShaderInfoLog(shader, log.size(), 0, &log[0]);
+	std::string SDL_log(logLength, '\0');
+	gl.GetShaderInfoLog(shader, SDL_log.size(), 0, &SDL_log[0]);
 
-	Debug() << "Shader log:\n" << log;
+	Debug() << "Shader SDL_log:\n" << SDL_log;
 }
 
 static void printProgramLog(GLuint program){
 	GLint logLength;
 	gl.GetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
 
-	std::string log(logLength, '\0');
-	gl.GetProgramInfoLog(program, log.size(), 0, &log[0]);
+	std::string SDL_log(logLength, '\0');
+	gl.GetProgramInfoLog(program, SDL_log.size(), 0, &SDL_log[0]);
 
-	Debug() << "Program log:\n" << log;
+	Debug() << "Program SDL_log:\n" << SDL_log;
 }
 
 Shader::Shader(){

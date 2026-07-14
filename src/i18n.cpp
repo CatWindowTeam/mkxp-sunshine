@@ -70,7 +70,7 @@ void loadLanguageMetadata() {
 	// char line[256];
 	char line[1024];
 
-	languageMetadata = (LanguageFontAndSize**) calloc(MAX_LANGUAGES, sizeof(LanguageFontAndSize*));
+	languageMetadata = (LanguageFontAndSize**) SDL_calloc(MAX_LANGUAGES, sizeof(LanguageFontAndSize*));
 	FILE* fontsFile = fopen("Languages/internal/language_fonts.ini", "r");
 	if (fontsFile) {
 
@@ -125,12 +125,12 @@ void loadLanguageMetadata() {
 				char* indexOfFontSize = indexOfEquals + 1;
 
 				// remove new line from end of font size
-				char* indexOfNewLine = strchr(indexOfFontSize, '\n');
+				char* indexOfNewLine = SDL_strchr(indexOfFontSize, '\n');
 				if (indexOfNewLine) {
 					indexOfNewLine[0] = 0;
 				}
 
-				int fontSize = atoi(indexOfFontSize);
+				int fontSize = SDL_atoi(indexOfFontSize);
 
 				for (int i = 0; i < MAX_LANGUAGES; i++) {
 					// search for corresponding langCode in metadata array to populate font size in the appropriate metadata
@@ -201,7 +201,7 @@ void loadLocale(const char* locale) {
 
 				int lineLen = SDL_strlen(lineWithoutMsgid);
 
-				strdict[nStr] = (char*)malloc(lineLen + 1);
+				strdict[nStr] = (char*)SDL_malloc(lineLen + 1);
 				SDL_strlcpy(strdict[nStr], lineWithoutMsgid, sizeof(lineWithoutMsgid));
 
 				nStr++;

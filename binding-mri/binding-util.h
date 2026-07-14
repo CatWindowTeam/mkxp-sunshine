@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is free software: you can redistribute it and/or modify
+** mkxp is SDL_free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -24,7 +24,7 @@
 
 #include <ruby.h>
 //костыль ебаный сука
-#undef snprintf
+#undef SDL_snprintf
 #undef inline
 
 #include "exception.h"
@@ -167,14 +167,14 @@ static inline void _rb_define_module_function(VALUE module, const char *name, Ru
 	rb_define_module_function(module, name, RUBY_METHOD_FUNC(func), -1);
 }
 
-#define GUARD_EXC(exp) \
-{ try { exp } catch (const Exception &exc) { raiseRbExc(exc); } }
+#define GUARD_EXC(SDL_exp) \
+{ try { SDL_exp } catch (const Exception &exc) { raiseRbExc(exc); } }
 
-#define GFX_GUARD_EXC(exp)                                                         \
+#define GFX_GUARD_EXC(SDL_exp)                                                         \
 {\
 	GFX_LOCK; \
 	try {\
-		exp                                                                      \
+		SDL_exp                                                                      \
 	} catch (const Exception &exc) {\
 		GFX_UNLOCK; \
 		raiseRbExc(exc);                                                         \

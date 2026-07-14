@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is free software: you can redistribute it and/or modify
+** mkxp is SDL_free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -39,7 +39,7 @@
 #include "signals/signal.h"
 
 static float fwrap(float value, float range){
-	float res = fmod(value, range);
+	float res = SDL_fmod(value, range);
 	return res < 0 ? res + range : res;
 }
 
@@ -133,8 +133,8 @@ struct PlanePrivate{
 		int vph = sceneGeo.rect.h;
 
 		/* Amount the scaled bitmap is tiled (repeated) */
-		size_t tilesX = ceil((vpw - sw + wox) / sw) + 1;
-		size_t tilesY = ceil((vph - sh + woy) / sh) + 1;
+		size_t tilesX = SDL_ceil((vpw - sw + wox) / sw) + 1;
+		size_t tilesY = SDL_ceil((vph - sh + woy) / sh) + 1;
 
 		FloatRect tex = srcRect->toFloatRect();
 

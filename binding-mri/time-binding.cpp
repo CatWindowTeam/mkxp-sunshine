@@ -1,6 +1,6 @@
 #include <ruby.h>
 #include <time.h>
-#include <math.h>
+#include <SDL3/SDL_stdinc.h>
 
 static VALUE get_month(VALUE self) {
     time_t now = time(NULL);
@@ -24,7 +24,7 @@ static VALUE ctime_at(int argc, VALUE *argv, VALUE self){
 
     if (TYPE(v_sec) == T_FLOAT || rb_obj_is_kind_of(v_sec, rb_cFloat)) {
         dsec = NUM2DBL(v_sec);
-        sec = (long long) floor(dsec);
+        sec = (long long) SDL_floor(dsec);
         double frac = dsec - (double)sec;
         nsec = (long) llround(frac * 1e9);
         if (nsec >= 1000000000L) { sec += 1; nsec -= 1000000000L; }

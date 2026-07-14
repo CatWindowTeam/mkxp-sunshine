@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is free software: you can redistribute it and/or modify
+** mkxp is SDL_free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -34,7 +34,7 @@
 static inline int32_t readInt32(const char **dataP){
 	int32_t result;
 
-	memcpy(&result, *dataP, 4);
+	SDL_memcpy(&result, *dataP, 4);
 	*dataP += 4;
 
 	return result;
@@ -43,19 +43,19 @@ static inline int32_t readInt32(const char **dataP){
 static inline double readDouble(const char **dataP){
 	double result;
 
-	memcpy(&result, *dataP, 8);
+	SDL_memcpy(&result, *dataP, 8);
 	*dataP += 8;
 
 	return result;
 }
 
 static inline void writeInt32(char **dataP, int32_t value){
-	memcpy(*dataP, &value, 4);
+	SDL_memcpy(*dataP, &value, 4);
 	*dataP += 4;
 }
 
 static inline void writeDouble(char **dataP, double value){
-	memcpy(*dataP, &value, 8);
+	SDL_memcpy(*dataP, &value, 8);
 	*dataP += 8;
 }
 

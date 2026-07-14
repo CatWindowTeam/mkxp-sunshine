@@ -18,12 +18,12 @@ static void start(){
 	MultiByteToWideChar(CP_UTF8, 0, shState->config().gameFolder.c_str(), -1, gameFolder, MAX_PATH);
 	GetModuleFileNameW(NULL, path, MAX_PATH);
 	STARTUPINFOW si;
-	memset(&si, 0, sizeof(si));
+	SDL_memset(&si, 0, sizeof(si));
 	si.cb = sizeof(si);
 	PROCESS_INFORMATION pi;
 	std::wstring argString = std::wstring(L"oneshot.exe \"--gameFolder=") + gameFolder + L"\" --screenMode=true";
 	WCHAR *args = new WCHAR[argString.size() + 1];
-	memcpy(args, argString.c_str(), (argString.size() + 1) * sizeof(WCHAR));
+	SDL_memcpy(args, argString.c_str(), (argString.size() + 1) * sizeof(WCHAR));
 	CreateProcessW(path, args, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 	delete [] args;
 #else
@@ -66,7 +66,7 @@ RB_METHOD(screenSet){
 	rb_get_args(argc, argv, "z", &imageName RB_ARG_END);
 	if (!ipc.isOpen())
 		start();
-	ipc.write(imageName, strlen(imageName) + 1);
+	ipc.write(imageName, SDL_strlen(imageName) + 1);
 	return Qnil;
 }
 

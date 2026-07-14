@@ -81,7 +81,7 @@ set(MAIN_HEADERS
 	src/define.h
 	src/signals/signal.h
 	src/signals/signalconnection.h
-	src/signals/rubyDispatcher.h
+	src/signals/rubydispatcher.h
 )
 
 set(MAIN_SOURCE
@@ -128,7 +128,7 @@ set(MAIN_SOURCE
 	src/modloader.cpp
 	src/sunshine.cpp
 	src/lightmap.cpp
-	src/signals/rubyDispatcher.cpp
+	src/signals/rubydispatcher.cpp
 )
 
 if(WIN32)

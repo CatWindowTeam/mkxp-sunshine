@@ -55,7 +55,7 @@ void crash(Exception::Type t, const char *fmt, ...){
 	char *buf = (char*)SDL_malloc((size_t)len + 1);
 	SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
 	va_end(args);
-	SDL_snprintf(msg, sizeof msg, "Error occured! Error message: %s\n\n Want to create a crash log? You can share the crash log with the developers and help resolve the issue.", buf);
+	SDL_snprintf(msg, sizeof msg, "Error occured! Error message: %s\n\n Want to create a crash SDL_log? You can share the crash SDL_log with the developers and help resolve the issue.", buf);
 	SDL_MessageBoxData messageboxdata = {
 	    .flags = SDL_MESSAGEBOX_ERROR,
 	    .window = NULL,
@@ -111,8 +111,8 @@ void crash(Exception::Type t, const char *fmt, ...){
 				}catch(const std::exception& e){
 					o << "Detected OS: " << e.what() << std::endl;
 				}
-				if(!getenv("XDG_CURRENT_DESKTOP") == NULL){
-					o << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << getenv("XDG_CURRENT_DESKTOP") << std::endl;
+				if(!SDL_getenv("XDG_CURRENT_DESKTOP") == NULL){
+					o << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << SDL_getenv("XDG_CURRENT_DESKTOP") << std::endl;
 				}
 				#ifdef __ANDROID__
 					o << "Android API version: " << android_get_device_api_level() << std::endl;
@@ -130,7 +130,7 @@ void crash(Exception::Type t, const char *fmt, ...){
 					o << "Emscripten start address of the stack: " << emscripten_stack_get_base() << std::endl;
 					o << "Emscripten end address of the stack: " << emscripten_stack_get_end() << std::endl;
 					o << "Emscripten current stack pointer: " << emscripten_stack_get_current() << std::endl;
-					o << "Emscripten number of free bytes left on stack: " << emscripten_stack_get_free() << std::endl;
+					o << "Emscripten number of SDL_free bytes left on stack: " << emscripten_stack_get_free() << std::endl;
 				#elif __PSP__
 					o << "PSPdev MIPS Stack Trace: " << int pspDebugGetStackTrace() << std::endl;
 				#endif

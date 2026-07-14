@@ -94,14 +94,14 @@ RB_METHOD(journalSet){
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);
 	// Record message
 	SDL_LockMutex(mutex);
-	message_len = strlen(name);
+	message_len = SDL_strlen(name);
 	strcpy((char*)message_buffer, name);
 	if (message_len > 0) {
 		// in the case where journal is being sent empty string
 		// do not append the language suffix, because empty string
 		// is the signifier to terminate the journal
 		strcpy((char*)message_buffer + message_len, (char*)lang_buffer);
-		message_len += strlen((char*)lang_buffer);
+		message_len += SDL_strlen((char*)lang_buffer);
 	}
 	SDL_UnlockMutex(mutex);
 
@@ -162,7 +162,7 @@ RB_METHOD(journalActive){
 
 void journalBindingInit(){
 	mutex = SDL_CreateMutex();
-	memset((char*)lang_buffer, 0, BUFFER_SIZE);
+	SDL_memset((char*)lang_buffer, 0, BUFFER_SIZE);
 	lang_buffer[0] = '_';
 #if defined __linux
 	mkfifo(PIPE_PATH.c_str(), 0666);

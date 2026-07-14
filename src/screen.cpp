@@ -56,7 +56,7 @@ int screenMain(Config &conf){
 
 		// Change shape
 		if (readMessage(ipc, messageBuf, sizeof(messageBuf))) {
-			if (strcmp(messageBuf, "END") == 0)
+			if (SDL_strcmp(messageBuf, "END") == 0)
 				break;
 			std::string imgname = conf.gameFolder + "/Journal/" + messageBuf + ".png";
 			SDL_DestroySurface(shape);

@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is free software: you can redistribute it and/or modify
+** mkxp is SDL_free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -204,7 +204,7 @@ static void setGamePathInRegistry() {
 			WarnMsg("Unable to open registry.");
 		}
 		else {
-			DWORD dataSize = (strlen(dataDir) + 1) * sizeof(char);
+			DWORD dataSize = (SDL_strlen(dataDir) + 1) * sizeof(char);
 			if (RegSetValueEx(key, TEXT("GameDirectory"), 0, REG_SZ, (LPBYTE)dataDir, dataSize) != ERROR_SUCCESS){
 				WarnMsg("Unable to set GameDirectory registry value");
 			}

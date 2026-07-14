@@ -6,7 +6,9 @@
 #include "eventthread.h"
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_stdinc.h>
 #include <boost/crc.hpp>
+#include <stdlib.h>
 
 RB_METHOD(oneshotSetYesNo){
 	RB_UNUSED_PARAM;
@@ -71,11 +73,11 @@ RB_METHOD(oneshotShake){
 	int absx, absy;
 	SDL_GetWindowPosition(shState->rtData().window, &absx, &absy);
 	int state;
-	srand(time(NULL));
+	SDL_srand(time(NULL));
 	for (int i = 0; i < 60; ++i) {
 		int max = 60 - i;
-		int x = rand() % (max * 2) - max;
-		int y = rand() % (max * 2) - max;
+		int x = SDL_rand(RAND_MAX) % (max * 2) - max;
+		int y = SDL_rand(RAND_MAX) % (max * 2) - max;
 		SDL_SetWindowPosition(shState->rtData().window, absx + x, absy + y);
 		rb_eval_string_protect("sleep 0.02", &state);
 	}
