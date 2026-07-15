@@ -1,6 +1,6 @@
 # mkxp-sunshine
 
-This is a specialized fork of [mkxp-oneshot](https://github.com/elizagamedev/mkxp-oneshot) designed for OneShot: sunshine mod.
+This is a specialized fork of [mkxp-oneshot](https://github.com/elizagamedev/mkxp-oneshot) designed for OneShot: Sunshine mod.
 Target of sunshine mod - improve original game.
 
 # xScripts.rxdata

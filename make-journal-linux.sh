@@ -1,5 +1,6 @@
 #!/bin/bash -eu
 
+
 if [ $# -lt 2 ]; then
   echo "usage: make-journal-linux.sh SOURCE_PATH OUTPUT_DIR"
   exit 1

@@ -336,8 +336,6 @@ int main(int argc, char *argv[]){
 	 * dealing with icons; don't interfere with them */
 #ifdef unix_like
 	setupWindowIcon(conf, win);
-#elif __EMSCRIPTEN__
-	Debug() << "meow";
 #else
 	(void) setupWindowIcon;
 #endif

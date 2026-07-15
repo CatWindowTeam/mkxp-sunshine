@@ -10,6 +10,7 @@ Artists:
 * DesMo
 * Обси
 * DepressedTWM
+* K1RMAN
 
 Testers:
 * Rubik
