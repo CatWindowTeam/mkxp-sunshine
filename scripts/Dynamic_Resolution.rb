@@ -41,7 +41,7 @@ module Graphics
   def self.adapted_file(path, extention = ".png")
     file_tag = RESOLUTIONS[Settings[:resolution] || 999]&.[](:file_tag) || ""
     if File.exist?(path + file_tag + extention)
-      path + file_tag
+      return path + file_tag
     end
     path
   end

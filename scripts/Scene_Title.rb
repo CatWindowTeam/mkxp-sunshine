@@ -5,8 +5,9 @@
 #==============================================================================
 
 class Scene_Title
-  MENU_X = Graphics.width - 150
-  MENU_Y = Graphics.height - 100
+  MENU_X = 150
+  MENU_Y = 100
+  ENTRY_HEIGHT = 25
   SDLVer = "#{Sunshine::SDLVersion_major}.#{Sunshine::SDLVersion_minor}.#{Sunshine::SDLVersion_micro}"
   SunshineVer = "0.1.1-dev"
   
@@ -54,8 +55,10 @@ class Scene_Title
     end
     @sprite.x = Graphics.width / 2
     @sprite.y = Graphics.height / 2
-    @sprite.ox = @sprite.bitmap.width / 2
-    @sprite.oy = @sprite.bitmap.height / 2
+    px = (Graphics.width / 1920.0)
+    py = (Graphics.height / 1080.0)
+    @sprite.ox = @sprite.bitmap.width / 2 * (0.5 * (1.0 - px) + px)
+    @sprite.oy = @sprite.bitmap.height / 2 * (1.3 * (1.0 - py) + py)
 
     RPG::Mod.exec_hooks("hooks/Scene_Title/init", binding)
 
@@ -71,19 +74,26 @@ class Scene_Title
     # Create/render menu options
     @menu = Sprite.new(@viewport)
     @menu.z += 1
-    @menu.bitmap = Bitmap.new(Graphics.width, Graphics.height)
-    @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
-    @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
-    @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
+    @menu.bitmap = Bitmap.new(MENU_X, MENU_Y)
+    @menu.bitmap.draw_text(0, 0, MENU_X, ENTRY_HEIGHT - 1, tr("Start"))
+    @menu.bitmap.draw_text(0, ENTRY_HEIGHT, MENU_X, ENTRY_HEIGHT - 1, tr("Settings"))
+    @menu.bitmap.draw_text(0, ENTRY_HEIGHT * 2, MENU_X, ENTRY_HEIGHT - 1, tr("Exit"))
+    if $game_switches[160] && $game_switches[152]
+        @menu.bitmap.draw_text(0, ENTRY_HEIGHT * 3, 150, 24, tr("..."))
+    end
+    @menu.x = Graphics.width - MENU_X
+    @menu.y = Graphics.height - MENU_Y
     
     @debug = Sprite.new(@viewport)
+    @debug.x = 5
+    @debug.y = 5
     @debug.z += 1
     @debug.visible = Settings[:debug_text_scene_title] || false
-    @debug.bitmap = Bitmap.new(Graphics.width, Graphics.height)
-    @debug.bitmap.draw_text(5, 5, 200, 20, tr("Ruby #{RUBY_VERSION}"))
-    @debug.bitmap.draw_text(5, 25, 200, 20, tr("SDL #{SDLVer}"))
-    @debug.bitmap.draw_text(5, 45, 200, 20, tr("Sunshine #{SunshineVer}"))
-    @debug.bitmap.draw_text(5, 65, 200, 20, tr("sec_#{Sunshine::SECURITYSTATE}"))
+    @debug.bitmap = Bitmap.new(200, ENTRY_HEIGHT * 6)
+    @debug.bitmap.draw_text(0, 0, 200, ENTRY_HEIGHT, tr("Ruby #{RUBY_VERSION}"))
+    @debug.bitmap.draw_text(0, ENTRY_HEIGHT, 200, ENTRY_HEIGHT, tr("SDL #{SDLVer}"))
+    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 2, 200, ENTRY_HEIGHT, tr("Sunshine #{SunshineVer}"))
+    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 3, 200, ENTRY_HEIGHT, tr("sec_#{Sunshine::SECURITYSTATE}"))
     jit_text = "JIT: unsupported"
     if defined?(RubyVM::YJIT) && RubyVM::YJIT.enabled?
       jit_text = "JIT: YJIT"
@@ -92,29 +102,40 @@ class Scene_Title
     elsif defined?(RubyVM::RJIT) && RubyVM::RJIT.enabled?
       jit_text = "JIT: RJIT"
     end
-    @debug.bitmap.draw_text(5, 85, 200, 20, tr(jit_text))
+    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 4, 200, ENTRY_HEIGHT, tr(jit_text))
     if ModLoader::IS_ENABLED
-      @debug.bitmap.draw_text(5, 65, 200, 20, tr("Mods loaded: #{ModLoader::COUNT}"))
-    end
-	
-    if $game_switches[160] && $game_switches[152]
-        @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
+      @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 5, 200, ENTRY_HEIGHT, tr("Mods loaded: #{ModLoader::COUNT}"))
     end
 
     Language.register_text_sprite(self.class.name + "_contents", @menu.bitmap)
 
     # Make cursor graphic
     @cursor = Sprite.new(@viewport)
-    @cursor.zoom_x = @cursor.zoom_y = 2
-    @cursor.bitmap
-    @cursor.z += 2
     @cursor.bitmap = RPG::Cache.menu('cursor')
-    @cursor.x = MENU_X - 12
-    @cursor.y = MENU_Y + (20 - @cursor.bitmap.height) / 2
+    @cursor.zoom_x = @cursor.zoom_y = 2
+    @cursor.z += 2
+    @cursor.x = Graphics.width - MENU_X - 12
+    @cursor.y = Graphics.height - MENU_Y + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2 - 2
 	
     # Initialize cursor position
     @cursor_pos = 0.0
-    
+
+    @update_connection = Graphics.viewport_resized do |w, h|
+      @viewport.rect.width = w
+      @viewport.rect.height = h
+      
+      @menu.x = w - MENU_X
+      @menu.y = h - MENU_Y
+      @cursor.x = w - MENU_X - 12
+      @cursor.y = ((h - MENU_Y).to_f + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2.0 + ENTRY_HEIGHT * @cursor_pos - 2)
+      
+      @sprite.x = w / 2
+      @sprite.y = h / 2
+      px = (Graphics.width / 1920.0)
+      py = (Graphics.height / 1080.0)
+      @sprite.ox = @sprite.bitmap.width / 2 * (0.5 * (1.0 - px) + px)
+      @sprite.oy = @sprite.bitmap.height / 2 * (1.3 * (1.0 - py) + py)
+    end
 
     # Play title BGM
     if File.exist?("badend.lock")
@@ -145,6 +166,7 @@ class Scene_Title
     # Prepare for transition
     Graphics.freeze
     # Dispose of title graphic
+    @update_connection.disconnect
     @sprite.bitmap.dispose
     @sprite.dispose
     @menu.bitmap.dispose
@@ -176,7 +198,7 @@ class Scene_Title
 
     # Handle cursor movement
     if !@window_settings_title.visible
-      @cursor.y = (MENU_Y.to_f + (20.0 - @cursor.bitmap.height.to_f) / 2.0 + 25.5 * @cursor_pos) * 0.65 + @cursor.y.to_f * 0.35
+      @cursor.y = ((Graphics.height - MENU_Y).to_f + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2.0 + ENTRY_HEIGHT * @cursor_pos - 2) * 0.65 + @cursor.y.to_f * 0.35
       update_cursor = false
       if Input.trigger?(Input::UP)
         if @cursor_pos > 0
