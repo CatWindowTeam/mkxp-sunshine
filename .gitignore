@@ -60,3 +60,4 @@ test.sh
 test2.sh
 
 /compile_commands.json
+/.cache
