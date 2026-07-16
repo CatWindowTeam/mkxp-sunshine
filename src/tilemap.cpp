@@ -363,7 +363,7 @@ struct TilemapPrivate {
 			elem.zlayers[i] = new ZLayer(this, viewport);
 
 		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &TilemapPrivate::prepare);
-		viewpUpdateConnection = shState->windowSignals.resized.Connect([&](int w, int h){
+		viewpUpdateConnection = shState->graphicsSignals.resized.Connect([&](int w, int h){
 			shState->rubyDispatcher().invoke([&, w, h]{
 				if (this->viewport->isDisposed()){
 					Debug() << "Warning: resize updating of disposed tilemap, disconnecting";

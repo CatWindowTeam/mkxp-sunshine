@@ -67,7 +67,7 @@ struct LightMapPrivate{
 		updateSrcRectCon();
 
 		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &LightMapPrivate::prepare);
-		bitmapUpdateConnection = shState->windowSignals.resized.Connect([&](int w, int h){
+		bitmapUpdateConnection = shState->graphicsSignals.resized.Connect([&](int w, int h){
 			shState->rubyDispatcher().invoke([&, w, h]{
 				bitmap = new Bitmap(w, h);
 				bitmap->ensureNonMega();
