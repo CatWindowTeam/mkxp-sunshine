@@ -48,11 +48,10 @@ class Window_NameInput < Window_Base
     @ok_text = "OK"
     @char_w = 28
     @char_h = 32
-    RPG::Mod.exec_hooks("hooks/Window_NameInput/init", binding)
   end
   def init
     # Create dimension information
-    @table_size = @character_tables[0].first.size
+    @table_size = @character_tables[0].size
     @table_width = @table_size / @table_height
     @start_x = ((width - 32) - @table_width * @char_w) / 2
     @start_y = ((height - 32) - (@table_height + 1) * @char_h + BUTTON_BUFFER) / 2
