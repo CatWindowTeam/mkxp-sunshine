@@ -68,3 +68,4 @@ Dynamic resolution support (WIP)
 Rewrited to use SDL3 libc methods instead default
 Removed useless debug logs
 Glen reworked
+GLLogger /n bug dix
