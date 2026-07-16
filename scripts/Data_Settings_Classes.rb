@@ -18,16 +18,19 @@ class Window_Settings
     attr_reader :viewport
     attr_reader :offset
 
-    def initialize(viewport, offset_y)
+    def initialize(viewport, offset_y, screen = 0, index = 0)
+      Window_Settings.send(:remove_const, :PARAMETER_WIDTH)
+      Window_Settings.const_set(:PARAMETER_WIDTH, (Graphics.width - 640) / 2 + 512) # костыль бля
+
       @viewport = viewport
-      @screen = 0
-      @index = 0
+      @screen = screen
+      @index = index
       @opacity = 255
       @offset = offset_y
       @waiting_for_key = false
       @wait_timer = 0
 
-      @visible_x = 0
+      @visible_x = @screen * Graphics.width
       @visible_y = offset_y
       @x = (Graphics.width - PARAMETER_WIDTH) / 2
       @y = offset_y
@@ -36,7 +39,7 @@ class Window_Settings
       @selection_sprite.bitmap = Bitmap.new(PARAMETER_WIDTH + 16, PARAMETER_HEIGHT)
       @selection_sprite.bitmap.fill_rect(Rect.new(0, 0, PARAMETER_WIDTH + 16, PARAMETER_HEIGHT), Color.new(255, 255, 255, 64))
       @selection_sprite.x = @x - 8
-      @selection_sprite.y = @offset
+      @selection_sprite.y = @index * PARAMETER_HEIGHT + @y
       @selection_sprite.blend_type = 1
       @selection_sprite.z = 1
 

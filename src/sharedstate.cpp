@@ -57,7 +57,7 @@ struct SharedStatePrivate{
 	Scene *screen;
 
 	RubyDispatcher rubyDispatcher;
-	RenderDispatcher renderDispatcher;
+	MainDispatcher mainDispatcher;
 
 	FileSystem fileSystem;
 
@@ -100,7 +100,7 @@ struct SharedStatePrivate{
 	    : bindingData(0),
 	      sdlWindow(threadData->window),
 		  rubyDispatcher(),
-		  renderDispatcher(),
+		  mainDispatcher(),
 	      fileSystem(threadData->config.allowSymlinks),
 	      eThread(*threadData->ethread),
 	      rtData(*threadData),
@@ -200,7 +200,7 @@ GSATT(void*, bindingData)
 GSATT(SDL_Window*, sdlWindow)
 GSATT(Scene*, screen)
 GSATT(RubyDispatcher&, rubyDispatcher)
-GSATT(RenderDispatcher&, renderDispatcher)
+GSATT(MainDispatcher&, mainDispatcher)
 GSATT(FileSystem&, fileSystem)
 GSATT(EventThread&, eThread)
 GSATT(RGSSThreadData&, rtData)

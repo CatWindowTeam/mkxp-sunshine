@@ -17,10 +17,7 @@ module RPG
   module Cache
     @cache = {}
     def self.load_bitmap(folder_name, filename, hue = 0)
-      path = folder_name + filename
-      if File.exist?(folder_name + filename + Graphics::RESOLUTION_ASPECT + ".png")
-        path += Graphics::RESOLUTION_ASPECT
-      end
+      path = Graphics.adapted_file(folder_name + filename)
       if not @cache.include?(path) or @cache[path].disposed?
         if filename != ""
           @cache[path] = Bitmap.new(path)

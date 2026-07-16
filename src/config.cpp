@@ -72,11 +72,11 @@ void Config::read(int argc, char *argv[]){
 	PO_DESC(printFPS, bool, false) \
 	PO_DESC(fullscreen, bool, false) \
 	PO_DESC(fixedAspectRatio, bool, true) \
-	PO_DESC(AspectPreset, int, 1) \
+	/*PO_DESC(AspectPreset, int, 1)*/ \
 	PO_DESC(smoothScaling, bool, false) \
 	PO_DESC(vsync, bool, true) \
-	PO_DESC(defScreenW, int, 640) \
-	PO_DESC(defScreenH, int, 480) \
+	PO_DESC(defScreenW, int, 0) \
+	PO_DESC(defScreenH, int, 0) \
 	PO_DESC(windowTitle, std::string, "") \
 	PO_DESC(commonDataPath, std::string, "") \
 	PO_DESC(Modloader.ModsDirPath, std::string,"mods") \
@@ -181,6 +181,10 @@ void Config::read(int argc, char *argv[]){
 		game.title = "OneShot: Sunshine";
 	game.scripts = "Data/xScripts.rxdata";
 
+	resolutionOverridden = defScreenW > 0 || defScreenH > 0;
+	defScreenW = defScreenW <= 0 ? 640 : defScreenW;
+	defScreenH = defScreenH <= 0 ? 480 : defScreenH;
+/*
 	#define ASPECT_SELECT(id, x, y, rubyConst) \
 		case id: { \
 			defScreenW = x; \
@@ -202,7 +206,7 @@ void Config::read(int argc, char *argv[]){
 		}
 
 	#undef ASPECT_SELECT
-
+*/
 #ifdef STEAM
 	/* Override fullscreen config if Big Picture */
 	if (const char *env = SDL_getenv("SteamTenfoot")){

@@ -12,7 +12,6 @@ class Language
     def set(lc)
       @data = nil
       @tr = nil
-      script = nil
       [lc.full.to_s, lc.lang.to_s].each do |name|
         path = "Languages/#{name}.po"
         if FileTest.exist?(path)
@@ -35,36 +34,36 @@ class Language
       str.chars.each do |c|
         if not string_began
           string_began = true if c == '"'
-		  next
+          next
         end
-		
+
         next if c == "\n"
         next if c == "\r"
-	
+
         if not escape
           break if c == '"'
           if c == '\\'
-        	escape = true
-			next
-		  end
-		else
-		  escape = false
-		  case c
-		  when 'n'
-			unescaped.push("\n")
-		  when 'r'
-			unescaped.push("\r")
-		  else
-			unescaped.push(c)
-		  end
-		  next
-		end
-	
+          	escape = true
+            next
+          end
+        else
+          escape = false
+          case c
+          when 'n'
+            unescaped.push("\n")
+          when 'r'
+            unescaped.push("\r")
+          else
+            unescaped.push(c)
+          end
+          next
+        end
+
         unescaped.push(c)
-	  end
-	
-	  return unescaped.join('')
-	end
+      end
+
+      return unescaped.join('')
+    end
 
     def load_pot(path)
       msgid = nil

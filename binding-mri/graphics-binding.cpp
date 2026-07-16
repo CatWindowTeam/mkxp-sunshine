@@ -297,5 +297,5 @@ void graphicsBindingInit(){
 	INIT_GRA_PROP_BIND( Frameskip,  "frameskip"   );
 	
 	const Config &conf = shState->rtData().config;
-	rb_define_const(module, "RESOLUTION_ASPECT", rb_str_new_cstr(conf.AspectPresetRubyConst.c_str()));
+	rb_define_const(module, "RESOLUTION_OVERRIDDEN", rb_bool_new(conf.resolutionOverridden));
 }

@@ -8,6 +8,7 @@ module Settings
 
         # Video
         :fullscreen                  => false,
+        :resolution                  => 0,
         :colorblind                  => false,
         :frameskip                   => true,
         :twm_shader                  => true,
@@ -141,6 +142,13 @@ class Window_Settings
         :type => :bool,
         :name => tr('Fullscreen'),
         :parameter => :fullscreen
+      },
+      {
+        :type => :enum,
+        :name => tr('Resolution'),
+        :default => 0,
+        :parameter => Graphics::RESOLUTION_OVERRIDDEN ? nil : :resolution,
+        :values => Graphics::RESOLUTION_OVERRIDDEN ? ["Resolution is redefined via config"] : Graphics.resolutions_names_list
       },
       {
         :type => :bool,

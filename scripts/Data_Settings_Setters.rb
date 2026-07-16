@@ -20,6 +20,17 @@ module Settings
       def fullscreen(value)
         Graphics.fullscreen = $console = value
       end
+      def resolution(value)
+        if (!Graphics::RESOLUTION_OVERRIDDEN)
+          res_data = Graphics::RESOLUTIONS&.[](value) || {:width => 480, :height => 640}
+          old_width = Graphics.width
+          old_height = Graphics.height
+          new_width = res_data[:width]
+          new_height = res_data[:height]
+          Graphics.move_screen(Graphics.x - (new_width - old_width) / 2, Graphics.y - (new_height - old_height) / 2)
+          Graphics.resize_screen(new_width, new_height)
+        end
+      end
       def colorblind(value)
         $game_switches[252] = value
       end

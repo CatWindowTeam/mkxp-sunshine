@@ -3,7 +3,7 @@ module Settings
 
   class << self
     def [](k)
-      @data[k]
+      @data&.[](k)
     end
 
     def []=(k, v)
