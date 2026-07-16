@@ -1,19 +1,19 @@
 # Displays Ed message boxes
 class Ed_Message
-  HEIGHT = 160
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @sprite_bg = Sprite.new(@viewport)
-    @sprite_bg.bitmap = Bitmap.new(Graphics.width, Graphics.height)
-    @sprite_bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0, 128))
+    @sprite_bg.bitmap = Bitmap.new(1, 1)
+    @sprite_bg.bitmap.fill_rect(0, 0, 1, 1, Color.new(0, 0, 0, 128))
+    @sprite_bg.zoom_x = Graphics.width
+    @sprite_bg.zoom_y = Graphics.height
     @sprite_text = Sprite.new(@viewport)
-    @contents = Bitmap.new(Graphics.width, HEIGHT)
+    @contents = Bitmap.new(Graphics.width, Graphics.height)
     Language.register_text_sprite(self.class.name + "_contents", @contents)
     @sprite_text.bitmap = @contents
-    @sprite_text.y = (Graphics.height - HEIGHT) / 2
     @sprite_bg.z = 0
     @sprite_text.z = 1
     @viewport.z = 9999
@@ -28,12 +28,26 @@ class Ed_Message
     @fade_out = false
     @fade_in_text = false
     @fade_out_text = false
+
+    @resize_connection = Graphics.viewport_resized do |w, h|
+      @viewport.rect.width = w
+      @viewport.rect.height = h
+
+      @sprite_bg.zoom_x = w
+      @sprite_bg.zoom_y = h
+      
+      @contents.dispose
+      @contents = Bitmap.new(w, h)
+      @sprite_text.bitmap = @contents
+    end
+
     RPG::Mod.exec_hooks("hooks/Ed_Message/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose
   #--------------------------------------------------------------------------
   def dispose
+    @resize_connection.disconnect
     terminate_message
     $game_temp.message_window_showing = false
     @contents.dispose
@@ -93,7 +107,7 @@ class Ed_Message
           widths << x
           x = 0
           y += 1
-          break if y >= 4
+          #break if y >= 4
         else
           newline = true
         end
@@ -105,7 +119,7 @@ class Ed_Message
           widths << x
           x = 0
           y += 1
-          break if y >= 4
+          #break if y >= 4
         end
 
         # Append word to list
@@ -116,14 +130,14 @@ class Ed_Message
         end
         x += width + spacewidth
       end
-      break if y >= 4
+      #break if y >= 4
     end
-    widths << x if y < 4
+    widths << x# if y < 4
 
     # Prepare renderer
     @contents.clear
     @contents.font.color = Color.new(255, 255, 255, 255)
-    y_top = (HEIGHT - widths.length * 24) / 2
+    y_top = (Graphics.height - widths.length * 24) / 2
     x = (Graphics.width - widths[0]) / 2
     y = 0
 
