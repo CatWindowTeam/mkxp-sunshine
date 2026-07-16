@@ -180,6 +180,9 @@ void EventThread::process(RGSSThreadData &rtData){
 	SDL_GetWindowPosition(win, &rtData.ethread->winX, &rtData.ethread->winY);
 
 	while (true) {
+		if (shState != nullptr)
+			shState->mainDispatcher().process();
+
 		if (!SDL_WaitEvent(&event)) {
 			Debug() << "[EventThread::process] Event error:\n" << SDL_GetError();
 			break;

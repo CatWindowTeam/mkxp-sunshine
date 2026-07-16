@@ -1,11 +1,11 @@
-#include "renderdispatcher.h"
+#include "maindispatcher.h"
 
-void RenderDispatcher::invoke(std::function<void()> fn){
+void MainDispatcher::invoke(std::function<void()> fn){
     std::lock_guard lock(mutex);
     queue.push(std::move(fn));
 }
 
-void RenderDispatcher::process(){
+void MainDispatcher::process(){
     std::queue<std::function<void()>> local;
 
     {

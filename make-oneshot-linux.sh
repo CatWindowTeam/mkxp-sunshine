@@ -1,5 +1,4 @@
 #!/bin/sh
-#set -e
 set -euo pipefail
 cd `dirname $0`
 

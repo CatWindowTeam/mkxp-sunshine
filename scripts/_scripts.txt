@@ -31,6 +31,8 @@ Game_Light
 Settings
 Input
 Gamepad_Colors
+Dynamic_Resolution
+Dynamic_Light
 
 Sprite_Character
 Sprite_Picture
@@ -103,7 +105,6 @@ Doc_Message
 Desktop_Message
 Credits_Message
 Particles
-DynamicLight
 
 EdText
 Main

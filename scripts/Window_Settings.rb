@@ -10,8 +10,10 @@ class Window_Settings
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @viewport.z = 9998
     @bg = Sprite.new(@viewport)
-    @bg.bitmap = Bitmap.new(Graphics.width, Graphics.height)
-    @bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0, 196))
+    @bg.bitmap = Bitmap.new(1, 1)
+    @bg.bitmap.fill_rect(0, 0, 1, 1, Color.new(0, 0, 0, 196))
+    @bg.zoom_x = Graphics.width
+    @bg.zoom_y = Graphics.height
     @title = Sprite.new(@viewport)
     @title.bitmap = Bitmap.new(320, 20)
     @title.bitmap.font.size = 20
@@ -27,9 +29,11 @@ class Window_Settings
       if self.visible
         @viewport.rect.width = w
         @viewport.rect.height = h
-        @bg.bitmap.dispose
-        @bg.bitmap = Bitmap.new(w, h)
-        @bg.bitmap.fill_rect(0, 0, w, h, Color.new(0, 0, 0, 196))
+        @bg.zoom_x = w
+        @bg.zoom_y = h
+        #@bg.bitmap.dispose
+        #@bg.bitmap = Bitmap.new(w, h)
+        #@bg.bitmap.fill_rect(0, 0, w, h, Color.new(0, 0, 0, 196))
         @title.x = (w - @title.bitmap.width) / 2
         init_content
       else
@@ -50,11 +54,15 @@ class Window_Settings
   end
 
   def init_content
+    old_screen = 0
+    old_index = 0
     if (@content)
+      old_screen = @content.screen
+      old_index = @content.index
       @content.dispose
     end
 
-    @content = SettingsContent.new(@viewport, TITLE_TOP_MARGIN + TITLE_MARGIN + 100)
+    @content = SettingsContent.new(@viewport, TITLE_TOP_MARGIN + TITLE_MARGIN + 100, old_screen, old_index)
 
     DATA.each_with_index do |(screen_title, parameters_info), screen_index|
       @content.add_screen(screen_title)

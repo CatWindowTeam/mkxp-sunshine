@@ -4,9 +4,9 @@
 #include <mutex>
 #include <queue>
 
-class RenderDispatcher{
+class MainDispatcher{
 public:
-    RenderDispatcher() {};
+    MainDispatcher() {};
 
     void invoke(std::function<void()> fn);
     void process();

@@ -82,6 +82,7 @@ set(MAIN_HEADERS
 	src/signals/signal.h
 	src/signals/signalconnection.h
 	src/signals/rubydispatcher.h
+	src/signals/maindispatcher.h
 )
 
 set(MAIN_SOURCE
@@ -129,6 +130,7 @@ set(MAIN_SOURCE
 	src/sunshine.cpp
 	src/lightmap.cpp
 	src/signals/rubydispatcher.cpp
+	src/signals/maindispatcher.cpp
 )
 
 if(WIN32)

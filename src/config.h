@@ -32,6 +32,7 @@ struct Config{
 	bool printFPS;
 	bool fullscreen;
 	bool fixedAspectRatio;
+	bool resolutionOverridden;
 	bool Windows_AllocConsole;
 	bool smoothScaling;
 	bool vsync;
@@ -51,8 +52,8 @@ struct Config{
 	int maxTextureSize;
 
 	std::string gameFolder;
-	int AspectPreset;
-	std::string AspectPresetRubyConst;
+	//int AspectPreset;
+	//std::string AspectPresetRubyConst;
 	bool allowSymlinks;
 	bool pathCache;
 
