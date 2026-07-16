@@ -40,12 +40,14 @@ struct GLDebugLoggerPrivate{
 	void writeTimestamp(){
 		//https://stackoverflow.com/questions/9628637/how-can-i-get-rid-of-n-from-string-in-c
 		time(&timestamp);
-		char foo[strlen(ctime(&timestamp)) - 1] = ctime(&timestamp);
-		*stream << "[GLDEBUG] [" << foo << "]";
+		char *foo = ctime(&timestamp);
+		if (strlen(foo) > 0) // i dont want segfault, im afraid of it >m<
+			foo[strlen(foo) - 1] = '\0';
+		*stream << "[GLDEBUG] [" << foo << "] ";
 	}
 
 	void writeLine(const char *line){
-		*stream << line << "/n";
+		*stream << line << "\n";
 		stream->flush();
 	}
 };
