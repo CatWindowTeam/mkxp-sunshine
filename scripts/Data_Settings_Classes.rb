@@ -483,8 +483,8 @@ class Window_Settings
     end
 
     def get_display_value()
-      percent = (self.value.to_f - @min_value.to_f) / @max_value.to_f
-      (percent * 100.0).to_i.to_s + "%" 
+      percent = (self.value - @min_value) * 100 / @max_value
+      percent.to_s + "%" 
     end
 
     def redraw()
