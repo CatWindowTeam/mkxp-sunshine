@@ -318,7 +318,7 @@ class Window_Settings
     end
 
     def value
-      if (Settings.has?(@parameter))
+      if @parameter && Settings.has?(@parameter)
         @value = Settings[@parameter]
       end
       @value

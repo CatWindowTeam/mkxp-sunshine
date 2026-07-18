@@ -75,3 +75,4 @@ Barrens reworked
 Solstice credits fixed
 Deleted unused maps
 cafe map size fixed
+Big performance fix
