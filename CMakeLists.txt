@@ -6,7 +6,6 @@ include(FindPackageHandleStandardArgs)
 option(STEAM "Build for Steam" OFF)
 option(DEBUG "Debug mode" ON)
 option(NATIVE "Use native instructions(for local use only)" OFF)
-option(MODLOADER "Build with modloader" ON)
 
 #Configuration
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
@@ -158,10 +157,8 @@ elseif(BSD)
     list(APPEND MAIN_SOURCE src/xdg-user-dir-lookup.c)
     list(APPEND MAIN_HEADERS src/xdg-user-dir-lookup.h)
 	set(STEAM OFF)
-	set(MODLOADER OFF)
 elseif(EMSCRIPTEN)
 	set(STEAM OFF)
-	set(MODLOADER OFF)
   	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
 elseif(APPLE)
   		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
@@ -367,11 +364,9 @@ find_package(Ruby 3.0 REQUIRED COMPONENTS Development)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
-if(MODLOADER)
-	find_package(OpenSSL CONFIG REQUIRED COMPONENTS Crypto)
-	pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
-	pkg_check_modules(LIBZIP REQUIRED libzip)
-endif()
+find_package(OpenSSL CONFIG REQUIRED COMPONENTS Crypto)
+pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
+pkg_check_modules(LIBZIP REQUIRED libzip)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE src include ${PIXMAN_INCLUDE_DIR} ${SIGC2_INCLUDE_DIRS}
@@ -384,12 +379,8 @@ physfs ${PIXMAN_LIBRARY} ${SIGC2_LIBRARIES} ${PLATFORM_LIBRARIES}
 ${Ruby_LIBRARIES} Boost::boost Boost::chrono ${Boost_LIBRARIES}
 ${VORBISFILE_LIBRARIES} ZLIB::ZLIB ${PLATFORM_LIBS})
 
-if(MODLOADER)
-	target_include_directories(${PROJECT_NAME} PRIVATE ${LIBZIP_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
-	target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBZIP_LIBRARIES} OpenSSL::Crypto)
-else()
-
-endif()
+target_include_directories(${PROJECT_NAME} PRIVATE ${LIBZIP_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBZIP_LIBRARIES} OpenSSL::Crypto)
 
 if(STEAM)
 	add_subdirectory(steamshim_parent)

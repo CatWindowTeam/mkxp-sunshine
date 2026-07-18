@@ -66,6 +66,12 @@
 	#include "gamecontrollerdb.txt.xxd"
 #endif
 
+#ifdef ps2
+	#ifdef DEBUG
+		SDL_PS2_SKIP_IOP_RESET();
+	#endif
+#endif
+
 static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
 	rtData->rgssErrorMsg = msg;
 	rtData->ethread->requestTerminate();
@@ -215,26 +221,31 @@ static void setGamePathInRegistry() {
 	//TODO handle this for Linux/Mac
 }
 int main(int argc, char *argv[]){
+    #if dos
+	__djgpp_nearptr_enable();
+    #endif
+
     SecurityManagerInit();
     startTime = boost::chrono::high_resolution_clock::now();
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
-	SDL_SetHint(SDL_HINT_APP_ID, "OneshotSunshine");
-	SDL_SetHint(SDL_HINT_APP_NAME, "Oneshot: Sunshine");
-	SDL_SetHint(SDL_HINT_AUDIO_DEVICE_STREAM_NAME, "Oneshot: sunshine");
-	SDL_SetHint(SDL_HINT_AUDIO_DEVICE_STREAM_ROLE, "Game");
+	SDL_SetAppMetadata("Oneshot: Sunshine", "0.1.1", "com.catwindowteam.sunshine");
 	//X11 work on *BSD,Solaris too!
 	#if unix_like
 		SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
 		#if SDL_VERSION_ATLEAST(3, 4, 10)
 			SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
 		#endif
-	#elif defined(WIN32)
+	#elif windows
 		SDL_SetHint(SDL_HINT_WINDOWS_RAW_KEYBOARD, "1");
-	#elif __ANDROID__
+	#elif android
 		SDL_SetHint(SDL_HINT_ANDROID_ALLOW_PERSISTENT_FOLDER_ACCESS, "1");
-	#elif defined(__DJGPP__) || defined(__DOS__) || defined(__MSDOS__)
+	#elif vita
+		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
+	#elif ps2
+		SFL_SetHint(SDL_HINT_PS2_GS_MODE, "NTSC");
+	#elif dos
 		SDL_SetHint(SDL_HINT_DOS_ALLOW_DIRECT_FRAMEBUFFER, "1");
 	#endif
 	/* initialize SDL first */
@@ -273,7 +284,7 @@ int main(int argc, char *argv[]){
 	/* now we load the config */
 	Config conf;
 	conf.read(argc, argv);
-	#if defined WIN32
+	#if windows
 		if(conf.Windows_AllocConsole == true){
     			AllocConsole();
     			freopen("CONOUT$", "w", stdout);

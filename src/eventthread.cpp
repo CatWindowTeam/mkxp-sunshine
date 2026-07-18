@@ -32,19 +32,16 @@
 #include <SDL3/SDL_thread.h>
 #include <SDL3/SDL_touch.h>
 #include <SDL3/SDL_rect.h>
+#include <SDL3/SDL_stdinc.h>
 
 #include "sharedstate.h"
 #include "graphics.h"
 #include "al-util.h"
 #include "debugwriter.h"
-
 #include "oneshot.h"
-
-#include <SDL3/SDL_stdinc.h>
 
 #include <cstdio>
 #include <map>
-
 #include <iostream>
 
 typedef void (ALC_APIENTRY *LPALCDEVICEPAUSESOFT) (ALCdevice *device);
@@ -106,9 +103,7 @@ bool EventThread::allocUserEvents(){
 }
 
 EventThread::EventThread()
-    : fullscreen(false),
-      showCursor(true)
-{}
+    : fullscreen(false), showCursor(true){}
 
 void EventThread::process(RGSSThreadData &rtData){
 	SDL_Event event;
@@ -128,7 +123,7 @@ void EventThread::process(RGSSThreadData &rtData){
 	fps.displayCounter = 0;
 	fps.acc = 0;
 	fps.accDiv = 0;
-	
+
 	if (rtData.config.printFPS)
 		fps.sendUpdates.set();
 
@@ -157,7 +152,7 @@ void EventThread::process(RGSSThreadData &rtData){
       		jId = ids[i];
 		}
 
-		printf("Gamepad connected: %s", SDL_GetGamepadName(gc));
+		Debug() << "Gamepad connected: " << SDL_GetGamepadName(gc);
 
     	if (i > 0) {
       		SDL_CloseGamepad(gamepd);
@@ -269,7 +264,10 @@ void EventThread::process(RGSSThreadData &rtData){
 
 		/* Now process the rest */
 		switch (event.type){
-		case SDL_EVENT_QUIT :
+		case SDL_EVENT_LOW_MEMORY:
+			rb_gc();
+			break;
+		case SDL_EVENT_QUIT:
 			if (rtData.allowExit) {
 				terminate = true;
 				Debug() << "[EventThread::process] EventThread termination requested";
