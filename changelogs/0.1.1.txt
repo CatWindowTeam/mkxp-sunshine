@@ -1,15 +1,12 @@
-Added 16:9 panorams support
-Added Panorams/green/maize_16.png
 mri-bindings cleanup
 RAM usage optimizations
 *BSD and emscriptein specific fixes
 On windows use of RAW input events by default
-Maps changes
 Added JIT support
 Reload on F5(in debug)
 Scene_Map optimization
 TPtL aray limit set to 300
-New 16:9 arts
+Arts in bigger resolution
 Optimized and extended debugwriter.h
 Water shader optimized
 Mouse scrolling support
@@ -17,17 +14,15 @@ Small ruby optimizations
 Boost+Ruby sprintf error fix
 New settings menu
 Extended debug mode configuration
-Added TracePoimt based profiler
+Added TracePoint based profiler
 Added April fools enforce mode
 Added way to control WM shader via settings
 Optimized game loading
 Fasttravel settings
 Removed useless hooks
-Added way to set Led color on gamepads
 Switches code optimized
 Added eval protection for events interpritator and for Characters scripts
 Added in-game keybindings settings
-Added switch 400(defines 4:3 or 16:9 is used)
 Removed depth limit for common events
 Fixed bug "Андрей"
 Fixed film
@@ -42,7 +37,7 @@ Fixed audio bug
 Добавлены отражения от плитки в стартовом доме
 Игра переведена на другое разрешение экрана и поддержку большего кол-во аспектов мониторов
 Fixed performance issues
-Android support patches
+Android support patches(WIP)
 Some Pancake episode specific changes
 squares when dialog skipping fixed
 Mirrors!
@@ -53,7 +48,7 @@ crash() function update
 Start house reworked
 removed SDL joystick support
 fixed SECCOMP blocking UDEV sockets
-Some Barens changes
+Barrens rework(WIP)
 dev room!
 MacOS support in SecurityManager
 Changed default 16:9 window resolution
@@ -67,5 +62,15 @@ main viewport resize, main window resize and move signals bindings for ruby
 Dynamic resolution support (WIP)
 Rewrited to use SDL3 libc methods instead default
 Removed useless debug logs
-Glen reworked
+Glen reworked(WIP)
 GLLogger \n bug fix
+LXDE support added
+DOS porting patches(WIP) (lol)
+PS2 porting patches(WIP) (lol)
+PSVita porting patches(WIP)
+other platforms porting patches
+Added new location
+Extended Office location
+Reworked Refuge(WIP)
+Updated Game quit common event
+Solstice credits updated
