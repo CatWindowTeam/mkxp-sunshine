@@ -198,39 +198,35 @@ class Window_Settings
     ],
     tr("Gameplay") => [
       {
+        :type => :enum,
+        :name => tr('Default movement'),
+        :parameter => :movement,
+        :values => [tr("Walk"), tr("Run")]
+      },
+      {
         :type => :bool,
         :name => tr('Skip Text (R)'),
         :parameter => :skip_text
       },
       {
         :type => :bool,
-        :name => tr('Purple message box for Entity(WIP)'),
+        :name => tr('Purple message box for Entity(Not implemented)'),
         :parameter => :en_purple_messagebox
       },
       {
         :type => :bool,
-        :name => tr('Enforce april fools(WIP)'),
+        :name => tr('Enforce april fools'),
         :parameter => :enforce_april_fools
       },
       {
         :type => :bool,
-        :name => tr('True Memory Mode(WIP)'),
+        :name => tr('True Memory Mode(Not implemented)'),
         :parameter => :true_memory_mode
       },
       {
         :type => :bool,
-        :name => tr('Enable Pre-Solstice update content(WIP)'),
-        :parameter => :pre_solstice_update_content
-      },
-      {
-        :type => :bool,
-        :name => tr('Dejavu mode(WIP)'),
+        :name => tr('Dejavu mode(Not implemented)'),
         :parameter => :dejavu_mode
-      },
-      {
-        :type => :bool,
-        :name => tr('Demo mode(WIP)'),
-        :parameter => :demo
       },
       {
         :type => :bool,
