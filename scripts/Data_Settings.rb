@@ -26,9 +26,7 @@ module Settings
         :en_purple_messagebox        => true,
         :enforce_april_fools         => false,
         :true_memory_mode            => false,
-        :pre_solstice_update_content => false,
         :dejavu_mode                 => false,
-        :demo                        => false,
         :oneshot_mode                => false,
 
         # Advanced
@@ -224,9 +222,12 @@ class Window_Settings
         :parameter => :true_memory_mode
       },
       {
-        :type => :bool,
-        :name => tr('Dejavu mode(Not implemented)'),
-        :parameter => :dejavu_mode
+        :type => :switch,
+        :name => tr("Dejavu mode"),
+        :switch => 399,
+        :parameter => :dejavu_mode,
+        :default => false,
+        :invert => false,
       },
       {
         :type => :bool,
@@ -240,13 +241,6 @@ class Window_Settings
         :name => tr('Control LED lighting on gamepads'),
         :parameter => :gamepad_led
       },
-      #{
-      #  :type => :slider,
-      #  :name => tr("Gamepad deadzone"),
-      #  :parameter => :gamepad_deadzone,
-      #  :min => 0,
-      #  :max => 10
-      #},
       { :type => :sep, :name => tr("Walk") },
       {
         :type => :key,
