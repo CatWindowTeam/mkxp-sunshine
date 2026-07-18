@@ -301,6 +301,8 @@ void DynamicLightShader::setWallMapResolution(int x, int y){
 }
 
 void DynamicLightShader::setCameraPosition(int x, int y){
+	cameraPositionCache.x = x;
+	cameraPositionCache.y = y;
 	gl.Uniform2f(u_cameraPosition, x, y);
 }
 
@@ -310,21 +312,31 @@ void DynamicLightShader::setTileMapOffset(int x, int y){
 
 void DynamicLightShader::setLightSources(std::vector<LightSource> sources){
 	int count = 0;
-	for(int i = 0; i < sources.size(); i++) {
+	int screenWidth = shState->graphics().width();
+	int screenHeight = shState->graphics().height();
+	for(int i = 0; i < sources.size(); ++i) {
 		if (count < 64) {
-			if (!sources[i].hasEffect())
+			LightSource source = sources[i];
+			if (!source.hasEffect())
 				continue;
+
+			if (source.x * 32 < cameraPositionCache.x - source.radius * 32
+			 || source.y * 32 < cameraPositionCache.y - source.radius * 32
+			 || source.x * 32 > cameraPositionCache.x + source.radius * 32 + screenWidth
+			 || source.y * 32 > cameraPositionCache.y + source.radius * 32 + screenHeight
+			) continue;
+
 			gl.Uniform4f(u_lightSources + count,
-				sources[i].x,
-				sources[i].y,
-				sources[i].power,
-				sources[i].radius
+				source.x,
+				source.y,
+				source.power,
+				source.radius
 			);
 			gl.Uniform4f(u_lightSourcesColors + count,
-				sources[i].color.red / 255.0,
-				sources[i].color.green / 255.0,
-				sources[i].color.blue / 255.0,
-				sources[i].color.alpha / 255.0
+				source.color.red / 255.0,
+				source.color.green / 255.0,
+				source.color.blue / 255.0,
+				source.color.alpha / 255.0
 			);
 			count++;
 		}
