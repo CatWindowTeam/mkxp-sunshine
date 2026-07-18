@@ -117,6 +117,7 @@ public:
 
 private:
 	GLint u_wallMapTexture, u_wallMapResolution, u_cameraPosition, u_tileMapOffset, u_lightSources, u_lightSourcesCount, u_lightSourcesColors, u_ambientLight;
+	Vec2i cameraPositionCache;
 };
 
 class SimpleColorShader : public ShaderBase{

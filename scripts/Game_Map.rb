@@ -23,6 +23,12 @@ class Game_Map
   attr_accessor :battleback_name          # battleback file name
   attr_accessor :display_x                # display x-coordinate * 128
   attr_accessor :display_y                # display y-coordinate * 128
+  attr_accessor :display_clip_bottom
+  attr_accessor :display_clip_left
+  attr_accessor :display_clip_right
+  attr_accessor :display_clip_top
+  attr_accessor :display_x_fix
+  attr_accessor :display_y_fix
   attr_accessor :wrap_x                   # display x-coordinate * 128 for wrap
   attr_accessor :wrap_y                   # display y-coordinate * 128 for wrap
   attr_accessor :need_refresh             # refresh request flag
@@ -83,6 +89,12 @@ class Game_Map
     @map_id = 0
     @display_x = 0
     @display_y = 0
+    @display_clip_bottom = 999999
+    @display_clip_left = 0
+    @display_clip_right = 999999
+    @display_clip_top = 0
+    @display_x_fix = nil
+    @display_y_fix = nil
   end
   #--------------------------------------------------------------------------
   # * Setup
@@ -118,6 +130,12 @@ class Game_Map
     # Initialize displayed coordinates
     @display_x = 0
     @display_y = 0
+    @display_clip_bottom = 999999
+    @display_clip_left = 0
+    @display_clip_right = 999999
+    @display_clip_top = 0
+    @display_x_fix = nil
+    @display_y_fix = nil
     @wrap_x = 0
     @wrap_y = 0
     # Clear refresh request flag
@@ -263,36 +281,40 @@ class Game_Map
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_down(distance)
-    if self.height < Graphics.height / 28
-    	@display_y = self.height / 2
-    else
-    	@display_y = [@display_y + distance, (self.height - Graphics.height / 28) * 128].min
-    end
+    return if @display_y_fix
+
+    @display_y = [@display_y + distance, (self.height - Graphics.height / 32 - 1) * 128].min
+    @display_y = @display_y.clamp((@display_clip_top * 128.0).to_i, (@display_clip_bottom * 128.0).to_i - Graphics.height * 4)
   end
   #--------------------------------------------------------------------------
   # * Scroll Left
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_left(distance)
+    return if @display_x_fix
+    
     @display_x = [@display_x - distance, 0].max
+    @display_x = @display_x.clamp((@display_clip_left * 128.0).to_i, (@display_clip_right * 128.0).to_i - Graphics.width * 4)
   end
   #--------------------------------------------------------------------------
   # * Scroll Right
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_right(distance)
+    return if @display_x_fix
+    
   	@display_x = [@display_x + distance, (self.width - (Graphics.width / 32)) * 128].min
+    @display_x = @display_x.clamp((@display_clip_left * 128.0).to_i, (@display_clip_right * 128.0).to_i - Graphics.width * 4)
   end
   #--------------------------------------------------------------------------
   # * Scroll Up
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_up(distance)
-    if self.height < Graphics.height / 28
-      @display_y = self.height / 2
-    else
-   	  @display_y = [@display_y - distance, 0].max
-    end
+    return if @display_y_fix
+
+   	@display_y = [@display_y - distance, 0].max
+    @display_y = @display_y.clamp((@display_clip_top * 128.0).to_i, (@display_clip_bottom * 128.0).to_i - Graphics.height * 4)
   end
   #--------------------------------------------------------------------------
   # * Determine Valid Coordinates
@@ -486,6 +508,11 @@ class Game_Map
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
+    @display_clip_top = @display_clip_top || 0
+    @display_clip_left = @display_clip_left || 0
+    @display_clip_right = @display_clip_right || 999999
+    @display_clip_bottom = @display_clip_bottom || 999999
+
     # Refresh map if necessary
     if $game_map.need_refresh
       refresh
@@ -534,6 +561,17 @@ class Game_Map
       d = @fog_opacity_duration
       @fog_opacity = (@fog_opacity * (d - 1) + @fog_opacity_target) / d
       @fog_opacity_duration -= 1
+    end
+    
+    if @display_x_fix
+      @display_x = (@display_x_fix * 128.0).to_i - Graphics.width * 2
+    else
+      @display_x = @display_x.clamp((@display_clip_left * 128.0).to_i, (@display_clip_right * 128.0).to_i - Graphics.width * 4)
+    end
+    if @display_y_fix
+      @display_y = (@display_y_fix * 128.0).to_i - Graphics.height * 2
+    else
+      @display_y = @display_y.clamp((@display_clip_top * 128.0).to_i, (@display_clip_bottom * 128.0).to_i - Graphics.height * 4)
     end
   end
 

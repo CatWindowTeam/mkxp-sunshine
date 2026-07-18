@@ -74,3 +74,8 @@ Extended Office location
 Reworked Refuge(WIP)
 Updated Game quit common event
 Solstice credits updated
+Removed text size limit in Ed Message
+Rewrited Linux build scripts
+Deleted unused maps
+Game maps size fixed
+Big performance fix

@@ -78,7 +78,7 @@ class Window_Settings
             @content.add_parameter(screen_title, BoolParameter.new(@content, screen_index, parameter_index,
               parameter_info[:name], parameter_info[:parameter], parameter_info[:default]))
           when :switch
-            @content.add_parameter(screen_title, BoolParameter.new(@content, screen_index, parameter_index,
+            @content.add_parameter(screen_title, SwitchPatameter.new(@content, screen_index, parameter_index,
               parameter_info[:name], parameter_info[:parameter], parameter_info[:default], parameter_info[:switch], parameter_info[:invert]))
           when :int
             @content.add_parameter(screen_title, IntParameter.new(@content, screen_index, parameter_index,
@@ -91,7 +91,7 @@ class Window_Settings
               parameter_info[:name], parameter_info[:parameter], parameter_info[:default], parameter_info[:step], parameter_info[:min], parameter_info[:max]))
           when :enum
             @content.add_parameter(screen_title, EnumParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:parameter], 0, parameter_info[:values]))
+              parameter_info[:name], parameter_info[:parameter], parameter_info[:default], parameter_info[:values]))
           when :sep
             @content.add_parameter(screen_title, Separator.new(@content, screen_index, parameter_index,
               parameter_info[:name]))

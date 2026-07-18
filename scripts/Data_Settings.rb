@@ -26,9 +26,6 @@ module Settings
         :en_purple_messagebox        => true,
         :enforce_april_fools         => false,
         :true_memory_mode            => false,
-        :pre_solstice_update_content => false,
-        :dejavu_mode                 => false,
-        :demo                        => false,
         :oneshot_mode                => false,
 
         # Advanced
@@ -139,16 +136,16 @@ class Window_Settings
     ],
     tr("Video") => [
       {
-        :type => :bool,
-        :name => tr('Fullscreen'),
-        :parameter => :fullscreen
-      },
-      {
         :type => :enum,
         :name => tr('Resolution'),
         :default => 0,
         :parameter => Graphics::RESOLUTION_OVERRIDDEN ? nil : :resolution,
         :values => Graphics::RESOLUTION_OVERRIDDEN ? ["Resolution is redefined via config"] : Graphics.resolutions_names_list
+      },
+      {
+        :type => :bool,
+        :name => tr('Fullscreen'),
+        :parameter => :fullscreen
       },
       {
         :type => :bool,
@@ -171,11 +168,6 @@ class Window_Settings
         :name => tr('Dynamic Light'),
         :parameter => :light,
       },
-      #{
-      #  :type => :bool,
-      #  :name => tr('Shadows'),
-      #  :parameter => :light_shadows
-      #},
     ],
     tr("UI") => [
       {
@@ -193,10 +185,16 @@ class Window_Settings
         :type => :enum,
         :name => tr('FastTravel UI'),
         :parameter => :fasttravel_ui,
-        :values => [tr("Original"), tr("WME")]
+        :values => [tr("Original"), tr("WME (WIP)")]
       },
     ],
     tr("Gameplay") => [
+      {
+        :type => :enum,
+        :name => tr('Default movement'),
+        :parameter => :movement,
+        :values => [tr("Walk"), tr("Run")]
+      },
       {
         :type => :bool,
         :name => tr('Skip Text (R)'),
@@ -204,37 +202,22 @@ class Window_Settings
       },
       {
         :type => :bool,
-        :name => tr('Purple message box for Entity(WIP)'),
+        :name => tr('Purple message box for Entity(Not implemented)'),
         :parameter => :en_purple_messagebox
       },
       {
         :type => :bool,
-        :name => tr('Enforce april fools(WIP)'),
+        :name => tr('Enforce april fools'),
         :parameter => :enforce_april_fools
       },
       {
         :type => :bool,
-        :name => tr('True Memory Mode(WIP)'),
+        :name => tr('True Memory Mode(Not implemented)'),
         :parameter => :true_memory_mode
       },
       {
         :type => :bool,
-        :name => tr('Enable Pre-Solstice update content(WIP)'),
-        :parameter => :pre_solstice_update_content
-      },
-      {
-        :type => :bool,
-        :name => tr('Dejavu mode(WIP)'),
-        :parameter => :dejavu_mode
-      },
-      {
-        :type => :bool,
-        :name => tr('Demo mode(WIP)'),
-        :parameter => :demo
-      },
-      {
-        :type => :bool,
-        :name => tr('Freeware Mode(!)'),
+        :name => tr('Freeware Mode(!, WIP)'),
         :parameter => :oneshot_mode
       },
     ],
@@ -244,13 +227,6 @@ class Window_Settings
         :name => tr('Control LED lighting on gamepads'),
         :parameter => :gamepad_led
       },
-      #{
-      #  :type => :slider,
-      #  :name => tr("Gamepad deadzone"),
-      #  :parameter => :gamepad_deadzone,
-      #  :min => 0,
-      #  :max => 10
-      #},
       { :type => :sep, :name => tr("Walk") },
       {
         :type => :key,

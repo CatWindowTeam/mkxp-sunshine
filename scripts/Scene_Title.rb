@@ -115,7 +115,7 @@ class Scene_Title
     @cursor.zoom_x = @cursor.zoom_y = 2
     @cursor.z += 2
     @cursor.x = Graphics.width - MENU_X - 12
-    @cursor.y = Graphics.height - MENU_Y + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2 - 2
+    @cursor.y = Graphics.height - MENU_Y + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2 - 3
 	
     # Initialize cursor position
     @cursor_pos = 0.0
@@ -127,7 +127,7 @@ class Scene_Title
       @menu.x = w - MENU_X
       @menu.y = h - MENU_Y
       @cursor.x = w - MENU_X - 12
-      @cursor.y = ((h - MENU_Y).to_f + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2.0 + ENTRY_HEIGHT * @cursor_pos - 2)
+      @cursor.y = ((h - MENU_Y).to_f + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2.0 + ENTRY_HEIGHT * @cursor_pos - 3)
       
       @sprite.x = w / 2
       @sprite.y = h / 2
@@ -198,7 +198,7 @@ class Scene_Title
 
     # Handle cursor movement
     if !@window_settings_title.visible
-      @cursor.y = ((Graphics.height - MENU_Y).to_f + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2.0 + ENTRY_HEIGHT * @cursor_pos - 2) * 0.65 + @cursor.y.to_f * 0.35
+      @cursor.y = ((Graphics.height - MENU_Y).to_f + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2.0 + ENTRY_HEIGHT * @cursor_pos - 3) * 0.65 + @cursor.y.to_f * 0.35
       update_cursor = false
       if Input.trigger?(Input::UP)
         if @cursor_pos > 0
