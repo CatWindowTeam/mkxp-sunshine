@@ -26,7 +26,6 @@ module Settings
         :en_purple_messagebox        => true,
         :enforce_april_fools         => false,
         :true_memory_mode            => false,
-        :dejavu_mode                 => false,
         :oneshot_mode                => false,
 
         # Advanced
@@ -169,11 +168,6 @@ class Window_Settings
         :name => tr('Dynamic Light'),
         :parameter => :light,
       },
-      #{
-      #  :type => :bool,
-      #  :name => tr('Shadows'),
-      #  :parameter => :light_shadows
-      #},
     ],
     tr("UI") => [
       {
@@ -222,16 +216,8 @@ class Window_Settings
         :parameter => :true_memory_mode
       },
       {
-        :type => :switch,
-        :name => tr("Dejavu mode"),
-        :switch => 399,
-        :parameter => :dejavu_mode,
-        :default => false,
-        :invert => false,
-      },
-      {
         :type => :bool,
-        :name => tr('Freeware Mode(!)'),
+        :name => tr('Freeware Mode(!, WIP)'),
         :parameter => :oneshot_mode
       },
     ],

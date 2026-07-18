@@ -60,7 +60,6 @@ class Scene_Map
     @blackfade.z = 9999
     color = GamepadMapColors::COLORS[$game_map.map_id] || GamepadMapColors::SUN
     Input.set_led(color.red, color.green, color.blue)
-    RPG::Mod.exec_hooks("hooks/Scene_Map/main", binding)
     
     # Transition run
     Graphics.transition
