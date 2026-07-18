@@ -139,16 +139,16 @@ class Window_Settings
     ],
     tr("Video") => [
       {
-        :type => :bool,
-        :name => tr('Fullscreen'),
-        :parameter => :fullscreen
-      },
-      {
         :type => :enum,
         :name => tr('Resolution'),
         :default => 0,
         :parameter => Graphics::RESOLUTION_OVERRIDDEN ? nil : :resolution,
         :values => Graphics::RESOLUTION_OVERRIDDEN ? ["Resolution is redefined via config"] : Graphics.resolutions_names_list
+      },
+      {
+        :type => :bool,
+        :name => tr('Fullscreen'),
+        :parameter => :fullscreen
       },
       {
         :type => :bool,
@@ -193,7 +193,7 @@ class Window_Settings
         :type => :enum,
         :name => tr('FastTravel UI'),
         :parameter => :fasttravel_ui,
-        :values => [tr("Original"), tr("WME")]
+        :values => [tr("Original"), tr("WME (WIP)")]
       },
     ],
     tr("Gameplay") => [

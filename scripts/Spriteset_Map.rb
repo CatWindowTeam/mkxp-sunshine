@@ -203,7 +203,7 @@ class Spriteset_Map
         else
           if @panorama_name == "dark_water"
             @panorama.shader = Shader::Water
-            @panorama.color.set(0, 0, 127, 0)
+            @panorama.color.set(0, 0, 255, 0)
             @panorama.tone.set(0, 0, 255, 63)
             @panorama.blend_type = 1
           elsif @panorama_name == "green_water"
