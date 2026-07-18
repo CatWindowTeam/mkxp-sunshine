@@ -71,3 +71,4 @@ Glen reworked
 GLLogger \n bug fix
 Removed text size limit in Ed Message
 Rewrited Linux build scripts
+Big performance fix
