@@ -26,9 +26,6 @@ module Settings
         :en_purple_messagebox        => true,
         :enforce_april_fools         => false,
         :true_memory_mode            => false,
-        :pre_solstice_update_content => false,
-        :dejavu_mode                 => false,
-        :demo                        => false,
         :oneshot_mode                => false,
 
         # Advanced
@@ -171,11 +168,6 @@ class Window_Settings
         :name => tr('Dynamic Light'),
         :parameter => :light,
       },
-      #{
-      #  :type => :bool,
-      #  :name => tr('Shadows'),
-      #  :parameter => :light_shadows
-      #},
     ],
     tr("UI") => [
       {
@@ -225,12 +217,7 @@ class Window_Settings
       },
       {
         :type => :bool,
-        :name => tr('Dejavu mode(Not implemented)'),
-        :parameter => :dejavu_mode
-      },
-      {
-        :type => :bool,
-        :name => tr('Freeware Mode(!)'),
+        :name => tr('Freeware Mode(!, WIP)'),
         :parameter => :oneshot_mode
       },
     ],
@@ -240,13 +227,6 @@ class Window_Settings
         :name => tr('Control LED lighting on gamepads'),
         :parameter => :gamepad_led
       },
-      #{
-      #  :type => :slider,
-      #  :name => tr("Gamepad deadzone"),
-      #  :parameter => :gamepad_deadzone,
-      #  :min => 0,
-      #  :max => 10
-      #},
       { :type => :sep, :name => tr("Walk") },
       {
         :type => :key,

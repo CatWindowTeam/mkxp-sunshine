@@ -1,5 +1,70 @@
-#if defined(__linux__) || defined(__sun) || defined(__APPLE__) || \
-    defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || \
-    defined(__GNU__) || defined(__hurd__) || defined(__DragonFly__)
-  #define unix_like 1
+#include <SDL3/SDL_platform_defines.h>
+
+#if defined(SDL_PLATFORM_AIX) || defined(SDL_PLATFORM_BSDI) || defined(SDL_PLATFORM_FREEBSD) || \
+    defined(SDL_PLATFORM_HPUX) || defined(SDL_PLATFORM_HURD) || defined(SDL_PLATFORM_IRIX) || \
+    defined(SDL_PLATFORM_LINUX) || defined(SDL_PLATFORM_MACOS) || defined(SDL_PLATFORM_NETBSD) || \
+    defined(SDL_PLATFORM_OPENBSD) || defined(SDL_PLATFORM_SOLARIS) || defined(SDL_PLATFORM_UNIX) || \
+    defined(SDL_PLATFORM_APPLE) || defined(SDL_PLATFORM_OSF)
+	#define unix_like 1
 #endif
+
+#if defined(SDL_PLATFORM_DOS)
+	#define dos 1
+#endif
+
+#if defined(SDL_WINAPI_FAMILY_PHONE) || defined(SDL_PLATFORM_WINDOWS) || defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
+	#define windows 1
+#endif
+
+#if defined(SDL_PLATFORM_XBOXSERIES) || defined(SDL_PLATFORM_XBOXONE)
+	#define xbox 1
+#endif
+
+#if SDL_PLATFORM_3DS
+	#define 3ds 1
+#endif
+
+#if SDL_PLATFORM_ANDROID
+	#define android 1
+#endif
+
+#if defined(SDL_PLATFORM_APPLE) || defined(SDL_PLATFORM_TVOS) || defined(SDL_PLATFORM_VISIONOS)
+	#define apple 1
+#endif
+
+#if SDL_PLATFORM_EMSCRIPTEN
+	#define web 1
+#endif
+
+#if SDL_PLATFORM_HAIKU
+	#define haiku 1
+#endif
+
+#if SDL_PLATFORM_IOS
+	#define ios 1
+#endif
+
+#if defined(SDL_PLATFORM_OS2)
+	#define os2 1
+#endif
+
+#if SDL_PLATFORM_PS2
+	#define ps2 1
+#endif
+
+#if SDL_PLATFORM_PSP
+	#define psp 1
+#endif
+
+#if SDL_PLATFORM_QNXNTO
+	#define qnx 1
+#endif
+
+#if SDL_PLATFORM_VITA
+	#define vita 1
+#endif
+
+#if SDL_PLATFORM_RISCOS
+	#define riscos 1
+#endif
+
