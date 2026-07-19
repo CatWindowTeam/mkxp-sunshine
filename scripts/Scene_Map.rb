@@ -423,9 +423,9 @@ class Scene_Map
   #--------------------------------------------------------------------------
   # * Misc operations
   #--------------------------------------------------------------------------  
-  def new_footprint(direction, x, y)
+  def new_footprint(direction, x, y, character_name)
     if @spriteset != nil
-      @spriteset.new_footprint(direction, x, y)
+      @spriteset.new_footprint(direction, x, y, character_name)
     end
   end
   def new_footsplash(direction, x, y)
