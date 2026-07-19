@@ -56,7 +56,6 @@ class Game_Map
   # * List of clamped panorama images
   #--------------------------------------------------------------------------
   CLAMPED = [
-    'red',
     'red_distort',
     'codebg'
   ]
