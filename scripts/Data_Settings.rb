@@ -27,7 +27,7 @@ module Settings
         :enforce_april_fools         => false,
         :true_memory_mode            => false,
         :oneshot_mode                => false,
-
+		:twm_shader_footprint        => true,
         # Advanced
 
         #controls
@@ -41,6 +41,10 @@ module Settings
         :debug_text_scene_title      => true,
         :debug_picture_names         => false,
         :debug_lightmap              => false,
+
+
+        #Hidden
+        :is_dejavu                   => false,
       }
       reset_controls!
     end
@@ -159,7 +163,6 @@ class Window_Settings
         :parameter => :scaling_mode,
         :values => [tr("Nearest Neighbor"), tr("Smooth(old)")]
       },
-      { :type => :sep, :name => tr("World")},
       {
         :type => :bool,
         :name => tr('Dynamic Light'),
@@ -209,7 +212,7 @@ class Window_Settings
       },
       {
         :type => :bool,
-        :name => tr('Purple message box for Entity(Not implemented)'),
+        :name => tr('Purple message box for Entity'),
         :parameter => :en_purple_messagebox
       },
       {
@@ -219,13 +222,18 @@ class Window_Settings
       },
       {
         :type => :bool,
-        :name => tr('True Memory Mode(Not implemented)'),
+        :name => tr('True Memory Mode'),
         :parameter => :true_memory_mode
       },
       {
         :type => :bool,
-        :name => tr('Freeware Mode(!, WIP)'),
+        :name => tr('Freeware Mode(!)'),
         :parameter => :oneshot_mode
+      },
+      {
+        :type => :bool,
+        :name => tr('World machine shader on Entity footprints'),
+        :parameter => :twm_shader_footprint
       },
     ],
     tr("Controls") => [

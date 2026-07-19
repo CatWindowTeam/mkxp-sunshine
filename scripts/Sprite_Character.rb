@@ -35,8 +35,9 @@ class Sprite_Character
     # Choose the appropriate light sprite
     @light_sprite.viewport = @character.light_ignore_transition ? @viewport : (($game_screen.tone.blank?) ? @viewport : @light_viewport)
     @light_sprite.shader = @sprite.shader =
+
     #idk what is this, maybe later i remake this
-    @character.character_name.start_with?("en") || (Settings[:twm_shader] && @character.character_name.start_with?("niko") && $game_switches[160]) ? Shader::WorldMachine :
+    @character.character_name.start_with?("en") || (Settings[:twm_shader] && @character.character_name.start_with?("niko") && ($game_switches[160] or Settings[:true_memory_mode])) ? Shader::WorldMachine :
     @character.shader || Shader::Sprite
     @light_sprite.mirror_x = @sprite.mirror_x = @character.mirror_x
     @light_sprite.mirror_y = @sprite.mirror_y = @character.mirror_y

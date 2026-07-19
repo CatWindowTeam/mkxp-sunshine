@@ -9,7 +9,7 @@ class Scene_Title
   MENU_Y = 100
   ENTRY_HEIGHT = 25
   SDLVer = "#{Sunshine::SDLVersion_major}.#{Sunshine::SDLVersion_minor}.#{Sunshine::SDLVersion_micro}"
-  SunshineVer = "0.1.1-dev"
+  SunshineVer = "0.1.2"
   
   #--------------------------------------------------------------------------
   # * Main Processing
@@ -59,9 +59,7 @@ class Scene_Title
     py = (Graphics.height / 1080.0)
     @sprite.ox = @sprite.bitmap.width / 2 * (0.5 * (1.0 - px) + px)
     @sprite.oy = @sprite.bitmap.height / 2 * (1.3 * (1.0 - py) + py)
-
-    RPG::Mod.exec_hooks("hooks/Scene_Title/init", binding)
-
+    
     # check for debug file to add debug items
     if Settings[:debug]
       $game_party.gain_item(54, 1) # debug save
@@ -94,15 +92,6 @@ class Scene_Title
     @debug.bitmap.draw_text(0, ENTRY_HEIGHT, 200, ENTRY_HEIGHT, tr("SDL #{SDLVer}"))
     @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 2, 200, ENTRY_HEIGHT, tr("Sunshine #{SunshineVer}"))
     @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 3, 200, ENTRY_HEIGHT, tr("sec_#{Sunshine::SECURITYSTATE}"))
-    jit_text = "JIT: unsupported"
-    if defined?(RubyVM::YJIT) && RubyVM::YJIT.enabled?
-      jit_text = "JIT: YJIT"
-    elsif defined?(RubyVM::ZJIT) && RubyVM::ZJIT.enabled?
-      jit_text = "JIT: ZJIT"
-    elsif defined?(RubyVM::RJIT) && RubyVM::RJIT.enabled?
-      jit_text = "JIT: RJIT"
-    end
-    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 4, 200, ENTRY_HEIGHT, tr(jit_text))
     if ModLoader::IS_ENABLED
       @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 5, 200, ENTRY_HEIGHT, tr("Mods loaded: #{ModLoader::COUNT}"))
     end

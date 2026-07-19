@@ -16,7 +16,7 @@ class Sprite_Footprint < Sprite
 
   def update
     return if disposed?
-
+	
     self.x = (@real_x - $game_map.display_x + 3) / 4 + 16
     self.y = (@real_y - $game_map.display_y + 3) / 4 + 32
 
