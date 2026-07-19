@@ -1,7 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-cd "dirname $0"
-
 # User-configurable variables.
 oneshot_id=420530
 STEAMWORKS_PATH=$(realpath ..)/steamworks
@@ -11,9 +9,9 @@ cd build
 make -j$(nproc)
 cd ..
 
-mkdir build/bandle
-mkdir build/bandle
-mkdir build/bandle/Data
+mkdir -p build/bandle
+mkdir -p build/bandle
+mkdir -p build/bandle/Data
 
 # Compile steamshim.
 #echo -e "-> ${cyan}Compile steamshim...${color_reset}"
@@ -34,7 +32,7 @@ cp build/oneshot build/bandle/
 #echo "$oneshot_id" > "$ONESHOT_PATH/steam_appid.txt"
 
 # Copy libraries.
-mkdir libs
+mkdir -p libs
 ldd build/oneshot | ruby libraries.rb
 #ldd steamshim_parent/build/steamshim | ruby libraries.rb
 cp libs/* build/bandle

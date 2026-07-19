@@ -26,7 +26,6 @@ class Sprite_Footsplash < Sprite
     self.oy = 80
     self.bitmap = RPG::Cache.misc('foot_splash')
     self.src_rect.set(0, 0, 80, 80)
-    RPG::Mod.exec_hooks("hooks/Sprite_Footsplash/init", binding)
     update
   end
 

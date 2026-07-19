@@ -1,0 +1,3 @@
+Freeware mode updated
+Added _old niko and twm sprites
+Implemented True Memory Mode
