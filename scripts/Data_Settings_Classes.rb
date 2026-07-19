@@ -195,6 +195,9 @@ class Window_Settings
       @switch_panels_hint_left.x -= SCREENS_PANELS_MARGIN
       @parameters.values[@screen]&.[](@index)&.select(previous)
       update_pos
+      if @parameters.values[@screen]&.[](@index)&.class&.const_get(:TYPE) == :sep
+        parameter_down
+      end
     end
     def screen_right()
       previous = @index
@@ -204,27 +207,28 @@ class Window_Settings
       @switch_panels_hint_right.x += SCREENS_PANELS_MARGIN
       @parameters.values[@screen]&.[](@index)&.select(previous)
       update_pos
+      if @parameters.values[@screen]&.[](@index)&.class&.const_get(:TYPE) == :sep
+        parameter_down
+      end
     end
 
     def parameter_up()
       previous = @index
       @parameters.values[@screen]&.[](@index)&.deselect
-      offset = 1
-      if @parameters.values&.[](@screen)&.[](@index - 1)&.class&.const_get(:TYPE) == :sep
-        offset += 1
+      @index = (@index - 1) % @parameters.values[@screen].length
+      if @parameters.values&.[](@screen)&.[](@index)&.class&.const_get(:TYPE) == :sep
+        @index = (@index - 1) % @parameters.values[@screen].length
       end
-      @index = (@index - offset) % @parameters.values[@screen].length
       @parameters.values[@screen]&.[](@index)&.select(previous)
       update_pos
     end
     def parameter_down()
       previous = @index
       @parameters.values[@screen]&.[](@index)&.deselect
-      offset = 1
-      if @parameters.values&.[](@screen)&.[](@index + 1)&.class&.const_get(:TYPE) == :sep
-        offset += 1
+      @index = (@index + 1) % @parameters.values[@screen].length
+      if @parameters.values&.[](@screen)&.[](@index)&.class&.const_get(:TYPE) == :sep
+        @index = (@index + 1) % @parameters.values[@screen].length
       end
-      @index = (@index + offset) % @parameters.values[@screen].length
       @parameters.values[@screen]&.[](@index)&.select(previous)
       update_pos
     end

@@ -135,6 +135,7 @@ class Window_Settings
       },
     ],
     tr("Video") => [
+      { :type => :sep, :name => tr("Screen")},
       {
         :type => :enum,
         :name => tr('Resolution'),
@@ -149,30 +150,30 @@ class Window_Settings
       },
       {
         :type => :bool,
-        :name => tr('Colorblind mode'),
-        :parameter => :colorblind
-      },
-      {
-        :type => :bool,
         :name => tr('Frameskip'),
         :parameter => :frameskip
-      },
-      {
-        :type => :bool,
-        :name => tr('World machine shader'),
-        :parameter => :twm_shader
-      },
-      { :type => :sep, :name => tr("Lighting")},
-      {
-        :type => :bool,
-        :name => tr('Dynamic Light'),
-        :parameter => :light,
       },
       {
         :type => :enum,
         :name => tr('Scaling mode'),
         :parameter => :scaling_mode,
         :values => [tr("Nearest Neighbor"), tr("Smooth(old)")]
+      },
+      { :type => :sep, :name => tr("World")},
+      {
+        :type => :bool,
+        :name => tr('Dynamic Light'),
+        :parameter => :light,
+      },
+      {
+        :type => :bool,
+        :name => tr('World machine shader'),
+        :parameter => :twm_shader
+      },
+      {
+        :type => :bool,
+        :name => tr('Colorblind mode'),
+        :parameter => :colorblind
       },
     ],
     tr("UI") => [
