@@ -50,7 +50,7 @@ module RPG
     end
     def self.character(filename, hue)
 	  filename = filename.downcase
-	  if $game_switches[160] && filename.start_with?("niko")
+	  if ($game_switches[160] || Settings[:true_memory_mode]) && filename.start_with?("niko")
 	    filename.gsub!(/niko/, "en")
 	  end
       self.load_bitmap("Graphics/Characters/", filename, hue)
