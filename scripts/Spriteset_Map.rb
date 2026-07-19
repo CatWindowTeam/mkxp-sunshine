@@ -340,9 +340,9 @@ class Spriteset_Map
       # no point in updating the sprite if offscreen
       # this greatly increases performance on larger maps
       elsif ((sprite.character.real_x + (sprite.ox*4) > $game_map.display_x - 128) &&
-             (sprite.character.real_x - (sprite.ox*4) < $game_map.display_x + ((Graphics.width / 32 + 1) * 128)) &&
+             (sprite.character.real_x - (sprite.ox*4) < $game_map.display_x + ((Graphics.width / 32.0).ceil * 128)) &&
              (sprite.character.real_y + (sprite.oy*4) > ($game_map.display_y) - 128) &&
-             (sprite.character.real_y - (sprite.oy*4) < ($game_map.display_y) + (Graphics.height / 32 * 128)))
+             (sprite.character.real_y - (sprite.oy*4) < ($game_map.display_y) + (Graphics.height / 32.0).ceil * 128))
         sprite.update
       else
         sprite.update_fast

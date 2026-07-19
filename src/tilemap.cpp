@@ -331,8 +331,8 @@ struct TilemapPrivate {
 	      mapViewportDirty(false),
 	      zOrderDirty(false),
 	      tilemapReady(false),
-		  viewpW(shState->graphics().width() / 31 + 2),
-		  viewpH(shState->graphics().height() / 31 + 2),
+		  viewpW(shState->graphics().width() / 32 + 2),
+		  viewpH(shState->graphics().height() / 32 + 2),
 		  zlayersMax(viewpH + 5)
 	{
 		zlayerVert.resize(zlayersMax);
@@ -372,8 +372,8 @@ struct TilemapPrivate {
 				}
 
 				int oldZLayersCount = zlayersMax;
-				viewpW = w / 31 + 2;
-				viewpH = h / 31 + 2;
+				viewpW = w / 32 + 2;
+				viewpH = h / 32 + 2;
 				zlayersMax = viewpH + 5;
 				zlayerVert.resize(zlayersMax);
 				zlayerBases.resize(zlayersMax + 1);
