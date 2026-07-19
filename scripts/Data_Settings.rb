@@ -13,7 +13,7 @@ module Settings
         :frameskip                   => true,
         :twm_shader                  => true,
         :light                       => true,
-        :light_shadows               => true,
+        :scaling_mode                => 0,
 
         # UI
         :in_game_timer               => false,
@@ -167,6 +167,12 @@ class Window_Settings
         :type => :bool,
         :name => tr('Dynamic Light'),
         :parameter => :light,
+      },
+      {
+        :type => :enum,
+        :name => tr('Scaling mode'),
+        :parameter => :scaling_mode,
+        :values => [tr("Nearest Neighbor"), tr("Smooth(old)")]
       },
     ],
     tr("UI") => [

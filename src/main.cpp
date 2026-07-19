@@ -50,7 +50,11 @@
 #include "gl-fun.h"
 #include "i18n.h"
 #include "security.h"
-#include "modloader.h"
+
+#ifndef ps2
+	#include "modloader.h"
+#endif
+
 #include "sunshine.h"
 
 #include "define.h"
@@ -299,6 +303,7 @@ int main(int argc, char *argv[]){
 		}
 	}
 
+	#ifndef ps2
 	std::string new_path = ModLoader(conf);
 	if(new_path != ""){
 		if (chdir(new_path.c_str()) != 0){
@@ -306,7 +311,8 @@ int main(int argc, char *argv[]){
 			return 0;
 		}
 	}
-
+	#endif
+	
 	extern int screenMain(Config &conf);
 	if (conf.screenMode)
 		return screenMain(conf);

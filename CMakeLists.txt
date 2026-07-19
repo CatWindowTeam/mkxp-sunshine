@@ -4,7 +4,7 @@ include(FindPackageHandleStandardArgs)
 
 # Options
 option(STEAM "Build for Steam" OFF)
-option(DEBUG "Debug mode" ON)
+option(DEBUG "Debug mode" OFF)
 option(NATIVE "Use native instructions(for local use only)" OFF)
 
 #Configuration

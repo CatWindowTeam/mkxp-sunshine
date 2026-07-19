@@ -24,7 +24,7 @@
 
 #include <ruby.h>
 //костыль ебаный сука
-#undef SDL_snprintf
+#undef snprintf
 #undef inline
 
 #include "exception.h"

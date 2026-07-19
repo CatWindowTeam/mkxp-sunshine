@@ -31,6 +31,15 @@ module Settings
           Graphics.resize_screen(new_width, new_height)
         end
       end
+
+	  def scaling_mode(value)
+		if value == 0
+			Graphics.smooth = false
+		else 
+			Graphics.smooth = true
+		end
+	  end
+      
       def colorblind(value)
         $game_switches[252] = value
       end

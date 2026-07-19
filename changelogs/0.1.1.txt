@@ -78,3 +78,4 @@ Rewrited Linux build scripts
 Deleted unused maps
 Game maps size fixed
 Big performance fix
+Added way to select prefered Scaling mode via Settings
