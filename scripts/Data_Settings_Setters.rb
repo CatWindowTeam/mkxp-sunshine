@@ -38,7 +38,9 @@ module Settings
       # UI
       def in_game_timer(value)
         $game_temp.igt_timer_visible = value
-        $scene.in_game_timer.visible = $game_temp.igt_timer_visible if $scene.is_a?(Scene_Map)
+        if $scene.is_a?(Scene_Map) && $scene&.in_game_timer
+          $scene.in_game_timer.visible = $game_temp.igt_timer_visible
+        end
       end
       def language(value)
         # idk how to set language
