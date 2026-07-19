@@ -494,7 +494,7 @@ class Game_Character
   #--------------------------------------------------------------------------
   def emit_footprint(direction)
     if $game_map.counter?(@x, @y) && !$game_switches[101] && !$game_switches[111]
-      $scene.new_footprint(direction, @x, @y)
+      $scene.new_footprint(direction, @x, @y, @character_name)
     end
   end
   def emit_footsplash(direction)

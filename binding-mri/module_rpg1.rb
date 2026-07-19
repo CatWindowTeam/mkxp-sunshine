@@ -49,20 +49,20 @@ module RPG
       self.load_bitmap("Graphics/Battlers/", filename, hue)
     end
     def self.character(filename, hue)
-	  filename = filename.downcase
-	  if $game_switches[160] && filename.start_with?("niko")
-	    filename.gsub!(/niko/, "en")
-	  end
-      self.load_bitmap("Graphics/Characters/", filename, hue)
+      filename = filename.downcase
+      if $game_switches[160] && filename.start_with?("niko")
+        filename.gsub!(/niko/, "en")
+      end
+        self.load_bitmap("Graphics/Characters/", filename, hue)
     end
     def self.face(filename)
-	  filename = filename.downcase
-	  if (CTime.month == 4 && CTime.day == 1 && filename.start_with?("niko")) or Settings[:enforce_april_fools]
-	    filename = "af"
-	  end	  
-	  if $game_switches[160] && filename.start_with?("niko")
-	    filename.gsub!(/niko/, "en")
-	  end
+      filename = filename.downcase
+      if (CTime.month == 4 && CTime.day == 1 && filename.start_with?("niko")) or Settings[:enforce_april_fools]
+        filename = "af"
+      end	  
+      if $game_switches[160] && filename.start_with?("niko")
+        filename.gsub!(/niko/, "en")
+      end
       self.load_bitmap("Graphics/Faces/", filename)
     end
     def self.menu(filename)

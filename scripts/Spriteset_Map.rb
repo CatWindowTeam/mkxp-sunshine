@@ -383,8 +383,8 @@ class Spriteset_Map
   #--------------------------------------------------------------------------
   # * Misc operations
   #--------------------------------------------------------------------------
-  def new_footprint(direction, x, y)
-    @footprint_sprites << Sprite_Footprint.new(@viewport, direction, x, y)
+  def new_footprint(direction, x, y, character_name)
+    @footprint_sprites << Sprite_Footprint.new(@viewport, direction, x, y, character_name)
   end
   def new_maptext(text, x, y)
     @footprint_sprites << Sprite_MapText.new(@viewport, text, x, y)

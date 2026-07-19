@@ -1,5 +1,5 @@
 class Sprite_Footprint < Sprite
-  def initialize(viewport, direction, x, y)
+  def initialize(viewport, direction, x, y, character_name)
     super(viewport)
     @direction = direction
     @real_x = x * 4 * 32
@@ -11,6 +11,8 @@ class Sprite_Footprint < Sprite
     self.oy = 16
     self.bitmap = RPG::Cache.misc('footprints')
     self.src_rect.set(0, 16 * (direction / 2 - 1), 16, 16)
+
+    self.shader = character_name.start_with?("en") || (character_name.start_with?("niko") && $game_switches[160]) ? Shader::WorldMachine : Shader::Sprite
     update
   end
 
