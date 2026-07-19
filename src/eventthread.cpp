@@ -43,6 +43,7 @@
 #include <cstdio>
 #include <map>
 #include <iostream>
+#include <ruby.h>
 
 typedef void (ALC_APIENTRY *LPALCDEVICEPAUSESOFT) (ALCdevice *device);
 typedef void (ALC_APIENTRY *LPALCDEVICERESUMESOFT) (ALCdevice *device);
