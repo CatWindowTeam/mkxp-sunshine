@@ -13,7 +13,7 @@ Target of sunshine mod - improve original game.
     * Cmake
     * C/C++ compiler
     * xxd
-    * Ruby 3+
+    * Ruby 3.4+
     * Boost
     * SDL3
     * pixman
