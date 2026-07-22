@@ -25,6 +25,7 @@
 #include <SDL3/SDL_system.h>
 #include <boost/stacktrace.hpp>
 #include <SDL3/SDL_cpuinfo.h>
+#include "sunshine-binding.h"
 #ifdef __LINUX__
 	#include <gtk/gtk.h>
 	#include "xdg-user-dir-lookup.h"
@@ -120,12 +121,14 @@ void crash(Exception::Type t, const char *fmt, ...){
 					o << "Internal storage path: " << SDL_GetAndroidInternalStoragePath() << std::endl;
 					o << "External Storage path: " << SDL_GetAndroidExternalStoragePath() << ats::endl;
 					o << "Cache path: " << SDL_GetAndroidCachePath() << std::endl;
-					o << "Is ChromeBook? " << SDL_IsChromebook() << std::endl;
-					o << "Is Phone? " << SDL_IsPhone() << std::endl;
-					o << "Is Tablet? " << SDL_IsTablet() << std::endl;
-					o << "Is Samsung DeX? " << SDL_IsDeXMode() << std::endl;
-					o << "Is TV? " << SDL_IsTV() << std::endl;
-					o << "Is Ubuntu Touch? " << SDL_IsUbuntuTouch() << std::endl;
+					if(!is_privacy_crashdump_enabled){
+						o << "Is ChromeBook? " << SDL_IsChromebook() << std::endl;
+						o << "Is Phone? " << SDL_IsPhone() << std::endl;
+						o << "Is Tablet? " << SDL_IsTablet() << std::endl;
+						o << "Is Samsung DeX? " << SDL_IsDeXMode() << std::endl;
+						o << "Is TV? " << SDL_IsTV() << std::endl;
+						o << "Is Ubuntu Touch? " << SDL_IsUbuntuTouch() << std::endl;
+					}
 				#elif __EMSCRIPTEN__
 					o << "Emscripten start address of the stack: " << emscripten_stack_get_base() << std::endl;
 					o << "Emscripten end address of the stack: " << emscripten_stack_get_end() << std::endl;
@@ -135,9 +138,7 @@ void crash(Exception::Type t, const char *fmt, ...){
 					o << "PSPdev MIPS Stack Trace: " << int pspDebugGetStackTrace() << std::endl;
 				#endif
 				o << "[Hardware]" << std::endl;
-				o << "L1 cache line size: " << SDL_GetCPUCacheLineSize() << std::endl;
 				o << "number of logical CPU cores: " << SDL_GetNumLogicalCPUCores() << std::endl;
-				//o << "System page size: " << SDL_GetSystemPageSize() << " bytes" << std::endl;
 				o << "System RAM size: " << SDL_GetSystemRAM() << " MiB" << std::endl;
 				o.close();
 		}else{

@@ -7,8 +7,11 @@ module Settings
       # if you do not take the value from settings directly.
 
       # name must be same as the parameter identifier
+
+	  def crashlog_privacy(value)
+		Sunshine.crashprivacy=value
+	  end
       
-      # Audio
       def bgm_volume(value)
         Audio.bgm_volume = value
       end
@@ -16,7 +19,6 @@ module Settings
         Audio.sfx_volume = value
       end
       
-      # Video
       def fullscreen(value)
         Graphics.fullscreen = $console = value
       end
@@ -56,7 +58,6 @@ module Settings
         # TODO: fix languages on new ruby versions
       end
 
-      # Gameplay
       def movement(value)
         $game_switches[251] = value != 0
       end
@@ -65,7 +66,6 @@ module Settings
         # TODO: fix skip_text settings setter
       end
 
-      # Advanced
       def frameskip(value)
         Graphics.frameskip = value
       end

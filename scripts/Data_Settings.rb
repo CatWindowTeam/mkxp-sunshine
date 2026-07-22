@@ -28,8 +28,10 @@ module Settings
         :true_memory_mode            => false,
         :oneshot_mode                => false,
 		:twm_shader_footprint        => true,
-        # Advanced
 
+        # Advanced
+		:crashlog_privacy        	 => false,
+	
         #controls
         :gamepad_led                 => true,
         :gamepad_deadzone            => 5,
@@ -326,8 +328,9 @@ class Window_Settings
     tr("Advanced") => [
       {
         :type => :bool,
-        :name => tr('useless option:3'),
-        :default => false
+        :name => tr('Crashlog privacy'),
+        :parameter => :crashlog_privacy
+        
       },
     ],
     tr("Debug") => [

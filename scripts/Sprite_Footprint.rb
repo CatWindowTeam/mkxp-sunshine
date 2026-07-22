@@ -11,8 +11,6 @@ class Sprite_Footprint < Sprite
     self.oy = 16
     self.bitmap = RPG::Cache.misc('footprints')
     self.src_rect.set(0, 16 * (direction / 2 - 1), 16, 16)
-
-    self.shader = (Settings[:twm_shader] and Settings[:twm_shader_footprint]) and ($game_switches[160] or Settings[:true_memory_mode]) and (character_name.start_with?("en") or character_name.start_with?("niko")) ? Shader::WorldMachine : Shader::Sprite
     update
   end
 

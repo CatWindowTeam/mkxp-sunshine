@@ -267,6 +267,7 @@ set(BINDING_HEADERS
 	binding-mri/flashable-binding.h
 	binding-mri/keybindings-binding.h
 	binding-mri/signalconnection-binding.h
+	binding-mri/sunshine-binding.h
 )
 set(BINDING_SOURCE
 	binding-mri/binding-mri.cpp

@@ -9,8 +9,17 @@
 #include "ruby/internal/intern/class.h"
 #include "security.h"
 #include "eventthread.h"
-//Просто на C реализуем методы мне в падлу ебаться со статической линковкой и прочим дерьмом.
-//Аминь.
+#include "sunshine-binding.h"
+bool is_privacy_crashdump_enabled = false;
+
+static VALUE sunshine_get_crash_privacy(VALUE self) {
+  return is_privacy_crashdump_enabled ? Qtrue : Qfalse;
+}
+
+static VALUE sunshine_set_crash_privacy(VALUE, VALUE v) {
+  is_privacy_crashdump_enabled = RTEST(v);
+  return v;
+}
 
 static VALUE obj_clone(VALUE self){
     return rb_obj_clone(self);
@@ -46,6 +55,8 @@ void SunshineBindingInit(){
     rb_const_set(module, rb_intern("SDLVersion_minor"), INT2NUM(SDL_MINOR_VERSION));
     rb_const_set(module, rb_intern("SDLVersion_micro"), INT2NUM(SDL_MICRO_VERSION));
 	rb_const_set(module, rb_intern("SECURITYSTATE"), rb_str_new_cstr(securitystate));
+	rb_define_singleton_method(module, "crashprivacy", RUBY_METHOD_FUNC(sunshine_get_crash_privacy), 0);
+	rb_define_singleton_method(module, "crashprivacy=", RUBY_METHOD_FUNC(sunshine_set_crash_privacy), 1);
     //если методы доступны то просто не перезаписываем их
 	if (!rb_respond_to(rb_cObject, rb_intern("class"))) {
 	        rb_define_method(rb_cObject, "class", rb_obj_class, 0);

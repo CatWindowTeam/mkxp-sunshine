@@ -1,0 +1,1 @@
+extern bool is_privacy_crashdump_enabled;

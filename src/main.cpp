@@ -336,10 +336,6 @@ int main(int argc, char *argv[]){
 	SDL_Window *win;
 	Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS;
 
-	// #ifdef __APPLE__
-	// 	winFlags |= SDL_WINDOW_RESIZABLE;
-	// #endif
-
 	win = SDL_CreateWindow(conf.windowTitle.c_str(), conf.defScreenW, conf.defScreenH, winFlags);
 	if (conf.fullscreen)
 		SDL_SetWindowFullscreen(win, true);
@@ -368,10 +364,6 @@ int main(int argc, char *argv[]){
 	}
 
 	SDL_DisplayMode mode;
-	/* Can't sync to display refresh rate if its value is unknown */
-	//if (!mode.refresh_rate)
-	//	conf.syncToRefreshrate = false;
-
 	EventThread eventThread;
 	RGSSThreadData rtData(&eventThread, win, alcDev, mode.refresh_rate, conf);
 
