@@ -5,7 +5,7 @@
 | Windows | 100% | Играбельно |
 | Linux | 91% | В работе, но уже играбельно<br>TODO:<br>&nbsp;\* Fix Wallpaper manager 
 | *BSD | 15% | не в работе |
-| GNU/Hurd | 1% | не в работе |
+| GNU/Hurd | 90% | не в работе |
 | Solaris/OpenSolaris | 1% | не в работе |
 | RedoxOS | 0% | Не хватает библеотек |
 | Android | 4% | В работе |
@@ -19,6 +19,7 @@
 | ChromeOS/ChromiumOS | 0.4% | Неизвестное |
 | MacOS | 10.5% | Неизвестное, но работа ведётся |
 | Kyronix | 10% | В работе сторонней командой разработчиков|
+| PS2 | 40% | В работе сторонним человеком|
 
 ## Окружения рабочего стола | Desktop Environments
 | Окружение<br>Environments | Завершено<br>Done % |

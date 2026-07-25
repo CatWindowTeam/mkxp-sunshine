@@ -1,3 +1,5 @@
 Freeware mode updated
-Added _old niko and twm sprites
 Implemented True Memory Mode
+Added Crashdump privacy setting 
+Ling faces updated
+Magpie faces updated
