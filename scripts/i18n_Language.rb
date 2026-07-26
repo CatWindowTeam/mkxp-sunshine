@@ -14,7 +14,6 @@ class Language
       @tr = nil
       [lc.full, lc.lang].each do |name|
         path = "Languages/#{name}.po"
-        puts path
         if File.exist?(path)
           load_pot(path)
           loadFontMap
