@@ -73,14 +73,9 @@ class Scene_Title
     @menu = Sprite.new(@viewport)
     @menu.z += 1
     @menu.bitmap = Bitmap.new(MENU_X, MENU_Y)
-    @menu.bitmap.draw_text(0, 0, MENU_X, ENTRY_HEIGHT - 1, tr("Start"))
-    @menu.bitmap.draw_text(0, ENTRY_HEIGHT, MENU_X, ENTRY_HEIGHT - 1, tr("Settings"))
-    @menu.bitmap.draw_text(0, ENTRY_HEIGHT * 2, MENU_X, ENTRY_HEIGHT - 1, tr("Exit"))
-    if $game_switches[160] && $game_switches[152]
-        @menu.bitmap.draw_text(0, ENTRY_HEIGHT * 3, 150, 24, tr("..."))
-    end
     @menu.x = Graphics.width - MENU_X
     @menu.y = Graphics.height - MENU_Y
+    redraw_menu
     
     @debug = Sprite.new(@viewport)
     @debug.x = 5
@@ -88,15 +83,10 @@ class Scene_Title
     @debug.z += 1
     @debug.visible = Settings[:debug_text_scene_title] || false
     @debug.bitmap = Bitmap.new(200, ENTRY_HEIGHT * 6)
-    @debug.bitmap.draw_text(0, 0, 200, ENTRY_HEIGHT, tr("Ruby #{RUBY_VERSION}"))
-    @debug.bitmap.draw_text(0, ENTRY_HEIGHT, 200, ENTRY_HEIGHT, tr("SDL #{SDLVer}"))
-    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 2, 200, ENTRY_HEIGHT, tr("Sunshine #{SunshineVer}"))
-    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 3, 200, ENTRY_HEIGHT, tr("sec_#{Sunshine::SECURITYSTATE}"))
-    if ModLoader::IS_ENABLED
-      @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 5, 200, ENTRY_HEIGHT, tr("Mods loaded: #{ModLoader::COUNT}"))
-    end
+    redraw_debug
 
-    Language.register_text_sprite(self.class.name + "_contents", @menu.bitmap)
+    Language.register_text_sprite(self.class.name + "_contents", @menu)
+    Language.register_text_sprite(self.class.name + "_debug", @debug)
 
     # Make cursor graphic
     @cursor = Sprite.new(@viewport)
@@ -170,6 +160,35 @@ class Scene_Title
     Graphics.transition(60)
     # Run automatic change for BGM and BGS set with map
     $game_map.autoplay
+  end
+
+  def redraw_menu
+    if !@menu
+      return
+    end
+
+    @menu.bitmap.clear
+    @menu.bitmap.draw_text(0, 0, MENU_X, ENTRY_HEIGHT - 1, tr("Start"))
+    @menu.bitmap.draw_text(0, ENTRY_HEIGHT, MENU_X, ENTRY_HEIGHT - 1, tr("Settings"))
+    @menu.bitmap.draw_text(0, ENTRY_HEIGHT * 2, MENU_X, ENTRY_HEIGHT - 1, tr("Exit"))
+    if $game_switches[160] && $game_switches[152]
+        @menu.bitmap.draw_text(0, ENTRY_HEIGHT * 3, 150, 24, tr("..."))
+    end
+  end
+
+  def redraw_debug
+    if !@debug
+      return
+    end
+
+    @debug.bitmap.clear
+    @debug.bitmap.draw_text(0, 0, 200, ENTRY_HEIGHT, tr("Ruby") + " " + RUBY_VERSION)
+    @debug.bitmap.draw_text(0, ENTRY_HEIGHT, 200, ENTRY_HEIGHT, tr("SDL") + " " + SDLVer)
+    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 2, 200, ENTRY_HEIGHT, tr("Sunshine") + " " + SunshineVer)
+    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 3, 200, ENTRY_HEIGHT, tr("sec_#{Sunshine::SECURITYSTATE}"))
+    if ModLoader::IS_ENABLED
+      @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 5, 200, ENTRY_HEIGHT, tr("Mods loaded:") + " " + ModLoader::COUNT.to_s)
+    end
   end
   #--------------------------------------------------------------------------
   # * Frame Update
@@ -302,5 +321,11 @@ class Scene_Title
   def command_settings
     $game_system.se_play($data_system.decision_se)
     @window_settings_title.open
+  end
+
+  def redraw
+    redraw_menu
+    redraw_debug
+    @window_settings_title&.redraw_all
   end
 end

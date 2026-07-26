@@ -446,4 +446,10 @@ class Scene_Map
   def menu_open?
     @menu.visible || @item_menu.visible
   end
+  
+  def redraw
+    if @window_settings
+      @window_settings.redraw_all
+    end
+  end
 end

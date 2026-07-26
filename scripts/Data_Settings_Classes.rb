@@ -66,6 +66,9 @@ class Window_Settings
       @switch_panels_hint_left.opacity = @switch_panels_hint_right.opacity = 127
       @switch_panels_hint_left.blend_type = @switch_panels_hint_right.blend_type = 1
 
+      Language.register_text_sprite("settings_switch_panels_hint_left", @switch_panels_hint_left)
+      Language.register_text_sprite("settings_switch_panels_hint_right", @switch_panels_hint_right)
+
       redraw_panels_hints
 
       @parameters = {}
@@ -93,12 +96,14 @@ class Window_Settings
       @parameters[name] = []
 
       screen_panel = Sprite.new(@viewport)
-      screen_panel.bitmap = Bitmap.new(name.length * 10 + SCREENS_PANELS_MARGIN, @screen_panel_selection_sprite.height)
-      screen_panel.bitmap.draw_text(SCREENS_PANELS_MARGIN / 2, 0, screen_panel.width, screen_panel.height, name, 1)
+      screen_panel.bitmap = Bitmap.new(@switch_panels_hint_left.bitmap.text_size(tr(name)).width + SCREENS_PANELS_MARGIN, @screen_panel_selection_sprite.height)
+      screen_panel.bitmap.draw_text(SCREENS_PANELS_MARGIN / 2, 0, screen_panel.width, screen_panel.height, tr(name), 1)
       screen_panel.y = @screen_panel_selection_sprite.y
       screen_panel.x = Graphics.width / 2 + @next_screen_panel_offset - (@screen_panels[0] ? @screen_panels[0].width / 2 : screen_panel.width / 2)
       @next_screen_panel_offset += screen_panel.width
       @screen_panels << screen_panel
+
+      Language.register_text_sprite("settings_screen_panel #{name}", screen_panel)
     end
 
     def add_parameter(sreen_name, parameter)
@@ -174,9 +179,18 @@ class Window_Settings
           parameter.update
         end
       end
+      redraw_panels_hints
+      @parameters.keys.each_with_index do |name, index|
+        screen_panel = @screen_panels[index]
+        screen_panel.bitmap.dispose
+        screen_panel.bitmap = Bitmap.new(@switch_panels_hint_left.bitmap.text_size(tr(name)).width + SCREENS_PANELS_MARGIN, @screen_panel_selection_sprite.height)
+        screen_panel.bitmap.draw_text(SCREENS_PANELS_MARGIN / 2, 0, screen_panel.width, screen_panel.height, tr(name), 1)
+      end
     end
     
     def redraw_panels_hints
+      @switch_panels_hint_right.bitmap.clear
+      @switch_panels_hint_left.bitmap.clear
       @switch_panels_hint_right.bitmap.draw_text(0, 0, @switch_panels_hint_right.bitmap.width, @switch_panels_hint_right.bitmap.height, "W→", 2)
       @switch_panels_hint_left.bitmap.draw_text(0, 0, @switch_panels_hint_left.bitmap.width, @switch_panels_hint_left.bitmap.height, "←Q")
     end
@@ -308,6 +322,8 @@ class Window_Settings
       @sprite.bitmap = Bitmap.new(PARAMETER_WIDTH, PARAMETER_HEIGHT + 1)
       @sprite.bitmap.font.size = 20
 
+      Language.register_text_sprite("settings_parameter #{screen_id}-#{position}", @sprite)
+
       @value_width = PARAMETER_VALUE_WIDTH
       self.value = self.value # appling init settings
       redraw
@@ -351,8 +367,8 @@ class Window_Settings
 
     def redraw()
       @sprite.bitmap.clear
-      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - @value_width, @sprite.bitmap.height, @name)
-      @sprite.bitmap.draw_text(@sprite.bitmap.width - @value_width, 0, @value_width, @sprite.bitmap.height, get_display_value, 2)
+      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - @value_width, @sprite.bitmap.height, tr(@name))
+      @sprite.bitmap.draw_text(@sprite.bitmap.width - @value_width, 0, @value_width, @sprite.bitmap.height, tr(get_display_value), 2)
       if (@settings_content.need_draw_line(@screen_id, @position))
         @sprite.bitmap.fill_rect(Rect.new(0, PARAMETER_HEIGHT - 1, PARAMETER_WIDTH, 2), Color.new(255, 255, 255, 24))
       end
@@ -386,9 +402,10 @@ class Window_Settings
     def redraw()
       @sprite.bitmap.clear
       @sprite.bitmap.fill_rect(Rect.new(0, PARAMETER_HEIGHT / 2 - 1, PARAMETER_WIDTH, 2), Color.new(255, 255, 255, 64))
-      if (@name != "")
-        @sprite.bitmap.clear_rect(Rect.new((PARAMETER_WIDTH - @name.length * 10) / 2 - 8, 0, @name.length * 10 + 16, PARAMETER_HEIGHT))
-        @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width, @sprite.bitmap.height, @name, 1)
+      if (@name && @name != "")
+        name = tr(@name)
+        @sprite.bitmap.clear_rect(Rect.new((PARAMETER_WIDTH - name.length * 10) / 2 - 8, 0, name.length * 10 + 16, PARAMETER_HEIGHT))
+        @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width, @sprite.bitmap.height, name, 1)
       end
     end
   end
@@ -410,7 +427,7 @@ class Window_Settings
     end
 
     def get_display_value
-      return self.value ? tr("ON") : tr("OFF")
+      return self.value ? "ON" : "OFF"
     end
     
     def value_left()
@@ -495,7 +512,7 @@ class Window_Settings
       @sprite.bitmap.clear
       @sprite.bitmap.font.color = Color.new(255, 255, 255)
 
-      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - @value_width, @sprite.bitmap.height, @name)
+      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - @value_width, @sprite.bitmap.height, tr(@name))
 
       percent = (self.value.to_f - @min_value.to_f) / @max_value.to_f
       width = (@value_width * percent).to_i
@@ -561,7 +578,7 @@ class Window_Settings
     end
 
     def get_display_value
-      @texts&.[](self.value) || "Unknown value #{self.value}"
+      @texts&.[](self.value) || "#{tr("Unknown value")} #{self.value}"
     end
 
     def value_left()
@@ -599,25 +616,25 @@ class Window_Settings
       key_bind = @key_binds[bind_id]
       
       if key_bind == nil
-        return tr("None")
+        return "None"
       end
       
       case key_bind.type
 
       when KeyBind::Type::Invalid
-        return tr("Invalid")
+        return "Invalid"
 
       when KeyBind::Type::Key
-        return tr(Input::key_name(key_bind.scancode))
+        return Input::key_name(key_bind.scancode)
 
       when KeyBind::Type::CButton
-        return tr(Input::c_button_name(key_bind.button))
+        return Input::c_button_name(key_bind.button)
       
       when KeyBind::Type::CAxis
         axis_name = Input::c_axis_name(key_bind.axis)
         dir_vert = axis_name.downcase.include?("y")
         dir_horiz = axis_name.downcase.include?("x")
-        return tr(axis_name +
+        return axis_name +
                   if dir_horiz || dir_vert 
                     " " + 
                     if dir_vert
@@ -625,16 +642,16 @@ class Window_Settings
                     else
                       (key_bind.dir == 1 ? "Right" : "Left")
                     end
-                  else "" end)
+                  else "" end
       
       when KeyBind::Type::JButton
         return tr("Joystick Button") + " " + key_bind.button.to_s
         
       when KeyBind::Type::JAxis
-        return tr("Joystick Axis") + " " + key_bind.axis.to_s + " " + key_bind.dir == 1 ? "Positive" : "Negative"
+        return tr("Joystick Axis") + " " + key_bind.axis.to_s + " " + key_bind.dir == 1 ? tr("Positive") : tr("Negative")
         
       when KeyBind::Type::JHat
-        return tr("Joystick Hat") + " " + key_bind.hat.to_s + " " + key_bind.pos == 1 ? "Positive" : "Negative"
+        return tr("Joystick Hat") + " " + key_bind.hat.to_s + " " + key_bind.pos == 1 ? tr("Positive") : tr("Negative")
 
       end
     end
@@ -652,11 +669,11 @@ class Window_Settings
         @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (3 - @selection) - SELECTED_KEYS_MARGIN, 0, SELECTED_KEYS_MARGIN, @sprite.bitmap.height, "←", 1)
       end
       
-      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - PARAMETER_KEY_WIDTH * 4, @sprite.bitmap.height, @name)
+      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - PARAMETER_KEY_WIDTH * 4, @sprite.bitmap.height, tr(@name))
       for i in 0..3
         offset = (@selected && i == @selection ? SELECTED_KEYS_MARGIN : 4)
         parameter_x = @sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i) + offset
-        @sprite.bitmap.draw_text(parameter_x, 0, PARAMETER_KEY_WIDTH - offset * 2, @sprite.bitmap.height, @waiting_for_key && i == @selection ? tr("Press a key") : get_display_value(i), 1)
+        @sprite.bitmap.draw_text(parameter_x, 0, PARAMETER_KEY_WIDTH - offset * 2, @sprite.bitmap.height, @waiting_for_key && i == @selection ? tr("Press a key") : tr(get_display_value(i)), 1)
         @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i) - 1, 1, 2, @sprite.bitmap.height - 2), Color.new(255, 255, 255, 32))
       end
 

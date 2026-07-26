@@ -122,6 +122,12 @@ class Window_Settings
     @fade_in = true
   end
 
+  def redraw_all
+    @title.bitmap.clear
+    @title.bitmap.draw_text(0, 0, @title.bitmap.width, @title.bitmap.height, tr("Settings"), 1)
+    @content.redraw_all
+  end
+
   def redraw_setting(screen, index)
     if @visible == false
       return

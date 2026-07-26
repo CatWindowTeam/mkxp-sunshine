@@ -54,8 +54,8 @@ module Settings
         end
       end
       def language(value)
-        # idk how to set language
-        # TODO: fix languages on new ruby versions
+        $persistent.lang = Language::LANGUAGES[value]
+        $scene&.redraw
       end
 
       def movement(value)

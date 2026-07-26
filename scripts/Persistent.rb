@@ -19,14 +19,14 @@ class LanguageCode
     end
     
     if parts.length == 1
-      @lang = parts[0].downcase.to_sym
+      @lang = parts[0].downcase
       @region = nil
       @full = @lang
     elsif parts.length == 2
-      @lang = parts[0].downcase.to_sym
-      @region = parts[1].upcase.to_sym
+      @lang = parts[0].downcase
+      @region = parts[1].upcase
       full_str = parts[0].downcase + '_' + parts[1].upcase
-      @full = full_str.to_sym
+      @full = full_str
     else
       raise "malformed language code: #{str}"
     end

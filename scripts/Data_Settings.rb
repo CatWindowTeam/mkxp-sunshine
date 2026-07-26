@@ -125,262 +125,262 @@ end
 class Window_Settings
   # if parameter is linked to data in class Settings, then default value in this structure is ignored
   DATA = {
-    tr("Audio") => [
+    "Audio" => [
       {
         :type => :slider,
-        :name => tr('BGM Volume'),
+        :name => "BGM Volume",
         :parameter => :bgm_volume,
         :min => 0,
         :max => 100
       },
       {
         :type => :slider,
-        :name => tr('SFX Volume'),
+        :name => "SFX Volume",
         :parameter => :sfx_volume,
         :min => 0,
         :max => 100
       },
       {
         :type => :bool,
-        :name => tr('ITS TIME FOR FIGHT CRIME'),
+        :name => "ITS TIME FOR FIGHT CRIME",
         :parameter => :use_fight_crime_track
       },
     ],
-    tr("Video") => [
-      { :type => :sep, :name => tr("Screen")},
+    "Video" => [
+      { :type => :sep, :name => "Screen"},
       {
         :type => :enum,
-        :name => tr('Resolution'),
+        :name => "Resolution",
         :default => 0,
         :parameter => Graphics::RESOLUTION_OVERRIDDEN ? nil : :resolution,
         :values => Graphics::RESOLUTION_OVERRIDDEN ? ["Resolution is redefined via config"] : Graphics.resolutions_names_list
       },
       {
         :type => :bool,
-        :name => tr('Fullscreen'),
+        :name => "Fullscreen",
         :parameter => :fullscreen
       },
       {
         :type => :bool,
-        :name => tr('Frameskip'),
+        :name => "Frameskip",
         :parameter => :frameskip
       },
       {
         :type => :enum,
-        :name => tr('Scaling mode'),
+        :name => "Scaling mode",
         :parameter => :scaling_mode,
-        :values => [tr("Nearest Neighbor"), tr("Smooth(old)")]
+        :values => ["Nearest Neighbor", "Smooth(old)"]
       },
       {
         :type => :bool,
-        :name => tr('Dynamic Light'),
+        :name => "Dynamic Light",
         :parameter => :light,
       },
       {
         :type => :bool,
-        :name => tr('World machine shader'),
+        :name => "World machine shader",
         :parameter => :twm_shader
       },
       {
         :type => :bool,
-        :name => tr('Colorblind mode'),
+        :name => "Colorblind mode",
         :parameter => :colorblind
       },
     ],
-    tr("UI") => [
+    "UI" => [
       {
         :type => :bool,
-        :name => tr('In-Game Timer'),
+        :name => "In-Game Timer",
         :parameter => :in_game_timer
       },
       {
         :type => :enum,
-        :name => tr('Language'),
+        :name => "Language",
         :parameter => :language,
         :values => Language::LANGUAGES
       },
       {
         :type => :enum,
-        :name => tr('FastTravel UI'),
+        :name => "FastTravel UI",
         :parameter => :fasttravel_ui,
-        :values => [tr("Original"), tr("WME (WIP)")]
+        :values => ["Original", "WME (WIP)"]
       },
     ],
-    tr("Gameplay") => [
+    "Gameplay" => [
       {
         :type => :enum,
-        :name => tr('Default movement'),
+        :name => "Default movement",
         :parameter => :movement,
-        :values => [tr("Walk"), tr("Run")]
+        :values => ["Walk", "Run"]
       },
       {
         :type => :bool,
-        :name => tr('Skip Text (R)'),
+        :name => "Skip Text (R)",
         :parameter => :skip_text
       },
       {
         :type => :bool,
-        :name => tr('Purple message box for Entity'),
+        :name => "Purple message box for Entity",
         :parameter => :en_purple_messagebox
       },
       {
         :type => :bool,
-        :name => tr('Enforce april fools'),
+        :name => "Enforce april fools",
         :parameter => :enforce_april_fools
       },
       {
         :type => :bool,
-        :name => tr('True Memory Mode'),
+        :name => "True Memory Mode",
         :parameter => :true_memory_mode
       },
       {
         :type => :bool,
-        :name => tr('Freeware Mode(!)'),
+        :name => "Freeware Mode(!)",
         :parameter => :oneshot_mode
       },
       {
         :type => :bool,
-        :name => tr('World machine shader on Entity footprints'),
+        :name => "World machine shader on Entity footprints",
         :parameter => :twm_shader_footprint
       },
     ],
-    tr("Controls") => [
+    "Controls" => [
       {
         :type => :bool,
-        :name => tr('Control LED lighting on gamepads'),
+        :name => 'Control LED lighting on gamepads',
         :parameter => :gamepad_led
       },
-      { :type => :sep, :name => tr("Walk") },
+      { :type => :sep, :name => "Walk" },
       {
         :type => :key,
-        :name => tr("Walk Down"),
+        :name => "Walk Down",
         :parameter => :controls_walk_down,
         :bind => Input::DOWN
       },
       {
         :type => :key,
-        :name => tr("Walk Left"),
+        :name => "Walk Left",
         :parameter => :controls_walk_left,
         :bind => Input::LEFT
       },
       {
         :type => :key,
-        :name => tr("Walk Right"),
+        :name => "Walk Right",
         :parameter => :controls_walk_right,
         :bind => Input::RIGHT
       },
       {
         :type => :key,
-        :name => tr("Walk Up"),
+        :name => "Walk Up",
         :parameter => :controls_walk_up,
         :bind => Input::UP
       },
       {
         :type => :key,
-        :name => tr("Run"),
+        :name => "Run",
         :parameter => :controls_run,
         :bind => Input::RUN
       },
-      { :type => :sep, :name => tr("Actions") },
+      { :type => :sep, :name => "Actions" },
       {
         :type => :key,
-        :name => tr("Action"),
+        :name => "Action",
         :parameter => :controls_action,
         :bind => Input::ACTION
       },
       {
         :type => :key,
-        :name => tr("Deactivate"),
+        :name => "Deactivate",
         :parameter => :controls_deactivate,
         :bind => Input::DEACTIVATE
       },
       {
         :type => :key,
-        :name => tr("Cancel"),
+        :name => "Cancel",
         :parameter => :controls_cancel,
         :bind => Input::CANCEL
       },
       {
         :type => :key,
-        :name => tr("Menu"),
+        :name => "Menu",
         :parameter => :controls_menu,
         :bind => Input::MENU
       },
       {
         :type => :key,
-        :name => tr("Items"),
+        :name => "Items",
         :parameter => :controls_items,
         :bind => Input::ITEMS
       },
       {
         :type => :key,
-        :name => tr("Nav Left"),
+        :name => "Nav Left",
         :parameter => :controls_nav_left,
         :bind => Input::L
       },
       {
         :type => :key,
-        :name => tr("Nav Right"),
+        :name => "Nav Right",
         :parameter => :controls_nav_right,
         :bind => Input::R
       },
-      #{ :type => :sep, :name => tr("Other") },
+      #{ :type => :sep, :name => "Other" },
       {
         :type => :action,
-        :name => tr("Reset Controls"),
+        :name => "Reset Controls",
         :action => Settings.method(:reset_controls!)
       },
     ],
-    tr("Advanced") => [
+    "Advanced" => [
       {
         :type => :bool,
-        :name => tr('Crashlog privacy'),
+        :name => "Crashlog privacy",
         :parameter => :crashlog_privacy
         
       },
     ],
-    tr("Debug") => [
+    "Debug" => [
       {
         :type => :bool,
-        :name => tr('Debug mode(!)'),
+        :name => "Debug mode(!)",
         :parameter => :debug
       },
       {
         :type => :bool,
-        :name => tr('Show debug character'),
+        :name => "Show debug character",
         :parameter => :debug_character
       },
       {
         :type => :bool,
-        :name => tr('Draw debug text in main menu'),
+        :name => "Draw debug text in main menu",
         :parameter => :debug_text_scene_title
       },
       {
         :type => :bool,
-        :name => tr('Show debug text'),
+        :name => "Show debug text",
         :parameter => :debug_text
       },
       {
         :type => :bool,
-        :name => tr('Show picture names'),
+        :name => "Show picture names",
         :parameter => :debug_picture_names
       },
       {
         :type => :bool,
-        :name => tr('Debug lightmap'),
+        :name => "Debug lightmap",
         :parameter => :debug_lightmap
       },
       { :type => :sep },
       {
         :type => :key,
-        :name => tr("Debug"),
+        :name => "Debug",
         :parameter => :controls_debug,
         :bind => Input::DEBUGACTION
       },
       { :type => :sep },
       {
         :type => :action,
-        :name => tr("Clear image cache"),
+        :name => "Clear image cache",
         :action => Proc.new { RPG::Cache.clear }
       }
     ],
