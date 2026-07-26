@@ -4,6 +4,7 @@
 //помойка ебаная
 inline boost::chrono::high_resolution_clock::time_point startTime;
 
+extern bool is_privacy_crashdump_enabled;
 class Sunshine{
 public:
     Sunshine();

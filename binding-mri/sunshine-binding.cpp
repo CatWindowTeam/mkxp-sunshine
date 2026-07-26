@@ -9,7 +9,7 @@
 #include "ruby/internal/intern/class.h"
 #include "security.h"
 #include "eventthread.h"
-#include "sunshine-binding.h"
+#include "sunshine.h"
 bool is_privacy_crashdump_enabled = false;
 
 static VALUE sunshine_get_crash_privacy(VALUE self) {

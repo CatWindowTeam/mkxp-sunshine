@@ -25,7 +25,7 @@
 #include <SDL3/SDL_system.h>
 #include <boost/stacktrace.hpp>
 #include <SDL3/SDL_cpuinfo.h>
-#include "sunshine-binding.h"
+#include "sunshine.h"
 #ifdef __LINUX__
 	#include <gtk/gtk.h>
 	#include "xdg-user-dir-lookup.h"
