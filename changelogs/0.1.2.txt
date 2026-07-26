@@ -4,3 +4,5 @@ Added Crashdump privacy setting
 Ling faces updated
 Magpie faces updated
 Added ITS TIME FOR FIGHT CRIME setting(enabled fight_crime.ogg when niko on roomba)
+Fixed language selection
+Replaced Japanese font with pixel one
