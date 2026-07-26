@@ -5,6 +5,7 @@ module Settings
         # Audio
         :bgm_volume                  => 100,
         :sfx_volume                  => 100,
+        :use_fight_crime_track       => false,
 
         # Video
         :fullscreen                  => false,
@@ -138,6 +139,11 @@ class Window_Settings
         :parameter => :sfx_volume,
         :min => 0,
         :max => 100
+      },
+      {
+        :type => :bool,
+        :name => tr('ITS TIME FOR FIGHT CRIME'),
+        :parameter => :use_fight_crime_track
       },
     ],
     tr("Video") => [
