@@ -12,9 +12,9 @@ class Language
     def set(lc)
       @data = nil
       @tr = nil
-      [lc.full.to_s, lc.lang.to_s].each do |name|
+      [lc.full, lc.lang].each do |name|
         path = "Languages/#{name}.po"
-        if FileTest.exist?(path)
+        if File.exist?(path)
           load_pot(path)
           loadFontMap
           Font.default_name = @languageFontMap[name]
@@ -71,7 +71,7 @@ class Language
       @data = Hash.new
       lastLineWasMsgId = false
       lastLineWasMsgStr = false
-      if FileTest.exist?(path)
+      if File.exist?(path)
         File.readlines(path, encoding: "UTF-8").each do |line|
           if line.start_with?("msgid ")
             line = line[6..-1]
@@ -138,7 +138,7 @@ class Language
       if !@fontMapLoaded
         @languageFontMap = Hash.new
         path = "Languages/language_fonts.ini"
-        if FileTest.exist?(path)
+        if File.exist?(path)
           File.readlines(path, encoding: "UTF-8").each do |line|
             parts = line.split("=", 2)
             #print(parts[0].inspect)
@@ -170,6 +170,10 @@ class Language
         @text_sprites = Hash.new()
       end
       @text_sprites[key] = spr
+      # we dont want memory leak
+      @text_sprites.delete_if do |_, ispr|
+        ispr.disposed?
+      end
     end
 
     def reset_fonts(sprites)
@@ -207,6 +211,10 @@ class TrString
 
   def length
     to_str.length
+  end
+
+  def +(other)
+    to_str + other
   end
 end
 
