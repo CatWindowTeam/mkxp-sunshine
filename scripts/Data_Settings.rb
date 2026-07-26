@@ -165,6 +165,7 @@ class Window_Settings
         :name => "Frameskip",
         :parameter => :frameskip
       },
+      { :type => :sep, :name => "Other"},
       {
         :type => :enum,
         :name => "Scaling mode",
