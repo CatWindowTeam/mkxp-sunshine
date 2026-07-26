@@ -8,3 +8,5 @@ Added x86, ARM64 and IA-64 specific optimizations
 Game Optimized
 Added help screen in Settings
 "Skip Text (R)" fixed
+Fixed language selection
+Replaced Japanese font with pixel one
