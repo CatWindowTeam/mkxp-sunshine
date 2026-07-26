@@ -4,3 +4,7 @@ Added Crashdump privacy setting
 Ling faces updated
 Magpie faces updated
 Added ITS TIME FOR FIGHT CRIME setting(enabled fight_crime.ogg when niko on roomba)
+Added x86, ARM64 and IA-64 specific optimizations
+Game Optimized
+Added help screen in Settings
+"Skip Text (R)" fixed

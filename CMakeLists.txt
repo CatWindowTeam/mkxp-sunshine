@@ -6,6 +6,8 @@ include(FindPackageHandleStandardArgs)
 option(STEAM "Build for Steam" OFF)
 option(DEBUG "Debug mode" OFF)
 option(NATIVE "Use native instructions(for local use only)" OFF)
+#x86, arm64, ia-64
+option(CPU_ARCH "Enter here your target arch" "x86")
 
 #Configuration
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
@@ -310,22 +312,68 @@ if (MSVC)
 	if(DEBUG)
 		add_compile_options(/EHr /fsanitize /validate-charset /DEBUG /RTCu /RTCs /RTCc)
 	else()
-		add_compile_options(/O2 /fp:fast /GL /GF /GA)
+		add_compile_options(/O2 /fp:fast /GL /GF /GA /Gy)
+		add_link_options(/LTCG /OPT:REF /OPT:ICF)
 	endif()
 else()
-	if(NATIVE)
-	    add_compile_options(-march=native -mtune=native)
-	endif()
 	if(DEBUG)
 		add_compile_options(-g3 -fno-omit-frame-pointer)
-		#add_compile_options(-g3 -O0 -fno-omit-frame-pointer -ggdb -fcheck-new -gbtf)
 	else()
-		add_compile_options(-O2 -ffast-math -fipa-pta -ftree-vectorize -fstdarg-opt -fomit-frame-pointer -frename-registers 
-		-ffunction-sections -fdata-sections -fvisibility=hidden)
-		add_link_options(-Wl,-O2 -Wl,--gc-sections -Wl,--as-needed -Wl,--strip-debug  -Wl,--no-undefined)
-		if(!WIN32)
-			add_compile_options(-flto)
+		add_compile_options(
+		-O2 
+		-ffast-math 
+		-fipa-pta 
+		-ftree-vectorize 
+		-fstdarg-opt 
+		-fomit-frame-pointer 
+		-frename-registers 
+		-ffunction-sections 
+		-fdata-sections 
+		-fvisibility=hidden 
+		-finline-functions #-fno-rtti
+		-fno-asynchronous-unwind-tables
+		-fno-unwind-tables
+		-s)
+		
+		add_link_options(-Wl,-O2 
+		-Wl,--gc-sections 
+		-Wl,--as-needed  
+		-Wl,--no-undefined
+		-Wl,--strip-all
+		-Wl,--no-copy-dt-needed-entries)
+		if(NOT WIN32)
+		  add_compile_options(-flto)
+		  add_link_options(-flto)
 		endif()
+
+		if(WIN32)
+		  add_compile_options(-flto)
+		  add_link_options(-flto)
+		elseif(LINUX)
+		  add_compile_options(-fno-plt)
+		endif()
+
+		if(CPU_ARCH MATCHES "x86")
+		  add_compile_options(
+		  	-mnoreturn-no-callee-saved-registers
+		  	-mrelax-cmpxchg-loop)
+		elseif(CPU_ARCH MATCHES "arm64")
+		  add_compile_options(
+			 -mlow-precision-recip-sqrt
+			 -mlow-precision-sqrt
+			 -mlow-precision-div
+		  )
+		elseif(CPU_ARCH MATCHES "ia-64")
+		  add_compile_options(
+			 -minline-float-divide-min-latency
+			 -minline-float-divide-max-throughput
+			 -minline-int-divide-min-latency
+			 -minline-int-divide-max-throughput
+			 -minline-sqrt-min-latency
+			 -minline-sqrt-max-throughput
+		  )
+		endif()
+		
 	endif()
 endif()
 

@@ -4,7 +4,7 @@
 #include "debugwriter.h"
 #include <stdio.h>
 #include <SDL3/SDL_system.h>
-// In the future, we plan to add a mod loader, so this component is needed to protect users from mod attacks.
+// this component is needed to protect users from mod attacks.
 
 #ifdef __linux__
 	#include <sys/socket.h>
