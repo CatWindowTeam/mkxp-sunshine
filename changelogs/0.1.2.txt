@@ -10,3 +10,4 @@ Added help screen in Settings
 "Skip Text (R)" fixed
 Fixed language selection
 Replaced Japanese font with pixel one
+Added SDL_HINT_INVALID_PARAM_CHECKS controller in Settings>Advanced

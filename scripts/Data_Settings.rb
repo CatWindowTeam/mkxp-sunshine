@@ -32,7 +32,9 @@ module Settings
 
         # Advanced
 		:crashlog_privacy        	 => false,
-	
+		:streamer_privacy        	 => false,
+		:SDL_HINT_INVALID_PARAM_CHECKS => false,
+		
         #controls
         :gamepad_led                 => true,
         :gamepad_deadzone            => 5,
@@ -44,7 +46,7 @@ module Settings
         :debug_text_scene_title      => true,
         :debug_picture_names         => false,
         :debug_lightmap              => false,
-
+		:SDL_HINT_SHUTDOWN_DBUS_ON_QUIT => false,
 
         #Hidden
         :is_dejavu                   => false,
@@ -125,6 +127,12 @@ end
 class Window_Settings
   # if parameter is linked to data in class Settings, then default value in this structure is ignored
   DATA = {
+  	"Help" => [
+  	  { :type => :base, :name => "(!) - It's Dangerous!" },
+  	  { :type => :base, :name => "(WIP) - Work In Progress" },
+  	  { :type => :base, :name => "(GRR) - Game Restart Required" },
+  	  { :type => :base, :name => "(LRR) - Location Reload Required" },
+  	],
     "Audio" => [
       {
         :type => :slider,
@@ -140,6 +148,7 @@ class Window_Settings
         :min => 0,
         :max => 100
       },
+      { :type => :sep, :name => "Game tracks"},
       {
         :type => :bool,
         :name => "ITS TIME FOR FIGHT CRIME",
@@ -165,13 +174,13 @@ class Window_Settings
         :name => "Frameskip",
         :parameter => :frameskip
       },
-      { :type => :sep, :name => "Other"},
       {
         :type => :enum,
         :name => "Scaling mode",
         :parameter => :scaling_mode,
         :values => ["Nearest Neighbor", "Smooth(old)"]
       },
+      { :type => :sep, :name => "Effects"},
       {
         :type => :bool,
         :name => "Dynamic Light",
@@ -181,11 +190,6 @@ class Window_Settings
         :type => :bool,
         :name => "World machine shader",
         :parameter => :twm_shader
-      },
-      {
-        :type => :bool,
-        :name => "Colorblind mode",
-        :parameter => :colorblind
       },
     ],
     "UI" => [
@@ -208,6 +212,12 @@ class Window_Settings
       },
     ],
     "Gameplay" => [
+      { :type => :sep, :name => "Vanila" },
+      {
+        :type => :bool,
+        :name => "Colorblind mode",
+        :parameter => :colorblind
+      },
       {
         :type => :enum,
         :name => "Default movement",
@@ -219,8 +229,9 @@ class Window_Settings
         :name => "Skip Text (R)",
         :parameter => :skip_text
       },
+      { :type => :sep, :name => "Sunshine" },
       {
-        :type => :bool,
+      	:type => :bool,
         :name => "Purple message box for Entity",
         :parameter => :en_purple_messagebox
       },
@@ -241,7 +252,7 @@ class Window_Settings
       },
       {
         :type => :bool,
-        :name => "World machine shader on Entity footprints",
+        :name => "World machine shader on Entity footprints(WIP)",
         :parameter => :twm_shader_footprint
       },
     ],
@@ -325,7 +336,6 @@ class Window_Settings
         :parameter => :controls_nav_right,
         :bind => Input::R
       },
-      #{ :type => :sep, :name => "Other" },
       {
         :type => :action,
         :name => "Reset Controls",
@@ -333,11 +343,22 @@ class Window_Settings
       },
     ],
     "Advanced" => [
+      { :type => :sep, :name => "Privacy" },
       {
         :type => :bool,
         :name => "Crashlog privacy",
         :parameter => :crashlog_privacy
-        
+      },
+      {
+        :type => :bool,
+        :name => "Streamer privacy",
+        :parameter => :streamer_privacy
+      },
+      { :type => :sep, :name => "Other" },
+      {
+        :type => :bool,
+        :name => "SDL_HINT_INVALID_PARAM_CHECKS (!)",
+        :parameter => :SDL_HINT_INVALID_PARAM_CHECKS
       },
     ],
     "Debug" => [
@@ -371,6 +392,11 @@ class Window_Settings
         :name => "Debug lightmap",
         :parameter => :debug_lightmap
       },
+      {
+        :type => :bool,
+        :name => "SDL_HINT_SHUTDOWN_DBUS_ON_QUIT",
+        :parameter => :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT
+      },
       { :type => :sep },
       {
         :type => :key,
@@ -378,12 +404,20 @@ class Window_Settings
         :parameter => :controls_debug,
         :bind => Input::DEBUGACTION
       },
-      { :type => :sep },
+      { :type => :seps},
       {
         :type => :action,
         :name => "Clear image cache",
         :action => Proc.new { RPG::Cache.clear }
       }
     ],
+    "Mods" => [
+		{ :type => :base, :name => "Modloader enabled? #{ModLoader::IS_ENABLED}" },
+    ],
   }
+
+  # Part of ModAPI
+  def self.add_setting(setting)
+    DATA["Mods"] << setting
+  end
 end

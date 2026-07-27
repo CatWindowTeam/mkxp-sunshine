@@ -51,10 +51,6 @@
 #include "i18n.h"
 #include "security.h"
 
-#ifndef ps2
-	#include "modloader.h"
-#endif
-
 #include "sunshine.h"
 
 #include "define.h"
@@ -302,16 +298,6 @@ int main(int argc, char *argv[]){
 			return 0;
 		}
 	}
-
-	#ifndef ps2
-	std::string new_path = ModLoader(conf);
-	if(new_path != ""){
-		if (chdir(new_path.c_str()) != 0){
-			crash(Exception::MEOW, "Unable to switch into new gameFolder %s", new_path);
-			return 0;
-		}
-	}
-	#endif
 	
 	extern int screenMain(Config &conf);
 	if (conf.screenMode)
@@ -379,7 +365,7 @@ int main(int argc, char *argv[]){
 
 	/* Load and post key bindings */
 	rtData.bindingUpdateMsg.post(loadBindings(conf));
-
+	
 	/* Start RGSS thread */
 	SDL_Thread *rgssThread = SDL_CreateThread(rgssThreadFun, "rgss", &rtData);
 

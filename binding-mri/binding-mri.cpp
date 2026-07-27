@@ -32,6 +32,7 @@
 #include "boost-hash.h"
 #include "meow.h"
 #include "sunshine.h"
+#include "modloader.h"
 
 #include <ruby.h>
 #include <ruby/debug.h>
@@ -178,6 +179,7 @@ static void mriBindingInit(){
     SunshineBindingInit();
 	steamBindingInit();
 	shaderBindingInit();
+	ModLoader();
 	ModLoaderBindingInit();
 	keybindingsBindingInit();
 	lightmapBindingInit();
@@ -198,6 +200,7 @@ static void mriBindingInit(){
 	_rb_define_module_function(mod, "puts", mkxpPuts);
 	_rb_define_module_function(mod, "raw_key_states", mkxpRawKeyStates);
 	_rb_define_module_function(mod, "mouse_in_window", mkxpMouseInWindow);
+
 }
 
 static void printP(int argc, VALUE *argv, const char *convMethod, const char *sep){

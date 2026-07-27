@@ -86,7 +86,8 @@ set(scripts
   Input.rb
   Dynamic_Light.rb
   Gamepad_Colors.rb
-  Dynamic_Resolution.rb)
+  Dynamic_Resolution.rb
+  ModAPI.rb)
 
 find_program(RUBY_EXE ruby
   DOC "Location of the Ruby executable")

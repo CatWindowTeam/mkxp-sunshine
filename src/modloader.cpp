@@ -25,35 +25,8 @@
 #include <algorithm>
 #include <system_error>
 #include <SDL3/SDL_system.h>
+#include <physfs.h>
 namespace fs = std::filesystem;
-
-// Get directory for storing cached builds
-//TODO: support for other OS and platforms
-std::string getCacheDir(){
-#ifdef _WIN32
-	return SDL_getenv("Temp");
-#elif __linux__
-	return std::string(SDL_getenv("HOME")) + "/.cache";
-#elif BSD
-	return std::string(SDL_getenv("HOME")) + "/.cache";
-#elif __APPLE__
-	return "~/Library/Caches";
-#elif __ANDROID__
-	return std::string str(SDL_GetAndroidCachePath());
-#else
-	return "idk";
-#endif
-}
-
-//helper
-bool ensure_parent_dir(const std::filesystem::path& p){
-	if (p.has_parent_path()){
-		std::error_code ec;
-		std::filesystem::create_directories(p.parent_path(), ec);
-		return !ec;
-	}    
-	return true;
-}
 
 std::string sha512(const std::string str){
   unsigned char hash[SHA512_DIGEST_LENGTH];
@@ -98,19 +71,14 @@ std::string sha256_file(const std::string &fn) {
     return out;
 }
 
-#ifdef __EMSCRIPTEN__
-std::string ModLoader(Config conf){ return ""; }
-#else
-std::string ModLoader(Config conf){
-		std::string path = conf.Modloader.ModsDirPath;
+void ModLoader(){
+		std::string path = "mods";
 		if (!fs::exists(path) || !std::filesystem::is_directory(path)) {
 			Debug() << "[MODLOADER] Mods directory not found, skip.";
-			return "";
 		}
 		
 		if (fs::is_empty(path)){
 			Debug() << "[MODLOADER] Mods directory empty, skip.";
-			return "";
 		}
 
 		//buildID - unique ID of a certain combination of mods
@@ -118,16 +86,18 @@ std::string ModLoader(Config conf){
 		std::string buildID_tmp = ""; 
 		std::vector<std::string> mod_list = {};
 		try{
-			//1.check if any zip(mod) file, 2. calculate sha256 hash of zip(mod) files
-			for (const auto &entry : std::filesystem::directory_iterator(path, std::filesystem::directory_options::skip_permission_denied)) {
+			//1.check if any zip(mod) file, 2. calculate sha256 hash of zip(mod) files 3.mount mod via PhysFS
+ 			for (const auto &entry : std::filesystem::directory_iterator(path, std::filesystem::directory_options::skip_permission_denied)) {
 			    std::error_code ec;
 			    auto p = entry.path();
 			    if (!std::filesystem::is_regular_file(p, ec) || ec) continue;
-			
 			    auto ext = p.extension().string();
 			    if (ext != ".zip") continue;
-			
 			    std::string full = p.string();
+			    int ok = PHYSFS_mount(full.c_str(), "/", 0);
+			    if (!ok) {
+			      crash(Exception::ModLoaderError, "PhysFS_mount failed: %s", PHYSFS_getLastError());
+			    }
 			    Debug() << "[MODLOADER] " << full;
 			    mod_list.push_back(full);
 			    mods_count++;
@@ -138,84 +108,9 @@ std::string ModLoader(Config conf){
 				
 			buildID = sha512(buildID_tmp);
 			Debug() << "[MODLOADER] BuildID: " << buildID;
-			std::string path3 = getCacheDir() + "/sunshine-" + buildID;
-			int err = 0;
-			modloader_is_enabled = true;
-			if(!std::filesystem::exists(path3)){
-				std::error_code ec;
-				fs::create_directory(path3, ec);
-				if (ec) {
-				    crash(Exception::ModLoaderError, "Failed to create destination: %s", ec.message().c_str());
-				}
-
-				fs::copy(conf.gameFolder, path3, fs::copy_options::recursive | fs::copy_options::overwrite_existing, ec);
-				if (ec) {
-				    crash(Exception::ModLoaderError, "Copy error: %s", ec.message().c_str());
-				}
-
-				//Extracting zipsodpsofspo idk
-				for (size_t i = 0; i < mod_list.size(); ++i){
-					zip_t* za = zip_open(mod_list[i].c_str(), ZIP_RDONLY, &err);
-					if (!za){
-						crash(Exception::ModLoaderError, "Failed to open zip");
-					}
-					 
-					zip_int64_t n = zip_get_num_entries(za, 0);
-					for (zip_uint64_t i2 = 0; i2 < static_cast<zip_uint64_t>(n); ++i2) {
-						zip_stat_t st;
-					    if (zip_stat_index(za, i2, 0, &st) != 0) {
-							crash(Exception::ModLoaderError, "zip_stat_index failed");
-					    }
-					    
-					    std::string name = st.name;
-					    std::filesystem::path target = path3 / std::filesystem::path(name);
-					 
-					    // If entry name ends with '/', treat as directory
-					    if (!name.empty() && name.back() == '/') {
-					    	std::error_code ec;
-					        std::filesystem::create_directories(target, ec);
-					        if (ec) crash(Exception::MEOW, "Failed to create dir");
-					        continue;
-					    }
-					 
-					    if (!ensure_parent_dir(target)){
-					    	crash(Exception::ModLoaderError, "Failed to create parent dirs");
-						}
-					 
-					    zip_file_t* zf = zip_fopen_index(za, i2, 0);
-					    if (!zf) {
-					    	crash(Exception::ModLoaderError, "zip_fopen_index failed");
-					 	}
-					    std::ofstream out(target, std::ios::binary);
-					    if (!out) {
-					    	crash(Exception::ModLoaderError, "Failed to open output file %s", target.c_str());
-					        zip_fclose(zf);
-					    }
-					 
-					    const zip_uint64_t bufsize = 4096;
-					    std::vector<char> buf(bufsize);
-					    zip_int64_t bytes_read;
-					    zip_uint64_t remaining = st.size;
-					    while (remaining > 0) {
-					    	zip_uint64_t to_read = std::min<zip_uint64_t>(bufsize, remaining);
-					        bytes_read = zip_fread(zf, buf.data(), to_read);
-					        if (bytes_read < 0) {
-					        	crash(Exception::ModLoaderError, "zip_fread error for %s", name.c_str());
-					            break;
-					        }
-					        out.write(buf.data(), bytes_read);
-					        remaining -= bytes_read;
-					    }
-					    zip_fclose(zf);
-					} 
-					zip_close(za);
-				}
-				return path3;
-			}else{
-				return path3;
-			}
+			
+			modloader_is_enabled = true;			
 		}catch(const std::exception& e){
 			crash(Exception::ModLoaderError, "Something is wrong, Exception: %s ", e.what());
 		}
 }
-#endif

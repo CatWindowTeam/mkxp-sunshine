@@ -2,6 +2,7 @@
 #include <SDL3/SDL_version.h>
 #include <SDL3/SDL_gamepad.h>
 #include <SDL3/SDL_joystick.h>
+#include <SDL3/SDL_hints.h>
 #include <limits.h>
 #include "ruby/backward/cxxanyargs.hpp"
 #include "ruby/internal/arithmetic/double.h"
@@ -19,6 +20,10 @@ static VALUE sunshine_get_crash_privacy(VALUE self) {
 static VALUE sunshine_set_crash_privacy(VALUE, VALUE v) {
   is_privacy_crashdump_enabled = RTEST(v);
   return v;
+}
+
+static VALUE sunshine_set_hint(VALUE, VALUE h, VALUE v) {
+  return SDL_SetHint(StringValueCStr(h), StringValueCStr(v));
 }
 
 static VALUE obj_clone(VALUE self){
@@ -57,6 +62,7 @@ void SunshineBindingInit(){
 	rb_const_set(module, rb_intern("SECURITYSTATE"), rb_str_new_cstr(securitystate));
 	rb_define_singleton_method(module, "crashprivacy", RUBY_METHOD_FUNC(sunshine_get_crash_privacy), 0);
 	rb_define_singleton_method(module, "crashprivacy=", RUBY_METHOD_FUNC(sunshine_set_crash_privacy), 1);
+	rb_define_singleton_method(module, "setSDLHint", RUBY_METHOD_FUNC(sunshine_set_hint), 2);
     //если методы доступны то просто не перезаписываем их
 	if (!rb_respond_to(rb_cObject, rb_intern("class"))) {
 	        rb_define_method(rb_cObject, "class", rb_obj_class, 0);
