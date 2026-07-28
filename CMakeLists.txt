@@ -5,6 +5,7 @@ include(FindPackageHandleStandardArgs)
 # Options
 option(STEAM "Build for Steam" OFF)
 option(DEBUG "Debug mode" OFF)
+option(SANITIZERS "Enable sanitizers" OFF)
 option(NATIVE "Use native instructions(for local use only)" OFF)
 #x86, arm64, ia-64
 option(CPU_ARCH "Enter here your target arch" "x86")
@@ -310,12 +311,23 @@ source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
 if (MSVC)
 	list(APPEND DEFINES _CRT_SECURE_NO_WARNINGS NOMINMAX )
 	if(DEBUG)
-		add_compile_options(/EHr /fsanitize /validate-charset /DEBUG /RTCu /RTCs /RTCc)
+		add_compile_options(/EHr /validate-charset /DEBUG /RTCu /RTCs /RTCc)
 	else()
 		add_compile_options(/O2 /fp:fast /GL /GF /GA /Gy)
 		add_link_options(/LTCG /OPT:REF /OPT:ICF)
 	endif()
+	if(SANITIZERS)
+		add_compile_options(/fsanitize=address /fsanitize=fuzzer /fsanitize-address-use-after-return)
+	endif()
 else()
+	if(NATIVE)
+
+	endif()
+	if(SANITIZERS)
+		set(SANITIZERS "address,undefined,leak,shift,shift-base,shift-exponent,integer-divide-by-zero,unreachable,vla-bound,null,signed-integer-overflow,bounds,bounds-strict,alignment,object-size,float-divide-by-zero,float-cast-overflow,nonnull-attribute,returns-nonnull-attribute,bool,enum,vptr,pointer-overflow,builtin,pointer-subtract,pointer-compare")
+		add_compile_options(-fsanitize=${SANITIZERS})
+		add_link_options(-fsanitize=${SANITIZERS})
+	endif()
 	if(DEBUG)
 		add_compile_options(-g3 -fno-omit-frame-pointer)
 	else()
@@ -369,8 +381,6 @@ else()
 		
 	endif()
 endif()
-
-###############
 
 if(ANDROID)
 	add_library(main SHARED
