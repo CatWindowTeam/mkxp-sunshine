@@ -73,12 +73,14 @@ std::string sha256_file(const std::string &fn) {
 
 void ModLoader(){
 		std::string path = "mods";
-		if (!fs::exists(path) || !std::filesystem::is_directory(path)) {
+		if (!fs::exists(path) || !fs::is_directory(path)) {
 			Debug() << "[MODLOADER] Mods directory not found, skip.";
+			return;
 		}
 		
 		if (fs::is_empty(path)){
 			Debug() << "[MODLOADER] Mods directory empty, skip.";
+			return;
 		}
 
 		//buildID - unique ID of a certain combination of mods
@@ -87,14 +89,14 @@ void ModLoader(){
 		std::vector<std::string> mod_list = {};
 		try{
 			//1.check if any zip(mod) file, 2. calculate sha256 hash of zip(mod) files 3.mount mod via PhysFS
- 			for (const auto &entry : std::filesystem::directory_iterator(path, std::filesystem::directory_options::skip_permission_denied)) {
+ 			for (const auto &entry : fs::directory_iterator(path, fs::directory_options::skip_permission_denied)) {
 			    std::error_code ec;
 			    auto p = entry.path();
-			    if (!std::filesystem::is_regular_file(p, ec) || ec) continue;
+			    if (!fs::is_regular_file(p, ec) || ec) continue;
 			    auto ext = p.extension().string();
 			    if (ext != ".zip") continue;
 			    std::string full = p.string();
-			    int ok = PHYSFS_mount(full.c_str(), "/", 0);
+			    int ok = PHYSFS_mount(full.c_str(), "/mod-storage", 0);
 			    if (!ok) {
 			      crash(Exception::ModLoaderError, "PhysFS_mount failed: %s", PHYSFS_getLastError());
 			    }
@@ -108,7 +110,6 @@ void ModLoader(){
 				
 			buildID = sha512(buildID_tmp);
 			Debug() << "[MODLOADER] BuildID: " << buildID;
-			
 			modloader_is_enabled = true;			
 		}catch(const std::exception& e){
 			crash(Exception::ModLoaderError, "Something is wrong, Exception: %s ", e.what());

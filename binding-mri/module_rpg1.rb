@@ -17,7 +17,18 @@ module RPG
   module Cache
     @cache = {}
     def self.load_bitmap(folder_name, filename, hue = 0)
-      path = Graphics.adapted_file(folder_name + filename)
+      if ModLoader::IS_ENABLED
+        if File.exist?("/mod-storage/" + folder_name + filename)
+          print "test"
+          path = Graphics.adapted_file("/mod-storage/" + folder_name + filename)
+        else
+          print "test2"
+          path = Graphics.adapted_file(folder_name + filename)
+        end
+	  else
+	    print "test3"
+		path = Graphics.adapted_file(folder_name + filename)
+      end
       if not @cache.include?(path) or @cache[path].disposed?
         if filename != ""
           @cache[path] = Bitmap.new(path)

@@ -329,11 +329,7 @@ else()
 		-frename-registers 
 		-ffunction-sections 
 		-fdata-sections 
-		-fvisibility=hidden 
-		-finline-functions #-fno-rtti
-		-fno-asynchronous-unwind-tables
-		-fno-unwind-tables
-		-s)
+		-fvisibility=hidden)
 		
 		add_link_options(-Wl,-O2 
 		-Wl,--gc-sections 

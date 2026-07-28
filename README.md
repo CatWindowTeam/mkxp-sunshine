@@ -10,6 +10,7 @@ Target of sunshine mod - improve original game.
 ## Build
 
 1. Install required packages
+	* GCC 14+
     * Cmake
     * C/C++ compiler
     * xxd
@@ -24,9 +25,10 @@ Target of sunshine mod - improve original game.
     * PhysFS
     * sigc++-2.0
     * OpenSSL
-    * libzip
-    * GTK3(Linux only!)
-    * libxfconf(Linux only!)
+    * GTK3(*NIX only!)
+    * libxfconf(*NIX only!)
+
+(*NIX - Linux,FreeBSD and other UNIX and UNIX-like systems.)
 
 2. build
     * In project dir create build dir
