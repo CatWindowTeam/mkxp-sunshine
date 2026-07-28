@@ -6,6 +6,7 @@ class Window_Settings
   PARAMETER_HEIGHT = 32
   PARAMETER_VALUE_WIDTH = PARAMETER_WIDTH / 2
   PARAMETER_KEY_WIDTH = PARAMETER_WIDTH / 5
+  ICON_SIZE = 16
   # typed sizes
   BOOL_VALUE_WIDTH = 120
 
@@ -108,6 +109,7 @@ class Window_Settings
 
     def add_parameter(sreen_name, parameter)
       @parameters[sreen_name] << parameter
+      parameter
     end
     
     def get_parameter(screen_name, parameter_id)
@@ -118,6 +120,21 @@ class Window_Settings
     end
     def get_current_parameter
       @parameters&.values&.[](@screen)&.[](@index)
+    end
+
+    def disable_setting(screen, position)
+      if screen.is_a?(String)
+        get_parameter(screen, position).disable
+      else
+        get_parameter_by_sceen_id(screen, position).disable
+      end
+    end
+    def enable_setting(screen, position)
+      if screen.is_a?(String)
+        get_parameter(screen, position).enable
+      else
+        get_parameter_by_sceen_id(screen, position).enable
+      end
     end
 
     # updating
@@ -309,7 +326,7 @@ class Window_Settings
   class BaseParameter
     TYPE = :base
 
-    def initialize(settings_content, screen_id, position, name, parameter, init_value)
+    def initialize(settings_content, screen_id, position, name, icon, parameter, init_value)
       @settings_content = settings_content
       @screen_id = screen_id
       @position = position
@@ -317,10 +334,18 @@ class Window_Settings
       @value = Settings[parameter] || init_value
       @parameter = parameter
       @opacity = 1.0
+      @icon_position = icon
+      @disabled = false
 
       @sprite = Sprite.new(@settings_content.viewport)
       @sprite.bitmap = Bitmap.new(PARAMETER_WIDTH, PARAMETER_HEIGHT + 1)
       @sprite.bitmap.font.size = 20
+
+      if @icon_position
+        @icon = Sprite.new(@settings_content.viewport)
+        @icon.bitmap = Bitmap.new(ICON_SIZE, ICON_SIZE)
+        @icon.zoom_x = @icon.zoom_y = 2
+      end
 
       Language.register_text_sprite("settings_parameter #{screen_id}-#{position}", @sprite)
 
@@ -328,13 +353,19 @@ class Window_Settings
       self.value = self.value # appling init settings
       redraw
     end
+
+    def enable
+      @disabled = false
+    end
+    def disable
+      @disabled = true
+    end
     
     def opacity
       @opacity
     end
     def opacity=(value)
       @opacity = value.to_f / 255.0
-      redraw
     end
 
     def value
@@ -358,35 +389,59 @@ class Window_Settings
     end
     def name=(name)
       @name = name
-      redraw()
+      redraw
     end
 
     def get_display_value()
       self.value.to_s || "null"
     end
 
+    def redraw_icon()
+      if @icon_position
+        @icon.bitmap.clear
+        @icon.bitmap.blt(0, 0, RPG::Cache.menu("icons"), Rect.new(@icon_position[0] * ICON_SIZE, @icon_position[1] * ICON_SIZE, ICON_SIZE, ICON_SIZE))
+      end
+    end
+
     def redraw()
+      offset = !!@icon_position ? ICON_SIZE * 2 + 8 : 0
       @sprite.bitmap.clear
-      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - @value_width, @sprite.bitmap.height, tr(@name))
+      @sprite.bitmap.draw_text(offset, 0, @sprite.bitmap.width - @value_width - offset, @sprite.bitmap.height, tr(@name))
       @sprite.bitmap.draw_text(@sprite.bitmap.width - @value_width, 0, @value_width, @sprite.bitmap.height, tr(get_display_value), 2)
       if (@settings_content.need_draw_line(@screen_id, @position))
         @sprite.bitmap.fill_rect(Rect.new(0, PARAMETER_HEIGHT - 1, PARAMETER_WIDTH, 2), Color.new(255, 255, 255, 24))
       end
+      #if @icon_position
+      #  @sprite.bitmap.blt(0, (PARAMETER_HEIGHT - ICON_SIZE * 2) / 2, RPG::Cache.menu("icons"), Rect.new(@icon_position[0] * ICON_SIZE, @icon_position[1] * ICON_SIZE, ICON_SIZE, ICON_SIZE))
+      #end
+      redraw_icon
     end
 
     def update()
+      disabled_opacity = @disabled ? 0.5 : 1
+
       @sprite.x = @screen_id * Graphics.width - @settings_content.visible_x + @settings_content.x
       @sprite.y = @settings_content.visible_y + @position * PARAMETER_HEIGHT
-      @sprite.opacity = ((1.0 + ((@sprite.y - @settings_content.offset).to_f / 64.0).clamp(-1.0, 0.0)) * @opacity * (@settings_content.opacity.to_f / 255.0) * 255.0).to_i 
+      @sprite.opacity = ((1.0 + ((@sprite.y - @settings_content.offset).to_f / 64.0).clamp(-1.0, 0.0)) * @opacity * (@settings_content.opacity.to_f / 255.0) * disabled_opacity * 255.0).to_i
+
+      if @icon_position
+        @icon.opacity = (@opacity * (@settings_content.opacity.to_f / 255.0) * disabled_opacity * 255.0)
+        @icon.x = @sprite.x
+        @icon.y = @sprite.y - (PARAMETER_HEIGHT - ICON_SIZE * 2) / 2
+      end
     end
 
     def dispose()
       @sprite.dispose
+      if @icon_position
+        @icon.dispose
+      end
     end
 
     def value_left() end
     def value_right() end
     def action() end
+    # only for visual updating, its not selecting for real
     def select(previous) end
     def deselect() end
   end
@@ -395,17 +450,23 @@ class Window_Settings
   class Separator < BaseParameter
     TYPE = :sep
 
-    def initialize(settings_content, screen_id, position, name)
-      super(settings_content, screen_id, position, name, nil, "")
+    def initialize(settings_content, screen_id, position, name, icon)
+      super(settings_content, screen_id, position, name, icon, nil, "")
     end
     
     def redraw()
+      redraw_icon
       @sprite.bitmap.clear
       @sprite.bitmap.fill_rect(Rect.new(0, PARAMETER_HEIGHT / 2 - 1, PARAMETER_WIDTH, 2), Color.new(255, 255, 255, 64))
       if (@name && @name != "")
+        offset = !!@icon_position ? ICON_SIZE + 8 : 0
         name = tr(@name)
-        @sprite.bitmap.clear_rect(Rect.new((PARAMETER_WIDTH - name.length * 10) / 2 - 8, 0, name.length * 10 + 16, PARAMETER_HEIGHT))
-        @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width, @sprite.bitmap.height, name, 1)
+        text_width = @sprite.bitmap.text_size(name).width
+        @sprite.bitmap.clear_rect(Rect.new((PARAMETER_WIDTH - text_width - offset) / 2 - 8, 0, text_width + 16 + offset, PARAMETER_HEIGHT))
+        @sprite.bitmap.draw_text(offset, 0, @sprite.bitmap.width - offset, @sprite.bitmap.height, name, 1)
+        #if @icon_position
+        #  @sprite.bitmap.blt((PARAMETER_WIDTH - text_width - offset - 16) / 2, (PARAMETER_HEIGHT - ICON_SIZE * 2) / 2, RPG::Cache.menu("icons"), Rect.new(@icon_position[0] * ICON_SIZE, @icon_position[1] * ICON_SIZE, ICON_SIZE, ICON_SIZE))
+        #end
       end
     end
   end
@@ -414,8 +475,8 @@ class Window_Settings
   class BoolParameter < BaseParameter
     TYPE = :bool
 
-    def initialize(settings_content, screen_id, position, name, parameter, bool_value)
-      super(settings_content, screen_id, position, name, parameter, bool_value || false)
+    def initialize(settings_content, screen_id, position, name, icon, parameter, bool_value)
+      super(settings_content, screen_id, position, name, icon, parameter, bool_value || false)
       @value_width = BOOL_VALUE_WIDTH
     end
 
@@ -431,14 +492,17 @@ class Window_Settings
     end
     
     def value_left()
+      return if @disabled
       self.value = !self.value
       redraw
     end
     def value_right()
+      return if @disabled
       self.value = !self.value
       redraw
     end
     def action()
+      return if @disabled
       self.value = !self.value
       redraw
     end
@@ -448,11 +512,11 @@ class Window_Settings
   class SwitchPatameter < BoolParameter
     TYPE = :switch
 
-    def initialize(settings_content, screen_id, position, name, parameter, bool_value, switch, invert)
+    def initialize(settings_content, screen_id, position, name, icon, parameter, bool_value, switch, invert)
       @switch = switch
       @invert = invert
 
-      super(settings_content, screen_id, position, name, parameter, bool_value)
+      super(settings_content, screen_id, position, name, icon, parameter, bool_value)
     end
     
     def value=(value)
@@ -471,11 +535,11 @@ class Window_Settings
     attr_reader :max_value
     attr_reader :min_value
 
-    def initialize(settings_content, screen_id, position, name, parameter, int_value, min_value, max_value)
+    def initialize(settings_content, screen_id, position, name, icon, parameter, int_value, min_value, max_value)
       @min_value = min_value
       @max_value = max_value
 
-      super(settings_content, screen_id, position, name, parameter, int_value)
+      super(settings_content, screen_id, position, name, icon, parameter, int_value)
     end
 
     def value=(value)
@@ -486,10 +550,12 @@ class Window_Settings
     end
 
     def value_left()
+      return if @disabled
       self.value = (self.value - 1).clamp(@min_value, @max_value)
       redraw
     end
     def value_right()
+      return if @disabled
       self.value = (self.value + 1).clamp(@min_value, @max_value)
       redraw
     end
@@ -499,8 +565,8 @@ class Window_Settings
   class SliderParameter < IntParameter
     TYPE = :slider
 
-    def initialize(settings_content, screen_id, position, name, parameter, int_value, min_value, max_value)
-      super(settings_content, screen_id, position, name, parameter, int_value, min_value, max_value)
+    def initialize(settings_content, screen_id, position, name, icon, parameter, int_value, min_value, max_value)
+      super(settings_content, screen_id, position, name, icon, parameter, int_value, min_value, max_value)
     end
 
     def get_display_value()
@@ -509,10 +575,12 @@ class Window_Settings
     end
 
     def redraw()
+      redraw_icon
+      offset = !!@icon_position ? ICON_SIZE * 2 + 8 : 0
       @sprite.bitmap.clear
       @sprite.bitmap.font.color = Color.new(255, 255, 255)
 
-      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - @value_width, @sprite.bitmap.height, tr(@name))
+      @sprite.bitmap.draw_text(offset, 0, @sprite.bitmap.width - @value_width - offset, @sprite.bitmap.height, tr(@name))
 
       percent = (self.value.to_f - @min_value.to_f) / @max_value.to_f
       width = (@value_width * percent).to_i
@@ -531,6 +599,10 @@ class Window_Settings
       if (@settings_content.need_draw_line(@screen_id, @position))
         @sprite.bitmap.fill_rect(Rect.new(0, PARAMETER_HEIGHT - 1, PARAMETER_WIDTH, 2), Color.new(255, 255, 255, 24))
       end
+
+      #if @icon_position
+      #  @sprite.bitmap.blt(0, (PARAMETER_HEIGHT - ICON_SIZE * 2) / 2, RPG::Cache.menu("icons"), Rect.new(@icon_position[0] * ICON_SIZE, @icon_position[1] * ICON_SIZE, ICON_SIZE, ICON_SIZE))
+      #end
     end
   end
 
@@ -542,12 +614,12 @@ class Window_Settings
     attr_reader :min_value
     attr_reader :step
 
-    def initialize(settings_content, screen_id, position, name, parameter, float_value, step, min_value, max_value)
+    def initialize(settings_content, screen_id, position, name, icon, parameter, float_value, step, min_value, max_value)
       @step = step
       @min_value = min_value
       @max_value = max_value
 
-      super(settings_content, screen_id, position, name, parameter, float_value)
+      super(settings_content, screen_id, position, name, icon, parameter, float_value)
     end
 
     def value=(value)
@@ -558,10 +630,12 @@ class Window_Settings
     end
 
     def value_left()
+      return if @disabled
       self.value = (self.value - @step).clamp(@min_value, @max_value)
       redraw
     end
     def value_right()
+      return if @disabled
       self.value = (self.value + @step).clamp(@min_value, @max_value)
       redraw
     end
@@ -571,10 +645,10 @@ class Window_Settings
   class EnumParameter < IntParameter
     TYPE = :enum
 
-    def initialize(settings_content, screen_id, position, name, parameter, int_value, enum_texts)
+    def initialize(settings_content, screen_id, position, name, icon, parameter, int_value, enum_texts)
       @texts = enum_texts
 
-      super(settings_content, screen_id, position, name, parameter, int_value, 0, enum_texts.length - 1)
+      super(settings_content, screen_id, position, name, icon, parameter, int_value, 0, enum_texts.length - 1)
     end
 
     def get_display_value
@@ -582,10 +656,12 @@ class Window_Settings
     end
 
     def value_left()
+      return if @disabled
       self.value = (self.value - 1) % [1, @max_value + 1].max
       redraw
     end
     def value_right()
+      return if @disabled
       self.value = (self.value + 1) % [1, @max_value + 1].max
       redraw
     end
@@ -599,7 +675,7 @@ class Window_Settings
 
     attr_reader :selection
 
-    def initialize(settings_content, screen_id, position, name, parameter, key_binds, input_bind)
+    def initialize(settings_content, screen_id, position, name, icon, parameter, key_binds, input_bind)
       @selected = false
       @selection = 0
       @key_binds = parameter ? Settings[parameter] : key_binds
@@ -607,7 +683,7 @@ class Window_Settings
       @waiting_for_key = false
       @accept_action = false
 
-      super(settings_content, screen_id, position, name, parameter, nil)
+      super(settings_content, screen_id, position, name, icon, parameter, nil)
 
       apply
     end
@@ -657,6 +733,8 @@ class Window_Settings
     end
     
     def redraw()
+      redraw_icon
+      offset = !!@icon_position ? ICON_SIZE * 2 + 8 : 0
       if (@parameter)
         @key_binds = Settings[@parameter]
       end
@@ -669,7 +747,7 @@ class Window_Settings
         @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (3 - @selection) - SELECTED_KEYS_MARGIN, 0, SELECTED_KEYS_MARGIN, @sprite.bitmap.height, "←", 1)
       end
       
-      @sprite.bitmap.draw_text(0, 0, @sprite.bitmap.width - PARAMETER_KEY_WIDTH * 4, @sprite.bitmap.height, tr(@name))
+      @sprite.bitmap.draw_text(offset, 0, @sprite.bitmap.width - PARAMETER_KEY_WIDTH * 4 - offset, @sprite.bitmap.height, tr(@name))
       for i in 0..3
         offset = (@selected && i == @selection ? SELECTED_KEYS_MARGIN : 4)
         parameter_x = @sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i) + offset
@@ -680,6 +758,10 @@ class Window_Settings
       if (@settings_content.need_draw_line(@screen_id, @position))
         @sprite.bitmap.fill_rect(Rect.new(0, PARAMETER_HEIGHT - 1, PARAMETER_WIDTH, 2), Color.new(255, 255, 255, 24))
       end
+
+      #if @icon_position
+      #  @sprite.bitmap.blt(0, (PARAMETER_HEIGHT - ICON_SIZE * 2) / 2, RPG::Cache.menu("icons"), Rect.new(@icon_position[0] * ICON_SIZE, @icon_position[1] * ICON_SIZE, ICON_SIZE, ICON_SIZE))
+      #end
     end
 
     def value_left()
@@ -698,6 +780,7 @@ class Window_Settings
     end
 
     def action()
+      return if @disabled
       @accept_action = false
       @waiting_for_key = true
       @settings_content.waiting_for_key = true
@@ -762,17 +845,18 @@ class Window_Settings
   class ActionParameter < BaseParameter
     TYPE = :action
 
-    def initialize(settings_content, screen_id, position, name, value_text, func, arg1, arg2, arg3, arg4)
+    def initialize(settings_content, screen_id, position, name, icon, value_text, func, arg1, arg2, arg3, arg4)
       @func = func
       @arg1 = arg1
       @arg2 = arg2
       @arg3 = arg3
       @arg4 = arg4
 
-      super(settings_content, screen_id, position, name, nil, value_text)
+      super(settings_content, screen_id, position, name, icon, nil, value_text)
     end
     
     def action()
+      return if @disabled
       if @arg1 == nil && @arg2 == nil && @arg3 == nil && @arg4 == nil
         @func.call
       elsif @arg2 == nil && @arg3 == nil && @arg4 == nil

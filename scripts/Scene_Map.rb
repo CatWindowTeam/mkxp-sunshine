@@ -452,4 +452,16 @@ class Scene_Map
       @window_settings.redraw_all
     end
   end
+
+  def disable_setting(screen, parameter_id)
+    if @window_settings
+      @window_settings.disable_setting(screen, parameter_id)
+    end
+  end
+
+  def enable_setting(screen, parameter_id)
+    if @window_settings
+      @window_settings.enable_setting(screen, parameter_id)
+    end
+  end
 end

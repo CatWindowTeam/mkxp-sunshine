@@ -67,43 +67,61 @@ class Window_Settings
     DATA.each_with_index do |(screen_title, parameters_info), screen_index|
       @content.add_screen(screen_title)
       parameters_info.each_with_index do |parameter_info, parameter_index|
+        parameter = nil
         if parameters_info == :sep
-          @content.add_parameter(screen_title, Separator.new(@content, screen_index, parameter_index, ""))
+          parameter = @content.add_parameter(screen_title, Separator.new(@content, screen_index, parameter_index, ""))
         else
           case parameter_info[:type]
           when :base
+            parameter = 
             @content.add_parameter(screen_title, BaseParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:parameter], parameter_info[:default]))
+              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default]))
           when :bool
+            parameter = 
             @content.add_parameter(screen_title, BoolParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:parameter], parameter_info[:default]))
+              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default]))
           when :switch
+            parameter = 
             @content.add_parameter(screen_title, SwitchPatameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:parameter], parameter_info[:default], parameter_info[:switch], parameter_info[:invert]))
+              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
+              parameter_info[:switch], parameter_info[:invert]))
           when :int
+            parameter = 
             @content.add_parameter(screen_title, IntParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:parameter], parameter_info[:default], parameter_info[:min], parameter_info[:max]))
+              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
+              parameter_info[:min], parameter_info[:max]))
           when :slider
+            parameter = 
             @content.add_parameter(screen_title, SliderParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:parameter], parameter_info[:default], parameter_info[:min], parameter_info[:max]))
+              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
+              parameter_info[:min], parameter_info[:max]))
           when :float
+            parameter = 
             @content.add_parameter(screen_title, FloatParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:parameter], parameter_info[:default], parameter_info[:step], parameter_info[:min], parameter_info[:max]))
+              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
+              parameter_info[:step], parameter_info[:min], parameter_info[:max]))
           when :enum
+            parameter = 
             @content.add_parameter(screen_title, EnumParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:parameter], parameter_info[:default], parameter_info[:values]))
+              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
+              parameter_info[:values]))
           when :sep
+            parameter = 
             @content.add_parameter(screen_title, Separator.new(@content, screen_index, parameter_index,
-              parameter_info[:name]))
+              parameter_info[:name], parameter_info[:icon]))
           when :key
+            parameter = 
             @content.add_parameter(screen_title, KeyParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:parameter], parameter_info[:key_binds], parameter_info[:bind]))
+              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:key_binds],
+              parameter_info[:bind]))
           when :action
+            parameter = 
             @content.add_parameter(screen_title, ActionParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:default], parameter_info[:action],
+              parameter_info[:name], parameter_info[:icon], parameter_info[:default], parameter_info[:action],
               parameter_info[:arg1], parameter_info[:arg2], parameter_info[:arg3], parameter_info[:arg4]))
           end
         end
+        parameter.disable if parameter_info[:disabled] && parameter 
       end
     end
     @content.redraw_all
@@ -114,6 +132,13 @@ class Window_Settings
     @title.dispose
     @content.dispose
     @update_connection.disconnect
+  end
+
+  def disable_setting(screen, position)
+    @content.disable_setting(screen, position)
+  end
+  def enable_setting(screen, position)
+    @content.enable_setting(screen, position)
   end
 
   def open

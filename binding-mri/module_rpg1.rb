@@ -23,8 +23,8 @@ module RPG
         else
           path = Graphics.adapted_file(folder_name + filename)
         end
-	  else
-		path = Graphics.adapted_file(folder_name + filename)
+      else
+        path = Graphics.adapted_file(folder_name + filename)
       end
       if not @cache.include?(path) or @cache[path].disposed?
         if filename != ""

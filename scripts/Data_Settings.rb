@@ -3,53 +3,53 @@ module Settings
     def reset!
       @data = {
         # Audio
-        :bgm_volume                  => 100,
-        :sfx_volume                  => 100,
-        :use_fight_crime_track       => false,
+        :bgm_volume                     => 100,
+        :sfx_volume                     => 100,
+        :use_fight_crime_track          => false,
 
         # Video
-        :fullscreen                  => false,
-        :resolution                  => 0,
-        :colorblind                  => false,
-        :frameskip                   => true,
-        :twm_shader                  => true,
-        :light                       => true,
-        :scaling_mode                => 0,
+        :fullscreen                     => false,
+        :resolution                     => 0,
+        :colorblind                     => false,
+        :frameskip                      => true,
+        :twm_shader                     => true,
+        :light                          => true,
+        :scaling_mode                   => 0,
 
         # UI
-        :in_game_timer               => false,
-        :language                    => 0,
-        :fasttravel_ui               => 0,
+        :in_game_timer                  => false,
+        :language                       => 0,
+        :fasttravel_ui                  => 0,
 
         # Gameplay
-        :movement                    => 0,
-        :skip_text                   => false,
-        :en_purple_messagebox        => true,
-        :enforce_april_fools         => false,
-        :true_memory_mode            => false,
-        :oneshot_mode                => false,
-		:twm_shader_footprint        => true,
+        :movement                       => 0,
+        :skip_text                      => false,
+        :en_purple_messagebox           => true,
+        :enforce_april_fools            => false,
+        :true_memory_mode               => false,
+        :oneshot_mode                   => false,
+        :twm_shader_footprint           => true,
 
         # Advanced
-		:crashlog_privacy        	 => false,
-		:streamer_privacy        	 => false,
-		:SDL_HINT_INVALID_PARAM_CHECKS => false,
+        :crashlog_privacy               => false,
+        :streamer_privacy               => false,
+        :SDL_HINT_INVALID_PARAM_CHECKS  => false,
 		
         #controls
-        :gamepad_led                 => true,
-        :gamepad_deadzone            => 5,
+        :gamepad_led                    => true,
+        :gamepad_deadzone               => 5,
 
         # Debug
-        :debug                       => false,
-        :debug_character             => false,
-        :debug_text                  => false,
-        :debug_text_scene_title      => true,
-        :debug_picture_names         => false,
-        :debug_lightmap              => false,
-		:SDL_HINT_SHUTDOWN_DBUS_ON_QUIT => false,
+        :debug                          => false,
+        :debug_character                => false,
+        :debug_text                     => false,
+        :debug_text_scene_title         => true,
+        :debug_picture_names            => false,
+        :debug_lightmap                 => false,
+        :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT => false,
 
         #Hidden
-        :is_dejavu                   => false,
+        :is_dejavu                      => false,
       }
       reset_controls!
     end
@@ -127,12 +127,29 @@ end
 class Window_Settings
   # if parameter is linked to data in class Settings, then default value in this structure is ignored
   DATA = {
-  	"Help" => [
-  	  { :type => :base, :name => "(!) - It's Dangerous!" },
-  	  { :type => :base, :name => "(WIP) - Work In Progress" },
-  	  { :type => :base, :name => "(GRR) - Game Restart Required" },
-  	  { :type => :base, :name => "(LRR) - Location Reload Required" },
-  	],
+    "Help" => [
+      #{ :type => :sep }
+      {
+        :type => :base, 
+        :name => "- It's Dangerous!",
+        :icon => [1, 0]
+      },
+      {
+        :type => :base,
+        :name => "- Work In Progress",
+        :icon => [0, 1]
+      },
+      {
+        :type => :base,
+        :name => "- Game Restart Required",
+        :icon => [3, 0]
+      },
+      {
+        :type => :base,
+        :name => "- Location Reload Required",
+        :icon => [1, 1]
+      },
+    ],
     "Audio" => [
       {
         :type => :slider,
@@ -208,11 +225,12 @@ class Window_Settings
         :type => :enum,
         :name => "FastTravel UI",
         :parameter => :fasttravel_ui,
+        :icon => [0, 1],
         :values => ["Original", "WME (WIP)"]
       },
     ],
     "Gameplay" => [
-      { :type => :sep, :name => "Vanila" },
+      { :type => :sep, :name => "Vanilla" },
       {
         :type => :bool,
         :name => "Colorblind mode",
@@ -247,12 +265,14 @@ class Window_Settings
       },
       {
         :type => :bool,
-        :name => "Freeware Mode(!)",
+        :name => "Freeware Mode",
+        :icon => [1, 0],
         :parameter => :oneshot_mode
       },
       {
         :type => :bool,
-        :name => "World machine shader on Entity footprints(WIP)",
+        :name => "World machine shader on Entity footprints",
+        :icon => [0, 1],
         :parameter => :twm_shader_footprint
       },
     ],
@@ -357,14 +377,16 @@ class Window_Settings
       { :type => :sep, :name => "Other" },
       {
         :type => :bool,
-        :name => "SDL_HINT_INVALID_PARAM_CHECKS (!)",
+        :name => "SDL_HINT_INVALID_PARAM_CHECKS",
+        :icon => [1, 0],
         :parameter => :SDL_HINT_INVALID_PARAM_CHECKS
       },
     ],
     "Debug" => [
       {
         :type => :bool,
-        :name => "Debug mode(!)",
+        :name => "Debug mode",
+        :icon => [1, 0],
         :parameter => :debug
       },
       {
@@ -404,7 +426,7 @@ class Window_Settings
         :parameter => :controls_debug,
         :bind => Input::DEBUGACTION
       },
-      { :type => :seps},
+      { :type => :sep },
       {
         :type => :action,
         :name => "Clear image cache",
@@ -412,7 +434,12 @@ class Window_Settings
       }
     ],
     "Mods" => [
-		{ :type => :base, :name => "Modloader enabled? #{ModLoader::IS_ENABLED}" },
+      {
+        :type => :base,
+        :name => "Modloader enabled?",
+        :default => ModLoader::IS_ENABLED ? "ON" : "OFF",
+        :disabled => true
+      },
     ],
   }
 
