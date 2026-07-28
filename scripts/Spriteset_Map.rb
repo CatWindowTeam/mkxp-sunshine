@@ -19,13 +19,6 @@ class Spriteset_Map
     @viewport_lights = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @viewport_flash = Viewport.new(0, 0, Graphics.width, Graphics.height)
 
-	@scroll_point_x   = 0
-	@scroll_point_y   = 0
-	@scroll_frames_x  = 0
-	@scroll_frames_y  = 0
-	@scroll_speed_x = $game_system.autoscroll_x_speed || 0
-	@scroll_speed_y = $game_system.autoscroll_y_speed || 0
-	
     @update_connection = Graphics.viewport_resized do |w, h|
       @viewport.rect.width = w
       @viewport.rect.height = h
@@ -181,15 +174,6 @@ class Spriteset_Map
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
-  	# https://save-point.org/printthread.php?tid=2759
-	# Apply new scroll speed from $game_system
-	if $game_system.autoscroll_x_speed != @scroll_speed_x
-	  @scroll_speed_x = $game_system.autoscroll_x_speed
-	end
-	if $game_system.autoscroll_y_speed != @scroll_speed_y
-	  @scroll_speed_y = $game_system.autoscroll_y_speed
-	end
-	
     # Update tilemap
     @tilemap.wrapping = $game_map.wrapping
     # If panorama is different from current one
@@ -298,7 +282,7 @@ class Spriteset_Map
     @tilemap.update
     # Update panorama plane
     if $game_map.always_moving
-      $game_map.pan_move_offset += 1
+      $game_map.pan_move_offset += 0.25
     end
     if $game_map.clamped_x
       x = ($game_player.real_x.to_f / (($game_map.width  - 1) * 128)) * (@panorama.bitmap.width * $game_map.pan_zoom - Graphics.width) 
@@ -307,7 +291,7 @@ class Spriteset_Map
       @panorama.ox = $game_map.display_x / ($game_map.pan_onetoone ? 4 : 8)
     end
     if $game_map.clamped_y
-      y = ($game_player.real_y.to_f / (($game_map.height - 1) * 128)) * (@panorama.bitmap.height * $game_map.pan_zoom  - Graphics.height) 
+      y = ($game_player.real_y.to_f / (($game_map.height - 1) * 128)) * (@panorama.bitmap.height * $game_map.pan_zoom - Graphics.height) 
       @panorama.oy = y < 0.0 ? 0.0 : y
     else
       @panorama.oy = $game_map.pan_offset_y + $game_map.display_y / ($game_map.pan_onetoone ? 4 : 8)
@@ -321,6 +305,9 @@ class Spriteset_Map
         @panorama.src_rect.x = (@panorama.src_rect.x + @panorama.src_rect.height) % @panorama.bitmap.width
       end
     end
+
+    @panorama.ox += $game_map.pan_move_offset
+    @panorama.oy += $game_map.pan_move_offset
 
     if $game_map.pan_fade_animate && @panorama2 != nil
       @panorama2.opacity += 3
@@ -395,20 +382,6 @@ class Spriteset_Map
     @viewport.update
     @viewport_flash.update
     @viewport_lights.update
-	scroll
-    # Update panorama plane    
-    if $game_system.autoscroll_x_speed == 0
-      if $game_system.autoscroll_y_speed == 0
-        @panorama.ox = $game_map.display_x / 8
-        @panorama.oy = $game_map.display_y / 8
-      end
-    end
-    a = $game_system.autoscroll_x_speed != 0
-    b = $game_system.autoscroll_y_speed != 0
-    if a or b
-      @panorama.ox = @scroll_point_x
-      @panorama.oy = @scroll_point_y
-    end
   end
   #--------------------------------------------------------------------------
   # * Misc operations
@@ -428,34 +401,5 @@ class Spriteset_Map
       footprint.correctY(y)
     end
   end
-
-  def scroll
-    return if @panorama.nil? || @panorama.bitmap.nil?
-    @scroll_speed_x ||= 0
-  	@scroll_speed_y ||= 0
-    w = @panorama.bitmap.width
-    h = @panorama.bitmap.height
-    @scroll_frames_x += @scroll_speed_x
-    @scroll_frames_y += @scroll_speed_y
-    while @scroll_frames_x >= 8
-      @scroll_frames_x -= 8
-      @scroll_point_x += 1
-    end
-    while @scroll_frames_x <= -8
-      @scroll_frames_x += 8
-      @scroll_point_x -= 1
-    end
-    while @scroll_frames_y >= 8
-      @scroll_frames_y -= 8
-      @scroll_point_y += 1
-    end
-    while @scroll_frames_y <= -8
-      @scroll_frames_y += 8
-      @scroll_point_y -= 1
-    end
-    @scroll_point_x -= w  if @scroll_point_x > w
-    @scroll_point_x += w  if @scroll_point_x < -w
-    @scroll_point_y -= h  if @scroll_point_y > h
-    @scroll_point_y += h  if @scroll_point_y < -h
-  end
 end
+

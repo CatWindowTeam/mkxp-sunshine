@@ -21,9 +21,6 @@ class Game_System
   attr_accessor :save_count               # save count
   attr_accessor :magic_number             # magic number
   attr_accessor :playing_bgm
-  # https://save-point.org/printthread.php?tid=2759
-  attr_accessor :autoscroll_x_speed       # panorama horizontal speed
-  attr_accessor :autoscroll_y_speed       # panorama vertical speed
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
@@ -38,8 +35,7 @@ class Game_System
     @message_frame = 0
     @save_count = 0
     @magic_number = 0
-    @autoscroll_x_speed = 0
-    @autoscroll_y_speed = 0
+    RPG::Mod.exec_hooks("hooks/Game_System/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Play Background Music
