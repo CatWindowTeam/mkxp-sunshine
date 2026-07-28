@@ -13,3 +13,5 @@ Replaced Japanese font with pixel one
 Added SDL_HINT_INVALID_PARAM_CHECKS controller in Settings>Advanced
 Added "Stream Privacy"
 Added a change to sub categories in the settings
+Added way to set move panorama with custom speed value
+Dynamic light configured in Tower
