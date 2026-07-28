@@ -344,11 +344,15 @@ end:
 			GValue colorValue = G_VALUE_INIT;
 			GPtrArray *colorArr = g_ptr_array_sized_new(4);
 			GType colorArrType = g_type_from_name("GPtrArray_GValue_");
-			if (!colorArrType) {
+			//TODO:fix later
+			//if (!colorArrType) {
 				std::stringstream colorCommand;
 				colorCommand << "xfconf-query -c xfce4-desktop -n -p " << optionColor
 							 << " -t uint -t uint -t uint -t uint -s " << ub
 							 << " -s " << ug << " -s " << ub << " -s " << alpha;
+				Debug() << "xfconf-query -c xfce4-desktop -n -p " << optionColor
+						<< " -t uint -t uint -t uint -t uint -s " << ub
+						<< " -s " << ug << " -s " << ub << " -s " << alpha;
 				int colorCommandRes = system(colorCommand.str().c_str());
 				defColorExists = xfconf_channel_get_property(bgchannel, optionColor.c_str(), &defColor);
 				colorArrType = g_type_from_name("GPtrArray_GValue_");
@@ -357,7 +361,7 @@ end:
 					Debug() << "[wallpaperSet] WALLPAPER ERROR: xfconf-query call returned" << colorCommandRes;
 					return Qnil;
 				}
-			}
+			//}
 			g_value_init(&colorValue, colorArrType);
 			GValue *vr = g_new0(GValue, 1);
 			GValue *vg = g_new0(GValue, 1);

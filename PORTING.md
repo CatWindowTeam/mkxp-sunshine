@@ -5,7 +5,7 @@
 | Windows | 100% | Играбельно |
 | Linux | 91% | В работе, но уже играбельно<br>TODO:<br>&nbsp;\* Fix Wallpaper manager 
 | *BSD | 15% | не в работе |
-| GNU/Hurd | 90% | не в работе |
+| GNU/Hurd | 0% | не в работеm не хватает библеотек |
 | Solaris/OpenSolaris | 1% | не в работе |
 | RedoxOS | 0% | Не хватает библеотек |
 | Android | 4% | В работе |
@@ -31,7 +31,7 @@
 | GNOME | 10% |
 | KDE | 10% |
 | LXQT | 0% |
-| MATE | 10% |
+| MATE | 100% |
 | Cinnamon | 10% |
 | Budgie | 0% |
 | Deepin | 10% |

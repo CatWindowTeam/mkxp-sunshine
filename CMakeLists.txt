@@ -4,7 +4,7 @@ include(FindPackageHandleStandardArgs)
 
 # Options
 option(STEAM "Build for Steam" OFF)
-option(DEBUG "Debug mode" ON)
+option(DEBUG "Debug mode" OFF)
 option(NATIVE "Use native instructions(for local use only)" OFF)
 #x86, arm64, ia-64
 option(CPU_ARCH "Enter here your target arch" "x86")
