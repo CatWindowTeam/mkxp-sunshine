@@ -342,10 +342,7 @@ else()
 		  add_link_options(-flto)
 		endif()
 
-		if(WIN32)
-		  add_compile_options(-flto)
-		  add_link_options(-flto)
-		elseif(LINUX)
+		if(LINUX)
 		  add_compile_options(-fno-plt)
 		endif()
 
