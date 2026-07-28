@@ -22,3 +22,4 @@ TPtL translation issue fixed
 fixed Obscured film bug
 added icons and way to disable options in settings
 fixed segfault while to fast window size changing
+updated cg_blue picture
