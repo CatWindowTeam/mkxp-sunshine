@@ -70,19 +70,19 @@ module Settings
       end
 
       def SDL_HINT_INVALID_PARAM_CHECKS(value)
-      	if value
-			Sunshine.setSDLHint("SDL_HINT_INVALID_PARAM_CHECKS", "1")
-      	else
-      		Sunshine.setSDLHint("SDL_HINT_INVALID_PARAM_CHECKS", "2")
-		end
+        if value
+          Sunshine.setSDLHint("SDL_HINT_INVALID_PARAM_CHECKS", "1")
+        else
+          Sunshine.setSDLHint("SDL_HINT_INVALID_PARAM_CHECKS", "2")
+        end
       end
 
       def SDL_HINT_SHUTDOWN_DBUS_ON_QUIT(value)
-      	if value
-			Sunshine.setSDLHint("SDL_HINT_SHUTDOWN_DBUS_ON_QUIT", "1")
-      	else
-      		Sunshine.setSDLHint("SDL_HINT_SHUTDOWN_DBUS_ON_QUIT", "0")
-		end
+        if value
+          Sunshine.setSDLHint("SDL_HINT_SHUTDOWN_DBUS_ON_QUIT", "1")
+        else
+          Sunshine.setSDLHint("SDL_HINT_SHUTDOWN_DBUS_ON_QUIT", "0")
+        end
       end
     end
   end
