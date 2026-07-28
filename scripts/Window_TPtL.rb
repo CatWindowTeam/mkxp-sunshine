@@ -26,7 +26,6 @@ class Window_TPtL < Window_Selectable
     end
     
     self.z = 9998
-    RPG::Mod.exec_hooks("hooks/Window_TPtL/init", binding)
   end
 
   def sort
@@ -122,7 +121,7 @@ class Window_TPtL < Window_Selectable
     self.contents.font.color = color
 
     # Update item
-    self.contents.draw_text(Rect.new(indent * 64, 32 * draw_ix, self.width - indent * 64, 32), tr(map_info&.name || "UNKNOWN_MAP"), 0)
+    self.contents.draw_text(Rect.new(indent * 64, 32 * draw_ix, self.width - indent * 64, 32), map_info&.name || "UNKNOWN_MAP", 0)
     self.contents.draw_text(Rect.new(0, 32 * draw_ix, self.width - 38, 32), index.to_s, 2)
   end
 
