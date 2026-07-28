@@ -906,6 +906,15 @@ void Graphics::resizeScreen(int width, int height, bool emitSignal){
 
 	glState.scissorBox.set(IntRect(0, 0, width, height));
 	shState->eThread().requestWindowResize(width, height);
+
+	TEX::del(p->obscuredTex);
+	p->obscuredTex = TEX::gen();
+	TEX::bind(p->obscuredTex);
+	TEX::setRepeat(false);
+	TEX::setSmooth(false);
+	gl.TexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, p->scRes.x, p->scRes.y, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
+	shState->oneshot().updateObscuredSize(size.x, size.y);
+	
 	if (emitSignal)
 		shState->graphicsSignals.resized.Emit(width, height);
 }

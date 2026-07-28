@@ -60,6 +60,7 @@ public:
 	void setExiting(bool exiting);
 	void setAllowExit(bool allowExit);
 	void setObscuredUpdating(bool enabled);
+	void updateObscuredSize(int winW, int winH);
 	void updateObscured(int winX, int winY);
 	void resetObscured();
 

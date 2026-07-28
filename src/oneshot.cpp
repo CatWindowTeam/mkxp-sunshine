@@ -525,7 +525,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 
 	// Show messagebox
 #ifdef _WIN32
-	PlaySoundW((LPCWSTR)sound, NULL, SND_ALIAS_ID | SND_ASYNC);
+	PlaySoundW(MAKEINTRESOURCEW(sound), NULL, SND_ALIAS_ID | SND_ASYNC);
 #endif
 	int button;
 
@@ -586,6 +586,12 @@ std::string Oneshot::textinput(const char *prompt, int char_limit, const char *f
 
 void Oneshot::setObscuredUpdating(bool enabled){
 	p->obscuredNeedToUpdate = enabled;
+}
+
+void Oneshot::updateObscuredSize(int winW, int winH){
+	p->winW = winW;
+	p->winH = winH;
+	p->obscuredMap.resize(p->winW * p->winH, 255);
 }
 
 void Oneshot::updateObscured(int winX, int winY)

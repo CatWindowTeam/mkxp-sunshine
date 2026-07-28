@@ -522,7 +522,7 @@ bool EventThread::eventFilter(void *data, SDL_Event *event){
 				rtData.ethread->winX = event->window.data1;
 				rtData.ethread->winY = event->window.data2;
 				shState->windowSignals.moved.Emit(event->window.data1, event->window.data2);
-				shState->graphics().update(false);
+				//shState->graphics().update(false);
 			}
 			return 0;
 		}
