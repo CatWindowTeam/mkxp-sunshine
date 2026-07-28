@@ -23,8 +23,6 @@ begin
   #debug shit 
   Input.set_led(255, 150, 30)
   
-  print Dir.entries(".")
-  
   # Load persistent data
   Persistent.load
 
