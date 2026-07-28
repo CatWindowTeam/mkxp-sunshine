@@ -767,7 +767,7 @@ end
 
 # Misc
 def watcher_tell_time
-  hour = 0 #Time.now.hour
+  hour = CTime.hour
   if hour >= 6 && hour < 12
     Script.tmp_v1 = 0
   elsif hour >= 12 && hour < 17

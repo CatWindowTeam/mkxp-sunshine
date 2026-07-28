@@ -15,3 +15,6 @@ Added "Stream Privacy"
 Added a change to sub categories in the settings
 Added way to set move panorama with custom speed value
 Dynamic light configured in Tower
+Added SANITIZERS build option
+"Watcher" time check function fixed
+Ruby CTime.hour added

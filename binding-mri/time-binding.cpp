@@ -1,17 +1,21 @@
+// Custom Methods for time bcz Ruby bullshit
 #include <ruby.h>
-#include <time.h>
 #include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_time.h>
+#include "debugwriter.h"
+static SDL_DateTime dt;
+static SDL_Time ticks;
 
 static VALUE get_month(VALUE self) {
-    time_t now = time(NULL);
-    struct tm *ltm = localtime(&now);
-    return INT2NUM(1 + ltm->tm_mon);
+    return INT2NUM(dt.month);
 }
 
 static VALUE get_day(VALUE self) {
-    time_t now = time(NULL);
-    struct tm *ltm = localtime(&now);
-    return INT2NUM(ltm->tm_mday);
+    return INT2NUM(dt.day);
+}
+
+static VALUE get_hours(VALUE self) {
+    return INT2NUM(dt.hour);
 }
 
 static VALUE ctime_at(int argc, VALUE *argv, VALUE self){
@@ -55,4 +59,14 @@ void TimeBindingInit() {
     rb_define_module_function(m, "month", get_month, 0);
     rb_define_module_function(m, "day", get_day, 0);
     rb_define_singleton_method(m, "at", ctime_at, -1);
+    rb_define_singleton_method(m, "hour", get_hours, 0);
+    if (!SDL_GetCurrentTime(&ticks)) {
+        Debug() << "SDL_GetCurrentTime failed: " << SDL_GetError();
+        return;
+    }
+
+    if (!SDL_TimeToDateTime(ticks, &dt, true)) {
+        Debug() << "SDL_TimeToDateTime failed: " << SDL_GetError();
+        return;
+    }
 }
