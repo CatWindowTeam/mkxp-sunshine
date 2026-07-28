@@ -12,10 +12,13 @@ Replaced Japanese font with pixel one
 Added SDL_HINT_INVALID_PARAM_CHECKS controller in Settings>Advanced
 Added "Stream Privacy"
 Added a change to sub categories in the settings
-Added way to set move panorama with custom speed value
+codebg panorama moving always
 Dynamic light configured in Tower
 Added SANITIZERS build option
 "Watcher" time check function fixed
 Ruby CTime.hour added
 LoadQASave Deleted
 TPtL translation issue fixed
+fixed Obscured film bug
+added icons and way to disable options in settings
+fixed segfault while to fast window size changing

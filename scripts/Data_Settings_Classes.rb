@@ -124,16 +124,16 @@ class Window_Settings
 
     def disable_setting(screen, position)
       if screen.is_a?(String)
-        get_parameter(screen, position).disable
+        get_parameter(screen, position).disabled = true
       else
-        get_parameter_by_sceen_id(screen, position).disable
+        get_parameter_by_sceen_id(screen, position).disabled = true
       end
     end
     def enable_setting(screen, position)
       if screen.is_a?(String)
-        get_parameter(screen, position).enable
+        get_parameter(screen, position).disabled = false
       else
-        get_parameter_by_sceen_id(screen, position).enable
+        get_parameter_by_sceen_id(screen, position).disabled = false
       end
     end
 
@@ -325,6 +325,7 @@ class Window_Settings
   # ----------------------------------------------------------------------------------------
   class BaseParameter
     TYPE = :base
+    attr_accessor :disabled
 
     def initialize(settings_content, screen_id, position, name, icon, parameter, init_value)
       @settings_content = settings_content
@@ -352,13 +353,6 @@ class Window_Settings
       @value_width = PARAMETER_VALUE_WIDTH
       self.value = self.value # appling init settings
       redraw
-    end
-
-    def enable
-      @disabled = false
-    end
-    def disable
-      @disabled = true
     end
     
     def opacity
