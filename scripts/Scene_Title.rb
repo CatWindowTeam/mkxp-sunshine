@@ -42,17 +42,15 @@ class Scene_Title
     # Make title graphic
     @sprite = Sprite.new(@viewport)
 	
-    # chinese has its own special title screen so check for it
-    translation_name = "#{$persistent.langcode}/#{$data_system.title_name}"
-    if File.exist?("Graphics/Titles/#{translation_name}.png")
-      @sprite.bitmap = RPG::Cache.title(translation_name)
+    if File.exist?("badend.lock")
+    	@sprite.bitmap = RPG::Cache.title("badend")
     else
-      if File.exist?("badend.lock")
-        @sprite.bitmap = RPG::Cache.title("badend")
-      else
-        @sprite.bitmap = RPG::Cache.title($data_system.title_name)
-      end
-    end
+    	case Settings[:mainmenu_background]
+    	when 0 then @sprite.bitmap = RPG::Cache.title($data_system.title_name)
+    	when 1 then @sprite.bitmap = RPG::Cache.title("badend")
+    	else @sprite.bitmap = RPG::Cache.title($data_system.title_name)
+    	end
+	end
     @sprite.x = Graphics.width / 2
     @sprite.y = Graphics.height / 2
     px = (Graphics.width / 1920.0)

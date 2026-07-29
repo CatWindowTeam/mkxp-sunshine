@@ -20,6 +20,7 @@ module Settings
         :in_game_timer                  => false,
         :language                       => 0,
         :fasttravel_ui                  => 0,
+        :mainmenu_background            => 0,
 
         # Gameplay
         :movement                       => 0,
@@ -128,7 +129,6 @@ class Window_Settings
   # if parameter is linked to data in class Settings, then default value in this structure is ignored
   DATA = {
     "Help" => [
-      #{ :type => :sep }
       {
         :type => :base, 
         :name => "- It's Dangerous!",
@@ -227,6 +227,13 @@ class Window_Settings
         :parameter => :fasttravel_ui,
         :icon => [0, 1],
         :values => ["Original", "WME (WIP)"]
+      },
+      {
+        :type => :enum,
+        :name => "Main menu background",
+        :icon => [3, 0],
+        :parameter => :mainmenu_background,
+        :values => ["Original", "Badend"]
       },
     ],
     "Gameplay" => [

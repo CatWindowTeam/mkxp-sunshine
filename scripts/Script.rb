@@ -170,8 +170,7 @@ module Script
   end
 
   def self.cdown_update(equinox)
-		diff = 0
-	end
+	diff = 0
 	seconds = diff % 60
 	minutes = ((diff - seconds)/ 60) % 60
 	hours = ((((diff - seconds)/ 60) - minutes) / 60) % 24
@@ -240,10 +239,10 @@ module Script
   end
 
   def self.countdown_update_rue
+  def self.reflection_update(npc_id, offset_x = 0, offset_y = 0, reverse_x = false, reverse_y = false)
     return cdown_update(0)
   end
 
-  def self.reflection_update(npc_id, offset_x = 0, offset_y = 0, reverse_x = false, reverse_y = false)
     event = $game_map.events[npc_id]
     event.real_x = reverse_x ? offset_x * 128 - $game_player.real_x : $game_player.real_x + offset_x * 128
     event.real_y = reverse_y ? offset_y * 128 - $game_player.real_y : $game_player.real_y + offset_y * 128
