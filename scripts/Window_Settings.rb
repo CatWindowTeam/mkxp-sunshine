@@ -121,7 +121,7 @@ class Window_Settings
               parameter_info[:arg1], parameter_info[:arg2], parameter_info[:arg3], parameter_info[:arg4]))
           end
         end
-        parameter.disable if parameter_info[:disabled] && parameter 
+        parameter.disabled = true if parameter_info[:disabled] && parameter 
       end
     end
     @content.redraw_all
