@@ -4,9 +4,8 @@ set(scripts
   Data_Footsteps.rb
   Data_Item.rb
   Data_Settings.rb
-  Data_Settings_Classes.rb
-  Data_Settings_Setters.rb
   Data_SpecialEventData.rb
+  Data_Gamepads.rb
   Desktop_Message.rb
   Doc_Message.rb
   EdText.rb
@@ -83,9 +82,10 @@ set(scripts
   i18n_Language.rb
   Window_TPtL.rb
   Settings.rb
+  Settings_Classes.rb
+  Settings_Setters.rb
   Input.rb
   Dynamic_Light.rb
-  Gamepad_Colors.rb
   Dynamic_Resolution.rb
   ModAPI.rb)
 

@@ -29,8 +29,9 @@ Game_Light
 
 # yes.
 Settings
+Settings_Classes
+Settings_Setters
 Input
-Gamepad_Colors
 Dynamic_Resolution
 Dynamic_Light
 
@@ -86,8 +87,7 @@ Data_Footsteps
 Data_SpecialEventData
 Data_FastTravel
 Data_Settings
-Data_Settings_Classes
-Data_Settings_Setters
+Data_Gamepads
 
 # Script Functions
 Script
