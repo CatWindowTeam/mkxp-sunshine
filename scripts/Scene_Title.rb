@@ -14,26 +14,6 @@ class Scene_Title
   #--------------------------------------------------------------------------
   # * Main Processing
   #--------------------------------------------------------------------------
-  def setbg
-	current_wallpaper = Settings[:mainmenu_background]
-	@sprite = Sprite.new(@viewport)
-	case Settings[:mainmenu_background]
-	when 0 then @sprite.bitmap = RPG::Cache.title($data_system.title_name)
-	when 1 then @sprite.bitmap = RPG::Cache.title("badend")
-	when 2 then @sprite.bitmap = RPG::Cache.picture("title_black")
-	else @sprite.bitmap = RPG::Cache.title($data_system.title_name)
-	end
-	@sprite.x = Graphics.width / 2
-	@sprite.y = Graphics.height / 2
-	px = (Graphics.width / 1920.0)
-	py = (Graphics.height / 1080.0)
-	@sprite.zoom_x = 2.0
-	@sprite.zoom_y = 2.0
-	@sprite.ox = @sprite.bitmap.width / 2 * (0.5 * (1.0 - px) + px)
-	@sprite.oy = @sprite.bitmap.height / 2 * (1.3 * (1.0 - py) + py)
-	@sprite.update
-  end
-  
   def main
     # Load database
     $data_actors        = load_data("Data/Actors.rxdata")
@@ -43,8 +23,9 @@ class Scene_Title
     $data_tilesets      = load_data("Data/Tilesets.rxdata")
     $data_common_events = load_data("Data/CommonEvents.rxdata")
     $data_system        = load_data("Data/System.rxdata")
+
     Language.initialize_database
-    
+
     $game_temp = Game_Temp.new
     new_game
     $game_system = Game_System.new
@@ -57,14 +38,21 @@ class Scene_Title
     @window_settings_title = Window_Settings.new
 
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+
     # Make title graphic
+    @old_setting = Settings[:mainmenu_background] 
+    
     @sprite = Sprite.new(@viewport)
-    if File.exist?("badend.lock")
-    	@sprite.bitmap = RPG::Cache.title("badend")
+    @badend_sprite = Sprite.new(@viewport)
+	
+    # chinese has its own special title screen so check for it
+    translation_name = "#{$persistent.langcode}/#{$data_system.title_name}"
+    if File.exist?("Graphics/Titles/#{translation_name}.png")
+      @sprite.bitmap = RPG::Cache.title(translation_name)
     else
-    	current_wallpaper = Settings[:mainmenu_background]
-    	setbg
-	end
+      @sprite.bitmap = RPG::Cache.title($data_system.title_name)
+    end
+
     @sprite.x = Graphics.width / 2
     @sprite.y = Graphics.height / 2
     px = (Graphics.width / 1920.0)
@@ -79,8 +67,12 @@ class Scene_Title
       $game_party.gain_item(81, 1) # George reroler
     end 
 
-    @sprite.zoom_x = 2.0
-    @sprite.zoom_y = 2.0
+    @sprite.zoom_x = @sprite.zoom_y =
+    @badend_sprite.zoom_x = @badend_sprite.zoom_y = 2.0
+
+    redraw_bgs
+    update_visibility
+
     # Create/render menu options
     @menu = Sprite.new(@viewport)
     @menu.z += 1
@@ -126,14 +118,11 @@ class Scene_Title
       py = (Graphics.height / 1080.0)
       @sprite.ox = @sprite.bitmap.width / 2 * (0.5 * (1.0 - px) + px)
       @sprite.oy = @sprite.bitmap.height / 2 * (1.3 * (1.0 - py) + py)
+
+      redraw_bgs
+      update_visibility
     end
 
-    # Play title BGM
-    if File.exist?("badend.lock")
-      Audio.bgm_play("Audio/BGM/MyBurdenIsDead.ogg", Audio.bgm_volume, 100)
-    else
-      $game_system.bgm_play($data_system.title_bgm)
-    end
     # Stop playing ME and BGS
     Audio.me_stop
     Audio.bgs_stop
@@ -142,12 +131,6 @@ class Scene_Title
     Graphics.transition(40)
     # Main loop
     while true
-      # check if wallpaper changed
-      if current_wallpaper =! Settings[:mainmenu_background]
-      	@sprite.bitmap.dispose
-      	@sprite.dispose
-		setbg
-      end
       # Update game screen
       Graphics.update
       # Update input information
@@ -166,6 +149,8 @@ class Scene_Title
     @update_connection.disconnect
     @sprite.bitmap.dispose
     @sprite.dispose
+    @badend_sprite.bitmap.dispose
+    @badend_sprite.dispose
     @menu.bitmap.dispose
     @menu.dispose
     @cursor.bitmap.dispose
@@ -208,11 +193,52 @@ class Scene_Title
       @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 5, 200, ENTRY_HEIGHT, tr("Mods loaded:") + " " + ModLoader::COUNT.to_s)
     end
   end
+
+  def redraw_bgs
+    if @badend_sprite.bitmap
+      @badend_sprite.bitmap.dispose
+    end
+    @badend_sprite.bitmap = RPG::Cache.title("badend")
+
+    @badend_sprite.ox = @badend_sprite.bitmap.width / 2
+    @badend_sprite.oy = @badend_sprite.bitmap.height / 2
+    @badend_sprite.x = Graphics.width / 2
+    @badend_sprite.y = Graphics.height / 2
+  end
+
+  def update_visibility
+    if File.exist?("badend.lock")
+      @sprite.visible = false
+      @badend_sprite.visible = true
+      Audio.bgm_play("Audio/BGM/MyBurdenIsDead.ogg", Audio.bgm_volume, 100)
+    else
+      case Settings[:mainmenu_background]
+      when 0
+        @sprite.visible = true
+        @badend_sprite.visible = false
+        $game_system.bgm_play($data_system.title_bgm)
+      when 1
+        @sprite.visible = false
+        @badend_sprite.visible = true
+        Audio.bgm_play("Audio/BGM/MyBurdenIsDead.ogg", Audio.bgm_volume, 100)
+      when 2
+        @sprite.visible = false
+        @badend_sprite.visible = false
+        Audio.bgm_stop
+      end
+    end
+  end
   #--------------------------------------------------------------------------
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
+    if @old_setting != Settings[:mainmenu_background] 
+      @old_setting = Settings[:mainmenu_background]
+      update_visibility
+    end
+
     @debug.visible = Settings[:debug_text_scene_title] || false # if undefined don't render
+    
     if Input.trigger?(Input::F8)
       Graphics.fullscreen = $console = !Settings[:fullscreen]
       Settings[:fullscreen] = !Settings[:fullscreen]

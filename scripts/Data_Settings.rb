@@ -3,56 +3,56 @@ module Settings
     def reset!
       @data = {
         # Audio
-        :bgm_volume                     => 100,
-        :sfx_volume                     => 100,
-        :use_fight_crime_track          => false,
+        :bgm_volume                              => 100,
+        :sfx_volume                              => 100,
+        :use_fight_crime_track                   => false,
         :use_old_self_contained_universe_reprise => false,
 
         # Video
-        :fullscreen                     => false,
-        :resolution                     => 0,
-        :colorblind                     => false,
-        :frameskip                      => true,
-        :twm_shader                     => true,
-        :light                          => true,
-        :scaling_mode                   => 0,
+        :fullscreen                              => false,
+        :resolution                              => 0,
+        :colorblind                              => false,
+        :frameskip                               => true,
+        :twm_shader                              => true,
+        :light                                   => true,
+        :scaling_mode                            => 0,
 
         # UI
-        :in_game_timer                  => false,
-        :language                       => 0,
-        :fasttravel_ui                  => 0,
-        :mainmenu_background            => 0,
-        :ui_theme						=> 0,
+        :in_game_timer                           => false,
+        :language                                => 0,
+        :fasttravel_ui                           => 0,
+        :mainmenu_background                     => 0,
+        :ui_theme                                => 0,
 
         # Gameplay
-        :movement                       => 0,
-        :skip_text                      => false,
-        :en_purple_messagebox           => true,
-        :enforce_april_fools            => false,
-        :true_memory_mode               => false,
-        :oneshot_mode                   => false,
-        :twm_shader_footprint           => true,
+        :movement                                => 0,
+        :skip_text                               => false,
+        :en_purple_messagebox                    => true,
+        :enforce_april_fools                     => false,
+        :true_memory_mode                        => false,
+        :oneshot_mode                            => false,
+        :twm_shader_footprint                    => true,
 
         # Advanced
-        :crashlog_privacy               => false,
-        :streamer_privacy               => false,
-        :SDL_HINT_INVALID_PARAM_CHECKS  => false,
+        :crashlog_privacy                        => false,
+        :streamer_privacy                        => false,
+        :SDL_HINT_INVALID_PARAM_CHECKS           => false,
 		
         #controls
-        :gamepad_led                    => true,
-        :gamepad_deadzone               => 5,
+        :gamepad_led                             => true,
+        :gamepad_deadzone                        => 5,
 
         # Debug
-        :debug                          => false,
-        :debug_character                => false,
-        :debug_text                     => false,
-        :debug_text_scene_title         => true,
-        :debug_picture_names            => false,
-        :debug_lightmap                 => false,
-        :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT => false,
+        :debug                                   => false,
+        :debug_character                         => false,
+        :debug_text                              => false,
+        :debug_text_scene_title                  => true,
+        :debug_picture_names                     => false,
+        :debug_lightmap                          => false,
+        :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT          => false,
 
         #Hidden
-        :is_dejavu                      => false,
+        :is_dejavu                               => false,
       }
       reset_controls!
     end
@@ -238,7 +238,6 @@ class Window_Settings
       {
         :type => :enum,
         :name => "Main menu background",
-        :icon => [3, 0],
         :parameter => :mainmenu_background,
         :values => ["Original", "Badend", "Title Black"]
       },
