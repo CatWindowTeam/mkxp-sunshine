@@ -6,6 +6,7 @@ module Settings
         :bgm_volume                     => 100,
         :sfx_volume                     => 100,
         :use_fight_crime_track          => false,
+        :use_old_self_contained_universe_reprise => false,
 
         # Video
         :fullscreen                     => false,
@@ -171,6 +172,11 @@ class Window_Settings
         :type => :bool,
         :name => "ITS TIME FOR FIGHT CRIME",
         :parameter => :use_fight_crime_track
+      },
+      {
+        :type => :bool,
+        :name => "Use Old Self Contained Universe(Reprise) version",
+        :parameter => :use_old_self_contained_universe_reprise
       },
     ],
     "Video" => [

@@ -25,7 +25,6 @@ class Game_Party
     @items = {}
     @weapons = {}
     @armors = {}
-    RPG::Mod.exec_hooks("hooks/Game_Party/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Initial Party Setup

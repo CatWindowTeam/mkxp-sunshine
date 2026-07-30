@@ -14,7 +14,6 @@ class Game_Oneshot
     @plight_timer = nil
     @wallpaper = nil
     @bruteforce_start = nil
-    RPG::Mod.exec_hooks("hooks/Game_Oneshot/init", binding)
   end
   
   def self.get_user_name

@@ -40,8 +40,6 @@ class Ed_Message
       @contents = Bitmap.new(w, h)
       @sprite_text.bitmap = @contents
     end
-
-    RPG::Mod.exec_hooks("hooks/Ed_Message/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose

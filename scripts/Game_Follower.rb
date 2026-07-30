@@ -12,7 +12,6 @@ class Game_Follower < Game_Character
     @leader = leader
     self.actor = actor
     moveto(leader.x, leader.y)
-    RPG::Mod.exec_hooks("hooks/Game_Follower/init", binding)
   end
 
   # Overrides

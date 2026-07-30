@@ -53,7 +53,6 @@ class Doc_Message
     # Animation flags
     @fade_in = false
     @fade_out = false
-    RPG::Mod.exec_hooks("hooks/Doc_Message/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose

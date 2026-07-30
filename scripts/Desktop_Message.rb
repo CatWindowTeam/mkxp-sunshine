@@ -9,12 +9,11 @@ class Desktop_Message
   def initialize
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @sprite_messagebox = Sprite.new(@viewport)
-    @sprite_messagebox.bitmap = RPG::Cache.picture('cg_desktop_messagebox') #Bitmap.new(640, 480)
+    @sprite_messagebox.bitmap = RPG::Cache.picture('cg_desktop_messagebox')
     @sprite_messagebox.zoom_x = @sprite_messagebox.zoom_y = 2
     @sprite_messagebox.x = (Graphics.width) / 2 - 320
     @sprite_messagebox.y = (Graphics.height) / 2 - 240
     @sprite_messagebox.shader = Shader::CRT
-    
     @sprite_text = Sprite.new(@viewport)
     @contents = Bitmap.new(Graphics.width, Graphics.height)
     Language.register_text_sprite(self.class.name + "_contents", @contents)
@@ -32,7 +31,6 @@ class Desktop_Message
     # Animation flags
     @fade_in = false
     @fade_out = false
-    RPG::Mod.exec_hooks("hooks/Desktop_Message/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose

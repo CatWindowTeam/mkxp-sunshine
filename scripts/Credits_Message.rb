@@ -1,6 +1,5 @@
 # Displays doc message boxes
 class Credits_Message
-
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
@@ -59,7 +58,6 @@ class Credits_Message
   # * Refresh: Load new message text and pre-process it
   #--------------------------------------------------------------------------
   def refresh
-
     if $game_switches[104]
       @sprite_bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0, 255))
     else

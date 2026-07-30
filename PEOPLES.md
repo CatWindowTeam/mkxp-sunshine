@@ -1,10 +1,12 @@
-Programmers:
+# Peoples
+## Programmers
 * Issac332
 * "Визя"
 * DepressedTWM
 * referr
 
-Artists:
+## Artists
+
 * Issac332
 * Creature_of_steel1
 * DesMo
@@ -13,24 +15,28 @@ Artists:
 * K1RMAN
 * Serega_play_x 
 
-Testers and helpers:
+## Testers and helpers:
 * Rubik
 * Prime 223432
 
-Telegram moderators:
+## Donators
+* Kodu
+
+## Telegram moderators
 * Creature_of_steel1
 * Обси(ENG channel)
-* Freskovich(leaved)
+* Freskovich
 * "Визя"
 
-Matrix moderators:
+## Matrix moderators
 * referr
 
-Servers administrators
+## Servers administrators
 * DepressedTWM
 
-Special thanks to:
+## Special thanks to
 * my mom and dad:3
+* Friends:3
 
-Donators:
+## Donators:
 * Kodu

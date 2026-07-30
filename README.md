@@ -1,5 +1,4 @@
 # mkxp-sunshine
-
 This is a specialized fork of [mkxp-oneshot](https://github.com/elizagamedev/mkxp-oneshot) designed for OneShot: Sunshine mod.
 Target of sunshine mod - improve original game.
 
@@ -11,7 +10,7 @@ Target of sunshine mod - improve original game.
 
 1. Install required packages
     * Cmake
-    * C/C++ compiler(GCC 14+/Clang(untested)/MinGW)
+    * C/C++ compiler, GCC 14+ or Clang(untested) or MinGW or MSVC(untested)
     * xxd
     * Ruby 3.4+
     * Boost
