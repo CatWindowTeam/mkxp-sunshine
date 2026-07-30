@@ -14,6 +14,26 @@ class Scene_Title
   #--------------------------------------------------------------------------
   # * Main Processing
   #--------------------------------------------------------------------------
+  def setbg
+	current_wallpaper = Settings[:mainmenu_background]
+	@sprite = Sprite.new(@viewport)
+	case Settings[:mainmenu_background]
+	when 0 then @sprite.bitmap = RPG::Cache.title($data_system.title_name)
+	when 1 then @sprite.bitmap = RPG::Cache.title("badend")
+	when 2 then @sprite.bitmap = RPG::Cache.picture("title_black")
+	else @sprite.bitmap = RPG::Cache.title($data_system.title_name)
+	end
+	@sprite.x = Graphics.width / 2
+	@sprite.y = Graphics.height / 2
+	px = (Graphics.width / 1920.0)
+	py = (Graphics.height / 1080.0)
+	@sprite.zoom_x = 2.0
+	@sprite.zoom_y = 2.0
+	@sprite.ox = @sprite.bitmap.width / 2 * (0.5 * (1.0 - px) + px)
+	@sprite.oy = @sprite.bitmap.height / 2 * (1.3 * (1.0 - py) + py)
+	@sprite.update
+  end
+  
   def main
     # Load database
     $data_actors        = load_data("Data/Actors.rxdata")
@@ -23,9 +43,8 @@ class Scene_Title
     $data_tilesets      = load_data("Data/Tilesets.rxdata")
     $data_common_events = load_data("Data/CommonEvents.rxdata")
     $data_system        = load_data("Data/System.rxdata")
-
     Language.initialize_database
-
+    
     $game_temp = Game_Temp.new
     new_game
     $game_system = Game_System.new
@@ -38,18 +57,13 @@ class Scene_Title
     @window_settings_title = Window_Settings.new
 
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-
     # Make title graphic
     @sprite = Sprite.new(@viewport)
-	
     if File.exist?("badend.lock")
     	@sprite.bitmap = RPG::Cache.title("badend")
     else
-    	case Settings[:mainmenu_background]
-    	when 0 then @sprite.bitmap = RPG::Cache.title($data_system.title_name)
-    	when 1 then @sprite.bitmap = RPG::Cache.title("badend")
-    	else @sprite.bitmap = RPG::Cache.title($data_system.title_name)
-    	end
+    	current_wallpaper = Settings[:mainmenu_background]
+    	setbg
 	end
     @sprite.x = Graphics.width / 2
     @sprite.y = Graphics.height / 2
@@ -128,6 +142,12 @@ class Scene_Title
     Graphics.transition(40)
     # Main loop
     while true
+      # check if wallpaper changed
+      if current_wallpaper =! Settings[:mainmenu_background]
+      	@sprite.bitmap.dispose
+      	@sprite.dispose
+		setbg
+      end
       # Update game screen
       Graphics.update
       # Update input information
@@ -193,7 +213,6 @@ class Scene_Title
   #--------------------------------------------------------------------------
   def update
     @debug.visible = Settings[:debug_text_scene_title] || false # if undefined don't render
-    
     if Input.trigger?(Input::F8)
       Graphics.fullscreen = $console = !Settings[:fullscreen]
       Settings[:fullscreen] = !Settings[:fullscreen]

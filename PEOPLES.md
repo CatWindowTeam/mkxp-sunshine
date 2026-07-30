@@ -11,24 +11,19 @@ Artists:
 * Обси
 * DepressedTWM
 * K1RMAN
+* Serega_play_x 
 
-Testers:
+Testers and helpers:
 * Rubik
 * Prime 223432
 
-Donators:
-* Kodu
-
 Telegram moderators:
 * Creature_of_steel1
-* Обси
-* Freskovich
+* Обси(ENG channel)
+* Freskovich(leaved)
 * "Визя"
 
 Matrix moderators:
-* referr
-
-Discord moderators:
 * referr
 
 Servers administrators
@@ -36,3 +31,6 @@ Servers administrators
 
 Special thanks to:
 * my mom and dad:3
+
+Donators:
+* Kodu

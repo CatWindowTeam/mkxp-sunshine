@@ -14,8 +14,8 @@ class Window_Base < Window
   #--------------------------------------------------------------------------
   def initialize(x, y, width, height)
     super()
-    @windowskin_name = $game_system.windowskin_name
-    self.windowskin = RPG::Cache.windowskin(@windowskin_name)
+   	self.windowskin = RPG::Cache.windowskin(@windowskin_name)
+	@windowskin_name = $game_system.windowskin_name
     self.x = x
     self.y = y
     self.width = width
