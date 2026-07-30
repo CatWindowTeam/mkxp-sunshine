@@ -400,6 +400,10 @@ else()
 	)
 endif()
 
+if(POLICY CMP0167) # suppress Boost warning
+    cmake_policy(SET CMP0167 OLD)
+endif()
+
 find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(SDL3 CONFIG)
