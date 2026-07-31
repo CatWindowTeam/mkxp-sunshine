@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is SDL_free software: you can redistribute it and/or modify
+** mkxp is free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -21,6 +21,8 @@
 
 #include "binding.h"
 #include "binding-util.h"
+#include "ruby/internal/eval.h"
+#include "ruby/internal/memory.h"
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "filesystem.h"
@@ -34,6 +36,7 @@
 #include "sunshine.h"
 #include "modloader.h"
 
+#include <ruby-3.4.0/ruby/internal/gc.h>
 #include <ruby.h>
 #include <ruby/debug.h>
 #include <ruby/encoding.h>
@@ -97,6 +100,7 @@ static void tp_cb(VALUE tpval, void *data) {
 }
 
 extern const char binding_mri_module_rpg1_rb[];
+extern const int binding_mri_module_rpg1_rb_len;
 
 static void mriBindingExecute();
 static void mriBindingTerminate();
@@ -193,7 +197,13 @@ static void mriBindingInit(){
 	rb_define_alias(rb_singleton_class(rb_mKernel), "_mkxp_kernel_caller_alias", "caller");
 	_rb_define_module_function(rb_mKernel, "caller", _kernelCaller);
 
-	rb_eval_string(binding_mri_module_rpg1_rb);
+	char *script = (char*)SDL_malloc(binding_mri_module_rpg1_rb_len + 1);
+	SDL_memcpy(script, binding_mri_module_rpg1_rb, binding_mri_module_rpg1_rb_len);
+	script[binding_mri_module_rpg1_rb_len] = '\0';
+
+	rb_eval_string(script);
+
+	SDL_free(script);
 
 	VALUE mod = rb_define_module("MKXP");
 	_rb_define_module_function(mod, "data_directory", mkxpDataDirectory);
@@ -466,6 +476,8 @@ static void runRMXPScripts(BacktraceData &btData){
 			VALUE scriptDecoded = rb_ary_entry(script, 3);
 			VALUE string = newStringUTF8(RSTRING_PTR(scriptDecoded), RSTRING_LEN(scriptDecoded));
 
+			rb_gc_register_address(&string);
+
 			VALUE fname;
 			const char *scriptName = RSTRING_PTR(rb_ary_entry(script, 1));
 			char buf[512];
@@ -474,9 +486,15 @@ static void runRMXPScripts(BacktraceData &btData){
 			len = SDL_snprintf(buf, sizeof(buf), "%03ld:%s", i, scriptName);
 
 			fname = newStringUTF8(buf, len);
+			rb_gc_register_address(&fname);
+
 			btData.scriptNames.insert(buf, scriptName);
 			int state;
 			evalString(string, fname, &state);
+
+			rb_gc_unregister_address(&fname);
+			rb_gc_unregister_address(&string);
+
 			if (state)
 				break;
 		}

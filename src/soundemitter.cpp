@@ -119,7 +119,7 @@ void SoundEmitter::play(const std::string &filename, int volume, int pitch) {
 	if (!buffer)
 		return;
 
-	/* Try to find first SDL_free source */
+	/* Try to find first free source */
 	size_t i;
 	for (i = 0; i < srcCount; ++i)
 		if (AL::Source::getState(alSrcs[srcPrio[i]]) != AL_PLAYING)

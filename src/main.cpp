@@ -272,7 +272,6 @@ int main(int argc, char *argv[]){
 	if (dataDir) {
 		int result = chdir(dataDir);
 		(void)result;
-		SDL_free((void*)dataDir); // SDL_GetBasePath returns a heap pointer; SDL_free expects void*
 	}
 #endif
 

@@ -24,3 +24,4 @@ added icons and way to disable options in settings
 fixed segfault while to fast window size changing
 updated cg_blue picture
 Deleted useless hooks
+fix crash on game exit
