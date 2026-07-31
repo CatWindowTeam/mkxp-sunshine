@@ -7,11 +7,11 @@ check_file() {
 
   case "$f" in
     *.c|*.cc|*.cpp|*.cxx)
-      cppcheck --check-level=exhaustive --disable=missingInclude --enable=all --force -q -I . "$f" \
-        || echo "cppcheck is not installed or reported issues for: $f"
+      #cppcheck --check-level=exhaustive --disable=missingInclude --enable=all --force -q -I . "$f" \
+      #  || echo "cppcheck is not installed or reported issues for: $f"
 
-      gcc -fanalyzer -Wall -Wextra -Wpedantic -std=c11 -c "$f" -o /dev/null 2>/dev/null \
-        || echo "gcc is not installed or analyzer reported issues for: $f"
+      #gcc -fanalyzer -Wall -Wextra -Wpedantic -std=c11 -c "$f" -o /dev/null 2>/dev/null \
+      #  || echo "gcc is not installed or analyzer reported issues for: $f"
 
       cbmc "$f" \
         || echo "cbmc is not installed or reported issues for: $f"

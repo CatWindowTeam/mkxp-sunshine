@@ -54,7 +54,6 @@ class Window_Message < Window_Selectable
 
     # Text blip sound
     @blipsound = nil
-    RPG::Mod.exec_hooks("hooks/Window_Message/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose
@@ -182,7 +181,7 @@ class Window_Message < Window_Selectable
     $game_system.windowskin_name = "normal"
     if $game_temp.message_face != nil
       if $game_temp.message_face.start_with?("en")
-        $game_system.windowskin_name = "en_normal"
+        $game_system.windowskin_name = "en_square"
         self.y = 16;
       else
         $game_system.windowskin_name = "normal"

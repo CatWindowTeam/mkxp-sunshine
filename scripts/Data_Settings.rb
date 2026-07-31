@@ -22,7 +22,6 @@ module Settings
         :language                                => 0,
         :fasttravel_ui                           => 0,
         :mainmenu_background                     => 0,
-        :ui_theme                                => 0,
 
         # Gameplay
         :movement                                => 0,
@@ -240,12 +239,6 @@ class Window_Settings
         :name => "Main menu background",
         :parameter => :mainmenu_background,
         :values => ["Original", "Badend", "Title Black"]
-      },
-      {
-        :type => :enum,
-        :name => "UI theme",
-        :parameter => :ui_theme,
-        :values => ["Original", "World Machine", "World Machine Square"]
       },
     ],
     "Gameplay" => [
