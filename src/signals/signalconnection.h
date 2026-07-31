@@ -1,5 +1,4 @@
 #pragma once
-
 #include <sigc++/connection.h>
 #include "debugwriter.h"
 

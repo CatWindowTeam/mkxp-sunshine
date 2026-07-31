@@ -8,7 +8,7 @@ option(DEBUG "Debug mode" OFF)
 option(SANITIZERS "Enable sanitizers" OFF)
 option(NATIVE "Use native instructions(for local use only)" OFF)
 #x86, arm64, ia-64
-option(CPU_ARCH "Enter here your target arch" "x86")
+option(CPU_ARCH "CPU arch" "x86")
 
 #Configuration
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
@@ -245,11 +245,6 @@ macro(ProcessWithXXD outvar inputfile outdir)
 	)
 endmacro()
 
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/xxdhack)
-include_directories(
-	${CMAKE_CURRENT_BINARY_DIR}/xxdhack
-)
-
 foreach(item ${EMBEDDED_INPUT})
 	ProcessWithXXD(EMBEDDED_SOURCE ${item} ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
@@ -305,7 +300,6 @@ set(BINDING_SOURCE
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
 
 
-
 ################ 
 # Настройки зависимые от компилятора
 if (MSVC)
@@ -321,9 +315,10 @@ if (MSVC)
 	endif()
 else()
 	if(NATIVE)
-
+		add_compile_options("-march=native -mtune=native")
 	endif()
 	if(SANITIZERS)
+		# ASan + Ruby = shit :<
 		set(SANITIZERS "undefined,leak,shift,shift-base,shift-exponent,integer-divide-by-zero,unreachable,vla-bound,null,signed-integer-overflow,bounds,bounds-strict,alignment,object-size,float-divide-by-zero,float-cast-overflow,nonnull-attribute,returns-nonnull-attribute,bool,enum,vptr,pointer-overflow,builtin,pointer-subtract,pointer-compare")
 		add_compile_options(-fsanitize=${SANITIZERS})
 		add_link_options(-fsanitize=${SANITIZERS})
@@ -368,12 +363,14 @@ else()
 		  	-mnoreturn-no-callee-saved-registers
 		  	-mrelax-cmpxchg-loop)
 		elseif(CPU_ARCH MATCHES "arm64")
+		  # TODO: check is it really usefull:3
 		  add_compile_options(
 			 -mlow-precision-recip-sqrt
 			 -mlow-precision-sqrt
 			 -mlow-precision-div
 		  )
 		elseif(CPU_ARCH MATCHES "ia-64")
+		  # In theory it must make game work better on IA-64?
 		  add_compile_options(
 			 -minline-float-divide-min-latency
 			 -minline-float-divide-max-throughput
@@ -383,7 +380,6 @@ else()
 			 -minline-sqrt-max-throughput
 		  )
 		endif()
-		
 	endif()
 endif()
 
@@ -426,7 +422,6 @@ find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INC
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 find_package(OpenSSL CONFIG REQUIRED COMPONENTS Crypto)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
-pkg_check_modules(LIBZIP REQUIRED libzip)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE src include ${PIXMAN_INCLUDE_DIR} ${SIGC2_INCLUDE_DIRS}
@@ -439,12 +434,11 @@ physfs ${PIXMAN_LIBRARY} ${SIGC2_LIBRARIES} ${PLATFORM_LIBRARIES}
 ${Ruby_LIBRARIES} Boost::boost Boost::chrono ${Boost_LIBRARIES}
 ${VORBISFILE_LIBRARIES} ZLIB::ZLIB ${PLATFORM_LIBS})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${LIBZIP_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBZIP_LIBRARIES} OpenSSL::Crypto)
+target_include_directories(${PROJECT_NAME} PRIVATE ${OPENSSL_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::Crypto)
 
 if(STEAM)
 	add_subdirectory(steamshim_parent)
-
 	# steam_appid.txt
 	configure_file(
 		"${CMAKE_SOURCE_DIR}/steam_appid.txt"

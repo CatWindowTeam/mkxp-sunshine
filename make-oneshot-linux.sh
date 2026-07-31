@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 # User-configurable variables.
-oneshot_id=420530
+oneshot_id="$(cat steam_appid.txt)"
 STEAMWORKS_PATH=$(realpath ..)/steamworks
 
 cmake . -B build/

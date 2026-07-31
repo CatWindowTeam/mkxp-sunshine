@@ -1,41 +1,33 @@
 #ifndef GAME_LAUNCH_NAME
-#define GAME_LAUNCH_NAME "oneshot"
+	#define GAME_LAUNCH_NAME "oneshot"
 #endif
 
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN 1
-#define UNICODE
-#include <windows.h>
-typedef PROCESS_INFORMATION ProcessType;
-typedef HANDLE PipeType;
-#define NULLPIPE NULL
-#define LLUFMT "%I64u"
+	#define WIN32_LEAN_AND_MEAN 1
+	#define UNICODE
+	#include <windows.h>
+	typedef PROCESS_INFORMATION ProcessType;
+	typedef HANDLE PipeType;
+	#define NULLPIPE NULL
+	#define LLUFMT "%I64u"
 #else
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <fcntl.h>
-typedef pid_t ProcessType;
-typedef int PipeType;
-#define NULLPIPE -1
-#define LLUFMT "%llu"
+	#include <stdio.h>
+	#include <string.h>
+	#include <unistd.h>
+	#include <errno.h>
+	#include <sys/wait.h>
+	#include <signal.h>
+	#include <fcntl.h>
+	typedef pid_t ProcessType;
+	typedef int PipeType;
+	#define NULLPIPE -1
+	#define LLUFMT "%llu"
 #endif
-#include <stdlib.h>
 
 #include "steam/steam_api.h"
-
-#ifdef STEAMSHIM_DEBUG
-#define dbgpipe printf
-#else
-static inline void dbgpipe(const char *fmt, ...) {
-    (void)fmt;
-}
-#endif
-
 #include <SDL3/SDL_messagebox.h>
+#include <SDL3/SDL_log.h>
+#include <SDL3/SDL_stdinc.h>
 
 /* platform-specific mainline calls this. */
 static int mainline(void);
@@ -44,19 +36,22 @@ static int mainline(void);
 static void fail(const char *err);
 static bool writePipe(PipeType fd, const void *buf, const unsigned int _len);
 static int readPipe(PipeType fd, void *buf, const unsigned int _len);
-static bool createPipes(PipeType *pPipeParentRead, PipeType *pPipeParentWrite,
-                        PipeType *pPipeChildRead, PipeType *pPipeChildWrite);
+static bool createPipes(PipeType *pPipeParentRead, PipeType *pPipeParentWrite, PipeType *pPipeChildRead, PipeType *pPipeChildWrite);
 static void closePipe(PipeType fd);
 static bool setEnvVar(const char *key, const char *val);
 static bool launchChild(ProcessType *pid);
 static int closeProcess(ProcessType *pid);
 
-#ifdef _WIN32
 static void fail(const char *err){
-    MessageBoxA(NULL, err, "ERROR", MB_ICONERROR | MB_OK);
-    ExitProcess(1);
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Steamshim Error", err, NULL);
+    #ifdef _WIN32
+    	ExitProcess(1);
+    #else
+    	_exit(1);
+    #endif
 } // fail
 
+#ifdef _WIN32
 static bool writePipe(PipeType fd, const void *buf, const unsigned int _len){
     const DWORD len = (DWORD) _len;
     DWORD bw = 0;
@@ -158,13 +153,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 
 #else  // everyone else that isn't Windows.
-
-static void fail(const char *err){
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Steamshim parent error", err, NULL);
-    fprintf(stderr, "%s\n", err);
-    _exit(1);
-} // fail
-
 static bool writePipe(PipeType fd, const void *buf, const unsigned int _len){
     const ssize_t len = (ssize_t) _len;
     ssize_t bw;
@@ -222,7 +210,7 @@ static bool launchChild(ProcessType *pid){
 
     // we're the child.
     GArgv[0] = SDL_strdup("./" GAME_LAUNCH_NAME);
-    dbgpipe("Starting %s\n", GArgv[0]);
+    SDL_log("Starting %s\n", GArgv[0]);
     execvp(GArgv[0], GArgv);
     // still here? It failed! Terminate, closing child's ends of the pipes.
     _exit(1);
@@ -249,7 +237,6 @@ int main(int argc, char **argv){
 // THE ACTUAL PROGRAM.
 
 class SteamBridge;
-
 static ISteamUserStats *GSteamStats = NULL;
 static ISteamUtils *GSteamUtils = NULL;
 static ISteamUser *GSteamUser = NULL;
@@ -319,33 +306,33 @@ static bool writeString(PipeType fd, ShimEvent event, const char *str){
     uint8 buf[256];
     buf[0] = SDL_strlen(str) + 2;
     buf[1] = (uint8) event;
-    strcpy((char *) buf + 2, str);
+    SDL_strlcpy((char *) buf + 2, str, sizeof(buf + 2));
     return writePipe(fd, buf, buf[0] + 1);
 } // writeString
 
 static inline bool writeBye(PipeType fd){
-    dbgpipe("Parent sending SHIMEVENT_BYE().\n");
+    SDL_log("Parent sending SHIMEVENT_BYE().\n");
     return write1ByteCmd(fd, SHIMEVENT_BYE);
 } // writeBye
 
 static inline bool writeStatsReceived(PipeType fd, const bool okay){
-    dbgpipe("Parent sending SHIMEVENT_STATSRECEIVED(%sokay).\n", okay ? "" : "!");
+    SDL_log("Parent sending SHIMEVENT_STATSRECEIVED(%sokay).\n", okay ? "" : "!");
     return write2ByteCmd(fd, SHIMEVENT_STATSRECEIVED, okay ? 1 : 0);
 } // writeStatsReceived
 
 static inline bool writeStatsStored(PipeType fd, const bool okay){
-    dbgpipe("Parent sending SHIMEVENT_STATSSTORED(%sokay).\n", okay ? "" : "!");
+    SDL_log("Parent sending SHIMEVENT_STATSSTORED(%sokay).\n", okay ? "" : "!");
     return write2ByteCmd(fd, SHIMEVENT_STATSSTORED, okay ? 1 : 0);
 } // writeStatsStored
 
 static bool writeAchievementSet(PipeType fd, const char *name, const bool enable, const bool okay){
     uint8 buf[256];
     uint8 *ptr = buf+1;
-    dbgpipe("Parent sending SHIMEVENT_SETACHIEVEMENT('%s', %senable, %sokay).\n", name, enable ? "" : "!", okay ? "" : "!");
+    SDL_log("Parent sending SHIMEVENT_SETACHIEVEMENT('%s', %senable, %sokay).\n", name, enable ? "" : "!", okay ? "" : "!");
     *(ptr++) = (uint8) SHIMEVENT_SETACHIEVEMENT;
     *(ptr++) = enable ? 1 : 0;
     *(ptr++) = okay ? 1 : 0;
-    strcpy((char *) ptr, name);
+    SDL_strlcpy((char *) ptr, name, buf);
     ptr += SDL_strlen(name) + 1;
     buf[0] = (uint8) ((ptr-1) - buf);
     return writePipe(fd, buf, buf[0] + 1);
@@ -354,19 +341,19 @@ static bool writeAchievementSet(PipeType fd, const char *name, const bool enable
 static bool writeAchievementGet(PipeType fd, const char *name, const int status, const uint64 time){
     uint8 buf[256];
     uint8 *ptr = buf+1;
-    dbgpipe("Parent sending SHIMEVENT_GETACHIEVEMENT('%s', status %d, time " LLUFMT ").\n", name, status, (unsigned long long) time);
+    SDL_log("Parent sending SHIMEVENT_GETACHIEVEMENT('%s', status %d, time " LLUFMT ").\n", name, status, (unsigned long long) time);
     *(ptr++) = (uint8) SHIMEVENT_GETACHIEVEMENT;
     *(ptr++) = (uint8) status;
     SDL_memcpy(ptr, &time, sizeof (time));
     ptr += sizeof (time);
-    strcpy((char *) ptr, name);
+    SDL_strlcpy((char *) ptr, name, buf);
     ptr += SDL_strlen(name) + 1;
     buf[0] = (uint8) ((ptr-1) - buf);
     return writePipe(fd, buf, buf[0] + 1);
 } // writeAchievementGet
 
 static inline bool writeResetStats(PipeType fd, const bool alsoAch, const bool okay){
-    dbgpipe("Parent sending SHIMEVENT_RESETSTATS(%salsoAchievements, %sokay).\n", alsoAch ? "" : "!", okay ? "" : "!");
+    SDL_log("Parent sending SHIMEVENT_RESETSTATS(%salsoAchievements, %sokay).\n", alsoAch ? "" : "!", okay ? "" : "!");
     return write3ByteCmd(fd, SHIMEVENT_RESETSTATS, alsoAch ? 1 : 0, okay ? 1 : 0);
 } // writeResetStats
 
@@ -377,29 +364,29 @@ static bool writeStatThing(PipeType fd, const ShimEvent ev, const char *name, co
     *(ptr++) = okay ? 1 : 0;
     SDL_memcpy(ptr, val, vallen);
     ptr += vallen;
-    strcpy((char *) ptr, name);
+    SDL_memcpy((char *) ptr, name, buf);
     ptr += SDL_strlen(name) + 1;
     buf[0] = (uint8) ((ptr-1) - buf);
     return writePipe(fd, buf, buf[0] + 1);
 } // writeStatThing
 
 static inline bool writeSetStatI(PipeType fd, const char *name, const int32 val, const bool okay){
-    dbgpipe("Parent sending SHIMEVENT_SETSTATI('%s', val %d, %sokay).\n", name, (int) val, okay ? "" : "!");
+    SDL_log("Parent sending SHIMEVENT_SETSTATI('%s', val %d, %sokay).\n", name, (int) val, okay ? "" : "!");
     return writeStatThing(fd, SHIMEVENT_SETSTATI, name, &val, sizeof (val), okay);
 } // writeSetStatI
 
 static inline bool writeSetStatF(PipeType fd, const char *name, const float val, const bool okay){
-    dbgpipe("Parent sending SHIMEVENT_SETSTATF('%s', val %f, %sokay).\n", name, val, okay ? "" : "!");
+    SDL_log("Parent sending SHIMEVENT_SETSTATF('%s', val %f, %sokay).\n", name, val, okay ? "" : "!");
     return writeStatThing(fd, SHIMEVENT_SETSTATF, name, &val, sizeof (val), okay);
 } // writeSetStatF
 
 static inline bool writeGetStatI(PipeType fd, const char *name, const int32 val, const bool okay){
-    dbgpipe("Parent sending SHIMEVENT_GETSTATI('%s', val %d, %sokay).\n", name, (int) val, okay ? "" : "!");
+    SDL_log("Parent sending SHIMEVENT_GETSTATI('%s', val %d, %sokay).\n", name, (int) val, okay ? "" : "!");
     return writeStatThing(fd, SHIMEVENT_GETSTATI, name, &val, sizeof (val), okay);
 } // writeGetStatI
 
 static inline bool writeGetStatF(PipeType fd, const char *name, const float val, const bool okay){
-    dbgpipe("Parent sending SHIMEVENT_GETSTATF('%s', val %f, %sokay).\n", name, val, okay ? "" : "!");
+    SDL_log("Parent sending SHIMEVENT_GETSTATF('%s', val %f, %sokay).\n", name, val, okay ? "" : "!");
     return writeStatThing(fd, SHIMEVENT_GETSTATF, name, &val, sizeof (val), okay);
 } // writeGetStatF
 
@@ -547,12 +534,12 @@ static bool processCommand(const uint8 *buf, unsigned int buflen, PipeType fd){
             break;
 
         case SHIMCMD_GETPERSONANAME:
-            dbgpipe("Parent sending SHIMEVENT_GETPERSONANAME.\n");
+            SDL_log("Parent sending SHIMEVENT_GETPERSONANAME.\n");
             writeString(fd, SHIMEVENT_GETPERSONANAME, GSteamFriends->GetPersonaName());
             break;
 
         case SHIMCMD_GETCURRENTGAMELANGUAGE:
-            dbgpipe("Parent sending SHIMEVENT_GETCURRENTGAMELANGUAGE.\n");
+            SDL_log("Parent sending SHIMEVENT_GETCURRENTGAMELANGUAGE.\n");
             writeString(fd, SHIMEVENT_GETCURRENTGAMELANGUAGE, GSteamApps->GetCurrentGameLanguage());
             break;
     } // switch
@@ -642,7 +629,7 @@ static int mainline(void){
     PipeType pipeChildWrite = NULLPIPE;
     ProcessType childPid;
 
-    dbgpipe("Parent starting mainline.\n");
+    SDL_log("Parent starting mainline.\n");
 
     if (!createPipes(&pipeParentRead, &pipeParentWrite, &pipeChildRead, &pipeChildWrite))
         fail("Failed to create application pipes");
@@ -658,13 +645,13 @@ static int mainline(void){
     closePipe(pipeChildWrite);
     pipeChildRead = pipeChildWrite = NULLPIPE;
 
-    dbgpipe("Parent in command processing loop.\n");
+    SDL_log("Parent in command processing loop.\n");
 
     // Now, we block for instructions until the pipe fails (child closed it or
     //  terminated/crashed).
     processCommands(pipeParentRead, pipeParentWrite);
 
-    dbgpipe("Parent shutting down.\n");
+    SDL_log("Parent shutting down.\n");
 
     // Close our ends of the pipes.
     writeBye(pipeParentWrite);
@@ -673,12 +660,12 @@ static int mainline(void){
 
     deinitSteamworks();
 
-    dbgpipe("Parent waiting on child process.\n");
+    SDL_log("Parent waiting on child process.\n");
 
     // Wait for the child to terminate, close the child process handles.
     const int retval = closeProcess(&childPid);
 
-    dbgpipe("Parent exiting mainline (child exit code %d).\n", retval);
+    SDL_log("Parent exiting mainline (child exit code %d).\n", retval);
 
     return retval;
 } // mainline

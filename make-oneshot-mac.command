@@ -1,44 +1,34 @@
 #!/bin/sh
-set -e
-
+set -ueo pipefail
 cd `dirname $0`
 
 # User-configurable variables
 mac_version="1.1.1"
-make_threads=8
 ONESHOT_PATH=$HOME/Library/Application\ Support/Steam/steamapps/common/OneShot
-# Colors
-white="\033[0;37m"      # White - Regular
-bold="\033[1;37m"       # White - Bold
-cyan="\033[1;36m"       # Cyan - Bold
-green="\033[1;32m"      # Green - Bold
-color_reset="\033[0m"   # Reset Colors
-
 use_qmake=True
 
-echo "${white}Compiling ${bold}Sunshine ${white}engine for macOS...${color_reset}\n"
+echo "Compiling Sunshine engine for macOS...\n"
 
-# Generate makefile and build main + journal
 if [[ $use_qmake == True ]]
 	then
-	echo "-> ${cyan}Generate makefile...${color_reset}"
+	echo "-> Generate makefile..."
 	qmake MRIVERSION=3.3
-	echo "-> ${cyan}Compile engine...${color_reset}"
-	make -j${make_threads}
-	echo "-> ${cyan}Compile steamshim...${color_reset}"
+	echo "-> Compile engine..."
+	make -j"${nproc}"
+	echo "-> Compile steamshim..."
 	# cd steamshim_parent
 	# mkdir build && cd build
 	# cmake ..
 	# STEAMWORKS=./steamworks make -j${make_threads}
 	# cd ../..
 else
-	echo "${bold}WARNING: Conan/CMake method not ready yet.${color_reset}"
+	echo "WARNING: Conan/CMake method not ready yet."
 fi
-echo "-> ${cyan}Compile journal...${color_reset}"
+echo "-> Compile journal..."
 pyinstaller journal/unix/journal.spec --onefile --windowed
 
 # Create app bundles
-echo "-> ${cyan}Create app bundles...${color_reset}"
+echo "-> Create app bundles..."
 OSX_App="OneShot.app"
 ContentsDir="$OSX_App/Contents"
 LibrariesDir="$OSX_App/Contents/Libraries"
@@ -67,26 +57,24 @@ mv OneShot.app/Contents/MacOS/OneShot OneShot.app/Contents/Resources/OneShot
 cp -r dist/_______.app _______.app
 
 # Set version number
-echo "-> ${cyan}Set version number...${color_reset}"
+echo "-> Set version number..."
 rm -f OneShot.app/Contents/Info.plist
 rm -f _______.app/Contents/Info.plist
 m4 patches/mac/Info.plist.in -DONESHOTMACVERSION=$mac_version > OneShot.app/Contents/Info.plist
 m4 patches/mac/JournalInfo.plist.in -DONESHOTMACVERSION=$mac_version > _______.app/Contents/Info.plist
 
 # Compile scripts
-echo "-> ${cyan}Compile xScripts.rxdata...${color_reset}"
+echo "-> Compile xScripts.rxdata..."
 ruby rpgscript.rb ./scripts "$ONESHOT_PATH"
 cp "$ONESHOT_PATH/Data/xScripts.rxdata" .
 
-echo "-> ${cyan}Install OneShot apps to Steam directory...${color_reset}"
+echo "-> Install OneShot apps to Steam directory..."
 cp -rf "./OneShot.app" "$ONESHOT_PATH"
 cp -rf "./_______.app" "$ONESHOT_PATH"
 
 # Cleanup
-echo "-> ${cyan}Cleanup files...${color_reset}"
+echo "-> Cleanup files..."
 # make clean
 rm -rf journal/unix/__pycache__
 rm -rf build
 rm -rf dist
-
-echo "\n${green}Complete!"

@@ -4,7 +4,7 @@
 
   Copyright (c) 2007 Red Hat, Inc.
 
-  Permission is hereby granted, SDL_free of charge, to any person
+  Permission is hereby granted, free of charge, to any person
   obtaining a copy of this software and associated documentation files
   (the "Software"), to deal in the Software without restriction,
   including without limitation the rights to use, copy, modify, merge,
@@ -28,8 +28,6 @@
 #include "xdg-user-dir-lookup.h"
 
 #include <SDL3/SDL_stdinc.h>
-#include <stdio.h>
-#include <stdlib.h>
 /**
  * xdg_user_dir_lookup_with_fallback:
  * @type: a string specifying the type of directory
@@ -62,7 +60,6 @@ char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback
 
   config_home = SDL_getenv("XDG_CONFIG_HOME");
   if (config_home == NULL || config_home[0] == 0){
-      //SDL_strlen("/.config/user-dirs.dirs") + 1
       config_file = (char*)SDL_malloc(SDL_strlen(home_dir) + 23);
       if (config_file == NULL)
         goto error;
