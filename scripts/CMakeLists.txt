@@ -1,5 +1,6 @@
 set(scripts
   Credits_Message.rb
+  Data_Types.rb
   Data_FastTravel.rb
   Data_Footsteps.rb
   Data_Item.rb

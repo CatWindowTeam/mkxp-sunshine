@@ -34,6 +34,8 @@
 #include <cstdio>
 #include <vector>
 
+extern void initGamepadBinding(VALUE inputModule);
+
 RB_METHOD(inputUpdate){
 	RB_UNUSED_PARAM;
 
@@ -343,6 +345,8 @@ static elementsN(buttonCodes);
 void inputBindingInit(){
 	printf("[inputBindingInit] Initializing Input binding\n");
 	VALUE module = rb_define_module("Input");
+
+	initGamepadBinding(module);
 
 	// mkxp's input
 	_rb_define_module_function(module, "update", inputUpdate);

@@ -219,3 +219,329 @@ module GamepadMapColors
     259 => WORLD_MACHINE,
   }
 end
+
+module GamepadIcons
+  ICONS_CACHE = []
+
+  ICONS = {
+    # SDL supported types, can be detected automatically
+    # SDL_GAMEPAD_TYPE_UNKNOWN                      => UNKNOWN
+    # SDL_GAMEPAD_TYPE_STANDARD                     => STANDART
+    # SDL_GAMEPAD_TYPE_XBOX360                      => XBOX360
+    # SDL_GAMEPAD_TYPE_XBOXONE                      => XBOXONE
+    # SDL_GAMEPAD_TYPE_PS3                          => PS3
+    # SDL_GAMEPAD_TYPE_PS4                          => PS4
+    # SDL_GAMEPAD_TYPE_PS5                          => PS5
+    # SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO          => SWITCH_PRO
+    # SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT  => JOYCON_LEFT
+    # SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT => JOYCON_RIGHT
+    # SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR  => JOYCON_PAIR
+    # SDL_GAMEPAD_TYPE_GAMECUBE                     => GAMECUBE
+
+    Input::GamepadType::UNKNOWN => {
+      :extends => Input::GamepadType::STANDART,
+      :icon => [8, 16],
+    },
+    Input::GamepadType::STANDART => {
+      :icon => [10, 13],
+      :buttons => {
+        Input::GamepadButton::INVALID => [9, 16],
+        Input::GamepadButton::SOUTH => [0, 0],
+        Input::GamepadButton::EAST => [3, 0],
+        Input::GamepadButton::WEST => [1, 0],
+        Input::GamepadButton::NORTH => [2, 0],
+        Input::GamepadButton::BACK => [4, 5],
+        Input::GamepadButton::GUIDE => [6, 13],
+        Input::GamepadButton::START => [5, 5],
+        Input::GamepadButton::LEFT_STICK => [4, 3],
+        Input::GamepadButton::RIGHT_STICK => [5, 3],
+        Input::GamepadButton::LEFT_SHOULDER => [6, 3],
+        Input::GamepadButton::RIGHT_SHOULDER => [7, 3],
+        Input::GamepadButton::DPAD_UP => [7, 0],
+        Input::GamepadButton::DPAD_DOWN => [4, 0],
+        Input::GamepadButton::DPAD_LEFT => [5, 0],
+        Input::GamepadButton::DPAD_RIGHT => [6, 0],
+        Input::GamepadButton::MISC1 => [0, 18],
+        Input::GamepadButton::RIGHT_PADDLE1 => [7, 6],
+        Input::GamepadButton::LEFT_PADDLE1 => [6, 6],
+        Input::GamepadButton::RIGHT_PADDLE2 => [7, 7],
+        Input::GamepadButton::LEFT_PADDLE2 => [6, 7],
+        Input::GamepadButton::TOUCHPAD => [8, 16],
+        Input::GamepadButton::MISC2 => [1, 18],
+        Input::GamepadButton::MISC3 => [2, 18],
+        Input::GamepadButton::MISC4 => [3, 18],
+        Input::GamepadButton::MISC5 => [4, 18],
+        Input::GamepadButton::MISC6 => [5, 18],
+      },
+      :axes => {
+        Input::GamepadAxis::INVALID => [[9, 16], [9, 16]],
+        Input::GamepadAxis::LEFTX => [[5, 1], [6, 1]],
+        Input::GamepadAxis::LEFTY => [[4, 1], [7, 1]],
+        Input::GamepadAxis::RIGHTX => [[5, 2], [6, 2]],
+        Input::GamepadAxis::RIGHTY => [[4, 2], [7, 2]],
+        Input::GamepadAxis::LEFT_TRIGGER => [[6, 4], [9, 16]],
+        Input::GamepadAxis::RIGHT_TRIGGER => [[7, 4], [9, 16]],
+      }
+    },
+    Input::GamepadType::XBOX360 => {
+      :extends => Input::GamepadType::STANDART,
+      :icon => [8, 14],
+      :buttons => {
+        Input::GamepadButton::GUIDE => [1, 17],
+      }
+    },
+    Input::GamepadType::XBOXONE => {
+      :extends => Input::GamepadType::XBOX360,
+      :icon => [10, 14],
+      :buttons => {
+        Input::GamepadButton::BACK => [4, 4],
+        Input::GamepadButton::START => [5, 4],
+        Input::GamepadButton::MISC1 => [5, 6],
+      }
+    },
+    Input::GamepadType::PS3 => {
+      :extends => Input::GamepadType::STANDART,
+      :icon => [8, 12],
+      :buttons => {
+        Input::GamepadButton::SOUTH => [0, 5],
+        Input::GamepadButton::EAST => [3, 5],
+        Input::GamepadButton::WEST => [1, 5],
+        Input::GamepadButton::NORTH => [2, 5],
+        Input::GamepadButton::BACK => [5, 12],
+        Input::GamepadButton::GUIDE => [6, 18],
+        Input::GamepadButton::START => [6, 12],
+        Input::GamepadButton::LEFT_SHOULDER => [6, 9],
+        Input::GamepadButton::RIGHT_SHOULDER => [7, 9],
+      },
+      :axes => {
+        Input::GamepadAxis::LEFT_TRIGGER => [[6, 10], [9, 16]],
+        Input::GamepadAxis::RIGHT_TRIGGER => [[7, 10], [9, 16]],
+      }
+    },
+    Input::GamepadType::PS4 => {
+      :extends => Input::GamepadType::PS3,
+      :icon => [9, 12],
+      :buttons => {
+        Input::GamepadButton::BACK => [6, 11],
+        Input::GamepadButton::START => [5, 11],
+        Input::GamepadButton::TOUCHPAD => [4, 11],
+      }
+    },
+    Input::GamepadType::PS5 => {
+      :extends => Input::GamepadType::PS4,
+      :icon => [10, 12],
+      :buttons => {
+        Input::GamepadButton::BACK => [4, 9],
+        Input::GamepadButton::GUIDE => [11, 17],
+        Input::GamepadButton::START => [5, 9],
+        Input::GamepadButton::TOUCHPAD => [4, 10],
+        Input::GamepadButton::MISC1 => [7, 11],
+      }
+    },
+    Input::GamepadType::PS5 => {
+      :extends => Input::GamepadType::PS4,
+      :icon => [10, 12],
+      :buttons => {
+        Input::GamepadButton::BACK => [4, 9],
+        Input::GamepadButton::START => [5, 9],
+        Input::GamepadButton::TOUCHPAD => [4, 10],
+        Input::GamepadButton::MISC1 => [7, 11],
+      }
+    },
+    Input::GamepadType::SWITCH_PRO => {
+      :extends => Input::GamepadType::JOYCON_PAIR,
+      :icon => [10, 13],
+      :buttons => {
+        Input::GamepadButton::DPAD_UP => [7, 0],
+        Input::GamepadButton::DPAD_DOWN => [4, 0],
+        Input::GamepadButton::DPAD_LEFT => [5, 0],
+        Input::GamepadButton::DPAD_RIGHT => [6, 0],
+      }
+    },
+    Input::GamepadType::JOYCON_PAIR => {
+      :extends => Input::GamepadType::STANDART,
+      :icon => [9, 11],
+      :buttons => {
+        Input::GamepadButton::SOUTH => [3, 0],
+        Input::GamepadButton::EAST => [0, 0],
+        Input::GamepadButton::WEST => [2, 0],
+        Input::GamepadButton::NORTH => [1, 0],
+        Input::GamepadButton::BACK => [5, 13],
+        Input::GamepadButton::START => [4, 13],
+        Input::GamepadButton::DPAD_UP => [3, 15],
+        Input::GamepadButton::DPAD_DOWN => [0, 15],
+        Input::GamepadButton::DPAD_LEFT => [1, 15],
+        Input::GamepadButton::DPAD_RIGHT => [2, 15],
+        Input::GamepadButton::LEFT_SHOULDER => [6, 8],
+        Input::GamepadButton::RIGHT_SHOULDER => [7, 8],
+        Input::GamepadButton::MISC1 => [4, 14],
+      },
+      :axes => {
+        Input::GamepadAxis::LEFT_TRIGGER => [[6, 14], [9, 16]],
+        Input::GamepadAxis::RIGHT_TRIGGER => [[7, 14], [9, 16]],
+      }
+    },
+    Input::GamepadType::JOYCON_LEFT => {
+      :extends => Input::GamepadType::JOYCON_PAIR,
+      :icon => [10, 16],
+    },
+    Input::GamepadType::JOYCON_RIGHT => {
+      :extends => Input::GamepadType::JOYCON_PAIR,
+      :icon => [11, 16],
+    },
+    Input::GamepadType::GAMECUBE => {
+      :extends => Input::GamepadType::STANDART,
+      :icon => [8, 11],
+      :buttons => {
+        Input::GamepadButton::SOUTH => [8, 10],
+        Input::GamepadButton::EAST => [7, 15],
+        Input::GamepadButton::WEST => [9, 10],
+        Input::GamepadButton::NORTH => [5, 15],
+        Input::GamepadButton::START => [5, 14],
+        Input::GamepadButton::LEFT_STICK => [10, 11],
+        Input::GamepadButton::RIGHT_STICK => [10, 10],
+        Input::GamepadButton::RIGHT_SHOULDER => [4, 15],
+      },
+      :axes => {
+        Input::GamepadAxis::LEFT_TRIGGER => [[6, 15], [9, 16]],
+        Input::GamepadAxis::RIGHT_TRIGGER => [[0, 17], [9, 16]],
+        Input::GamepadAxis::LEFTX => [[9, 9], [10, 9]],
+        Input::GamepadAxis::LEFTY => [[8, 9], [11, 9]],
+        Input::GamepadAxis::RIGHTX => [[9, 8], [10, 8]],
+        Input::GamepadAxis::RIGHTY => [[8, 8], [11, 8]],
+      }
+    },
+
+    # GUID gamepads
+    :series_x => {
+      :extends => Input::GamepadType::XBOXONE,
+      :icon => [9, 14],
+      :buttons => {
+        Input::GamepadButton::MISC1 => [5, 6],
+      }
+    },
+    :luna => {
+      :extends => Input::GamepadType::XBOXONE,
+      :icon => [8, 11],
+      :buttons => {
+        Input::GamepadButton::BACK => [7, 13],
+        Input::GamepadButton::GUIDE => [7, 12],
+        Input::GamepadButton::START => [6, 12],
+      }
+    },
+    :ouya => {
+      :extends => Input::GamepadType::PS3,
+      :icon => [11, 11],
+      :buttons => {
+        Input::GamepadButton::SOUTH => [0, 10],
+        Input::GamepadButton::EAST => [3, 10],
+        Input::GamepadButton::WEST => [1, 10],
+        Input::GamepadButton::NORTH => [2, 10],
+        Input::GamepadButton::GUIDE => [2, 17],
+        Input::GamepadButton::TOUCHPAD => [4, 12],
+      }
+    },
+    :steam_controller => {
+      :extends => Input::GamepadType::XBOXONE,
+      :icon => [8, 13],
+      :buttons => {
+        Input::GamepadButton::GUIDE => [5, 10],
+        Input::GamepadButton::DPAD_UP => [7, 17],
+        Input::GamepadButton::DPAD_DOWN => [4, 17],
+        Input::GamepadButton::DPAD_LEFT => [5, 17],
+        Input::GamepadButton::DPAD_RIGHT => [6, 17],
+        Input::GamepadButton::RIGHT_PADDLE1 => [7, 8],
+        Input::GamepadButton::LEFT_PADDLE1 => [6, 8],
+        Input::GamepadButton::RIGHT_STICK => [3, 17],
+      },
+      :axes => {
+        Input::GamepadAxis::RIGHTX => [[5, 16], [6, 16]],
+        Input::GamepadAxis::RIGHTY => [[4, 16], [7, 16]],
+      }
+    },
+    :steam_deck => {
+      :extends => Input::GamepadType::XBOXONE,
+      :icon => [9, 13],
+      :buttons => {
+        Input::GamepadButton::BACK => [4, 4],
+        Input::GamepadButton::GUIDE => [4, 8],
+        Input::GamepadButton::MISC1 => [5, 8],
+        Input::GamepadButton::START => [5, 4],
+        Input::GamepadButton::LEFT_SHOULDER => [6, 9],
+        Input::GamepadButton::RIGHT_SHOULDER => [7, 9],
+      },
+      :axes => {
+        Input::GamepadAxis::LEFT_TRIGGER => [[6, 10], [9, 16]],
+        Input::GamepadAxis::RIGHT_TRIGGER => [[7, 10], [9, 16]],
+      }
+    },
+    :stadia => {
+      :extends => Input::GamepadType::XBOXONE,
+      :icon => [8, 17],
+      :buttons => {
+        Input::GamepadButton::BACK => [5, 8],
+        Input::GamepadButton::GUIDE => [8, 17],
+        Input::GamepadButton::LEFT_SHOULDER => [6, 9],
+        Input::GamepadButton::RIGHT_SHOULDER => [7, 9],
+      },
+      :axes => {
+        Input::GamepadAxis::LEFT_TRIGGER => [[6, 10], [9, 16]],
+        Input::GamepadAxis::RIGHT_TRIGGER => [[7, 10], [9, 16]],
+      }
+    }
+  }
+
+  GUIDS = {
+
+  }
+
+  class << self
+    def button(id, skinned = true, gamepad_type = nil)
+      current_gamepad = gamepad_type
+      if !ICONS.has_key?(gamepad_type)
+        current_gamepad = Input::GamepadType.current_type
+        if !ICONS.has_key?(current_gamepad)
+          current_gamepad = Input::GamepadType::UNKNOWN
+        end
+      end
+
+      result = nil
+      while !result
+        if !ICONS[current_gamepad].has_key?(:buttons)
+          current_gamepad = ICONS[current_gamepad][:extends]
+          next
+        end
+        result = ICONS[current_gamepad][:buttons][id].clone
+      end
+      if skinned
+        if id == Input::GamepadButton::SOUTH ||
+           id == Input::GamepadButton::EAST ||
+           id == Input::GamepadButton::WEST ||
+           id == Input::GamepadButton::NORTH
+          result[1] += Settings[:gamepad_face_style]
+        end
+      end
+      result
+    end
+    
+    def axis(id, dir, gamepad_type = nil)
+      current_gamepad = gamepad_type
+      if !ICONS.has_key?(gamepad_type)
+        current_gamepad = Input::GamepadType.current_type
+        if !ICONS.has_key?(current_gamepad)
+          current_gamepad = Input::GamepadType::UNKNOWN
+        end
+      end
+
+      result = nil
+      while !result
+        if !ICONS[current_gamepad].has_key?(:axes)
+          current_gamepad = ICONS[current_gamepad][:extends]
+          next
+        end
+        result = ICONS[current_gamepad][:axes][id][1 - dir].clone
+      end
+      result
+    end
+  end
+end

@@ -72,10 +72,6 @@ class Window_Settings
           parameter = @content.add_parameter(screen_title, Separator.new(@content, screen_index, parameter_index, ""))
         else
           case parameter_info[:type]
-          when :base
-            parameter = 
-            @content.add_parameter(screen_title, BaseParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default]))
           when :bool
             parameter = 
             @content.add_parameter(screen_title, BoolParameter.new(@content, screen_index, parameter_index,
@@ -119,6 +115,15 @@ class Window_Settings
             @content.add_parameter(screen_title, ActionParameter.new(@content, screen_index, parameter_index,
               parameter_info[:name], parameter_info[:icon], parameter_info[:default], parameter_info[:action],
               parameter_info[:arg1], parameter_info[:arg2], parameter_info[:arg3], parameter_info[:arg4]))
+          when :custom
+            parameter = 
+            @content.add_parameter(screen_title, CustomParameter.new(@content, screen_index, parameter_index,
+              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
+              parameter_info[:callbacks]))
+          else
+            parameter = 
+            @content.add_parameter(screen_title, BaseParameter.new(@content, screen_index, parameter_index,
+              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default]))
           end
         end
         parameter.disabled = true if parameter_info[:disabled] && parameter 

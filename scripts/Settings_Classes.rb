@@ -342,11 +342,11 @@ class Window_Settings
       @sprite.bitmap = Bitmap.new(PARAMETER_WIDTH, PARAMETER_HEIGHT + 1)
       @sprite.bitmap.font.size = 20
 
-      if @icon_position
-        @icon = Sprite.new(@settings_content.viewport)
-        @icon.bitmap = Bitmap.new(ICON_SIZE, ICON_SIZE)
-        @icon.zoom_x = @icon.zoom_y = 2
-      end
+      #if @icon_position
+      #  @icon = Sprite.new(@settings_content.viewport)
+      #  @icon.bitmap = Bitmap.new(ICON_SIZE, ICON_SIZE)
+      #  @icon.zoom_x = @icon.zoom_y = 2
+      #end
 
       Language.register_text_sprite("settings_parameter #{screen_id}-#{position}", @sprite)
 
@@ -392,8 +392,9 @@ class Window_Settings
 
     def redraw_icon()
       if @icon_position
-        @icon.bitmap.clear
-        @icon.bitmap.blt(0, 0, RPG::Cache.menu("icons"), Rect.new(@icon_position[0] * ICON_SIZE, @icon_position[1] * ICON_SIZE, ICON_SIZE, ICON_SIZE))
+        #@icon.bitmap.clear
+        #@icon.bitmap.blt(0, 0, RPG::Cache.menu("icons"), Rect.new(@icon_position[0] * ICON_SIZE, @icon_position[1] * ICON_SIZE, ICON_SIZE, ICON_SIZE))
+        @sprite.bitmap.stretch_blt(Rect.new(0, 0, 32, 32), RPG::Cache.menu("icons"), Rect.new(@icon_position[0] * ICON_SIZE, @icon_position[1] * ICON_SIZE, ICON_SIZE, ICON_SIZE))
       end
     end
 
@@ -418,18 +419,18 @@ class Window_Settings
       @sprite.y = @settings_content.visible_y + @position * PARAMETER_HEIGHT
       @sprite.opacity = ((1.0 + ((@sprite.y - @settings_content.offset).to_f / 64.0).clamp(-1.0, 0.0)) * @opacity * (@settings_content.opacity.to_f / 255.0) * disabled_opacity * 255.0).to_i
 
-      if @icon_position
-        @icon.opacity = (@opacity * (@settings_content.opacity.to_f / 255.0) * disabled_opacity * 255.0)
-        @icon.x = @sprite.x
-        @icon.y = @sprite.y - (PARAMETER_HEIGHT - ICON_SIZE * 2) / 2
-      end
+      #if @icon_position
+      #  @icon.opacity = (@opacity * (@settings_content.opacity.to_f / 255.0) * disabled_opacity * 255.0)
+      #  @icon.x = @sprite.x
+      #  @icon.y = @sprite.y - (PARAMETER_HEIGHT - ICON_SIZE * 2) / 2
+      #end
     end
 
     def dispose()
       @sprite.dispose
-      if @icon_position
-        @icon.dispose
-      end
+      #if @icon_position
+      #  @icon.dispose
+      #end
     end
 
     def value_left() end
@@ -744,8 +745,20 @@ class Window_Settings
       @sprite.bitmap.draw_text(offset, 0, @sprite.bitmap.width - PARAMETER_KEY_WIDTH * 4 - offset, @sprite.bitmap.height, tr(@name))
       for i in 0..3
         offset = (@selected && i == @selection ? SELECTED_KEYS_MARGIN : 4)
-        parameter_x = @sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i) + offset
-        @sprite.bitmap.draw_text(parameter_x, 0, PARAMETER_KEY_WIDTH - offset * 2, @sprite.bitmap.height, @waiting_for_key && i == @selection ? tr("Press a key") : tr(get_display_value(i)), 1)
+        parameter_x = @sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i)
+        key_bind = @key_binds[i]
+        if key_bind && key_bind.type > KeyBind::Type::Key && key_bind.type < KeyBind::Type::JButton
+          icon_x, icon_y = case key_bind.type
+          when KeyBind::Type::CButton
+            GamepadIcons.button(key_bind.button)
+          when KeyBind::Type::CAxis
+            GamepadIcons.axis(key_bind.axis, key_bind.dir)
+          end
+
+          @sprite.bitmap.stretch_blt(Rect.new(parameter_x + PARAMETER_KEY_WIDTH / 2 - ICON_SIZE, @sprite.bitmap.height / 2 - ICON_SIZE, ICON_SIZE * 2, ICON_SIZE * 2), RPG::Cache.menu("gamepad_icons"), Rect.new(icon_x * ICON_SIZE, icon_y * ICON_SIZE, ICON_SIZE, ICON_SIZE))
+        else
+          @sprite.bitmap.draw_text(parameter_x + offset, 0, PARAMETER_KEY_WIDTH - offset * 2, @sprite.bitmap.height, @waiting_for_key && i == @selection ? tr("Press a key") : tr(get_display_value(i)), 1)
+        end
         @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i) - 1, 1, 2, @sprite.bitmap.height - 2), Color.new(255, 255, 255, 32))
       end
 
@@ -864,6 +877,84 @@ class Window_Settings
       end
       @settings_content.redraw_all
       $game_system.se_play($data_system.buzzer_se)
+    end
+  end
+
+  class CustomParameter < BaseParameter
+    TYPE = :custom
+    def initialize(settings_content, screen_id, position, name, icon, parameter, init_value, callbacks)
+      @callbacks = callbacks
+
+      callback(:init, settings_content, screen_id, position, name, icon, parameter, init_value, callbacks) do
+        super(settings_content, screen_id, position, name, icon, parameter, init_value)
+      end
+    end
+    def callback(name, *args)
+      original = proc { yield if block_given? }
+
+      if proc = @callbacks[name]
+        instance_exec(original, *args, &proc)
+      else
+        original.call
+      end
+    end
+    
+    def opacity
+      callback(:opacity_get) do super end
+    end
+    def opacity=(value)
+      callback(:opacity_set, value) do super(value) end
+    end
+
+    def value
+      callback(:value_get) do super end
+    end
+    def value=(value)
+      callback(:value_set, value) do super(value) end
+    end
+
+    def name
+      callback(:name_get) do super end
+    end
+    def name=(name)
+      callback(:name_set, name) do super(name) end
+    end
+
+    def get_display_value
+      callback(:get_display_value) do super end
+    end
+
+    def redraw_icon
+      callback(:redraw_icon) do super end
+    end
+
+    def redraw
+      callback(:redraw) do super end
+    end
+
+    def update
+      callback(:update) do super end
+    end
+
+    def dispose
+      callback(:dispose) do super end
+    end
+
+    def value_left
+      callback(:value_left) do super end
+    end
+    def value_right
+      callback(:value_right) do super end
+    end
+    def action
+      callback(:action) do super end
+    end
+    # only for visual updating, its not selecting for real
+    def select(previous)
+      callback(:select, previous) do super(previous) end
+    end
+    def deselect
+      callback(:deselect) do super end
     end
   end
 end

@@ -38,6 +38,8 @@ module Settings
         :SDL_HINT_INVALID_PARAM_CHECKS           => false,
 		
         #controls
+        :gamepad_type                            => -1,
+        :gamepad_face_style                      => 0,
         :gamepad_led                             => true,
         :gamepad_deadzone                        => 5,
 
@@ -58,66 +60,66 @@ module Settings
 
     def reset_controls!
       @data.merge!({
-        :controls_walk_down                   => [
+        :controls_walk_down          => [
                                           KeyBind.key(Input::key_from_name("Down")),
                                           KeyBind.caxis(Input::c_axis_from_name("LeftY"), KeyBind::Positive),
                                           KeyBind.cbutton(Input::c_button_from_name("DpDown"))
                                         ],
-        :controls_walk_left                   => [
+        :controls_walk_left          => [
                                           KeyBind.key(Input::key_from_name("Left")),
                                           KeyBind.caxis(Input::c_axis_from_name("LeftX"), KeyBind::Negative),
                                           KeyBind.cbutton(Input::c_button_from_name("DpLeft"))
                                         ],
-        :controls_walk_right                  => [
+        :controls_walk_right         => [
                                           KeyBind.key(Input::key_from_name("Right")),
                                           KeyBind.caxis(Input::c_axis_from_name("LeftX"), KeyBind::Positive),
                                           KeyBind.cbutton(Input::c_button_from_name("DpRight"))
                                         ],
-        :controls_walk_up                     => [
+        :controls_walk_up            => [
                                           KeyBind.key(Input::key_from_name("Up")),
                                           KeyBind.caxis(Input::c_axis_from_name("LeftY"), KeyBind::Negative),
                                           KeyBind.cbutton(Input::c_button_from_name("DpUp"))
                                         ],
-        :controls_run                    => [
+        :controls_run                => [
                                           KeyBind.key(Input::key_from_name("Left Shift")),
                                           KeyBind.caxis(Input::c_axis_from_name("righttrigger"), KeyBind::Positive),
                                           KeyBind.cbutton(Input::c_button_from_name("x"))
                                         ],
         # -----------------------------------------------------------------------------------------------------------
-        :controls_action                => [
+        :controls_action             => [
                                           KeyBind.key(Input::key_from_name("Z")),
                                           KeyBind.key(Input::key_from_name("Space")),
                                           KeyBind.cbutton(Input::c_button_from_name("a")),
                                         ],
-        :controls_deactivate            => [
+        :controls_deactivate         => [
                                           KeyBind.key(Input::key_from_name("Left Shift")),
                                           KeyBind.cbutton(Input::c_button_from_name("back")),
                                           KeyBind.caxis(Input::c_axis_from_name("lefttrigger"), KeyBind::Positive),
                                         ],
-        :controls_cancel                => [
+        :controls_cancel             => [
                                           KeyBind.key(Input::key_from_name("X")),
                                           KeyBind.key(Input::key_from_name("Escape")),
                                           KeyBind.cbutton(Input::c_button_from_name("b")),
                                         ],
-        :controls_menu                  => [
+        :controls_menu               => [
                                           KeyBind.key(Input::key_from_name("A")),
                                           KeyBind.key(Input::key_from_name("Return")),
                                           KeyBind.cbutton(Input::c_button_from_name("start")),
                                         ],
-        :controls_items                 => [
+        :controls_items              => [
                                           KeyBind.key(Input::key_from_name("S")),
                                           KeyBind.cbutton(Input::c_button_from_name("y")),
                                         ],
-        :controls_nav_left              => [
+        :controls_nav_left           => [
                                           KeyBind.key(Input::key_from_name("Q")),
                                           KeyBind.cbutton(Input::c_button_from_name("leftshoulder")),
                                         ],
-        :controls_nav_right             => [
+        :controls_nav_right          => [
                                           KeyBind.key(Input::key_from_name("W")),
                                           KeyBind.cbutton(Input::c_button_from_name("rightshoulder")),
                                         ],
         # -----------------------------------------------------------------------------------------------------------
-        :controls_debug                 => [
+        :controls_debug              => [
                                           KeyBind.key(Input::key_from_name("Left Ctrl")),
                                           KeyBind.cbutton(Input::c_button_from_name("rightstick")),
                                         ],
@@ -289,9 +291,50 @@ class Window_Settings
       },
     ],
     "Controls" => [
+      { :type => :sep, :name => "Gamepad" },
+      {
+        :type => :custom,
+        :name => "Face buttons style",
+        :parameter => :gamepad_face_style,
+        :default => 0,
+        :callbacks => {
+          :init => proc { |super_proc|
+            @max_value = 5
+
+            super_proc.call
+          },
+          :get_display_value => proc { |super_proc|
+            "" # meow >w<
+          },
+          :redraw => proc { |super_proc|
+            super_proc.call
+
+            x, y = GamepadIcons.button(Input::GamepadButton::SOUTH, false)
+            y += self.value * ICON_SIZE
+
+            @sprite.bitmap.stretch_blt(Rect.new(PARAMETER_WIDTH - ICON_SIZE * 4 * 2, (PARAMETER_HEIGHT - ICON_SIZE * 2) / 2, ICON_SIZE * 4 * 2, ICON_SIZE * 2), RPG::Cache.menu("gamepad_icons"), Rect.new(x, y, ICON_SIZE * 4, ICON_SIZE))
+          },
+          :value_set => proc { |super_proc, value|
+            if (value != self.value)
+              Audio.se_play(PARAMETER_CHANGE_AUDIO, 70, (value.to_f / @max_value.to_f * 50.0).to_i + 75)
+            end
+            super_proc.call(value)
+          },
+          :value_left => proc { |super_proc|
+            return if @disabled
+            self.value = (self.value - 1) % @max_value
+            @settings_content.redraw_all
+          },
+          :value_right => proc { |super_proc|
+            return if @disabled
+            self.value = (self.value + 1) % @max_value
+            @settings_content.redraw_all
+          }
+        }
+      },
       {
         :type => :bool,
-        :name => 'Control LED lighting on gamepads',
+        :name => "Control LED lighting on gamepads",
         :parameter => :gamepad_led
       },
       { :type => :sep, :name => "Walk" },

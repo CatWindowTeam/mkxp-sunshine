@@ -4,7 +4,7 @@ include(FindPackageHandleStandardArgs)
 
 # Options
 option(STEAM "Build for Steam" OFF)
-option(DEBUG "Debug mode" OFF)
+option(DEBUG "Debug mode" ON)
 option(SANITIZERS "Enable sanitizers" OFF)
 option(NATIVE "Use native instructions(for local use only)" OFF)
 #x86, arm64, ia-64
@@ -295,6 +295,7 @@ set(BINDING_SOURCE
 	binding-mri/keybindings-binding.cpp
 	binding-mri/lightmap-binding.cpp
 	binding-mri/signalconnection-binding.cpp
+	binding-mri/gamepad-binding.cpp
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
