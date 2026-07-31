@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2014 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is SDL_free software: you can redistribute it and/or modify
+** mkxp is free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -119,7 +119,7 @@ void SoundEmitter::play(const std::string &filename, int volume, int pitch) {
 	if (!buffer)
 		return;
 
-	/* Try to find first SDL_free source */
+	/* Try to find first free source */
 	size_t i;
 	for (i = 0; i < srcCount; ++i)
 		if (AL::Source::getState(alSrcs[srcPrio[i]]) != AL_PLAYING)
