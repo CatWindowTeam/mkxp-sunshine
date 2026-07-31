@@ -324,12 +324,17 @@ else()
 
 	endif()
 	if(SANITIZERS)
-		set(SANITIZERS "address,undefined,leak,shift,shift-base,shift-exponent,integer-divide-by-zero,unreachable,vla-bound,null,signed-integer-overflow,bounds,bounds-strict,alignment,object-size,float-divide-by-zero,float-cast-overflow,nonnull-attribute,returns-nonnull-attribute,bool,enum,vptr,pointer-overflow,builtin,pointer-subtract,pointer-compare")
+		set(SANITIZERS "undefined,leak,shift,shift-base,shift-exponent,integer-divide-by-zero,unreachable,vla-bound,null,signed-integer-overflow,bounds,bounds-strict,alignment,object-size,float-divide-by-zero,float-cast-overflow,nonnull-attribute,returns-nonnull-attribute,bool,enum,vptr,pointer-overflow,builtin,pointer-subtract,pointer-compare")
 		add_compile_options(-fsanitize=${SANITIZERS})
 		add_link_options(-fsanitize=${SANITIZERS})
 	endif()
 	if(DEBUG)
-		add_compile_options(-g3 -fno-omit-frame-pointer)
+		add_compile_options(
+		-g3
+		-fno-omit-frame-pointer
+		-Og
+		-Wall
+		-Wextra)
 	else()
 		add_compile_options(
 		-O2 
