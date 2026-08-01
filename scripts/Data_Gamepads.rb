@@ -221,7 +221,22 @@ module GamepadMapColors
 end
 
 module GamepadIcons
-  ICONS_CACHE = []
+  GAMEPADS = [nil,
+    Input::GamepadType::XBOX360,
+    Input::GamepadType::XBOXONE,
+    :series_x,
+    Input::GamepadType::PS3,
+    Input::GamepadType::PS4,
+    Input::GamepadType::PS5,
+    Input::GamepadType::SWITCH_PRO,
+    Input::GamepadType::JOYCON_PAIR,
+    :luna,
+    :ouya,
+    :stadia,
+    :steam_controller,
+    :steam_deck,
+    Input::GamepadType::GAMECUBE
+  ]
 
   ICONS = {
     # SDL supported types, can be detected automatically
@@ -244,6 +259,7 @@ module GamepadIcons
     },
     Input::GamepadType::STANDART => {
       :icon => [10, 13],
+      :face_skinnable => true,
       :buttons => {
         Input::GamepadButton::INVALID => [9, 16],
         Input::GamepadButton::SOUTH => [0, 0],
@@ -338,16 +354,6 @@ module GamepadIcons
         Input::GamepadButton::MISC1 => [7, 11],
       }
     },
-    Input::GamepadType::PS5 => {
-      :extends => Input::GamepadType::PS4,
-      :icon => [10, 12],
-      :buttons => {
-        Input::GamepadButton::BACK => [4, 9],
-        Input::GamepadButton::START => [5, 9],
-        Input::GamepadButton::TOUCHPAD => [4, 10],
-        Input::GamepadButton::MISC1 => [7, 11],
-      }
-    },
     Input::GamepadType::SWITCH_PRO => {
       :extends => Input::GamepadType::JOYCON_PAIR,
       :icon => [10, 13],
@@ -391,6 +397,7 @@ module GamepadIcons
     },
     Input::GamepadType::GAMECUBE => {
       :extends => Input::GamepadType::STANDART,
+      :face_skinnable => false,
       :icon => [8, 11],
       :buttons => {
         Input::GamepadButton::SOUTH => [8, 10],
@@ -422,7 +429,7 @@ module GamepadIcons
     },
     :luna => {
       :extends => Input::GamepadType::XBOXONE,
-      :icon => [8, 11],
+      :icon => [10, 11],
       :buttons => {
         Input::GamepadButton::BACK => [7, 13],
         Input::GamepadButton::GUIDE => [7, 12],
@@ -597,6 +604,54 @@ module GamepadIcons
   }
 
   class << self
+    def icon(gamepad_type = nil)
+      current_gamepad = get_gamepad_type(gamepad_type)
+
+      debug_string = ""
+      iterations = 0
+
+      result = nil
+      while !result
+        if !ICONS[current_gamepad].has_key?(:icon)
+          current_gamepad = ICONS[current_gamepad][:extends]
+          debug_string << "gamepad " << current_gamepad << "\n"
+          iterations += 1
+          if iterations > 10
+            puts debug_string
+            result = [8, 16]
+          end
+          next
+        end
+        result = ICONS[current_gamepad][:icon].clone
+        current_gamepad = ICONS[current_gamepad][:extends]
+      end
+      result
+    end
+
+    def face_skinnable(gamepad_type = nil)
+      current_gamepad = get_gamepad_type(gamepad_type)
+
+      debug_string = ""
+      iterations = 0
+
+      result = nil
+      while result == nil
+        if !ICONS[current_gamepad].has_key?(:face_skinnable)
+          current_gamepad = ICONS[current_gamepad][:extends]
+          debug_string << "gamepad " << current_gamepad << "\n"
+          iterations += 1
+          if iterations > 10
+            puts debug_string
+            result = false
+          end
+          next
+        end
+        result = ICONS[current_gamepad][:face_skinnable]
+        current_gamepad = ICONS[current_gamepad][:extends]
+      end
+      result
+    end
+
     def button(id, skinned = true, gamepad_type = nil)
       current_gamepad = get_gamepad_type(gamepad_type)
 
@@ -647,14 +702,15 @@ module GamepadIcons
           end
           next
         end
-        result = ICONS[current_gamepad][:axes][id][1 - dir].clone
+        axis = ICONS[current_gamepad][:axes][id]
+        result = axis[1 - dir].clone if axis
         current_gamepad = ICONS[current_gamepad][:extends]
       end
       result
     end
 
     def get_gamepad_type(gamepad_override = nil)
-      current_gamepad = gamepad_override
+      current_gamepad = gamepad_override || GamepadIcons::GAMEPADS[Settings[:gamepad_type]]
       if !ICONS.has_key?(current_gamepad)
         current_gamepad = GUIDS[Input::GamepadType.current_guid]
         if !ICONS.has_key?(current_gamepad)
