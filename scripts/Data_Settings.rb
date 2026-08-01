@@ -448,31 +448,37 @@ class Window_Settings
         :type => :bool,
         :name => "Show debug character",
         :parameter => :debug_character
+        :icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "Draw debug text in main menu",
         :parameter => :debug_text_scene_title
+        :icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "Show debug text",
         :parameter => :debug_text
+		:icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "Show picture names",
         :parameter => :debug_picture_names
+        :icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "Debug lightmap",
         :parameter => :debug_lightmap
+        :icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "SDL_HINT_SHUTDOWN_DBUS_ON_QUIT",
         :parameter => :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT
+        :icon => [1, 0],
       },
       { :type => :sep },
       {
@@ -480,12 +486,14 @@ class Window_Settings
         :name => "Debug",
         :parameter => :controls_debug,
         :bind => Input::DEBUGACTION
+        :icon => [1, 0],
       },
       { :type => :sep },
       {
         :type => :action,
         :name => "Clear image cache",
         :action => Proc.new { RPG::Cache.clear }
+        :icon => [1, 0],
       }
     ],
     "Mods" => [

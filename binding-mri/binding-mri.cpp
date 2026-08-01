@@ -36,7 +36,7 @@
 #include "sunshine.h"
 #include "modloader.h"
 
-#include <ruby-3.4.0/ruby/internal/gc.h>
+#include <ruby/internal/gc.h>
 #include <ruby.h>
 #include <ruby/debug.h>
 #include <ruby/encoding.h>
