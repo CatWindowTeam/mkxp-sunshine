@@ -159,8 +159,26 @@ RB_METHOD(mriRgssMain);
 RB_METHOD(mriRgssStop);
 RB_METHOD(_kernelCaller);
 
+
+// TODO: find the reason why Symbol doesn't have some methods
+VALUE rb_symbol_to_s(VALUE self)
+{
+    ID id = SYM2ID(self);
+    const char *name = rb_id2name(id);
+
+    if (!name)
+        return rb_str_new("", 0);
+
+    return rb_utf8_str_new_cstr(name);
+}
+
 static void mriBindingInit(){
 	printf("[mriBindingInit] Loading bindings...\n");
+
+	rb_define_method(rb_cSymbol, "to_s", RUBY_METHOD_FUNC(rb_symbol_to_s), 0);
+	rb_define_method(rb_cSymbol, "name", RUBY_METHOD_FUNC(rb_symbol_to_s), 0);
+	rb_define_method(rb_cSymbol, "id2name", RUBY_METHOD_FUNC(rb_symbol_to_s), 0);
+	
 	tableBindingInit();
 	etcBindingInit();
 	fontBindingInit();
@@ -565,7 +583,7 @@ static void mriBindingExecute(){
 	 * but not doing it will lead to crashes due to closed
 	 * stdio streams on some platforms (eg. Windows) */
 	int argc = 0;
-	char **argv = 0;
+	char **argv = nullptr;
 	//options_argv3[] = "--jit"
 	char options_argv1[] = "oneshot", options_argv2[] = "-ev";
 	char* options_argv[] = {options_argv1, options_argv2, NULL};
