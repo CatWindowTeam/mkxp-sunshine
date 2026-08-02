@@ -221,7 +221,22 @@ module GamepadMapColors
 end
 
 module GamepadIcons
-  ICONS_CACHE = []
+  GAMEPADS = [nil,
+    Input::GamepadType::XBOX360,
+    Input::GamepadType::XBOXONE,
+    :series_x,
+    Input::GamepadType::PS3,
+    Input::GamepadType::PS4,
+    Input::GamepadType::PS5,
+    Input::GamepadType::SWITCH_PRO,
+    Input::GamepadType::JOYCON_PAIR,
+    :luna,
+    :ouya,
+    :stadia,
+    :steam_controller,
+    :steam_deck,
+    Input::GamepadType::GAMECUBE
+  ]
 
   ICONS = {
     # SDL supported types, can be detected automatically
@@ -244,6 +259,7 @@ module GamepadIcons
     },
     Input::GamepadType::STANDART => {
       :icon => [10, 13],
+      :face_skinnable => true,
       :buttons => {
         Input::GamepadButton::INVALID => [9, 16],
         Input::GamepadButton::SOUTH => [0, 0],
@@ -275,9 +291,9 @@ module GamepadIcons
       },
       :axes => {
         Input::GamepadAxis::INVALID => [[9, 16], [9, 16]],
-        Input::GamepadAxis::LEFTX => [[5, 1], [6, 1]],
+        Input::GamepadAxis::LEFTX => [[6, 1], [5, 1]],
         Input::GamepadAxis::LEFTY => [[4, 1], [7, 1]],
-        Input::GamepadAxis::RIGHTX => [[5, 2], [6, 2]],
+        Input::GamepadAxis::RIGHTX => [[6, 2], [5, 2]],
         Input::GamepadAxis::RIGHTY => [[4, 2], [7, 2]],
         Input::GamepadAxis::LEFT_TRIGGER => [[6, 4], [9, 16]],
         Input::GamepadAxis::RIGHT_TRIGGER => [[7, 4], [9, 16]],
@@ -338,16 +354,6 @@ module GamepadIcons
         Input::GamepadButton::MISC1 => [7, 11],
       }
     },
-    Input::GamepadType::PS5 => {
-      :extends => Input::GamepadType::PS4,
-      :icon => [10, 12],
-      :buttons => {
-        Input::GamepadButton::BACK => [4, 9],
-        Input::GamepadButton::START => [5, 9],
-        Input::GamepadButton::TOUCHPAD => [4, 10],
-        Input::GamepadButton::MISC1 => [7, 11],
-      }
-    },
     Input::GamepadType::SWITCH_PRO => {
       :extends => Input::GamepadType::JOYCON_PAIR,
       :icon => [10, 13],
@@ -391,6 +397,7 @@ module GamepadIcons
     },
     Input::GamepadType::GAMECUBE => {
       :extends => Input::GamepadType::STANDART,
+      :face_skinnable => false,
       :icon => [8, 11],
       :buttons => {
         Input::GamepadButton::SOUTH => [8, 10],
@@ -405,9 +412,9 @@ module GamepadIcons
       :axes => {
         Input::GamepadAxis::LEFT_TRIGGER => [[6, 15], [9, 16]],
         Input::GamepadAxis::RIGHT_TRIGGER => [[0, 17], [9, 16]],
-        Input::GamepadAxis::LEFTX => [[9, 9], [10, 9]],
+        Input::GamepadAxis::LEFTX => [[10, 9], [9, 9]],
         Input::GamepadAxis::LEFTY => [[8, 9], [11, 9]],
-        Input::GamepadAxis::RIGHTX => [[9, 8], [10, 8]],
+        Input::GamepadAxis::RIGHTX => [[10, 8], [9, 8]],
         Input::GamepadAxis::RIGHTY => [[8, 8], [11, 8]],
       }
     },
@@ -422,7 +429,7 @@ module GamepadIcons
     },
     :luna => {
       :extends => Input::GamepadType::XBOXONE,
-      :icon => [8, 11],
+      :icon => [10, 11],
       :buttons => {
         Input::GamepadButton::BACK => [7, 13],
         Input::GamepadButton::GUIDE => [7, 12],
@@ -455,7 +462,7 @@ module GamepadIcons
         Input::GamepadButton::RIGHT_STICK => [3, 17],
       },
       :axes => {
-        Input::GamepadAxis::RIGHTX => [[5, 16], [6, 16]],
+        Input::GamepadAxis::RIGHTX => [[6, 16], [5, 16]],
         Input::GamepadAxis::RIGHTY => [[4, 16], [7, 16]],
       }
     },
@@ -477,7 +484,7 @@ module GamepadIcons
     },
     :stadia => {
       :extends => Input::GamepadType::XBOXONE,
-      :icon => [8, 17],
+      :icon => [10, 13],
       :buttons => {
         Input::GamepadButton::BACK => [5, 8],
         Input::GamepadButton::GUIDE => [8, 17],
@@ -492,26 +499,179 @@ module GamepadIcons
   }
 
   GUIDS = {
-
+    "030000006f0e00001301000000000000" => :series_x,
+    "030000006f0e00001304000000000000" => :series_x,
+    "030000006f0e00001302000000000000" => :series_x,
+    "030000006f0e00003901000000000000" => :series_x,
+    "030000006f0e00001413000000000000" => :series_x,
+    "03000000ab1200000103000000000000" => :series_x,
+    "03000000ad1b000000f9000000000000" => :series_x,
+    "030000005e040000130b000000000000" => :series_x,
+    "03000000373500000411000023000000" => :series_x,
+    "030000005e040000050b000003090000" => :series_x,
+    "030000005e040000130b000001050000" => :series_x,
+    "030000005e040000130b000013050000" => :series_x,
+    "030000005e040000130b000015050000" => :series_x,
+    "030000005e040000130b000007050000" => :series_x,
+    "030000005e040000130b000017050000" => :series_x,
+    "030000005e040000130b000022050000" => :series_x,
+    "030000005e040000220b000017050000" => :series_x,
+    "030000005e040000220b000021050000" => :series_x,
+    "03000000c82d00000a20000000020000" => :series_x,
+    "03000000c82d00000020000000000000" => :series_x,
+    "06000000c82d00000020000006010000" => :series_x,
+    "030000005e040000120b00000b050000" => :series_x,
+    "030000005e040000120b000016050000" => :series_x,
+    "030000005e040000120b000017050000" => :series_x,
+    "060000005e040000120b000001050000" => :series_x,
+    "030000006f0e0000d702000006640000" => :series_x,
+    "030000006f0e0000d802000006640000" => :series_x,
+    "030000006f0e0000ef02000007640000" => :series_x,
+    "03000000d62000000540000001010000" => :series_x,
+    "03000000d62000000520000050010000" => :series_x,
+    "03000000d62000000b20000001010000" => :series_x,
+    "03000000d62000000f20000001010000" => :series_x,
+    "03000000d62000006520000002010000" => :series_x,
+    "030000004b2900000430000011000000" => :series_x,
+    "030000005e040000120b000001050000" => :series_x,
+    "030000005e040000120b000005050000" => :series_x,
+    "030000005e040000120b000007050000" => :series_x,
+    "030000005e040000120b000009050000" => :series_x,
+    "030000005e040000120b00000d050000" => :series_x,
+    "030000005e040000120b00000f050000" => :series_x,
+    "030000005e040000120b000011050000" => :series_x,
+    "030000005e040000120b000014050000" => :series_x,
+    "030000005e040000120b000015050000" => :series_x,
+    "030000005e040000130b000005050000" => :series_x,
+    "050000005e040000130b000001050000" => :series_x,
+    "050000005e040000130b000005050000" => :series_x,
+    "050000005e040000130b000007050000" => :series_x,
+    "050000005e040000130b000009050000" => :series_x,
+    "050000005e040000130b000011050000" => :series_x,
+    "050000005e040000130b000013050000" => :series_x,
+    "050000005e040000130b000015050000" => :series_x,
+    "050000005e040000130b000017050000" => :series_x,
+    "060000005e040000120b000007050000" => :series_x,
+    "060000005e040000120b00000b050000" => :series_x,
+    "060000005e040000120b00000d050000" => :series_x,
+    "060000005e040000120b00000f050000" => :series_x,
+    "050000005e040000130b000022050000" => :series_x,
+    "060000005e040000120b000011050000" => :series_x,
+    "32386235353630393033393135613831" => :series_x,
+    "050000005e040000120b000000783f00" => :series_x,
+    "050000005e040000120b000000783f80" => :series_x,
+    "050000005e040000130b0000ffff3f00" => :series_x,
+    "65633038363832353634653836396239" => :series_x,
+    "050000005e040000130b0000df870001" => :series_x,
+    "050000005e040000130b0000ff870001" => :series_x,
+    "0300fa675e040000ff02000000007801" => :series_x, # this is my gamepad, but for some reason it is not in the gamecontrollerdb.txt
+    "03000000491900001904000000000000" => :luna,
+    "03000000710100001904000000000000" => :luna,
+    "03000000491900001904000001010000" => :luna,
+    "03000000710100001904000000010000" => :luna,
+    "03000000491900001904000011010000" => :luna,
+    "05000000710100001904000000010000" => :luna,
+    "32333634613735616163326165323731" => :luna,
+    "416d617a6f6e2047616d6520436f6e74" => :luna,
+    "4c756e612047616d6570616400000000" => :luna,
+    "03000000362800000100000000000000" => :ouya,
+    "05000000362800000100000002010000" => :ouya,
+    "05000000362800000100000003010000" => :ouya,
+    "05000000362800000100000004010000" => :ouya,
+    "39383335313438623439373538343266" => :ouya,
+    "4f5559412047616d6520436f6e74726f" => :ouya,
+    "03000000de2800000112000001000000" => :steam_controller,
+    "03000000de2800000112000011010000" => :steam_controller,
+    "03000000de2800000211000001000000" => :steam_controller,
+    "03000000de2800000211000011010000" => :steam_controller,
+    "03000000de2800004211000001000000" => :steam_controller,
+    "03000000de2800004211000011010000" => :steam_controller,
+    "03000000de280000fc11000001000000" => :steam_controller,
+    "05000000de2800000212000001000000" => :steam_controller,
+    "05000000de2800000511000001000000" => :steam_controller,
+    "05000000de2800000611000001000000" => :steam_controller,
+    "30623739343039643830333266346439" => :steam_controller,
+    "31643365666432386133346639383937" => :steam_controller,
+    "03000000de2800000512000010010000" => :steam_deck,
+    "03000000de2800000512000011010000" => :steam_deck,
+    "03000000d11800000094000000000000" => :stadia,
+    "03000000d11800000094000000010000" => :stadia,
+    "03000000d11800000094000011010000" => :stadia,
+    "05000000d11800000094000000010000" => :stadia,
+    "35383633353935396534393230616564" => :stadia,
+    "476f6f676c65204c4c43205374616469" => :stadia,
+    "5374616469614e3848532d6532633400" => :stadia,
   }
 
   class << self
-    def button(id, skinned = true, gamepad_type = nil)
-      current_gamepad = gamepad_type
-      if !ICONS.has_key?(gamepad_type)
-        current_gamepad = Input::GamepadType.current_type
-        if !ICONS.has_key?(current_gamepad)
-          current_gamepad = Input::GamepadType::UNKNOWN
+    def icon(gamepad_type = nil)
+      current_gamepad = get_gamepad_type(gamepad_type)
+
+      debug_string = ""
+      iterations = 0
+
+      result = nil
+      while !result
+        if !ICONS[current_gamepad].has_key?(:icon)
+          current_gamepad = ICONS[current_gamepad][:extends]
+          debug_string << "gamepad " << current_gamepad << "\n"
+          iterations += 1
+          if iterations > 10
+            puts debug_string
+            result = [8, 16]
+          end
+          next
         end
+        result = ICONS[current_gamepad][:icon].clone
+        current_gamepad = ICONS[current_gamepad][:extends]
       end
+      result
+    end
+
+    def face_skinnable(gamepad_type = nil)
+      current_gamepad = get_gamepad_type(gamepad_type)
+
+      debug_string = ""
+      iterations = 0
+
+      result = nil
+      while result == nil
+        if !ICONS[current_gamepad].has_key?(:face_skinnable)
+          current_gamepad = ICONS[current_gamepad][:extends]
+          debug_string << "gamepad " << current_gamepad << "\n"
+          iterations += 1
+          if iterations > 10
+            puts debug_string
+            result = false
+          end
+          next
+        end
+        result = ICONS[current_gamepad][:face_skinnable]
+        current_gamepad = ICONS[current_gamepad][:extends]
+      end
+      result
+    end
+
+    def button(id, skinned = true, gamepad_type = nil)
+      current_gamepad = get_gamepad_type(gamepad_type)
+
+      debug_string = ""
+      iterations = 0
 
       result = nil
       while !result
         if !ICONS[current_gamepad].has_key?(:buttons)
           current_gamepad = ICONS[current_gamepad][:extends]
+          debug_string << current_gamepad << "\n"
+          iterations += 1
+          if iterations > 10
+            puts debug_string
+            result = [8, 16]
+          end
           next
         end
         result = ICONS[current_gamepad][:buttons][id].clone
+        current_gamepad = ICONS[current_gamepad][:extends]
       end
       if skinned
         if id == Input::GamepadButton::SOUTH ||
@@ -525,23 +685,42 @@ module GamepadIcons
     end
     
     def axis(id, dir, gamepad_type = nil)
-      current_gamepad = gamepad_type
-      if !ICONS.has_key?(gamepad_type)
-        current_gamepad = Input::GamepadType.current_type
-        if !ICONS.has_key?(current_gamepad)
-          current_gamepad = Input::GamepadType::UNKNOWN
-        end
-      end
+      current_gamepad = get_gamepad_type(gamepad_type)
+
+      debug_string = ""
+      iterations = 0
 
       result = nil
       while !result
         if !ICONS[current_gamepad].has_key?(:axes)
           current_gamepad = ICONS[current_gamepad][:extends]
+          debug_string << "gamepad " << current_gamepad << "\n"
+          iterations += 1
+          if iterations > 10
+            puts debug_string
+            result = [8, 16]
+          end
           next
         end
-        result = ICONS[current_gamepad][:axes][id][1 - dir].clone
+        axis = ICONS[current_gamepad][:axes][id]
+        result = axis[1 - dir].clone if axis
+        current_gamepad = ICONS[current_gamepad][:extends]
       end
       result
+    end
+
+    def get_gamepad_type(gamepad_override = nil)
+      current_gamepad = gamepad_override || GamepadIcons::GAMEPADS[Settings[:gamepad_type]]
+      if !ICONS.has_key?(current_gamepad)
+        current_gamepad = GUIDS[Input::GamepadType.current_guid]
+        if !ICONS.has_key?(current_gamepad)
+          current_gamepad = Input::GamepadType.current_type
+          if !ICONS.has_key?(current_gamepad)
+            current_gamepad = Input::GamepadType::UNKNOWN
+          end
+        end
+      end
+      current_gamepad
     end
   end
 end

@@ -730,8 +730,9 @@ class Window_Settings
     def redraw()
       redraw_icon
       offset = !!@icon_position ? ICON_SIZE * 2 + 8 : 0
-      if (@parameter)
+      if @parameter && @key_binds != Settings[@parameter]
         @key_binds = Settings[@parameter]
+        apply
       end
 
       @sprite.bitmap.clear
@@ -747,7 +748,7 @@ class Window_Settings
         offset = (@selected && i == @selection ? SELECTED_KEYS_MARGIN : 4)
         parameter_x = @sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i)
         key_bind = @key_binds[i]
-        if key_bind && key_bind.type > KeyBind::Type::Key && key_bind.type < KeyBind::Type::JButton
+        if !(@waiting_for_key && i == @selection) && key_bind && key_bind.type > KeyBind::Type::Key && key_bind.type < KeyBind::Type::JButton
           icon_x, icon_y = case key_bind.type
           when KeyBind::Type::CButton
             GamepadIcons.button(key_bind.button)
@@ -821,12 +822,12 @@ class Window_Settings
           @waiting_for_key = @settings_content.waiting_for_key = false
           apply
           redraw
-        elsif c_button
+        elsif c_button && (!Input.press?(Input::ACTION) || @accept_action)
           Settings[@parameter][@selection] = KeyBind.cbutton(c_button)
           @waiting_for_key = @settings_content.waiting_for_key = false
           apply
           redraw
-        elsif c_axis
+        elsif c_axis && (!Input.press?(Input::ACTION) || @accept_action)
           Settings[@parameter][@selection] = KeyBind.caxis(c_axis, Input::c_axis_pressure(c_axis) > 0 ? KeyBind::Positive : KeyBind::Negative)
           @waiting_for_key = @settings_content.waiting_for_key = false
           apply
