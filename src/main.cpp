@@ -125,9 +125,6 @@ int rgssThreadFun(void *userdata){
     Debug() << "[main] GL Renderer  :" << glGetStringInt(GL_RENDERER);
     Debug() << "[main] GL Version   :" << glGetStringInt(GL_VERSION);
     Debug() << "[main] GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
-
-	bool vsync = conf.vsync || conf.syncToRefreshrate;
-	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
 #ifndef NDEBUG
 	GLDebugLogger dLogger;
 #endif
