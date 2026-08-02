@@ -58,6 +58,8 @@ public:
 
 	void reset();
 
+	void setVsync(int value);
+
 	/* Non-standard extension */
 	DECL_ATTR( Fullscreen, bool )
 	DECL_ATTR( ShowCursor, bool )

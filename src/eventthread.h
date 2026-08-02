@@ -96,7 +96,8 @@ public:
 	void requestWindowMove(int x, int y);
 	void requestWindowResize(int width, int height);
 	void requestShowCursor(bool mode);
-
+	void requestVsync(int interval);
+	
 	void requestTerminate();
 
 	Vec2i getWindowPosition() const;

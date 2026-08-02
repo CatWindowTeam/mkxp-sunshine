@@ -582,12 +582,7 @@ static void mriBindingExecute(){
 	 * but not doing it will lead to crashes due to closed
 	 * stdio streams on some platforms (eg. Windows) */
 	int argc = 0;
-<<<<<<< HEAD
 	char **argv = 0;
-=======
-	char **argv = nullptr;
-	//options_argv3[] = "--jit"
->>>>>>> b9cd221a9e6e6586cc4ca23a2b2d315b074f14e7
 	char options_argv1[] = "oneshot", options_argv2[] = "-ev";
 	char* options_argv[] = {options_argv1, options_argv2, NULL};
 	ruby_sysinit(&argc, &argv);

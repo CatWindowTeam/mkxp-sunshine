@@ -33,6 +33,7 @@
 #include <SDL3/SDL_touch.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_video.h>
 
 #include "sharedstate.h"
 #include "graphics.h"
@@ -84,7 +85,8 @@ enum{
 	REQUEST_WINMOVETO,
 	REQUEST_MESSAGEBOX,
 	REQUEST_SETCURSORVISIBLE,
-
+	REQUEST_VSYNC,
+	
 	UPDATE_FPS,
 	UPDATE_SCREEN_RECT,
 
@@ -96,15 +98,13 @@ SDL_Gamepad* gc = nullptr;
 
 bool EventThread::allocUserEvents(){
 	usrIdStart = SDL_RegisterEvents(EVENT_COUNT);
-	// SDL_RegisterEvents() now returns 0 if it couldn't allocate any user events.
 	if (usrIdStart == (uint32_t) 0)
 		return false;
 
 	return true;
 }
 
-EventThread::EventThread()
-    : fullscreen(false), showCursor(true){}
+EventThread::EventThread(): fullscreen(false), showCursor(true){}
 
 void EventThread::process(RGSSThreadData &rtData){
 	SDL_Event event;
@@ -412,8 +412,10 @@ void EventThread::process(RGSSThreadData &rtData){
 
 		default :
 			/* Handle user events */
-			switch(event.type - usrIdStart)
-			{
+			switch(event.type - usrIdStart){
+			case REQUEST_VSYNC: 
+				SDL_GL_SetSwapInterval(event.user.code);
+				break;
 			case REQUEST_SETFULLSCREEN :
 				setFullscreen(win, static_cast<bool>(event.user.code));
 				break;
@@ -511,10 +513,6 @@ bool EventThread::eventFilter(void *data, SDL_Event *event){
 		Debug() << "SDL_EVENT_TERMINATING";
 		return 0;
 
-	case SDL_EVENT_LOW_MEMORY :
-		Debug() << "SDL_EVENT_LOW_MEMORY";
-		return 0;
-
 	/* Workaround for Windows pausing on drag */
 	default:
 		if (event->window.type == SDL_EVENT_WINDOW_MOVED){
@@ -576,6 +574,13 @@ void EventThread::requestFullscreenMode(bool mode){
 	SDL_Event event;
 	event.type = usrIdStart + REQUEST_SETFULLSCREEN;
 	event.user.code = static_cast<Sint32>(mode);
+	SDL_PushEvent(&event);
+}
+
+void EventThread::requestVsync(int interval){
+	SDL_Event event;
+	event.type = usrIdStart + REQUEST_VSYNC;
+	event.user.code = interval;
 	SDL_PushEvent(&event);
 }
 

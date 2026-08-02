@@ -958,6 +958,10 @@ void Graphics::setFullscreen(bool value){
 	p->threadData->ethread->requestFullscreenMode(value);
 }
 
+void Graphics::setVsync(int value){
+	p->threadData->ethread->requestVsync(value);
+}
+
 bool Graphics::getSmooth() const{
 	return p->threadData->config.smoothScaling;
 }

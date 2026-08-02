@@ -16,6 +16,7 @@ module Settings
         :twm_shader                              => true,
         :light                                   => true,
         :scaling_mode                            => 0,
+        :vsync                                   => 0,
 
         # UI
         :in_game_timer                           => false,
@@ -204,6 +205,12 @@ class Window_Settings
         :name => "Scaling mode",
         :parameter => :scaling_mode,
         :values => ["Nearest Neighbor", "Smooth(old)"]
+      },
+      {
+        :type => :enum,
+        :name => "Vsync mode",
+        :parameter => :vsync,
+        :values => ["Normal", "Adaptive", "Disabled"]
       },
       { :type => :sep, :name => "Effects"},
       {
@@ -517,37 +524,37 @@ class Window_Settings
       {
         :type => :bool,
         :name => "Show debug character",
-        :parameter => :debug_character
+        :parameter => :debug_character,
         :icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "Draw debug text in main menu",
-        :parameter => :debug_text_scene_title
+        :parameter => :debug_text_scene_title,
         :icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "Show debug text",
-        :parameter => :debug_text
+        :parameter => :debug_text,
 		:icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "Show picture names",
-        :parameter => :debug_picture_names
+        :parameter => :debug_picture_names,
         :icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "Debug lightmap",
-        :parameter => :debug_lightmap
+        :parameter => :debug_lightmap,
         :icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "SDL_HINT_SHUTDOWN_DBUS_ON_QUIT",
-        :parameter => :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT
+        :parameter => :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT,
         :icon => [1, 0],
       },
       { :type => :sep },
@@ -555,14 +562,14 @@ class Window_Settings
         :type => :key,
         :name => "Debug",
         :parameter => :controls_debug,
-        :bind => Input::DEBUGACTION
+        :bind => Input::DEBUGACTION,
         :icon => [1, 0],
       },
       { :type => :sep },
       {
         :type => :action,
         :name => "Clear image cache",
-        :action => Proc.new { RPG::Cache.clear }
+        :action => Proc.new { RPG::Cache.clear },
         :icon => [1, 0],
       }
     ],
