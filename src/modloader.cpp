@@ -47,7 +47,7 @@ std::string sha512(const std::string str){
 std::string sha256_file(const std::string &fn) {
     FILE *file = fopen(fn.c_str(), "rb");
     if (!file) {
-        crash(Exception::ModLoaderError, "Failed to load mod, filesystem error.");
+        crash(Exception::IOError, true, "Failed to load mod, filesystem error.");
     }
 
     unsigned char buf[1024];
@@ -98,7 +98,7 @@ void ModLoader(){
 			    std::string full = p.string();
 			    int ok = PHYSFS_mount(full.c_str(), "/mod-storage", 0);
 			    if (!ok) {
-			      crash(Exception::ModLoaderError, "PhysFS_mount failed: %s", PHYSFS_getLastError());
+			      crash(Exception::ModLoaderError, false, "PhysFS_mount failed: %s", PHYSFS_getLastError());
 			    }
 			    Debug() << "[MODLOADER] " << full;
 			    mod_list.push_back(full);
@@ -112,6 +112,6 @@ void ModLoader(){
 			Debug() << "[MODLOADER] BuildID: " << buildID;
 			modloader_is_enabled = true;			
 		}catch(const std::exception& e){
-			crash(Exception::ModLoaderError, "Something is wrong, Exception: %s ", e.what());
+			crash(Exception::ModLoaderError, true, "Something is wrong, Exception: %s ", e.what());
 		}
 }

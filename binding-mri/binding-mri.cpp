@@ -380,7 +380,7 @@ static void runCustomScript(const std::string &filename){
 	std::string scriptData;
 
 	if (!readFileSDL(filename.c_str(), scriptData)){
-		crash(Exception::MEOW, "Unable to open %s", filename);
+		crash(Exception::NoFileError, false, "Unable to open %s", filename);
 		return;
 	}
 
@@ -401,7 +401,7 @@ static void runRMXPScripts(BacktraceData &btData){
 	const std::string &scriptPack = conf.game.scripts;
 	
 	if (!shState->fileSystem().exists(scriptPack.c_str())){
-		crash(Exception::MEOW, "Unable to open '%s'", scriptPack.c_str());
+		crash(Exception::IOError, false, "Unable to open '%s'", scriptPack.c_str());
 		return;
 	}
 
@@ -412,12 +412,12 @@ static void runRMXPScripts(BacktraceData &btData){
 	try{
 		scriptArray = kernelLoadDataInt(scriptPack.c_str(), false);
 	}catch (const Exception &e){
-		crash(Exception::MEOW, "Failed to read script data: %s", e.msg);
+		crash(Exception::IOError, false ,"Failed to read script data: %s", e.msg);
 		return;
 	}
 
 	if (!RB_TYPE_P(scriptArray, RUBY_T_ARRAY)){
-		crash(Exception::MEOW, "Failed to read script data");
+		crash(Exception::IOError, false, "Failed to read script data");
 		return;
 	}
 	
@@ -455,7 +455,7 @@ static void runRMXPScripts(BacktraceData &btData){
 		}
 
 		if (result != Z_OK){
-			crash(Exception::MEOW, "Error decoding script %ld: '%s'\n", i, RSTRING_PTR(scriptName));
+			crash(Exception::IOError, false, "Error decoding script %ld: '%s'\n", i, RSTRING_PTR(scriptName));
 			break;
 		}
 		rb_ary_store(script, 3, rb_str_new_cstr(decodeBuffer.c_str()));
@@ -556,8 +556,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	file.resize(SDL_strlen(file.c_str()));
 	file = btData.scriptNames.value(file, file);
 
-	crash(Exception::MEOW, "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
-	exit(0);
+	crash(Exception::RUBYError, true, "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
 }
 
 static void mriBindingExecute(){
@@ -566,7 +565,6 @@ static void mriBindingExecute(){
 	 * stdio streams on some platforms (eg. Windows) */
 	int argc = 0;
 	char **argv = 0;
-	//options_argv3[] = "--jit"
 	char options_argv1[] = "oneshot", options_argv2[] = "-ev";
 	char* options_argv[] = {options_argv1, options_argv2, NULL};
 	ruby_sysinit(&argc, &argv);
