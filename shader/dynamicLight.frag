@@ -4,7 +4,7 @@ uniform int lightSourcesCount;
 uniform float ambientLight;
 
 uniform sampler2D texture;
-uniform sampler2D wallMapTexture;
+//uniform sampler2D wallMapTexture;
 
 uniform vec2 wallMapResolution;
 
@@ -24,8 +24,8 @@ float distance(vec2 a, vec2 b){
 
 void main(){
 	vec2 screenPoint = v_texCoord / texSizeInv;
-	vec2 mapPoint = cameraPosition + screenPoint;
-	vec2 wallmapUV = mapPoint / tileSize / wallMapResolution;
+	//vec2 mapPoint = cameraPosition + screenPoint;
+	//vec2 wallmapUV = mapPoint / tileSize / wallMapResolution;
 
 	vec3 light = vec3(0, 0, 0);
 
