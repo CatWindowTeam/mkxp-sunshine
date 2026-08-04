@@ -17,7 +17,6 @@
 #include <fstream>
 #include <openssl/sha.h>
 #include <SDL3/SDL_stdinc.h>
-#include <zip.h>
 #include <locale>
 #include <filesystem>
 #include <string>

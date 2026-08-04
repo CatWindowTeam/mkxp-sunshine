@@ -284,7 +284,7 @@ int main(int argc, char *argv[]){
 
 	if (!conf.gameFolder.empty()){
 		if (chdir(conf.gameFolder.c_str()) != 0){
-			crash(Exception::SDLError, false, "Unable to switch into gameFolder %s", conf.gameFolder);
+			crash(Exception::SDLError, false, "Unable to switch into gameFolder %s", conf.gameFolder.c_str());
 			return 0;
 		}
 	}

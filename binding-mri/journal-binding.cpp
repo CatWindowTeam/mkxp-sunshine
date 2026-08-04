@@ -19,7 +19,7 @@
 	#include <fcntl.h>
 	#include <sys/stat.h>
 	#include <sys/types.h>
-	#ifdef OS_LINUX
+	#ifdef __linux__
 		#include <sys/inotify.h>
 	#endif
 	#include <unistd.h>
@@ -164,7 +164,7 @@ void journalBindingInit(){
 	mutex = SDL_CreateMutex();
 	SDL_memset((char*)lang_buffer, 0, BUFFER_SIZE);
 	lang_buffer[0] = '_';
-#if defined __linux
+#ifdef unix_like
 	mkfifo(PIPE_PATH.c_str(), 0666);
 	atexit(cleanup_pipe);
 #endif
