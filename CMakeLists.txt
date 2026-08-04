@@ -138,14 +138,6 @@ set(MAIN_SOURCE
 	src/signals/maindispatcher.cpp
 )
 
-# main stuff
-set(MAIN_HEADERS
-  # ...
-)
-
-set(MAIN_SOURCE
-  # ...
-)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     list(APPEND MAIN_SOURCE assets/resources.rc)

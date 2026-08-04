@@ -51,7 +51,7 @@ class Window_NameInput < Window_Base
   end
   def init
     # Create dimension information
-    @table_size = @character_tables[0].size
+    @table_size = @character_tables.values.first.size
     @table_width = @table_size / @table_height
     @start_x = ((width - 32) - @table_width * @char_w) / 2
     @start_y = ((height - 32) - (@table_height + 1) * @char_h + BUTTON_BUFFER) / 2
