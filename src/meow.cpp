@@ -24,6 +24,9 @@
 #include <ruby.h>
 #undef vsnprintf
 #undef snprintf
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__NetBSD__)
+#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+#endif
 #include <boost/stacktrace.hpp>
 #include <boost/version.hpp>
 #include <zlib.h>

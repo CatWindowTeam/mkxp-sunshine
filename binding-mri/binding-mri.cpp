@@ -398,7 +398,7 @@ static void runCustomScript(const std::string &filename){
 	std::string scriptData;
 
 	if (!readFileSDL(filename.c_str(), scriptData)){
-		crash(Exception::NoFileError, false, "Unable to open %s", filename);
+		crash(Exception::NoFileError, false, "Unable to open %s", filename.c_str());
 		return;
 	}
 
@@ -430,7 +430,7 @@ static void runRMXPScripts(BacktraceData &btData){
 	try{
 		scriptArray = kernelLoadDataInt(scriptPack.c_str(), false);
 	}catch (const Exception &e){
-		crash(Exception::IOError, false ,"Failed to read script data: %s", e.msg);
+		crash(Exception::IOError, false, "Failed to read script data: %s", e.msg.c_str());
 		return;
 	}
 

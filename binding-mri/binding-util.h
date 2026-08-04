@@ -26,6 +26,7 @@
 //костыль ебаный сука
 #undef snprintf
 #undef inline
+#undef close
 
 #include "exception.h"
 

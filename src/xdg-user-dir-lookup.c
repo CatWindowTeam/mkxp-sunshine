@@ -27,6 +27,7 @@
 
 #include "xdg-user-dir-lookup.h"
 
+#include <stdio.h>
 #include <SDL3/SDL_stdinc.h>
 #include <stdio.h>
 /**

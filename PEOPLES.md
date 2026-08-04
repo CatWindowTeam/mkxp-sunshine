@@ -4,7 +4,7 @@
 * "Визя"
 * DepressedTWM
 * referr
-* MeTLAaaaaa
+* блинчек
 
 ## Artists
 
@@ -19,15 +19,16 @@
 ## Testers and helpers:
 * Rubik
 * Prime 223432
-
-## Donators
-* Kodu
+* Алула(from Oneshot)
+* Охотник
+* Ouzly
 
 ## Telegram moderators
 * Creature_of_steel1
 * Обси(ENG channel)
 * Freskovich
 * "Визя"
+* Ouzly
 
 ## Matrix moderators
 * referr

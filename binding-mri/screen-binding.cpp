@@ -6,6 +6,10 @@
 #include "sharedstate.h"
 #include "pipe.h"
 
+#if defined __FreeBSD__ || defined __DragonFly__
+#include <sys/sysctl.h>
+#endif
+
 static Pipe ipc;
 
 static void start(){
@@ -29,10 +33,19 @@ static void start(){
 #else
 #if defined unix_like
 	char path[PATH_MAX];
-	ssize_t len = readlink("/proc/self/exe", path, PATH_MAX);
-	if (len == -1)
-		rb_raise(rb_eRuntimeError, "Cannot determine path of running executable");
-	std::string exename = std::string(path, len);
+	std::string exename;
+	#if defined __FreeBSD__ || defined __DragonFly__
+		int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1};
+		size_t size = sizeof(path);
+		if (sysctl(mib, 4, path, &size, NULL, 0) != 0)
+			rb_raise(rb_eRuntimeError, "Cannot determine path of running executable");
+		exename = std::string(path);
+	#else
+		ssize_t len = readlink("/proc/self/exe", path, PATH_MAX);
+		if (len == -1)
+			rb_raise(rb_eRuntimeError, "Cannot determine path of running executable");
+		exename = std::string(path, len);
+	#endif
 #else
 #endif
 
