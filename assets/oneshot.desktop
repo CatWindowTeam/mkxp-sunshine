@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=OneShot
+Name=OneShot: Sunshine
 Exec=oneshot %F
-Comment=A surreal puzzle adventure game with unique mechanics / capabilities.
-Comment[ru]=Сюрреалистическая головоломка-приключение с уникальными механиками / возможностями.
+Comment=Fan-made remake of Oneshot(2016)
+Comment[ru]=Фанатский ремейк Oneshot(2016)
 Icon=oneshot
 Categories=Game;
 Terminal=false

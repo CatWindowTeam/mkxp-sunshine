@@ -217,7 +217,6 @@ int main(int argc, char *argv[]){
     #if dos
 	__djgpp_nearptr_enable();
     #endif
-    SecurityManagerInit();
     startTime = boost::chrono::high_resolution_clock::now();
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
@@ -274,6 +273,9 @@ int main(int argc, char *argv[]){
 	/* now we load the config */
 	Config conf;
 	conf.read(argc, argv);
+	if(conf.SecurityEngine){
+		SecurityManagerInit();	
+	}
 	#if windows
 		if(conf.Windows_AllocConsole == true){
     			AllocConsole();

@@ -55,6 +55,7 @@ struct Config{
 	//std::string AspectPresetRubyConst;
 	bool allowSymlinks;
 	bool pathCache;
+	bool SecurityEngine;
 
 	std::string iconPath;
 

@@ -28,4 +28,9 @@ fix crash on game exit
 Error handling updated
 added gamepad button icons in settings
 Removed MSVC support
-Fixed issue #47
+Fixed bug #47
+Game now support FreeBSD
+Fixed bug #46
+Added way to disable SecurityManager via oneshot.conf
+Vsync code updated
+
