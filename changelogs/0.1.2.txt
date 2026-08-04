@@ -33,4 +33,4 @@ Game now support FreeBSD
 Fixed bug #46
 Added way to disable SecurityManager via oneshot.conf
 Vsync code updated
-
+cg_credits1B.png updated
