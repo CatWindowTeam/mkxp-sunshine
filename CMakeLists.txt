@@ -7,7 +7,6 @@ option(STEAM "Build for Steam" OFF)
 option(DEBUG "Debug mode" ON)
 option(SANITIZERS "Enable sanitizers" OFF)
 option(NATIVE "Use native instructions(for local use only)" OFF)
-option(LINUX_CROSSCOMPILATION "Forces MiNGW use" OFF)
 option(STATIC "Build more static build" OFF)
 option(CPU_ARCH "CPU arch(x86, arm64, ia-64)" "x86")
 
@@ -21,31 +20,6 @@ set(CMAKE_CXX_STANDARD 23)
 if(STATIC)
 	set(ZLIB_USE_STATIC_LIBS ON)
 	set(OPENSSL_USE_STATIC_LIBS ON)
-endif()
-
-# https://www.mingw-w64.org/build-systems/cmake/
-if(LINUX_CROSSCOMPILATION)
-	# toolchain-mingw64.cmake
-	set(CMAKE_SYSTEM_NAME Windows)
-	set(CMAKE_SYSTEM_PROCESSOR x86_64)
-	
-	# specify the cross compiler
-	set(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc)
-	set(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++)
-	set(CMAKE_RC_COMPILER x86_64-w64-mingw32-windres)
-	
-	# where is the target environment
-	set(CMAKE_FIND_ROOT_PATH /usr/x86_64-w64-mingw32)
-	
-	# search for programs in the build host directories
-#	set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-	# for libraries and headers in the target directories
-#	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-#	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-	
-	# CMake determines how to examine dependencies based on the *host* system, leading to
-	# a `file unknown error` unless the target platform is explicitly specified.
-	set(CMAKE_GET_RUNTIME_DEPENDENCIES_PLATFORM "windows+pe")
 endif()
 
 # main stuff
@@ -423,15 +397,6 @@ else()
 		${BINDING_HEADERS}
 		${BINDING_SOURCE}
 		${EMBEDDED_SOURCE}
-	)
-endif()
-
-if(LINUX_CROSSCOMPILATION)
-	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
-	  /usr/x86_64-w64-mingw32/include
-	)
-	target_compile_options(oneshot PRIVATE
-	  -idirafter /usr/x86_64-w64-mingw32/include
 	)
 endif()
 
