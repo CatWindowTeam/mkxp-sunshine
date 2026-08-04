@@ -222,7 +222,7 @@ SoundBuffer *SoundEmitter::allocateBuffer(const std::string &filename){
 		buffer = handler.buffer;
 
 		if (!buffer){
-			crash(Exception::MEOW, "Unable to decode sound: %s: %s", filename.c_str(), Sound_GetError());
+			crash(Exception::SDLError, false, "Unable to decode sound: %s: %s", filename.c_str(), Sound_GetError());
 			return 0;
 		}
 

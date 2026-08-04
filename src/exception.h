@@ -28,6 +28,7 @@
 struct Exception{
 	enum Type{
 		RGSSError,
+		RUBYError,
 		NoFileError,
 		IOError,
 
@@ -42,9 +43,6 @@ struct Exception{
 
 		//modloader
 		ModLoaderError,
-		
-		// For crash()
-		MEOW
 	};
 
 	Type type;

@@ -35,7 +35,6 @@ struct Config{
 	bool resolutionOverridden;
 	bool Windows_AllocConsole;
 	bool smoothScaling;
-	bool vsync;
 	bool pancakes;
 	int defScreenW;
 	int defScreenH;

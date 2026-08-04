@@ -22,7 +22,6 @@ begin
   Font.default_size = 20
   #debug shit 
   Input.set_led(255, 150, 30)
-  
   # Load persistent data
   Persistent.load
 

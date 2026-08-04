@@ -29,6 +29,7 @@
 
 #include <stdio.h>
 #include <SDL3/SDL_stdinc.h>
+#include <stdio.h>
 /**
  * xdg_user_dir_lookup_with_fallback:
  * @type: a string specifying the type of directory

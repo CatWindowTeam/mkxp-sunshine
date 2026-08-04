@@ -16,6 +16,7 @@ module Settings
         :twm_shader                              => true,
         :light                                   => true,
         :scaling_mode                            => 0,
+        :vsync                                   => 0,
 
         # UI
         :in_game_timer                           => false,
@@ -205,6 +206,12 @@ class Window_Settings
         :parameter => :scaling_mode,
         :values => ["Nearest Neighbor", "Smooth(old)"]
       },
+      {
+        :type => :enum,
+        :name => "Vsync mode",
+        :parameter => :vsync,
+        :values => ["Normal", "Adaptive", "Disabled"]
+      },
       { :type => :sep, :name => "Effects"},
       {
         :type => :bool,
@@ -294,25 +301,42 @@ class Window_Settings
       { :type => :sep, :name => "Gamepad" },
       {
         :type => :custom,
-        :name => "Face buttons style",
-        :parameter => :gamepad_face_style,
+        :name => "Your gamepad type",
+        :parameter => :gamepad_type,
         :default => 0,
         :callbacks => {
           :init => proc { |super_proc|
-            @max_value = 5
+            @max_value = GamepadIcons::GAMEPADS.length
+            @texts = [
+              "Auto",
+              "XBOX 360",
+              "XBOX One",
+              "XBOX Series X",
+              "PS 3",
+              "PS 4",
+              "PS 5",
+              "Nintendo Switch Pro",
+              "Nintendo Joycons",
+              "Amazon Luna",
+              "OUYA",
+              "Google Stadia",
+              "Steam Controller",
+              "Steam Deck",
+              "Nintendo GAMECUBE"
+            ]
 
             super_proc.call
           },
           :get_display_value => proc { |super_proc|
-            "" # meow >w<
+            ""
           },
           :redraw => proc { |super_proc|
             super_proc.call
 
-            x, y = GamepadIcons.button(Input::GamepadButton::SOUTH, false)
-            y += self.value * ICON_SIZE
+            x, y = GamepadIcons.icon()
 
-            @sprite.bitmap.stretch_blt(Rect.new(PARAMETER_WIDTH - ICON_SIZE * 4 * 2, (PARAMETER_HEIGHT - ICON_SIZE * 2) / 2, ICON_SIZE * 4 * 2, ICON_SIZE * 2), RPG::Cache.menu("gamepad_icons"), Rect.new(x, y, ICON_SIZE * 4, ICON_SIZE))
+            @sprite.bitmap.stretch_blt(Rect.new(PARAMETER_WIDTH - ICON_SIZE * 2, PARAMETER_HEIGHT / 2 - ICON_SIZE, ICON_SIZE * 2, ICON_SIZE * 2), RPG::Cache.menu("gamepad_icons"), Rect.new(x * ICON_SIZE, y * ICON_SIZE, ICON_SIZE, ICON_SIZE))
+            @sprite.bitmap.draw_text(@sprite.bitmap.width - @value_width - ICON_SIZE * 2 - 8, 0, @value_width, @sprite.bitmap.height, tr(@texts[self.value]), 2)
           },
           :value_set => proc { |super_proc, value|
             if (value != self.value)
@@ -333,8 +357,61 @@ class Window_Settings
         }
       },
       {
+        :type => :custom,
+        :name => "Face buttons style",
+        :parameter => :gamepad_face_style,
+        :default => 0,
+        :callbacks => {
+          :init => proc { |super_proc|
+            @max_value = 5
+
+            super_proc.call
+          },
+          :get_display_value => proc { |super_proc|
+            "" # meow >w<
+          },
+          :redraw => proc { |super_proc|
+            @disabled = !GamepadIcons.face_skinnable
+
+            super_proc.call
+
+            sx, sy = GamepadIcons.button(Input::GamepadButton::SOUTH, false)
+            wx, wy = GamepadIcons.button(Input::GamepadButton::WEST, false)
+            nx, ny = GamepadIcons.button(Input::GamepadButton::NORTH, false)
+            ex, ey = GamepadIcons.button(Input::GamepadButton::EAST, false)
+            if GamepadIcons.face_skinnable
+              sy += self.value
+              wy += self.value
+              ny += self.value
+              ey += self.value
+            end
+
+            @sprite.bitmap.stretch_blt(Rect.new(PARAMETER_WIDTH - ICON_SIZE * 8, PARAMETER_HEIGHT / 2 - ICON_SIZE, ICON_SIZE * 2, ICON_SIZE * 2), RPG::Cache.menu("gamepad_icons"), Rect.new(sx * ICON_SIZE, sy * ICON_SIZE, ICON_SIZE, ICON_SIZE))
+            @sprite.bitmap.stretch_blt(Rect.new(PARAMETER_WIDTH - ICON_SIZE * 6, PARAMETER_HEIGHT / 2 - ICON_SIZE, ICON_SIZE * 2, ICON_SIZE * 2), RPG::Cache.menu("gamepad_icons"), Rect.new(wx * ICON_SIZE, wy * ICON_SIZE, ICON_SIZE, ICON_SIZE))
+            @sprite.bitmap.stretch_blt(Rect.new(PARAMETER_WIDTH - ICON_SIZE * 4, PARAMETER_HEIGHT / 2 - ICON_SIZE, ICON_SIZE * 2, ICON_SIZE * 2), RPG::Cache.menu("gamepad_icons"), Rect.new(nx * ICON_SIZE, ny * ICON_SIZE, ICON_SIZE, ICON_SIZE))
+            @sprite.bitmap.stretch_blt(Rect.new(PARAMETER_WIDTH - ICON_SIZE * 2, PARAMETER_HEIGHT / 2 - ICON_SIZE, ICON_SIZE * 2, ICON_SIZE * 2), RPG::Cache.menu("gamepad_icons"), Rect.new(ex * ICON_SIZE, ey * ICON_SIZE, ICON_SIZE, ICON_SIZE))
+          },
+          :value_set => proc { |super_proc, value|
+            if (value != self.value)
+              Audio.se_play(PARAMETER_CHANGE_AUDIO, 70, (value.to_f / @max_value.to_f * 50.0).to_i + 75)
+            end
+            super_proc.call(value)
+          },
+          :value_left => proc { |super_proc|
+            next if @disabled
+            self.value = (self.value - 1) % @max_value
+            @settings_content.redraw_all
+          },
+          :value_right => proc { |super_proc|
+            next if @disabled
+            self.value = (self.value + 1) % @max_value
+            @settings_content.redraw_all
+          }
+        }
+      },
+      {
         :type => :bool,
-        :name => "Control LED lighting on gamepads",
+        :name => "Control LED lighting",
         :parameter => :gamepad_led
       },
       { :type => :sep, :name => "Walk" },
@@ -447,45 +524,53 @@ class Window_Settings
       {
         :type => :bool,
         :name => "Show debug character",
-        :parameter => :debug_character
+        :parameter => :debug_character,
+        :icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "Draw debug text in main menu",
-        :parameter => :debug_text_scene_title
+        :parameter => :debug_text_scene_title,
+        :icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "Show debug text",
-        :parameter => :debug_text
+        :parameter => :debug_text,
+		:icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "Show picture names",
-        :parameter => :debug_picture_names
+        :parameter => :debug_picture_names,
+        :icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "Debug lightmap",
-        :parameter => :debug_lightmap
+        :parameter => :debug_lightmap,
+        :icon => [1, 0],
       },
       {
         :type => :bool,
         :name => "SDL_HINT_SHUTDOWN_DBUS_ON_QUIT",
-        :parameter => :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT
+        :parameter => :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT,
+        :icon => [1, 0],
       },
       { :type => :sep },
       {
         :type => :key,
         :name => "Debug",
         :parameter => :controls_debug,
-        :bind => Input::DEBUGACTION
+        :bind => Input::DEBUGACTION,
+        :icon => [1, 0],
       },
       { :type => :sep },
       {
         :type => :action,
         :name => "Clear image cache",
-        :action => Proc.new { RPG::Cache.clear }
+        :action => Proc.new { RPG::Cache.clear },
+        :icon => [1, 0],
       }
     ],
     "Mods" => [
@@ -503,3 +588,4 @@ class Window_Settings
     DATA["Mods"] << setting
   end
 end
+

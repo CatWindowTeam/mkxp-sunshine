@@ -99,7 +99,7 @@ int rgssThreadFun(void *userdata){
 	glCtx = SDL_GL_CreateContext(win);
 
 	if (!glCtx){
-		crash(Exception::MEOW, "Error creating context: %s", SDL_GetError());
+		crash(Exception::SDLError, false, "Error creating context: %s", SDL_GetError());
 		rgssThreadError(threadData, std::string(msg));
 		return 0;
 	}
@@ -108,7 +108,7 @@ int rgssThreadFun(void *userdata){
 		initGLFunctions();
 	}
 	catch (const Exception &exc){
-		crash(Exception::MEOW, exc.msg.c_str());
+		crash(Exception::RGSSError, false, exc.msg.c_str());
 		rgssThreadError(threadData, exc.msg);
 		SDL_GL_DestroyContext(glCtx);
 		return 0;
@@ -125,9 +125,6 @@ int rgssThreadFun(void *userdata){
     Debug() << "[main] GL Renderer  :" << glGetStringInt(GL_RENDERER);
     Debug() << "[main] GL Version   :" << glGetStringInt(GL_VERSION);
     Debug() << "[main] GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
-
-	bool vsync = conf.vsync || conf.syncToRefreshrate;
-	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
 #ifndef NDEBUG
 	GLDebugLogger dLogger;
 #endif
@@ -136,7 +133,6 @@ int rgssThreadFun(void *userdata){
 	ALCcontext *alcCtx = alcCreateContext(threadData->alcDev, 0);
 
 	if (!alcCtx){
-		crash(Exception::MEOW, "Error creating OpenAL context");
 		rgssThreadError(threadData, "Error creating OpenAL context");
 		SDL_GL_DestroyContext(glCtx);
 		return 0;
@@ -147,11 +143,9 @@ int rgssThreadFun(void *userdata){
 	try{
 		SharedState::initInstance(threadData);
 	}catch (const Exception &exc){
-		crash(Exception::MEOW, exc.msg.c_str());
 		rgssThreadError(threadData, exc.msg);
 		alcDestroyContext(alcCtx);
 		SDL_GL_DestroyContext(glCtx);
-
 		return 0;
 	}
 
@@ -165,7 +159,6 @@ int rgssThreadFun(void *userdata){
 
 	alcDestroyContext(alcCtx);
 	SDL_GL_DestroyContext(glCtx);
-
 	return 0;
 }
 
@@ -224,13 +217,11 @@ int main(int argc, char *argv[]){
     #if dos
 	__djgpp_nearptr_enable();
     #endif
-
     SecurityManagerInit();
     startTime = boost::chrono::high_resolution_clock::now();
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
-
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
-	SDL_SetAppMetadata("Oneshot: Sunshine", "0.1.1", "com.catwindowteam.sunshine");
+	SDL_SetAppMetadata("Oneshot: Sunshine", "0.1.2", "com.catwindowteam.sunshine");
 	//X11 work on *BSD,Solaris too!
 	#if unix_like
 		SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
@@ -250,19 +241,19 @@ int main(int argc, char *argv[]){
 	#endif
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
-		crash(Exception::MEOW, "Error initializing SDL: %s", SDL_GetError());
+		crash(Exception::SDLError, false, "Error initializing SDL: %s", SDL_GetError());
 		return 0;
 	}
 
 #ifdef STEAM
 	if (!STEAMSHIM_init()){
-		crash(Exception::MEOW, "Could not initialize Steamworks API");
+		crash(Exception::SDLError, false, "Could not initialize Steamworks API");
 		return 0;
 	}
 #endif
 
 	if (!EventThread::allocUserEvents()){
-		crash(Exception::MEOW, "Error allocating SDL user events");
+		crash(Exception::SDLError, false, "Error allocating SDL user events");
 		return 0;
 	}
 
@@ -293,7 +284,7 @@ int main(int argc, char *argv[]){
 
 	if (!conf.gameFolder.empty()){
 		if (chdir(conf.gameFolder.c_str()) != 0){
-			crash(Exception::MEOW, "Unable to switch into gameFolder %s", conf.gameFolder.c_str());
+			crash(Exception::SDLError, false, "Unable to switch into gameFolder %s", conf.gameFolder.c_str());
 			return 0;
 		}
 	}
@@ -306,12 +297,12 @@ int main(int argc, char *argv[]){
 		conf.windowTitle = conf.game.title;
 
 	if (TTF_Init() == false){
-		crash(Exception::MEOW, "Error initializing SDL_ttf: %s", SDL_GetError());
+		crash(Exception::SDLError, false,"Error initializing SDL_ttf: %s", SDL_GetError());
 		SDL_Quit();
 	}
 
 	if (Sound_Init() == false){
-		crash(Exception::MEOW, "Error initializing SDL_sound: %s", Sound_GetError());
+		crash(Exception::SDLError, false,"Error initializing SDL_sound: %s", Sound_GetError());
 		TTF_Quit();
 		SDL_Quit();
 
@@ -326,7 +317,7 @@ int main(int argc, char *argv[]){
 		SDL_SetWindowFullscreen(win, true);
 
 	if (!win){
-		crash(Exception::MEOW, "Error creating window: %s", SDL_GetError());
+		crash(Exception::SDLError, false,"Error creating window: %s", SDL_GetError());
 		return 0;
 	}
 
@@ -342,7 +333,7 @@ int main(int argc, char *argv[]){
 
 	if (!alcDev){
 		SDL_DestroyWindow(win);
-		crash(Exception::MEOW, "Error opening OpenAL device");
+		crash(Exception::SDLError, false, "Error opening OpenAL device");
 		TTF_Quit();
 		SDL_Quit();
 		return 0;
@@ -394,7 +385,7 @@ int main(int argc, char *argv[]){
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and Sunshine will now force quit", win);
 
 	if (!rtData.rgssErrorMsg.empty())
-		crash(Exception::MEOW, rtData.rgssErrorMsg.c_str());
+		crash(Exception::RGSSError, false, rtData.rgssErrorMsg.c_str());
 
 	/* Clean up any remainin events */
 	eventThread.cleanup();
@@ -409,7 +400,7 @@ int main(int argc, char *argv[]){
 
 	Sound_Quit();
 	TTF_Quit();
-	SDL_Quit(); // i got "Thread 1 received signal ?, Unknown signal" here on windows after closing game
+	SDL_Quit();
 
 #ifdef STEAM
 	STEAMSHIM_deinit();

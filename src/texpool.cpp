@@ -117,7 +117,7 @@ TEXFBO TexPool::request(int width, int height){
 
 	int maxSize = glState.caps.maxTexSize;
 	if (width > maxSize || height > maxSize){
-		crash(Exception::MKXPError, "Texture dimensions [%d, %d] exceed hardware capabilities", width, height);
+		crash(Exception::MKXPError, true, "Texture dimensions [%d, %d] exceed hardware capabilities", width, height);
 	}
 
 	/* Nope, create it instead */
@@ -162,8 +162,7 @@ void TexPool::release(TEXFBO &obj){
 
 		CNodeList &bucket = p->poolHash[removedSize];
 
-		std::list<CacheNode>::iterator toRemove =
-		        std::find(bucket.begin(), bucket.end(), last);
+		std::list<CacheNode>::iterator toRemove = std::find(bucket.begin(), bucket.end(), last);
 		assert(toRemove != bucket.end());
 		bucket.erase(toRemove);
 

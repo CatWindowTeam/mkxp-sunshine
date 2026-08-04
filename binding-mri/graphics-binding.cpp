@@ -133,6 +133,15 @@ RB_METHOD(graphicsWait){
 	return Qnil;
 }
 
+RB_METHOD(graphicsSetVsync){
+	RB_UNUSED_PARAM;
+	int xuinia_ebania;
+	rb_get_args(argc, argv, "i", &xuinia_ebania RB_ARG_END);
+	shState->graphics().setVsync(xuinia_ebania);
+
+	return Qnil;
+}
+
 RB_METHOD(graphicsFadeout){
 	RB_UNUSED_PARAM;
 
@@ -284,7 +293,7 @@ void graphicsBindingInit(){
 	_rb_define_module_function(module, "freeze", graphicsFreeze);
 	_rb_define_module_function(module, "transition", graphicsTransition);
 	_rb_define_module_function(module, "frame_reset", graphicsFrameReset);
-
+	_rb_define_module_function(module, "setVsync", graphicsSetVsync);
 	_rb_define_module_function(module, "__reset__", graphicsReset);
 
 	// Variables

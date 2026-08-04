@@ -77,6 +77,16 @@ module Settings
         end
       end
 
+	  def vsync(value)
+		if value == 0
+			Graphics.setVsync(1)
+		elsif value == 1
+			Graphics.setVsync(-1)
+		else
+			Graphics.setVsync(0)
+		end				
+	  end
+	  
       def SDL_HINT_SHUTDOWN_DBUS_ON_QUIT(value)
         if value
           Sunshine.setSDLHint("SDL_HINT_SHUTDOWN_DBUS_ON_QUIT", "1")
