@@ -23,6 +23,9 @@
 #include <physfs.h>
 #include <pixman.h>
 #include <SDL3/SDL_system.h>
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__NetBSD__)
+#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+#endif
 #include <boost/stacktrace.hpp>
 #include <SDL3/SDL_cpuinfo.h>
 #include "sunshine.h"
@@ -83,15 +86,19 @@ void crash(Exception::Type t, const char *fmt, ...){
 				o << "[BOOST stacktrace()]" << std::endl;
 				o << boost::stacktrace::stacktrace() << std::endl;
 				o << "[OpenGL]" << std::endl;
-				try{
-					o << "GL Vendor: " << glGetStringInt(GL_VENDOR) << std::endl;
-					o << "GL Renderer: " << glGetStringInt(GL_RENDERER) << std::endl;
-					o << "GL Version: " << glGetStringInt(GL_VERSION) << std::endl;
-					o << "GLSL Version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-					o << "Shading language version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-					o << "GL Extensions: " << glGetStringInt(GL_EXTENSIONS) << std::endl;
-				}catch(const std::exception& e){
-					o << "Crashed before OpenGL initialization: " << e.what() << std::endl;
+				if (gl.GetString){
+					try{
+						o << "GL Vendor: " << glGetStringInt(GL_VENDOR) << std::endl;
+						o << "GL Renderer: " << glGetStringInt(GL_RENDERER) << std::endl;
+						o << "GL Version: " << glGetStringInt(GL_VERSION) << std::endl;
+						o << "GLSL Version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+						o << "Shading language version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+						o << "GL Extensions: " << glGetStringInt(GL_EXTENSIONS) << std::endl;
+					}catch(const std::exception& e){
+						o << "Crashed before OpenGL initialization: " << e.what() << std::endl;
+					}
+				}else{
+					o << "OpenGL not initialized yet" << std::endl;
 				}
 				o << "[Versions of libs]" << std::endl;
 				const int sdlcompiled = SDL_VERSION;
@@ -146,7 +153,7 @@ void crash(Exception::Type t, const char *fmt, ...){
 		}
 	}
 
-	if(!t == Exception::MEOW)
+	if(t != Exception::MEOW)
 		throw Exception(t, msg);
 }
 

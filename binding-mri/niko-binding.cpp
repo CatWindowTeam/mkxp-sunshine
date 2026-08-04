@@ -19,7 +19,7 @@
 	#include <fcntl.h>
 	#include <sys/stat.h>
 	#include <sys/types.h>
-	#ifdef OS_LINUX
+	#ifdef __linux__
 		#include <sys/inotify.h>
 	#endif
 	#include <unistd.h>

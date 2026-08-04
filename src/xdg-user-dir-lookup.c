@@ -27,6 +27,7 @@
 
 #include "xdg-user-dir-lookup.h"
 
+#include <stdio.h>
 #include <SDL3/SDL_stdinc.h>
 /**
  * xdg_user_dir_lookup_with_fallback:

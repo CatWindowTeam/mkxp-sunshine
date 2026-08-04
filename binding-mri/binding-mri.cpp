@@ -36,7 +36,6 @@
 #include "sunshine.h"
 #include "modloader.h"
 
-#include <ruby-3.4.0/ruby/internal/gc.h>
 #include <ruby.h>
 #include <ruby/debug.h>
 #include <ruby/encoding.h>
@@ -380,7 +379,7 @@ static void runCustomScript(const std::string &filename){
 	std::string scriptData;
 
 	if (!readFileSDL(filename.c_str(), scriptData)){
-		crash(Exception::MEOW, "Unable to open %s", filename);
+		crash(Exception::MEOW, "Unable to open %s", filename.c_str());
 		return;
 	}
 
@@ -412,7 +411,7 @@ static void runRMXPScripts(BacktraceData &btData){
 	try{
 		scriptArray = kernelLoadDataInt(scriptPack.c_str(), false);
 	}catch (const Exception &e){
-		crash(Exception::MEOW, "Failed to read script data: %s", e.msg);
+		crash(Exception::MEOW, "Failed to read script data: %s", e.msg.c_str());
 		return;
 	}
 
