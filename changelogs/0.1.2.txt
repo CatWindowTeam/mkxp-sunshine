@@ -27,3 +27,5 @@ Deleted useless hooks
 fix crash on game exit
 Error handling updated
 added gamepad button icons in settings
+Removed MSVC support
+Fixed issue #47

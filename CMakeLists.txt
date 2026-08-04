@@ -7,17 +7,46 @@ option(STEAM "Build for Steam" OFF)
 option(DEBUG "Debug mode" ON)
 option(SANITIZERS "Enable sanitizers" OFF)
 option(NATIVE "Use native instructions(for local use only)" OFF)
-#x86, arm64, ia-64
-option(CPU_ARCH "CPU arch" "x86")
+option(LINUX_CROSSCOMPILATION "Forces MiNGW use" OFF)
+option(STATIC "Build more static build" OFF)
+option(CPU_ARCH "CPU arch(x86, arm64, ia-64)" "x86")
 
 #Configuration
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
 set(VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "5.1.2600.0")
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
-set(ZLIB_USE_STATIC_LIBS ON)
-set(OPENSSL_USE_STATIC_LIBS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 23)
+
+if(STATIC)
+	set(ZLIB_USE_STATIC_LIBS ON)
+	set(OPENSSL_USE_STATIC_LIBS ON)
+endif()
+
+# https://www.mingw-w64.org/build-systems/cmake/
+if(LINUX_CROSSCOMPILATION)
+	# toolchain-mingw64.cmake
+	set(CMAKE_SYSTEM_NAME Windows)
+	set(CMAKE_SYSTEM_PROCESSOR x86_64)
+	
+	# specify the cross compiler
+	set(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc)
+	set(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++)
+	set(CMAKE_RC_COMPILER x86_64-w64-mingw32-windres)
+	
+	# where is the target environment
+	set(CMAKE_FIND_ROOT_PATH /usr/x86_64-w64-mingw32)
+	
+	# search for programs in the build host directories
+#	set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+	# for libraries and headers in the target directories
+#	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+#	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+	
+	# CMake determines how to examine dependencies based on the *host* system, leading to
+	# a `file unknown error` unless the target platform is explicitly specified.
+	set(CMAKE_GET_RUNTIME_DEPENDENCIES_PLATFORM "windows+pe")
+endif()
 
 # main stuff
 set(MAIN_HEADERS
@@ -135,23 +164,32 @@ set(MAIN_SOURCE
 	src/signals/maindispatcher.cpp
 )
 
-if(WIN32)
-	list(APPEND MAIN_SOURCE assets/resources.rc)
-	list(APPEND DEFINES UNICODE)
-	list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi winmm z)
-	include_directories( ${CMAKE_CURRENT_BINARY_DIR}/windows )
-elseif(APPLE)
-	list(APPEND MAIN_HEADERS src/mac-desktop.h)
-	list(APPEND MAIN_SOURCE src/mac-desktop.mm)
-elseif(LINUX)
-	find_package(PkgConfig REQUIRED)
-	pkg_check_modules(LINUXPKGS REQUIRED gtk+-3.0 libxfconf-0 libseccomp)
-	include_directories(${LINUXPKGS_INCLUDE_DIRS})
-	add_compile_options(${LINUXPKGS_CFLAGS_OTHER})
-	list(APPEND PLATFORM_LIBRARIES ${LINUXPKGS_LDFLAGS})
-	list(APPEND MAIN_SOURCE src/xdg-user-dir-lookup.c)
-	list(APPEND MAIN_HEADERS src/xdg-user-dir-lookup.h)
-elseif(BSD)
+# main stuff
+set(MAIN_HEADERS
+  # ...
+)
+
+set(MAIN_SOURCE
+  # ...
+)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    list(APPEND MAIN_SOURCE assets/resources.rc)
+    list(APPEND DEFINES UNICODE)
+    list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi winmm z)
+    include_directories(${CMAKE_CURRENT_BINARY_DIR}/windows)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    list(APPEND MAIN_HEADERS src/mac-desktop.h)
+    list(APPEND MAIN_SOURCE src/mac-desktop.mm)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(LINUXPKGS REQUIRED gtk+-3.0 libxfconf-0 libseccomp)
+    include_directories(${LINUXPKGS_INCLUDE_DIRS})
+    add_compile_options(${LINUXPKGS_CFLAGS_OTHER})
+    list(APPEND PLATFORM_LIBRARIES ${LINUXPKGS_LDFLAGS})
+    list(APPEND MAIN_SOURCE src/xdg-user-dir-lookup.c)
+    list(APPEND MAIN_HEADERS src/xdg-user-dir-lookup.h)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(LINUXPKGS REQUIRED gtk+-3.0)
     include_directories(${LINUXPKGS_INCLUDE_DIRS})
@@ -159,12 +197,15 @@ elseif(BSD)
     list(APPEND PLATFORM_LIBRARIES ${LINUXPKGS_LDFLAGS})
     list(APPEND MAIN_SOURCE src/xdg-user-dir-lookup.c)
     list(APPEND MAIN_HEADERS src/xdg-user-dir-lookup.h)
-	set(STEAM OFF)
-elseif(EMSCRIPTEN)
-	set(STEAM OFF)
-  	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
+    set(STEAM OFF)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    set(STEAM OFF)
+    set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
 elseif(APPLE)
-  		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake"
+        VERBATIM
+    )
 endif()
 
 if (STEAM)
@@ -299,88 +340,71 @@ set(BINDING_SOURCE
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
-
-
-################ 
-# Настройки зависимые от компилятора
-if (MSVC)
-	list(APPEND DEFINES _CRT_SECURE_NO_WARNINGS NOMINMAX )
-	if(DEBUG)
-		add_compile_options(/EHr /validate-charset /DEBUG /RTCu /RTCs /RTCc)
-	else()
-		add_compile_options(/O2 /fp:fast /GL /GF /GA /Gy)
-		add_link_options(/LTCG /OPT:REF /OPT:ICF)
-	endif()
-	if(SANITIZERS)
-		add_compile_options(/fsanitize=address /fsanitize=fuzzer /fsanitize-address-use-after-return)
-	endif()
-else()
-	if(NATIVE)
-		add_compile_options("-march=native -mtune=native")
-	endif()
-	if(SANITIZERS)
-		# ASan + Ruby = shit :<
-		set(SANITIZERS "undefined,leak,shift,shift-base,shift-exponent,integer-divide-by-zero,unreachable,vla-bound,null,signed-integer-overflow,bounds,bounds-strict,alignment,object-size,float-divide-by-zero,float-cast-overflow,nonnull-attribute,returns-nonnull-attribute,bool,enum,vptr,pointer-overflow,builtin,pointer-subtract,pointer-compare")
-		add_compile_options(-fsanitize=${SANITIZERS})
-		add_link_options(-fsanitize=${SANITIZERS})
-	endif()
-	if(DEBUG)
-		add_compile_options(
+if(NATIVE)
+	add_compile_options("-march=native -mtune=native")
+endif()
+if(SANITIZERS)
+	# ASan + Ruby = SEGFAULT
+	set(SANITIZERS "undefined,leak,shift,shift-base,shift-exponent,integer-divide-by-zero,unreachable,vla-bound,null,signed-integer-overflow,bounds,bounds-strict,alignment,object-size,float-divide-by-zero,float-cast-overflow,nonnull-attribute,returns-nonnull-attribute,bool,enum,vptr,pointer-overflow,builtin,pointer-subtract,pointer-compare")
+	add_compile_options(-fsanitize=${SANITIZERS})
+	add_link_options(-fsanitize=${SANITIZERS})
+endif()
+if(DEBUG)
+	add_compile_options(
 		-g3
 		-fno-omit-frame-pointer
 		-Og
 		-Wall
 		-Wextra)
-	else()
-		add_compile_options(
-		-O2 
-		-ffast-math 
-		-fipa-pta 
-		-ftree-vectorize 
-		-fstdarg-opt 
-		-fomit-frame-pointer 
-		-frename-registers 
-		-ffunction-sections 
-		-fdata-sections 
-		-fvisibility=hidden)
+else()
+	add_compile_options(
+	-O2 
+	-ffast-math 
+	-fipa-pta 
+	-ftree-vectorize 
+	-fstdarg-opt 
+	-fomit-frame-pointer 
+	-frename-registers 
+	-ffunction-sections 
+	-fdata-sections 
+	-fvisibility=hidden)
 		
-		add_link_options(-Wl,-O2 
-		-Wl,--gc-sections 
-		-Wl,--as-needed  
-		-Wl,--no-undefined
-		-Wl,--strip-all
-		-Wl,--no-copy-dt-needed-entries)
-		if(NOT WIN32)
-		  add_compile_options(-flto)
-		  add_link_options(-flto)
-		endif()
+	add_link_options(-Wl,-O2 
+	-Wl,--gc-sections 
+	-Wl,--as-needed  
+	-Wl,--no-undefined
+	-Wl,--strip-all
+	-Wl,--no-copy-dt-needed-entries)
+	if(NOT WIN32)
+		add_compile_options(-flto)
+		add_link_options(-flto)
+	endif()
 
-		if(LINUX)
-		  add_compile_options(-fno-plt)
-		endif()
+	if(LINUX)
+		add_compile_options(-fno-plt)
+	endif()
 
-		if(CPU_ARCH MATCHES "x86")
-		  add_compile_options(
-		  	-mnoreturn-no-callee-saved-registers
-		  	-mrelax-cmpxchg-loop)
-		elseif(CPU_ARCH MATCHES "arm64")
-		  # TODO: check is it really usefull:3
-		  add_compile_options(
-			 -mlow-precision-recip-sqrt
-			 -mlow-precision-sqrt
-			 -mlow-precision-div
-		  )
-		elseif(CPU_ARCH MATCHES "ia-64")
-		  # In theory it must make game work better on IA-64?
-		  add_compile_options(
-			 -minline-float-divide-min-latency
-			 -minline-float-divide-max-throughput
-			 -minline-int-divide-min-latency
-			 -minline-int-divide-max-throughput
-			 -minline-sqrt-min-latency
-			 -minline-sqrt-max-throughput
-		  )
-		endif()
+	if(CPU_ARCH MATCHES "x86")
+		add_compile_options(
+		-mnoreturn-no-callee-saved-registers
+		-mrelax-cmpxchg-loop)
+	elseif(CPU_ARCH MATCHES "arm64")
+		# TODO: check is it really usefull:3
+		add_compile_options(
+		-mlow-precision-recip-sqrt
+		-mlow-precision-sqrt
+		-mlow-precision-div
+		)
+	elseif(CPU_ARCH MATCHES "ia-64")
+		# In theory it must make game work better on IA-64?
+		add_compile_options(
+		-minline-float-divide-min-latency
+		-minline-float-divide-max-throughput
+		-minline-int-divide-min-latency
+		-minline-int-divide-max-throughput
+		-minline-sqrt-min-latency
+		-minline-sqrt-max-throughput
+		)
 	endif()
 endif()
 
@@ -399,6 +423,15 @@ else()
 		${BINDING_HEADERS}
 		${BINDING_SOURCE}
 		${EMBEDDED_SOURCE}
+	)
+endif()
+
+if(LINUX_CROSSCOMPILATION)
+	target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
+	  /usr/x86_64-w64-mingw32/include
+	)
+	target_compile_options(oneshot PRIVATE
+	  -idirafter /usr/x86_64-w64-mingw32/include
 	)
 endif()
 
