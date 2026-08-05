@@ -15,6 +15,7 @@
 * DepressedTWM
 * K1RMAN
 * Serega_play_x 
+* kakafka
 
 ## Testers and helpers:
 * Rubik
