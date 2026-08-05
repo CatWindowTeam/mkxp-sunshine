@@ -480,7 +480,7 @@ static void runRMXPScripts(BacktraceData &btData){
 	}
 
 	/* Execute preloaded scripts */
-	for (std::set<std::string>::iterator i = conf.preloadScripts.begin();
+	for (std::set<std::string>::iterator i = preloadScripts.begin();
 	     i != conf.preloadScripts.end(); ++i)
 		runCustomScript(*i);
 

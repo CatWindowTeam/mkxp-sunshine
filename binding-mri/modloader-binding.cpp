@@ -63,4 +63,5 @@ void ModLoaderBindingInit(){
 	rb_define_module_function(klass, "hooks", RUBY_METHOD_FUNC(hooks), -1);
 	rb_define_const(klass, "IS_ENABLED", modloader_is_enabled ? Qtrue : Qfalse);
 	rb_define_const(klass, "COUNT", INT2NUM(mods_count));
+	rb_define_const(klass, "PRELOAD_SCRIPTS_COUNT", INT2NUM(preloaded_script_count));
 }

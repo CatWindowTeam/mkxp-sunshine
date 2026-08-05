@@ -184,29 +184,7 @@ void Config::read(int argc, char *argv[]){
 	resolutionOverridden = defScreenW > 0 || defScreenH > 0;
 	defScreenW = defScreenW <= 0 ? 640 : defScreenW;
 	defScreenH = defScreenH <= 0 ? 480 : defScreenH;
-/*
-	#define ASPECT_SELECT(id, x, y, rubyConst) \
-		case id: { \
-			defScreenW = x; \
-			defScreenH = y; \
-			AspectPresetRubyConst = #rubyConst;\
-			break; \
-		}
-	
-	if (defScreenW == 640 && defScreenH == 480)
-		switch (AspectPreset) {
-			RESOLUTIONS_LIST(ASPECT_SELECT)
-		default: {
-				AspectPreset = 1;
-				AspectPresetRubyConst = "_4_3";
-				defScreenW = 640;
-				defScreenH = 480;
-				break;
-			}
-		}
 
-	#undef ASPECT_SELECT
-*/
 #ifdef STEAM
 	/* Override fullscreen config if Big Picture */
 	if (const char *env = SDL_getenv("SteamTenfoot")){
