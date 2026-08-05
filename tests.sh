@@ -1,8 +1,12 @@
 #!/bin/bash
+#
+# ПЕРЕПИСАТЬ ЭТУ ХУЙНЮ ОНА НЕ РАБОТАЕТ
+#
+
 set -euo pipefail
 FASTERER_PATH="$1"
 
-check_file() {
+check_c(){
   local f="$1"
 
   case "$f" in
@@ -22,12 +26,31 @@ check_file() {
       ;;
   esac
 }
-export -f check_file
+
+check_shader(){
+  local f="$1"
+  case "$f" in
+    *.vert)
+		#glslangValidator -S vert --target-env opengl --client opengl100 -t "$f"
+    ;;
+    *.frag)
+		glslangValidator -S frag --target-env opengl --client opengl100 -t -DGLSLES -DFRAGMENT_SHADER "$f"
+    ;;
+  esac
+}
+export -f check_c
+export -f check_shader
 
 find . -type f \( \
   -name '*.c' -o -name '*.cc' -o -name '*.cpp' -o -name '*.cxx' \
   -o -name '*.h' -o -name '*.hh' -o -name '*.hpp' -o -name '*.hxx' \
 \) -print0 \
-| xargs -0 -n 1 bash -c 'check_file "$1"' _
+| xargs -0 -n 1 bash -c 'check_c "$1"' _
+
+find . -type f \( \
+  -name '*.frag' -o -name '*.vert' \
+\) -print0 \
+| xargs -0 -n 1 bash -c 'check_shader "$1"' _
 
 find . | grep .rb | $FASTERER_PATH
+glslangValidator

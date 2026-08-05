@@ -7,7 +7,6 @@
 * блинчек
 
 ## Artists
-
 * Issac332
 * Creature_of_steel1
 * DesMo
@@ -20,7 +19,7 @@
 ## Testers and helpers:
 * Rubik
 * Prime 223432
-* Алула(from Oneshot)
+* Alula(from Oneshot)
 * Охотник
 * Ouzly
 
