@@ -32,6 +32,7 @@ module Settings
         :true_memory_mode                        => false,
         :oneshot_mode                            => false,
         :twm_shader_footprint                    => true,
+        :disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already => false,
 
         # Advanced
         :crashlog_privacy                        => false,
@@ -295,6 +296,12 @@ class Window_Settings
         :name => "World machine shader on Entity footprints",
         :icon => [0, 1],
         :parameter => :twm_shader_footprint
+      },
+      {
+        :type => :bool,
+        :name => "Disable System API Dependent Puzzles(For wayland users)",
+        :icon => [0, 1],
+        :parameter => :disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already
       },
     ],
     "Controls" => [

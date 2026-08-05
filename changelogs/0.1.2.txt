@@ -38,3 +38,7 @@ cg_lightbulb1.png updated
 cg_lightbulb2.png updated
 cg_tower5.png updated
 cg_credits1B.png updated
+Fixed bug #21
+Fixed OpenGL ES 2 support
+Added CMake option to build engine with OpenGL ES2 instead Desktop GL(why not?)
+Added setting that disable some puzzles(For Wayland users)

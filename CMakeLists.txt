@@ -9,6 +9,7 @@ option(SANITIZERS "Enable sanitizers" OFF)
 option(NATIVE "Use native instructions(for local use only)" OFF)
 option(STATIC "Build more static build" OFF)
 option(CPU_ARCH "CPU arch(x86, arm64, ia-64)" "x86")
+option(USE_OPENGL_ES2 "GLES2_HEADER define" OFF)
 
 #Configuration
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
@@ -20,6 +21,9 @@ set(CMAKE_CXX_STANDARD 23)
 if(STATIC)
 	set(ZLIB_USE_STATIC_LIBS ON)
 	set(OPENSSL_USE_STATIC_LIBS ON)
+endif()
+if(USE_OPENGL_ES2)
+	add_definitions(-DGLES2_HEADER)
 endif()
 
 # main stuff
