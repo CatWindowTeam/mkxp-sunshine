@@ -48,57 +48,6 @@
 #include <inttypes.h>
 #include <time.h>
 #include <SDL3/SDL_filesystem.h>
-
-typedef struct {
-    uint64_t start_ns;
-} ud_t;
-
-//TODO rewrtire profiler bcz ChatGPT bcz WHERE IS DOCS ABOUT RUBY C API TRACEPOINT 
-static uint64_t now_ns(void) {
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-    return (uint64_t)ts.tv_sec * 1000000000ull + (uint64_t)ts.tv_nsec;
-}
-
-static const char *val_to_cstr(VALUE v, const char *fallback) {
-    if (NIL_P(v)) return fallback;
-    VALUE s = rb_funcall(v, rb_intern("to_s"), 0);
-    if (!RB_TYPE_P(s, T_STRING)) return fallback;
-    return RSTRING_PTR(s);
-}
-
-static void tp_cb(VALUE tpval, void *data) {
-    ud_t *ud = (ud_t *)data;
-
-    rb_trace_arg_t *trace_arg = rb_tracearg_from_tracepoint(tpval);
-    if (!trace_arg) return;
-
-    VALUE path   = rb_tracearg_path(trace_arg);
-    VALUE lineno = rb_tracearg_lineno(trace_arg);
-    VALUE defined_class = rb_tracearg_defined_class(trace_arg);
-    VALUE method_id = rb_tracearg_method_id(trace_arg);
-    rb_event_flag_t ev = rb_tracearg_event_flag(trace_arg);
-
-    const char *path_s = val_to_cstr(path, "<nil>");
-    const char *class_s = val_to_cstr(defined_class, "<nil>");
-
-    const char *meth_s = "<nil>";
-    if (!NIL_P(method_id)) {
-        const char *mn = rb_id2name(SYM2ID(method_id));
-        if (mn) meth_s = mn;
-    }
-
-    long line = NIL_P(lineno) ? 0 : FIX2LONG(lineno);
-
-    if (ev == RUBY_EVENT_CALL) {
-        ud->start_ns = now_ns();
-    } else if (ev == RUBY_EVENT_RETURN) {
-        uint64_t end_ns = now_ns();
-        uint64_t dur_ns = end_ns - ud->start_ns;
-        printf("[PROFILER] %s %s:%ld class=%s dur_ns=%" PRIu64 "\n", meth_s, path_s, line, class_s, dur_ns);
-    }
-}
-
 extern const char binding_mri_module_rpg1_rb[];
 extern const int binding_mri_module_rpg1_rb_len;
 
@@ -147,6 +96,7 @@ void shaderBindingInit();
 void ModLoaderBindingInit();
 void keybindingsBindingInit();
 void lightmapBindingInit();
+void ProfilerInit();
 
 RB_METHOD(mriPrint);
 RB_METHOD(mriP);
@@ -159,10 +109,8 @@ RB_METHOD(mriRgssMain);
 RB_METHOD(mriRgssStop);
 RB_METHOD(_kernelCaller);
 
-
 // TODO: find the reason why Symbol doesn't have some methods
-VALUE rb_symbol_to_s(VALUE self)
-{
+VALUE rb_symbol_to_s(VALUE self){
     ID id = SYM2ID(self);
     const char *name = rb_id2name(id);
 
@@ -205,6 +153,7 @@ static void mriBindingInit(){
 	ModLoaderBindingInit();
 	keybindingsBindingInit();
 	lightmapBindingInit();
+	ProfilerInit();
 
 	_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
 	_rb_define_module_function(rb_mKernel, "rgss_stop", mriRgssStop);
@@ -481,7 +430,7 @@ static void runRMXPScripts(BacktraceData &btData){
 
 	/* Execute preloaded scripts */
 	for (std::set<std::string>::iterator i = preloadScripts.begin();
-	     i != conf.preloadScripts.end(); ++i)
+	     i != preloadScripts.end(); ++i)
 		runCustomScript(*i);
 
 	VALUE exc = rb_gv_get("$!");
@@ -591,17 +540,6 @@ static void mriBindingExecute(){
 	ruby_init_loadpath();
 	rb_enc_set_default_external(rb_enc_from_encoding(rb_utf8_encoding()));
 	Config &conf = shState->rtData().config;
-	if(conf.debugMode){
-		setvbuf(stdout, NULL, _IOFBF, 1<<20);
-		ud_t ud;
-		rb_event_flag_t flags = 0;
-		flags |= RUBY_EVENT_CALL;
-		flags |= RUBY_EVENT_RETURN;
-		flags |= RUBY_EVENT_RAISE;
-		VALUE tp = rb_tracepoint_new(Qnil, flags, tp_cb, &ud);
-		rb_tracepoint_enable(tp);		
-	}
-
 	if (!conf.rubyLoadpaths.empty()){
 		/* Setup custom load paths */
 		VALUE lpaths = rb_gv_get("$:");

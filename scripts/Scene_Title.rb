@@ -191,7 +191,7 @@ class Scene_Title
     @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 3, 200, ENTRY_HEIGHT, tr("sec_#{Sunshine::SECURITYSTATE}"))
     if ModLoader::IS_ENABLED
       @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 4, 200, ENTRY_HEIGHT, tr("Mods loaded: ") + ModLoader::COUNT.to_s)
-      @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 5, 200, ENTRY_HEIGHT, tr("Preload Scripts loaded: ") + ModLoader::PRELOAD_SCRIPTS_COUNT.to_s)
+      @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 5, 200, ENTRY_HEIGHT, tr("PreloadScripts loaded: ") + ModLoader::PRELOAD_SCRIPTS_COUNT.to_s)
     end
   end
 

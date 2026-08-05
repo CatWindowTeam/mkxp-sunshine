@@ -51,8 +51,6 @@ struct Config{
 	int maxTextureSize;
 
 	std::string gameFolder;
-	//int AspectPreset;
-	//std::string AspectPresetRubyConst;
 	bool allowSymlinks;
 	bool pathCache;
 	bool SecurityEngine;
@@ -71,19 +69,11 @@ struct Config{
 	bool useScriptNames;
 
 	std::string customScript;
-	std::set<std::string> preloadScripts;
 	std::vector<std::string> rtps;
 
 	std::vector<std::string> fontSubs;
 
 	std::vector<std::string> rubyLoadpaths;
-
-	/* Editor flags */
-	struct {
-		bool debug;
-		bool battleTest;
-	} editor;
-
 	/* Game INI contents */
 	struct {
 		std::string scripts;

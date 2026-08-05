@@ -307,6 +307,7 @@ set(BINDING_SOURCE
 	binding-mri/lightmap-binding.cpp
 	binding-mri/signalconnection-binding.cpp
 	binding-mri/gamepad-binding.cpp
+	binding-mri/profiler-binding.cpp
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
