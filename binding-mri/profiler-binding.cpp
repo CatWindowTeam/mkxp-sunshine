@@ -1,20 +1,17 @@
-// someone plz help me fix it 3:
+//SOMEONE PLZ HELP ME FIX TIHIS SHITTTTTTTTTTT
+
 
 #include "binding.h"
 #include "binding-util.h"
 #include "debugwriter.h"
-
 #include <ruby.h>
 #include <ruby/debug.h>
-
 #include <inttypes.h>
 #include <time.h>
-
-#include <iostream>
 #include <string>
 #include <vector>
 
-static VALUE tp = Qnil;
+VALUE tp = Qnil;
 
 static uint64_t now_ns(void) {
     timespec ts;
@@ -27,7 +24,7 @@ static std::string value_to_string(VALUE v, const char *fallback) {
     return std::string(StringValuePtr(v));
 }
 
-static void tp_cb(VALUE tpval, void * /*data*/) {
+static void tp_cb(VALUE tpval, void *) {
     rb_trace_arg_t *trace_arg = rb_tracearg_from_tracepoint(tpval);
     if (!trace_arg) return;
 
@@ -42,7 +39,7 @@ static void tp_cb(VALUE tpval, void * /*data*/) {
         return;
     }
 
-    if (ev == RUBY_EVENT_RETURN || ev == RUBY_EVENT_RAISE) {
+    if (ev == RUBY_EVENT_RETURN) {
         if (stack.starts.empty()) return;
 
         uint64_t end_ns = now_ns();
@@ -67,19 +64,21 @@ static void tp_cb(VALUE tpval, void * /*data*/) {
 
         long line = NIL_P(lineno) ? 0 : FIX2LONG(lineno);
 
-        std::cout << "[PROFILER] "
-                  << meth_s << ' '
-                  << path_s << ':' << line
-                  << " class=" << class_s
-                  << " dur_ns=" << dur_ns
-                  << (ev == RUBY_EVENT_RAISE ? " event=RAISE" : " event=RETURN")
-                  << '\n';
+        Debug() << "[PROFILER] "
+                << meth_s << ' '
+                << path_s << ':' << line
+                << " class=" << class_s
+                << " dur_ns=" << dur_ns << "\n";
         return;
     }
 }
 
-static VALUE profiler(VALUE /*self*/, VALUE v) {
-    if (tp == Qnil) return Qnil;
+static VALUE profiler(VALUE, VALUE v) {
+    if (tp == Qnil || NIL_P(tp)) {
+        rb_raise(rb_eRuntimeError, "Profiler not initialized");
+        return Qnil;
+    }
+    
     if (v == Qtrue) {
         rb_tracepoint_enable(tp);
     } else {
@@ -93,9 +92,11 @@ void ProfilerInit() {
     VALUE module = rb_define_module("Profiler");
     tp = rb_tracepoint_new(
         Qnil,
-        RUBY_EVENT_CALL | RUBY_EVENT_RETURN | RUBY_EVENT_RAISE,
+        RUBY_EVENT_CALL | RUBY_EVENT_RETURN,
         tp_cb,
         nullptr
     );
+    
+    rb_gc_register_address(&tp);    
     rb_define_singleton_method(module, "set", RUBY_METHOD_FUNC(profiler), 1);
 }
