@@ -25,14 +25,15 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <ruby.h>
+#undef vsnprintf
+#undef snprintf
 
 #ifdef __ANDROID__
 	#include <android/SDL_log.h>
 #elif __EMSCRIPTEN__
 	#include <emscripten/console.h>
 #endif
-
-/* A cheap replacement for qDebug() */
 
 class Debug{
 public:
@@ -53,6 +54,12 @@ public:
 		for (size_t i = 0; i < v.size(); ++i)
 			buf << v[i] << " ";
 
+		return *this;
+	}
+
+	template<typename T>
+	Debug &operator<<(const VALUE &v){
+		buf << rb_inspect(v);
 		return *this;
 	}
 

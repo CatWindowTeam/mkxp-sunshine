@@ -532,8 +532,6 @@ static void mriBindingExecute(){
 	 * stdio streams on some platforms (eg. Windows) */
 	int argc = 0;
 	char **argv = 0;
-	char options_argv1[] = "oneshot", options_argv2[] = "-ev";
-	char* options_argv[] = {options_argv1, options_argv2, NULL};
 	ruby_sysinit(&argc, &argv);
 	RUBY_INIT_STACK;
 	ruby_init();

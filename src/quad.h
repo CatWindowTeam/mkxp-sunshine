@@ -67,9 +67,7 @@ struct Quad{
 			vert[i].color = c;
 	}
 
-	Quad()
-	    : vbo(VBO::gen()),
-	      vboDirty(true){
+	Quad() : vbo(VBO::gen()), vboDirty(true){
 		GLMeta::vaoFillInVertexData<Vertex>(vao);
 		vao.vbo = vbo;
 		vao.ibo = shState->globalIBO().ibo;

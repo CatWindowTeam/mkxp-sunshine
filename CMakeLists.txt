@@ -19,6 +19,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 23)
 
 if(STATIC)
+	add_compile_options(-static-libgcc -static-libstdc++)
 	set(ZLIB_USE_STATIC_LIBS ON)
 	set(OPENSSL_USE_STATIC_LIBS ON)
 endif()
@@ -185,8 +186,6 @@ endif()
 
 source_group("MKXP Source" FILES ${MAIN_SOURCE} ${MAIN_HEADERS})
 
-## Setup embedded source ##
-
 set(EMBEDDED_INPUT
 	shader/common.h
 	shader/transSimple.frag
@@ -339,29 +338,6 @@ else()
 
 	if(LINUX)
 		add_compile_options(-fno-plt)
-	endif()
-
-	if(CPU_ARCH MATCHES "x86")
-		add_compile_options(
-		-mnoreturn-no-callee-saved-registers
-		-mrelax-cmpxchg-loop)
-	elseif(CPU_ARCH MATCHES "arm64")
-		# TODO: check is it really usefull:3
-		add_compile_options(
-		-mlow-precision-recip-sqrt
-		-mlow-precision-sqrt
-		-mlow-precision-div
-		)
-	elseif(CPU_ARCH MATCHES "ia-64")
-		# In theory it must make game work better on IA-64?
-		add_compile_options(
-		-minline-float-divide-min-latency
-		-minline-float-divide-max-throughput
-		-minline-int-divide-min-latency
-		-minline-int-divide-max-throughput
-		-minline-sqrt-min-latency
-		-minline-sqrt-max-throughput
-		)
 	endif()
 endif()
 

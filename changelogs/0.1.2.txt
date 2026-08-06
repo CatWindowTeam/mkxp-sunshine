@@ -44,3 +44,6 @@ Added CMake option to build engine with OpenGL ES2 instead Desktop GL(why not?)
 Added setting that disable some puzzles(For Wayland users)
 PreloadScripts moved to modloader
 Deleted Battletest and RPGMaker debug code
+glstate Alpha calculation fix backported from MKXP
+Added VALUE support in debugwriter.h
+When STATIC build option is enabled, enable static libc++ and libgcc
