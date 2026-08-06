@@ -47,3 +47,4 @@ Deleted Battletest and RPGMaker debug code
 glstate Alpha calculation fix backported from MKXP
 Added VALUE support in debugwriter.h
 When STATIC build option is enabled, enable static libc++ and libgcc
+CPU specific optimizations moved to separated Toolchanin files
