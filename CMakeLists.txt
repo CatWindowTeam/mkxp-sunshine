@@ -22,8 +22,13 @@ if(STATIC)
 	set(ZLIB_USE_STATIC_LIBS ON)
 	set(OPENSSL_USE_STATIC_LIBS ON)
 endif()
+
 if(USE_OPENGL_ES2)
 	add_definitions(-DGLES2_HEADER)
+endif()
+
+if(POLICY CMP0167) # suppress Boost warning
+    cmake_policy(SET CMP0167 OLD)
 endif()
 
 # main stuff
@@ -178,20 +183,6 @@ elseif(APPLE)
     )
 endif()
 
-if (STEAM)
-	list(APPEND MAIN_HEADERS
-		src/steam.h
-		steamshim/steamshim_child.h
-	)
-	list(APPEND MAIN_SOURCE
-		src/steam.cpp
-		steamshim/steamshim_child.c
-	)
-	list(APPEND DEFINES
-		STEAM
-	)
-endif()
-
 source_group("MKXP Source" FILES ${MAIN_SOURCE} ${MAIN_HEADERS})
 
 ## Setup embedded source ##
@@ -261,11 +252,6 @@ foreach(item ${EMBEDDED_INPUT})
 endforeach()
 
 source_group("Embedded Source" FILES ${EMBEDDED_INPUT} ${EMBEDDED_SOURCE})
-
-## Setup binding source ##
-list(APPEND DEFINES
-	BINDING_MRI
-)
 set(BINDING_HEADERS
 	binding-mri/binding-util.h
 	binding-mri/binding-types.h
@@ -397,10 +383,6 @@ else()
 	)
 endif()
 
-if(POLICY CMP0167) # suppress Boost warning
-    cmake_policy(SET CMP0167 OLD)
-endif()
-
 find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(SDL3 CONFIG)
@@ -416,7 +398,6 @@ find_package(Ruby 3.0 REQUIRED COMPONENTS Development)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
-find_package(OpenSSL REQUIRED COMPONENTS Crypto)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 
@@ -430,10 +411,18 @@ physfs ${PIXMAN_LIBRARY} ${SIGC2_LIBRARIES} ${PLATFORM_LIBRARIES}
 ${Ruby_LIBRARIES} Boost::boost Boost::chrono ${Boost_LIBRARIES}
 ${VORBISFILE_LIBRARIES} ZLIB::ZLIB ${PLATFORM_LIBS})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${OPENSSL_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::Crypto)
-
 if(STEAM)
+	list(APPEND MAIN_HEADERS
+		src/steam.h
+		steamshim/steamshim_child.h
+	)
+	list(APPEND MAIN_SOURCE
+		src/steam.cpp
+		steamshim/steamshim_child.c
+	)
+	list(APPEND DEFINES
+		STEAM
+	)
 	add_subdirectory(steamshim_parent)
 	# steam_appid.txt
 	configure_file(
@@ -441,5 +430,4 @@ if(STEAM)
 		"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/steam_appid.txt"
 		COPYONLY)
 endif()
-
 add_subdirectory(scripts)
