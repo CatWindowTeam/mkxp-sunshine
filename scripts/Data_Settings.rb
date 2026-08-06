@@ -53,6 +53,7 @@ module Settings
         :debug_picture_names                     => false,
         :debug_lightmap                          => false,
         :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT          => false,
+        :profiller								 => false,
 
         #Hidden
         :is_dejavu                               => false,
@@ -563,6 +564,12 @@ class Window_Settings
         :name => "SDL_HINT_SHUTDOWN_DBUS_ON_QUIT",
         :parameter => :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT,
         :icon => [1, 0],
+      },
+      {
+        :type => :bool,
+        :name => "Profiller",
+        :icon => [1, 0],
+        :parameter => :profiller
       },
       { :type => :sep },
       {

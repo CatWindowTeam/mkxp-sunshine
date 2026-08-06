@@ -94,6 +94,10 @@ module Settings
           Sunshine.setSDLHint("SDL_HINT_SHUTDOWN_DBUS_ON_QUIT", "0")
         end
       end
+
+      def profiller(value)
+		Profiler.set(value)
+      end
     end
   end
 end
