@@ -662,7 +662,7 @@ void EventThread::notifyFrame(){
 	fps.displayCounter = 0;
 	fps.immFiniFlag.clear();
 
-	int32_t avgFPS = fps.acc / fps.accDiv;
+	int32_t avgFPS = fps.accDiv;
 	fps.acc = fps.accDiv = 0;
 
 	SDL_Event event;

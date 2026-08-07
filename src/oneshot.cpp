@@ -1,9 +1,4 @@
 #include "oneshot.h"
-
-/******************
- * HERE BE DRAGONS
- ******************/
-
 #include "eventthread.h"
 #include "debugwriter.h"
 #include "bitmap.h"
@@ -17,37 +12,36 @@
 #include <SDL3/SDL_messagebox.h>
 #include <SDL3/SDL_filesystem.h>
 // OS-Specific code
-#if defined(_WIN32)
+#if windows
 #define SECURITY_WIN32
-#include <windows.h>
-#include <mmsystem.h>
-#include <security.h>
-#include <secext.h>
-#include <shlobj.h>
-#elif defined(__APPLE__)
-#include <stdlib.h>
-#include <unistd.h>
-#include <pwd.h>
-#include <dlfcn.h>
-#include <dispatch/dispatch.h>
+	#include <windows.h>
+	#include <mmsystem.h>
+	#include <security.h>
+	#include <secext.h>
+	#include <shlobj.h>
+#elif apple
+	#include <stdlib.h>
+	#include <unistd.h>
+	#include <pwd.h>
+	#include <dlfcn.h>
+	#include <dispatch/dispatch.h>
 #elif unix_like
-#include <stdlib.h>
-#include <unistd.h>
-#include <pwd.h>
-#include <dlfcn.h>
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
-#include "xdg-user-dir-lookup.h"
+	#include <stdlib.h>
+	#include <unistd.h>
+	#include <pwd.h>
+	#include <dlfcn.h>
+	#include <gtk/gtk.h>
+	#include <gdk/gdk.h>
+	#include "xdg-user-dir-lookup.h"
 #else
-#error "Operating system not detected or unsupported."
+	#error "Operating system not detected or unsupported."
 #endif
 
 const Config conf;
 #define DEF_SCREEN_W conf.defScreenW
 #define DEF_SCREEN_H conf.defScreenH
 
-struct OneshotPrivate
-{
+struct OneshotPrivate{
 	// Main SDL window
 	SDL_Window *window;
 
@@ -80,16 +74,14 @@ struct OneshotPrivate
 	{
 	}
 
-	~OneshotPrivate()
-	{
+	~OneshotPrivate(){
 		SDL_DestroyMutex(winMutex);
 	}
 };
 
 // OS-SPECIFIC FUNCTIONS
 #if unix_like
-struct linux_DialogData
-{
+struct linux_DialogData{
 	// Input
 	int type;
 	const char *body;
@@ -99,14 +91,12 @@ struct linux_DialogData
 	bool result;
 };
 
-static int linux_dialog(void *rawData)
-{
+static int linux_dialog(void *rawData){
 	linux_DialogData *data = reinterpret_cast<linux_DialogData *>(rawData);
 	// Determine correct flags
 	GtkMessageType gtktype;
 	GtkButtonsType gtkbuttons = GTK_BUTTONS_OK;
-	switch (data->type)
-	{
+	switch (data->type){
 	case Oneshot::MSG_INFO:
 		gtktype = GTK_MESSAGE_INFO;
 		break;
@@ -137,14 +127,12 @@ static int linux_dialog(void *rawData)
 	return 0;
 }
 
-#elif defined _WIN32
+#elif windows
 /* Convert WCHAR pointer to std::string */
-static std::string w32_fromWide(const WCHAR *ustr)
-{
+static std::string w32_fromWide(const WCHAR *ustr){
 	std::string result;
 	int size = WideCharToMultiByte(CP_UTF8, 0, ustr, -1, 0, 0, 0, 0);
-	if (size > 0)
-	{
+	if (size > 0){
 		CHAR *str = new CHAR[size];
 		if (WideCharToMultiByte(CP_UTF8, 0, ustr, -1, str, size, 0, 0) == size)
 			result = str;
@@ -153,13 +141,10 @@ static std::string w32_fromWide(const WCHAR *ustr)
 	return result;
 }
 /* Convert WCHAR pointer from const char* */
-static WCHAR *w32_toWide(const char *str)
-{
-	if (str)
-	{
+static WCHAR *w32_toWide(const char *str){
+	if (str){
 		int size = MultiByteToWideChar(CP_UTF8, 0, str, -1, 0, 0);
-		if (size > 0)
-		{
+		if (size > 0){
 			WCHAR *ustr = new WCHAR[size];
 			if (MultiByteToWideChar(CP_UTF8, 0, str, -1, ustr, size) == size)
 				return ustr;
@@ -174,8 +159,7 @@ static WCHAR *w32_toWide(const char *str)
 }
 #endif
 
-Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
-{
+Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	p = new OneshotPrivate();
 	p->window = threadData.window;
 	p->savePath = threadData.config.commonDataPath.substr(0, threadData.config.commonDataPath.size() - 1);
@@ -187,18 +171,19 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
 	p->obscuredNeedToUpdate = false;
 	p->allowExit = true;
 	p->exiting = false;
-#ifdef _WIN32
+#ifdef windows
 	p->os = "windows";
-#elif __APPLE__
+#elif apple
 	p->os = "macos";
 #elif unix_like
+	//TODO: FIX IT
 	p->os = "linux";
 #endif
 
 	/********************
 	 * USERNAME/DOCS PATH
 	 ********************/
-#if defined _WIN32
+#if windows
 	// Get language code
 	WCHAR wlang[9];
 	GetLocaleInfoW(LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME, wlang, sizeof(wlang) / sizeof(WCHAR));
@@ -209,86 +194,71 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
 	// Get user's name
 	ULONG size = 0;
 	GetUserNameEx(NameDisplay, 0, &size);
-	if (GetLastError() == ERROR_MORE_DATA)
-	{
+	if (GetLastError() == ERROR_MORE_DATA){
 		// Get their full (display) name
 		WCHAR *name = new WCHAR[size];
 		GetUserNameEx(NameDisplay, name, &size);
 		p->userName = w32_fromWide(name);
 		delete[] name;
-	}
-	else
-	{
+	}else{
 		// Get their login name
 		DWORD size2 = 0;
 		GetUserName(0, &size2);
-		if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
-		{
+		if (GetLastError() == ERROR_INSUFFICIENT_BUFFER){
 			WCHAR *name = new WCHAR[size2];
 			GetUserName(name, &size2);
 			p->userName = w32_fromWide(name);
 			delete[] name;
 		}
 	}
-
-	// Get documents path
-	WCHAR path[MAX_PATH];
-	SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, path);
-	p->docsPath = w32_fromWide(path);
-	p->gamePath = p->docsPath + "\\My Games";
 	p->journal = "_______.exe";
 #else
 	// Get language code
 	const char *lc_all = SDL_getenv("LC_ALL");
 	const char *lang = SDL_getenv("LANG");
 	const char *code = (lc_all ? lc_all : lang);
-	if (code)
-	{
+	if (code){
 		// find first dot, copy language code
 		int end = 0;
-		for (; code[end] && code[end] != '.'; ++end)
-		{
-		}
+		for (; code[end] && code[end] != '.'; ++end){}
 		p->lang = std::string(code, end);
 	}
 	else
 		p->lang = "en";
 
 // Get user's name
-#ifdef OS_OSX
+#ifdef apple
 	struct passwd *pwd = getpwuid(geteuid());
 #elif unix_like
 	struct passwd *pwd = getpwuid(getuid());
 #endif
-	if (pwd)
-	{
-		if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ',')
-		{
+	if (pwd){
+		if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ','){
 			// Get the user's full name
 			int comma = 0;
-			for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma)
-			{
-			}
+			for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma){}
 			p->userName = std::string(pwd->pw_gecos, comma);
 		}
 		else
 			p->userName = pwd->pw_name;
 	}
 
-// Get documents path
-#ifdef __APPLE__
-	std::string path = std::string(SDL_getenv("HOME")) + "/Documents";
-	p->docsPath = path.c_str();
-	p->gamePath = path.c_str();
+#ifdef apple
 	p->journal = "_______.app";
 #elif unix_like
-	char *path = xdg_user_dir_lookup("DOCUMENTS");
-	p->docsPath = path;
-	p->gamePath = path;
 	p->journal = "_______";
 #endif
 #endif
 
+	// Get documents path
+	const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
+	p->docsPath = path;
+	#ifdef windows
+		p->gamePath = path "\\My Games";
+	#else
+		p->gamePath = path;
+	#endif
+	
 	Debug() << "[oneshot] Game path    :" << p->gamePath;
 	Debug() << "[oneshot] Docs path    :" << p->docsPath;
 
@@ -296,46 +266,29 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
 	char const *xdg_current_desktop = SDL_getenv("XDG_CURRENT_DESKTOP");
 	gtk_init(0, 0);
 
-	if (xdg_current_desktop == NULL)
-	{
+	if (xdg_current_desktop == NULL){
 		desktopEnv = "nope";
-	}
-	else
-	{
+	}else{
 		std::string desktop(xdg_current_desktop);
 		std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::SDL_tolower);
-		if (desktop.find("cinnamon") != std::string::npos)
-		{
+		if (desktop.find("cinnamon") != std::string::npos){
 			desktopEnv = "cinnamon";
-		}
-		else if (
+		}else if (
 			desktop.find("gnome") != std::string::npos ||
 			desktop.find("unity") != std::string::npos)
 		{
 			desktopEnv = "gnome";
-		}
-		else if (desktop.find("mate") != std::string::npos)
-		{
+		}else if (desktop.find("mate") != std::string::npos){
 			desktopEnv = "mate";
-		}
-		else if (desktop.find("xfce") != std::string::npos)
-		{
+		}else if (desktop.find("xfce") != std::string::npos){
 			desktopEnv = "xfce";
-		}
-		else if (desktop.find("kde") != std::string::npos)
-		{
+		}else if (desktop.find("kde") != std::string::npos){
 			desktopEnv = "kde";
-		}
-		else if (desktop.find("lxde") != std::string::npos)
-		{
+		}else if (desktop.find("lxde") != std::string::npos){
 			desktopEnv = "lxde";
-		}
-		else if (desktop.find("lxqt") != std::string::npos)
-		{
+		}else if (desktop.find("lxqt") != std::string::npos){
 			desktopEnv = "lxqt";
-		}
-		else if (desktop.find("deepin") != std::string::npos)
-		{
+		}else if (desktop.find("deepin") != std::string::npos){
 			desktopEnv = "deepin";
 		}
 	}
@@ -346,7 +299,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
 	/********
 	 * MISC
 	 ********/
-#if defined _WIN32
+#if windows
 	// Get windows version
 	OSVERSIONINFOW version;
 	ZeroMemory(&version, sizeof(version));
@@ -355,106 +308,82 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
 #endif
 }
 
-Oneshot::~Oneshot()
-{
+Oneshot::~Oneshot(){
 	delete p;
 }
 
-const std::string &Oneshot::os() const
-{
+const std::string &Oneshot::os() const{
 	return p->os;
 }
 
-const std::string &Oneshot::lang() const
-{
+const std::string &Oneshot::lang() const{
 	return p->lang;
 }
 
-const std::string &Oneshot::userName() const
-{
+const std::string &Oneshot::userName() const{
 	return p->userName;
 }
 
-const std::string &Oneshot::savePath() const
-{
+const std::string &Oneshot::savePath() const{
 	return p->savePath;
 }
 
-const std::string &Oneshot::docsPath() const
-{
+const std::string &Oneshot::docsPath() const{
 	return p->docsPath;
 }
 
-const std::string &Oneshot::gamePath() const
-{
+const std::string &Oneshot::gamePath() const{
 	return p->gamePath;
 }
 
-const std::string &Oneshot::journal() const
-{
+const std::string &Oneshot::journal() const{
 	return p->journal;
 }
 
-const std::vector<uint8_t> &Oneshot::obscuredMap() const
-{
+const std::vector<uint8_t> &Oneshot::obscuredMap() const{
 	return p->obscuredMap;
 }
 
-bool Oneshot::obscuredCleared() const
-{
+bool Oneshot::obscuredCleared() const{
 	return p->obscuredCleared;
 }
 
-bool Oneshot::exiting() const
-{
+bool Oneshot::exiting() const{
 	return p->exiting;
 }
 
-bool Oneshot::allowExit() const
-{
+bool Oneshot::allowExit() const{
 	return p->allowExit;
 }
 
-void Oneshot::setYesNo(const char *yes, const char *no)
-{
+void Oneshot::setYesNo(const char *yes, const char *no){
 	p->txtYes = yes;
 	p->txtNo = no;
 }
 
-void Oneshot::setExiting(bool exiting)
-{
-	if (p->exiting != exiting)
-	{
+void Oneshot::setExiting(bool exiting){
+	if (p->exiting != exiting){
 		p->exiting = exiting;
-		if (exiting)
-		{
+		if (exiting){
 			threadData.exiting.set();
-		}
-		else
-		{
+		}else{
 			threadData.exiting.clear();
 		}
 	}
 }
 
-void Oneshot::setAllowExit(bool allowExit)
-{
-	if (p->allowExit != allowExit)
-	{
+void Oneshot::setAllowExit(bool allowExit){
+	if (p->allowExit != allowExit){
 		p->allowExit = allowExit;
-		if (allowExit)
-		{
+		if (allowExit){
 			threadData.allowExit.set();
-		}
-		else
-		{
+		}else{
 			threadData.allowExit.clear();
 		}
 	}
 }
 
-bool Oneshot::msgbox(int type, const char *body, const char *title)
-{
+bool Oneshot::msgbox(int type, const char *body, const char *title){
 	if (!title)
 		title = "";
 #ifdef unix_like
@@ -478,38 +407,36 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	data.colorScheme = 0;
 	data.title = title;
 	data.message = body;
-#ifdef _WIN32
+#ifdef windows
 	DWORD sound;
 #endif
 
 	// Set type
-	switch (type)
-	{
+	switch (type){
 	case MSG_INFO:
 	case MSG_YESNO:
 	default:
 		data.flags = SDL_MESSAGEBOX_INFORMATION;
-#ifdef _WIN32
+#ifdef windows
 		sound = SND_ALIAS_SYSTEMQUESTION;
 #endif
 		break;
 	case MSG_WARN:
 		data.flags = SDL_MESSAGEBOX_WARNING;
-#ifdef _WIN32
+#ifdef windows
 		sound = SND_ALIAS_SYSTEMEXCLAMATION;
 #endif
 		break;
 	case MSG_ERR:
 		data.flags = SDL_MESSAGEBOX_WARNING;
-#ifdef _WIN32
+#ifdef windows
 		sound = SND_ALIAS_SYSTEMASTERISK;
 #endif
 		break;
 	}
 
 	// Set buttons
-	switch (type)
-	{
+	switch (type){
 	case MSG_INFO:
 	case MSG_WARN:
 	case MSG_ERR:
@@ -524,12 +451,12 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	}
 
 	// Show messagebox
-#ifdef _WIN32
+#ifdef windows
 	PlaySoundW(MAKEINTRESOURCEW(sound), NULL, SND_ALIAS_ID | SND_ASYNC);
 #endif
 	int button;
 
-#ifdef __APPLE__
+#ifdef apple
 	int *btn = &button;
 
 	// Message boxes and UI changes must be performed from the main thread on macOS Mojave and above.
@@ -543,11 +470,10 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 #endif
 
 	return button ? true : false;
-#endif // #ifdef OS_LINUX
+#endif
 }
 
-std::string Oneshot::textinput(const char *prompt, int char_limit, const char *fontName)
-{
+std::string Oneshot::textinput(const char *prompt, int char_limit, const char *fontName){
 	std::vector<std::string> *fontNames = new std::vector<std::string>();
 	fontNames->push_back(fontName);
 	fontNames->push_back("VL Gothic");
@@ -568,10 +494,8 @@ std::string Oneshot::textinput(const char *prompt, int char_limit, const char *f
 	SDL_StartTextInput(this->p->window);
 
 	// Main loop
-	while (threadData.acceptingTextInput)
-	{
-		if (inputTextPrev != threadData.inputText)
-		{
+	while (threadData.acceptingTextInput){
+		if (inputTextPrev != threadData.inputText){
 			inputBmp->clear();
 			inputBmp->drawText(DEF_SCREEN_W / 2, DEF_SCREEN_H / 2, DEF_SCREEN_W, DEF_SCREEN_H, threadData.inputText.c_str(), 1);
 			inputTextPrev = threadData.inputText;
@@ -594,8 +518,7 @@ void Oneshot::updateObscuredSize(int winW, int winH){
 	p->obscuredMap.resize(p->winW * p->winH, 255);
 }
 
-void Oneshot::updateObscured(int winX, int winY)
-{
+void Oneshot::updateObscured(int winX, int winY){
 	SDL_LockMutex(p->winMutex);
 	p->winX = winX;
 	p->winY = winY;
@@ -619,13 +542,12 @@ void Oneshot::updateObscured(int winX, int winY)
 	int num_displays;
 	SDL_DisplayID *displays = SDL_GetDisplays(&num_displays);
 	if (!displays)
-		printf("SDL_GetDisplays failed (oneshot.cpp)\n");
+		Debug() << "SDL_GetDisplays failed (oneshot.cpp)";
 	// Update obscured map and texture for window portion offscreen
-	for (int i = 0, max = num_displays; i < max; ++i)
-	{
+	for (int i = 0, max = num_displays; i < max; ++i){
 		SDL_Rect bounds;
 		if (!SDL_GetDisplayBounds(displays[i], &bounds))
-			printf("SDL_GetDisplayBounds failed (oneshot.cpp)\n");
+			Debug() << "SDL_GetDisplayBounds failed (oneshot.cpp)";
 
 		// Get intersection of window and the screen
 		SDL_Rect intersect;
@@ -639,8 +561,7 @@ void Oneshot::updateObscured(int winX, int winY)
 		if (intersect.x == 0 && intersect.y == 0 && intersect.w == conf.defScreenW && intersect.h == conf.defScreenH)
 			return;
 
-		for (int y = intersect.y; y < intersect.y + intersect.h; ++y)
-		{
+		for (int y = intersect.y; y < intersect.y + intersect.h; ++y){
 			int start = y * p->winW + intersect.x;
 			std::fill(obscuredFrame.begin() + start, obscuredFrame.begin() + (start + intersect.w), false);
 		}
@@ -651,10 +572,8 @@ void Oneshot::updateObscured(int winX, int winY)
 	// to make to the texture
 	bool needsUpdate = false;
 	bool cleared = true;
-	for (size_t i = 0; i < obscuredFrame.size(); ++i)
-	{
-		if (obscuredFrame[i])
-		{
+	for (size_t i = 0; i < obscuredFrame.size(); ++i){
+		if (obscuredFrame[i]){
 			p->obscuredMap[i] = 0;
 			needsUpdate = true;
 		}
@@ -669,8 +588,7 @@ void Oneshot::updateObscured(int winX, int winY)
 	obscuredDirty = true;
 }
 
-void Oneshot::resetObscured()
-{
+void Oneshot::resetObscured(){
 	std::fill(p->obscuredMap.begin(), p->obscuredMap.end(), 255);
 	obscuredDirty = true;
 	p->obscuredCleared = false;
