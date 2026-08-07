@@ -53,7 +53,6 @@ static VALUE int_times(VALUE self) {
 }
 
 void SunshineBindingInit(){
-    printf("[SunshineBindingInit] Initializing Sunshine binding\n");
     VALUE module = rb_define_module("Sunshine");
 	//SDL versions, for debug info in main menu and other shi idkkkkkkkk
     rb_const_set(module, rb_intern("SDLVersion_major"), INT2NUM(SDL_MAJOR_VERSION));

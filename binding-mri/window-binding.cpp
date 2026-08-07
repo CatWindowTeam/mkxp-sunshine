@@ -67,7 +67,6 @@ DEF_PROP_I(Window, ContentsOpacity)
 
 
 void windowBindingInit(){
-	printf("[windowBindingInit] Initialing Window binding\n");
 	VALUE klass = rb_define_class("Window", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&WindowType>);
 

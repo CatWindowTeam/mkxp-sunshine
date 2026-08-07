@@ -565,7 +565,6 @@ RB_METHOD(wallpaperReset){
 }
 
 void wallpaperBindingInit(){
-	printf("[wallpaperBindingInit] Initialing Wallpaper binding\n");
 	VALUE module = rb_define_module("Wallpaper");
 
 	// Functions

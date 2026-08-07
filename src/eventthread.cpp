@@ -444,7 +444,7 @@ void EventThread::process(RGSSThreadData &rtData){
 					break;
 
 				SDL_snprintf(buffer, sizeof(buffer), "%s - %d FPS", rtData.config.windowTitle.c_str(), event.user.code);
-
+				Debug() << event.user.code;
 				/* Updating the window title in fullscreen
 				 * mode seems to cause flickering */
 				if (fullscreen){
