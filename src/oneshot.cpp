@@ -32,7 +32,6 @@
 	#include <dlfcn.h>
 	#include <gtk/gtk.h>
 	#include <gdk/gdk.h>
-	#include "xdg-user-dir-lookup.h"
 #else
 	#error "Operating system not detected or unsupported."
 #endif

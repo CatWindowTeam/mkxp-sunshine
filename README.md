@@ -22,7 +22,7 @@ Target of sunshine mod - improve original game.
     * OpenAL
     * PhysFS
     * sigc++-2.0
-    * OpenSSL
+    * vorbisfile
     * GTK3(*NIX only!)
     * libxfconf(*NIX only!)
 
@@ -30,6 +30,8 @@ Target of sunshine mod - improve original game.
 
 2. build
     * In project dir create build dir
-    * cmake -S . -B build
+    * cmake . -B build -DDEBUG=(ON/OFF) -DCMAKE_TOOLCHAIN_FILE=toolchain/arch/(x86/arm64/ia-64).cmake
     * cd build
     * make -jn (n - count of threads for compilation)
+
+also you can use build scripts like make-oneshot-linux.sh

@@ -38,7 +38,6 @@
 #include "sunshine.h"
 #ifdef unix_like
 	#include <gtk/gtk.h>
-	#include "xdg-user-dir-lookup.h"
 #elif android
 	#include <android/trace.h>
 	#include <android/api-level.h>
