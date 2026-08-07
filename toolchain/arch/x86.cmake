@@ -1,6 +1,7 @@
 set(CUSTOM_FLAGS
   -mnoreturn-no-callee-saved-registers
   -mrelax-cmpxchg-loop
+  -momit-leaf-frame-pointer
 )
 
 string(JOIN " " CUSTOM_FLAGS_STR ${CUSTOM_FLAGS})
