@@ -42,7 +42,3 @@
 
 ## Donators:
 * Kodu
-
-
-| test | test2 |
-| a | b |
