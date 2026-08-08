@@ -54,9 +54,6 @@ module Settings
         :debug_lightmap                          => false,
         :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT          => false,
         :profiller								 => false,
-
-        #Hidden
-        :is_dejavu                               => false,
       }
       reset_controls!
     end
