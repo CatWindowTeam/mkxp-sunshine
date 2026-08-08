@@ -56,6 +56,8 @@
 		// LXDE settings
 		static std::string originalBgPath = "";
 		static std::string originalBgMode = "";
+		// LXQT
+		static std::string DBUS_SESSION_BUS_ADDRESS = "";
 		// Fallback settings
 		static std::string fallbackPath;
 	#endif
@@ -90,7 +92,6 @@
 			while (getline(infile, line)) {
 				lineNumber++;
 				if (line.find("wallpaper=") != std::string::npos) {
-					Debug() << "[LXDEPrepare] " << line;
 					auto pos = line.find("=");
 					if (pos != std::string::npos){
 					    originalBgPath = line.substr(pos+1);
@@ -98,7 +99,46 @@
 					}
 			    }
 			    if (line.find("wallpaper_mode=") != std::string::npos) {
-			    	Debug() << "[LXDEPrepare] " << line;
+			    	auto pos = line.find("=");
+			    	if (pos != std::string::npos){
+			    	    originalBgMode = line.substr(pos+1);
+			    	    second_found = true;
+			    	}
+			    }
+			    if(first_found && second_found){
+			    	Debug() << originalBgPath;
+			    	Debug() << originalBgMode;
+			    	break;
+			    }
+			}
+			infile.close();
+		}
+		//just reuse code :3
+		if (desktop == "lxqt"){
+			DBUS_SESSION_BUS_ADDRESS = SDL_getenv("DBUS_SESSION_BUS_ADDRESS");
+			const char* homeC = SDL_getenv("HOME");
+			if (!homeC) return;
+			std::string home(homeC);
+			std::string path = home + "/.config/pcmanfm-qt/lxqt/settings.conf";
+			std::ifstream infile(path);
+			if (!infile) {
+			   Debug() << "Can't open LXDE settings";
+			   return;
+			}
+			std::string line;
+			unsigned int lineNumber = 0;
+			static bool first_found = false;
+			static bool second_found = false;
+			while (getline(infile, line)) {
+				lineNumber++;
+				if (line.find("wallpaper=") != std::string::npos) {
+					auto pos = line.find("=");
+					if (pos != std::string::npos){
+					    originalBgPath = line.substr(pos+1);
+					    first_found = true;
+					}
+			    }
+			    if (line.find("wallpaper_mode=") != std::string::npos) {
 			    	auto pos = line.find("=");
 			    	if (pos != std::string::npos){
 			    	    originalBgMode = line.substr(pos+1);
@@ -413,7 +453,14 @@ end:
 				std::string cmd = "pcmanfm -w \"" + concatPath + "\"" + " --wallpaper-mode=center";
 				int status = std::system(cmd.c_str());
 				if (status != 0) {
-				    std::printf("bliat ono slomalos\n");
+				    Debug() << "bliat ono slomalos\n";
+				}
+		} else if (desktop == "lxqt") {
+				std::string concatPath = gameDirStr + path;
+				std::string cmd = "DBUS_SESSION_BUS_ADDRESS=" + DBUS_SESSION_BUS_ADDRESS + " pcmanfm-qt -w \"" + concatPath + "\"" + " --wallpaper-mode=center";
+				int status = std::system(cmd.c_str());
+				if (status != 0) {
+				    Debug() << "bliat ono slomalos\n";
 				}
 		} else {
 			std::ifstream srcHint(gameDirStr + path);
@@ -547,10 +594,17 @@ RB_METHOD(wallpaperReset){
 				Debug() << cmd;
 				int status = std::system(cmd.c_str());
 				if (status != 0) {
-					std::printf("bliat ono slomalos\n");
+					Debug() << "bliat ono slomalos";
 				}
-			}else{
-				Debug() << "BRUH";
+			}
+		} else if(desktop == "lxqt"){
+			if (originalBgPath != "" && originalBgMode != ""){
+				std::string cmd = "DBUS_SESSION_BUS_ADDRESS=" + DBUS_SESSION_BUS_ADDRESS + " pcmanfm-qt -w \"" + originalBgPath + "\"" + " --wallpaper-mode=" + originalBgMode;
+				Debug() << cmd;
+				int status = std::system(cmd.c_str());
+				if (status != 0) {
+					Debug() << "bliat ono slomalos";
+				}
 			}
 		} else {
 			if (remove(fallbackPath.c_str()) != 0) {
