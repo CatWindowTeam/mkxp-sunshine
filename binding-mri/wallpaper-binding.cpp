@@ -15,7 +15,7 @@
 #include "debugwriter.h"
 #include "define.h"
 
-#ifdef _WIN32
+#ifdef windows
 	#include <windows.h>
 	static WCHAR szStyle[8] = {0};
 	static WCHAR szTile[8] = {0};

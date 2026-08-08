@@ -1,44 +1,27 @@
 # Peoples
-## Programmers
-* Issac332
-* "Визя"
-* DepressedTWM
-* referr
-* блинчек
+| People | Description |
+| ----------- | ----------- |
+| Issac332 | Programmer, Artist and cat window |
+| визя | Programmer |
+| DepressedTWM | Stupid programmer, code.nikooneshot.ru administrator, telegram channel administrator, u/CatWindowTeam owner and other idk |
+| referr | programmer and matrix moderator |
+| блинчек | Ruby programmer |
+| Creature_of_steel1 | Pixel-art artist and telegram moderator |
+| DesMo | Pixel-art artist |
+| Обси | English telegram channel administrator |
+| K1RMAN | Artist |
+| Serega_play_x | Pixel-Art artist |
+| kakafka | Pixel-art artist |
+| Prime 223432 | Windows XP Tester |
+| Alula | Main tester |
+| Охотник | Tester |
+| Ouzly | Tester and telegram moderator |
 
-## Artists
-* Issac332
-* Creature_of_steel1
-* DesMo
-* Обси
-* DepressedTWM
-* K1RMAN
-* Serega_play_x 
-* kakafka
-
-## Testers and helpers:
-* Rubik
-* Prime 223432
-* Alula(from Oneshot)
-* Охотник
-* Ouzly
-
-## Telegram moderators
-* Creature_of_steel1
-* Обси(ENG channel)
-* Freskovich
-* "Визя"
-* Ouzly
-
-## Matrix moderators
-* referr
-
-## Servers administrators
-* DepressedTWM
+# Donators:
+| Donator     |
+| ----------- |
+| Kodu        |
 
 ## Special thanks to
 * my mom and dad:3
 * Friends:3
-
-## Donators:
-* Kodu
