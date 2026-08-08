@@ -51,4 +51,4 @@ CPU specific optimizations moved to separated Toolchanin files
 Documents path search code rewrited to crossplatform SDL functions.
 DEBUG SAVE bug fixed
 Added FreeBSD build script
-Fixed Apartaments teleport bug
+Fixed Office teleport bug
