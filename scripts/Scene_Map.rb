@@ -346,7 +346,10 @@ class Scene_Map
         $game_player.straighten
         @window_debug.open
       elsif $game_temp.save_calling
-        call_save
+        # Straighten player position
+        $game_player.straighten
+        # Switch to save screen
+        $scene = Scene_Save.new
       elsif $game_temp.debug_calling
         $game_temp.debug_calling = false
         $game_system.se_play($data_system.decision_se)

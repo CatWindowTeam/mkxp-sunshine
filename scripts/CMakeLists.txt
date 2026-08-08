@@ -88,7 +88,11 @@ set(scripts
   Input.rb
   Dynamic_Light.rb
   Dynamic_Resolution.rb
-  ModAPI.rb)
+  ModAPI.rb
+  Scene_Save.rb
+  Scene_File.rb
+  Window_SaveFile.rb
+  Scene_Load.rb)
 
 find_program(RUBY_EXE ruby DOC "Location of the Ruby executable")
 set(game_dir "${CMAKE_BINARY_DIR}/bin")

@@ -301,7 +301,6 @@ class Window_Settings
       {
         :type => :bool,
         :name => "Disable System API Dependent Puzzles(For wayland users)",
-        :icon => [0, 1],
         :parameter => :disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already
       },
     ],
