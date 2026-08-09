@@ -224,7 +224,7 @@ void ALStream::openSource(const std::string &filename){
 	source = handler.source;
 	needsRewind.clear();
 	if (!source)
-		crash(Exception::SDLError, true, "Unable to decode audio stream: %s: %s", filename.c_str(), handler.errorMsg.c_str());
+		crash(Exception::SDLError, "Unable to decode audio stream: %s: %s", filename.c_str(), handler.errorMsg.c_str());
 }
 
 void ALStream::stopStream(){

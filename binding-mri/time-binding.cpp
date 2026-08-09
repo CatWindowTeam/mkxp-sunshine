@@ -54,7 +54,6 @@ static VALUE ctime_at(int argc, VALUE *argv, VALUE self){
 }
 
 void TimeBindingInit() {
-    printf("[TimeBindingInit] Initializing Time binding\n");
     VALUE m = rb_define_module("CTime");
     rb_define_module_function(m, "month", get_month, 0);
     rb_define_module_function(m, "day", get_day, 0);

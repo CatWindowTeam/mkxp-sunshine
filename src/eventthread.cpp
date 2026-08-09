@@ -172,7 +172,7 @@ void EventThread::process(RGSSThreadData &rtData){
 	int id;
 	std::map<int, SDL_Gamepad*>::iterator gcit;
 
-	SDL_GetWindowSize(win, &winW, &winH); // SDL_GL_GetDrawableSize(win, &winW, &winH);
+	SDL_GetWindowSize(win, &winW, &winH);
 	SDL_GetWindowPosition(win, &rtData.ethread->winX, &rtData.ethread->winY);
 
 	while (true) {
@@ -180,24 +180,24 @@ void EventThread::process(RGSSThreadData &rtData){
 			shState->mainDispatcher().process();
 
 		if (!SDL_WaitEvent(&event)) {
-			Debug() << "[EventThread::process] Event error:\n" << SDL_GetError();
+			Debug() << "[EventThread::process] Event error: " << SDL_GetError();
 			break;
 		}
 
 		switch (event.type){
-		case SDL_EVENT_MOUSE_BUTTON_DOWN :
-		case SDL_EVENT_MOUSE_BUTTON_UP :
-		case SDL_EVENT_MOUSE_MOTION :
-			if (event.button.which == SDL_TOUCH_MOUSEID)
-				continue;
-			break;
+			case SDL_EVENT_MOUSE_BUTTON_DOWN :
+			case SDL_EVENT_MOUSE_BUTTON_UP :
+			case SDL_EVENT_MOUSE_MOTION :
+				if (event.button.which == SDL_TOUCH_MOUSEID)
+					continue;
+				break;
 
-		case SDL_EVENT_FINGER_DOWN :
-		case SDL_EVENT_FINGER_UP :
-		case SDL_EVENT_FINGER_MOTION :
-			if (event.tfinger.fingerID >= MAX_FINGERS)
-				continue;
-			break;
+			case SDL_EVENT_FINGER_DOWN :
+			case SDL_EVENT_FINGER_UP :
+			case SDL_EVENT_FINGER_MOTION :
+				if (event.tfinger.fingerID >= MAX_FINGERS)
+					continue;
+				break;
 		}
 
 		//Window events

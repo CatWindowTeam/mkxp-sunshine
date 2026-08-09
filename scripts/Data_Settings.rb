@@ -581,6 +581,12 @@ class Window_Settings
         :name => "Clear image cache",
         :action => Proc.new { RPG::Cache.clear },
         :icon => [1, 0],
+      },
+      {
+        :type => :action,
+        :name => "Do Crash",
+        :action => Proc.new { raise "Test" },
+        :icon => [1, 0],
       }
     ],
     "Mods" => [

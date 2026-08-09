@@ -47,7 +47,7 @@ void ModLoader(){
 			    if (ext == ".zip"){
 					int ok = PHYSFS_mount(full.c_str(), "/mod-storage", 0);
 			    	if (!ok) {
-			    		crash(Exception::ModLoaderError, false, "PhysFS_mount failed: %s", PHYSFS_getLastError());
+			    		crash(Exception::ModLoaderError, "PhysFS_mount failed: %s", PHYSFS_getLastError());
 			    	}
 			    	Debug() << "[MODLOADER] " << full;
 			    	mod_list.push_back(full);
@@ -60,6 +60,6 @@ void ModLoader(){
 			}
 			modloader_is_enabled = true;			
 		}catch(const std::exception& e){
-			crash(Exception::ModLoaderError, true, "Something is wrong, Exception: %s ", e.what());
+			crash(Exception::ModLoaderError, "Something is wrong, Exception: %s ", e.what());
 		}
 }

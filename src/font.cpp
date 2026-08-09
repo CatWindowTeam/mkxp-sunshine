@@ -127,7 +127,7 @@ TTF_Font *SharedFontState::getFont(std::string family, unsigned int size){
 	SDL_IOStream *ops;
 
 	if (family.empty()){
-		crash(Exception::RGSSError, true, "font does not exist");
+		crash(Exception::RGSSError, "font does not exist");
 	}else{
 		/* Use 'other' path as alternative in case
 		 * we have no 'regular' styled font asset */
@@ -140,7 +140,7 @@ TTF_Font *SharedFontState::getFont(std::string family, unsigned int size){
 	font = TTF_OpenFontIO(ops, 1, size);
 
 	if (!font){
-		crash(Exception::SDLError, true, "%s", SDL_GetError());
+		crash(Exception::SDLError, "%s", SDL_GetError());
 	}
 
 	p->pool.insert(key, font);
@@ -301,7 +301,7 @@ void Font::setSize(int value){
 
 	/* Catch illegal values (according to RMXP) */
 	if (value < 6 || value > 96)
-		crash(Exception::ArgumentError, true, "%s", "bad value for size");
+		crash(Exception::ArgumentError, "%s", "bad value for size");
 
 	p->size = value;
 	p->sdlFont = 0;

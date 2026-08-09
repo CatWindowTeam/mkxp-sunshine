@@ -99,7 +99,6 @@ int rgssThreadFun(void *userdata){
 	glCtx = SDL_GL_CreateContext(win);
 
 	if (!glCtx){
-		crash(Exception::SDLError, false, "Error creating context: %s", SDL_GetError());
 		rgssThreadError(threadData, std::string(msg));
 		return 0;
 	}
@@ -108,7 +107,7 @@ int rgssThreadFun(void *userdata){
 		initGLFunctions();
 	}
 	catch (const Exception &exc){
-		crash(Exception::RGSSError, false, exc.msg.c_str());
+		ErrorMsg(exc.msg.c_str());
 		rgssThreadError(threadData, exc.msg);
 		SDL_GL_DestroyContext(glCtx);
 		return 0;
@@ -240,19 +239,19 @@ int main(int argc, char *argv[]){
 	#endif
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
-		crash(Exception::SDLError, false, "Error initializing SDL: %s", SDL_GetError());
+		ErrorMsg("Error initializing SDL: %s", SDL_GetError());
 		return 0;
 	}
 
 #ifdef STEAM
 	if (!STEAMSHIM_init()){
-		crash(Exception::SDLError, false, "Could not initialize Steamworks API");
+		ErrorMsg("Could not initialize Steamworks API");
 		return 0;
 	}
 #endif
 
 	if (!EventThread::allocUserEvents()){
-		crash(Exception::SDLError, false, "Error allocating SDL user events");
+		ErrorMsg("Error allocating SDL user events");
 		return 0;
 	}
 
@@ -286,7 +285,7 @@ int main(int argc, char *argv[]){
 
 	if (!conf.gameFolder.empty()){
 		if (chdir(conf.gameFolder.c_str()) != 0){
-			crash(Exception::SDLError, false, "Unable to switch into gameFolder %s", conf.gameFolder.c_str());
+			ErrorMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
 			return 0;
 		}
 	}
@@ -299,12 +298,12 @@ int main(int argc, char *argv[]){
 		conf.windowTitle = conf.game.title;
 
 	if (TTF_Init() == false){
-		crash(Exception::SDLError, false,"Error initializing SDL_ttf: %s", SDL_GetError());
+		ErrorMsg("Error initializing SDL_ttf: %s", SDL_GetError());
 		SDL_Quit();
 	}
 
 	if (Sound_Init() == false){
-		crash(Exception::SDLError, false,"Error initializing SDL_sound: %s", Sound_GetError());
+		ErrorMsg("Error initializing SDL_sound: %s", Sound_GetError());
 		TTF_Quit();
 		SDL_Quit();
 
@@ -319,7 +318,7 @@ int main(int argc, char *argv[]){
 		SDL_SetWindowFullscreen(win, true);
 
 	if (!win){
-		crash(Exception::SDLError, false,"Error creating window: %s", SDL_GetError());
+		ErrorMsg("Error creating window: %s", SDL_GetError());
 		return 0;
 	}
 
@@ -335,7 +334,7 @@ int main(int argc, char *argv[]){
 
 	if (!alcDev){
 		SDL_DestroyWindow(win);
-		crash(Exception::SDLError, false, "Error opening OpenAL device");
+		ErrorMsg("Error opening OpenAL device");
 		TTF_Quit();
 		SDL_Quit();
 		return 0;
@@ -386,16 +385,18 @@ int main(int argc, char *argv[]){
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and Sunshine will now force quit", win);
 
 	if (!rtData.rgssErrorMsg.empty())
-		crash(Exception::RGSSError, false, rtData.rgssErrorMsg.c_str());
-
+		ErrorMsg(rtData.rgssErrorMsg.c_str());
+	
 	/* Clean up any remainin events */
 	eventThread.cleanup();
-
-	Debug() << "[main] Shutting down.";
 
 	unloadLocale();
 	unloadLanguageMetadata();
 
+	if(show_crash_sceen){
+		crash_screen(win);
+	}
+	
 	alcCloseDevice(alcDev);
 	SDL_DestroyWindow(win);
 
