@@ -177,6 +177,7 @@ class Window_Settings
       {
         :type => :bool,
         :name => "Use Old Self Contained Universe(Reprise) version",
+        :icon => [1, 1],
         :parameter => :use_old_self_contained_universe_reprise
       },
     ],

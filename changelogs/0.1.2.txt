@@ -54,3 +54,4 @@ Added FreeBSD build script
 Fixed Office teleport bug
 Added Crash Screen
 Added In-Memory Log buffer
+Added setting "Use Old Self Contained Universe(Reprise) version"
