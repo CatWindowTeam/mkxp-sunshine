@@ -31,6 +31,7 @@ struct Exception{
 		RUBYError,
 		NoFileError,
 		IOError,
+		ShaderError,
 
 		/* Already defined by ruby */
 		TypeError,

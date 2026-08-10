@@ -153,7 +153,7 @@ void Shader::init(const unsigned char *vert, int vertSize, const unsigned char *
 
 	if (!success){
 		printShaderLog(vertShader);
-		crash(Exception::MKXPError, "GLSL: An error occured while compiling vertex shader '%s' in program '%s'", vertName, programName);
+		crash(Exception::ShaderError, "GLSL: An error occured while compiling vertex shader '%s' in program '%s'", vertName, programName);
 	}
 
 	/* Compile fragment shader */
@@ -164,7 +164,7 @@ void Shader::init(const unsigned char *vert, int vertSize, const unsigned char *
 
 	if (!success){
 		printShaderLog(fragShader);
-		crash(Exception::MKXPError, "GLSL: An error occured while compiling fragment shader '%s' in program '%s'", fragName, programName);
+		crash(Exception::ShaderError, "GLSL: An error occured while compiling fragment shader '%s' in program '%s'", fragName, programName);
 	}
 
 	/* Link shader program */
@@ -181,7 +181,7 @@ void Shader::init(const unsigned char *vert, int vertSize, const unsigned char *
 
 	if (!success){
 		printProgramLog(program);
-		crash(Exception::MKXPError, "GLSL: An error occured while linking program '%s' (vertex '%s', fragment '%s')", programName, vertName, fragName);
+		crash(Exception::ShaderError, "GLSL: An error occured while linking program '%s' (vertex '%s', fragment '%s')", programName, vertName, fragName);
 	}
 }
 

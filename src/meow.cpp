@@ -76,14 +76,41 @@ void crash(Exception::Type t, const char *fmt, ...) {
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
 
+	//TODO: rewrite to use switch :3
     if (t == Exception::ModLoaderError) {
         crash_reason = "Broken mod";
         crash_possible_solution = "Fix mode manualy or ask developer to fix it or delete mod";
     } else if (t == Exception::NoFileError) {
         crash_reason = "Broken installation";
         crash_possible_solution = "Try reinstall game";
-    }
-
+    } else if (t == Exception::ShaderError) {
+		crash_reason = "Broken Shader";
+		crash_possible_solution = "Try reinstall game";
+	} else if (t == Exception::RGSSError) {
+		crash_reason = "Internal Error";
+		crash_possible_solution = "Try reinstall game or disable some mods";
+	} else if (t == Exception::RUBYError) {
+		crash_reason = "Internal Error";
+		crash_possible_solution = "Try reinstall game or disable some mods";
+	} else if (t == Exception::IOError) {
+		crash_reason = "Broken installation";
+		crash_possible_solution = "Try reinstall game";
+	} else if (t == Exception::TypeError) {
+		crash_reason = "Internal Error";
+		crash_possible_solution = "Try reinstall game or disable some mods";
+	} else if (t == Exception::ArgumentError) {
+		crash_reason = "Internal error";
+		crash_possible_solution = "Try reinstall game or disable some mods";
+	} else if (t == Exception::PHYSFSError) {
+		crash_reason = "Internal error";
+		crash_possible_solution = "Maybe you tryed load corrupted mod via modloader, try delete it";
+	} else if (t == Exception::SDLError) {
+		crash_reason = "Internal error";
+		crash_possible_solution = "Internal Engine Error, maybe something wrong with your device or operating system";
+	} else if (t == Exception::MKXPError) {
+		crash_reason = "Internal error";
+		crash_possible_solution = "Try reinstall game or disable some mods";
+	}
     show_crash_sceen = true;
     rb_exit(-1);
 }
@@ -228,6 +255,8 @@ void crash_screen(SDL_Window* win){
 	    SDL_RenderDebugText(ren, 10, 40, msg2);
 	    SDL_RenderDebugText(ren, 10, 50, msg3);
 	    SDL_RenderDebugText(ren, 10, 60, msg4);
+	    SDL_RenderDebugText(ren, 10, 70, "If you are sure that the problem is not in your modifications,");
+	    SDL_RenderDebugText(ren, 10, 80, "your hands or in your device - please report the bug to the developers");
 	    SDL_RenderPresent(ren);
 	}
 }
