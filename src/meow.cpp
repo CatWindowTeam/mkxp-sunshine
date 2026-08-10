@@ -3,11 +3,12 @@
 #include <SDL3/SDL_version.h>
 #include <SDL3/SDL_platform.h>
 #include <SDL3/SDL_rect.h>
+#include <SDL3/SDL_audio.h>
+#include <SDL3/SDL_video.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_sound/SDL_sound.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3/SDL_filesystem.h>
-#include <SDL3/SDL_video.h>
 #include "meow.h"
 #include "eventthread.h"
 #include "exception.h"
@@ -22,10 +23,6 @@
 #include <string>
 #include <vector>
 #include <ruby/version.h>
-#include <ruby/internal/intern/vm.h>
-#include <ruby/internal/error.h>
-#include <ruby/debug.h>
-#include <ruby.h>
 #undef vsnprintf
 #undef snprintf
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__NetBSD__)
@@ -157,11 +154,22 @@ void crash_screen(SDL_Window* win){
 		o << "REASON: " << msg << endl;
 		o << "[BOOST stacktrace()]" << endl << endl;
 		o << boost::stacktrace::stacktrace() << endl;
+
 		o << "[LOG BUFFER]" << endl << endl;
 		for (const auto& s : logs) {
 		    o << s << endl;
 		}
-		o << endl << "[VERSIONS OF LIBS]" << endl;
+		
+		o << endl;
+		o << "[AUDIO]" << endl;
+		o << "Driver used: " << SDL_GetCurrentAudioDriver() << endl;
+
+		o << endl;
+		o << "[VIDEO]" << endl;
+		o << "Driver used: " << SDL_GetCurrentVideoDriver() << endl;
+
+		o << endl;
+		o << "[VERSIONS OF LIBS]" << endl;
 		const static int sdlcompiled = SDL_VERSION;
 		const static int sdllinked = SDL_GetVersion();
 		o << "SDL(compiled) version: " << SDL_VERSIONNUM_MAJOR(sdlcompiled) << "." << SDL_VERSIONNUM_MINOR(sdlcompiled) << "." << SDL_VERSIONNUM_MICRO(sdlcompiled) << endl;
@@ -174,12 +182,15 @@ void crash_screen(SDL_Window* win){
 		o << "OpenAL version: " << AL_VERSION << endl;
 		o << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << endl;
 		o << "Pixman version: " << PIXMAN_VERSION_STRING << endl;
+
+		o << endl;
 		o << "[Platform specific]" << endl;
 		try{
 			o << "Detected OS: " << SDL_GetPlatform() << endl;
 		}catch(const std::exception& e){
 			o << "Detected OS: " << e.what() << endl;
 		}
+		o << "System page size: " << SDL_GetSystemPageSize() << endl;
 		#ifdef unix_like
 			if(SDL_getenv("XDG_CURRENT_DESKTOP") != nullptr){
 				o << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << SDL_getenv("XDG_CURRENT_DESKTOP") << endl;
@@ -206,11 +217,14 @@ void crash_screen(SDL_Window* win){
 		#elif psp
 			o << "PSPdev MIPS Stack Trace: " << pspDebugGetStackTrace() << endl;
 		#endif
+		
+		o << endl;
 		o << "[Hardware]" << endl;
 		o << "number of logical CPU cores: " << SDL_GetNumLogicalCPUCores() << endl;
 		o << "System RAM size: " << SDL_GetSystemRAM() << " MiB" << endl;
-		o << "[Ruby]" << endl;
-		o << "Is GC was busy? " << rb_during_gc() << endl;
+		o << "L1 cache size: " << SDL_GetCPUCacheLineSize() << endl;
+		
+		o << endl;
 		o << "[OpenGL]" << endl;
 		try{
 			o << "GL Vendor: " << glGetStringInt(GL_VENDOR) << endl;
@@ -297,3 +311,4 @@ void WarnMsg(const char *fmt, ...) {
 	Debug() << "[WARNMSG]" << buf;
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", buf, NULL);
 }
+

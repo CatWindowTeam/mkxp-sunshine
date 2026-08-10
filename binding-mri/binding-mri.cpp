@@ -44,7 +44,6 @@
 #include <assert.h>
 #include <string>
 #include <zlib.h>
-#include <stdio.h>
 #include <inttypes.h>
 #include <time.h>
 #include <SDL3/SDL_filesystem.h>
@@ -121,8 +120,6 @@ VALUE rb_symbol_to_s(VALUE self){
 }
 
 static void mriBindingInit(){
-	printf("[mriBindingInit] Loading bindings...\n");
-
 	rb_define_method(rb_cSymbol, "to_s", RUBY_METHOD_FUNC(rb_symbol_to_s), 0);
 	rb_define_method(rb_cSymbol, "name", RUBY_METHOD_FUNC(rb_symbol_to_s), 0);
 	rb_define_method(rb_cSymbol, "id2name", RUBY_METHOD_FUNC(rb_symbol_to_s), 0);
@@ -220,7 +217,6 @@ RB_METHOD(mkxpPuts){
 	const char *str;
 	rb_get_args(argc, argv, "z", &str RB_ARG_END);
 	Debug() << str;
-
 	return Qnil;
 }
 

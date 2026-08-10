@@ -110,7 +110,7 @@ void EventThread::process(RGSSThreadData &rtData){
 	SDL_Event event;
 	SDL_Window *win = rtData.window;
 	UnidirMessage<Vec2i> &windowSizeMsg = rtData.windowSizeMsg;
-
+	
 	initALCFunctions(rtData.alcDev);
 
 	// XXX this function breaks input focus on OSX
