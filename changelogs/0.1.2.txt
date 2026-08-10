@@ -52,3 +52,5 @@ Documents path search code rewrited to crossplatform SDL functions.
 DEBUG SAVE bug fixed
 Added FreeBSD build script
 Fixed Office teleport bug
+Added Crash Screen
+Added In-Memory Log buffer

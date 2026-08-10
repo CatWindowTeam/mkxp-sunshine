@@ -220,7 +220,7 @@ struct TEXFBO{
 #define GL_CHECK() { \
     GLenum e = gl.GetError(); \
     if (e != GL_NO_ERROR) \
-        printf("%s:%d -> %x\n", __FILE__, __LINE__, e); \
+        Debug() << __FILE__ << ":" << __LINE__ "->" << e); \
 }
 
 #endif // GLUTIL_H

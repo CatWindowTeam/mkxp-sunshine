@@ -1,6 +1,10 @@
 #pragma once
 #include "exception.h"
 #include <SDL3/SDL_video.h>
+#include <vector>
+#include <string>
+
+inline std::vector<std::string> logs = {};
 
 inline bool show_crash_sceen = false;
 inline char crash_reason[1024] = "Unknown";

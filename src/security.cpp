@@ -2,7 +2,6 @@
 #include "security.h"
 #include "meow.h"
 #include "debugwriter.h"
-#include <stdio.h>
 #include <SDL3/SDL_system.h>
 // this component is needed to protect users from mod attacks.
 
@@ -32,7 +31,7 @@ void SecurityManagerInit(){
 			int n = sizeof(seccomplist) / sizeof(seccomplist[0]);
 			for(int i = 0; i < n; ++i){
 			    if(seccomp_rule_add(ctx, SCMP_ACT_KILL, seccomplist[i], 0) < 0) {
-			        printf("seccomp_rule_add failed for %i", seccomplist[i]);
+			        Debug() << "seccomp_rule_add failed for " << seccomplist[i];
 			    }
 			}
 

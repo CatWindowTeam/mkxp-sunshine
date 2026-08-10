@@ -69,8 +69,7 @@ struct ViewportPrivate{
 
 	void updateRectCon(){
 		rectCon.Disconnect();
-		rectCon = rect->valueChanged.Connect
-		        (*this, &ViewportPrivate::onRectChange);
+		rectCon = rect->valueChanged.Connect(*this, &ViewportPrivate::onRectChange);
 	}
 
 	void recomputeOnScreen(){

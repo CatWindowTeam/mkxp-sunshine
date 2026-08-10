@@ -2,6 +2,7 @@
 #include <SDL3/SDL_dialog.h>
 #include <SDL3/SDL_version.h>
 #include <SDL3/SDL_platform.h>
+#include <SDL3/SDL_rect.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_sound/SDL_sound.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -16,8 +17,10 @@
 #include "debugwriter.h"
 #include "define.h"
 #include <SDL3/SDL_stdinc.h>
-#include <time.h>
+#include <ctime>
 #include <fstream>
+#include <string>
+#include <vector>
 #include <ruby/version.h>
 #include <ruby/internal/intern/vm.h>
 #include <ruby/internal/error.h>
@@ -47,8 +50,9 @@
 #elif dos
 	#include <dpmi.h>
 #endif
-
 #include "crash.png.xxd"
+
+using namespace std;
 
 static inline const char* glGetStringInt(GLenum name){
 	return (const char*) gl.GetString(name);
@@ -89,123 +93,141 @@ void crash_screen(SDL_Window* win){
 	static char msg1[1024] = "";
 	static char msg2[1024] = "";
 	static char msg3[1024] = "";
+	static char msg4[1024] = "";
+	//creating render
 	SDL_Renderer* ren = SDL_CreateRenderer(win, NULL);
 	if (ren == nullptr) {
-		ErrorMsg("Failed to create crash sceen, please check if your device is too strong to run game: ", SDL_GetError());
+		WarnMsg("Failed to create crash sceen, please check if your device is too strong to run game: ", SDL_GetError());
 	}
 	SDL_Surface* crash_img = IMG_Load_IO(SDL_IOFromConstMem(assets_crash_png, assets_crash_png_len), true);
 	if (crash_img == nullptr) {
-		ErrorMsg("Failed to create crash sceen, please check if your device is too strong to run game: ", SDL_GetError());
+		WarnMsg("Failed to create crash sceen, please check if your device is too strong to run game: ", SDL_GetError());
 	}
 	SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, crash_img);
 	SDL_DestroySurface(crash_img);	
 	if (tex == nullptr) {
-		ErrorMsg("Failed to create crash sceen, please check if your device is too strong to run game: ", SDL_GetError());
+		WarnMsg("Failed to create crash sceen, please check if your device is too strong to run game: ", SDL_GetError());
 	}
-	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+	//stringsssssssssssss
 	SDL_snprintf(msg, sizeof(msg), "Message: %s", crash_message);
 	SDL_snprintf(msg1, sizeof(msg1), "Possible reason: %s", crash_reason);
 	SDL_snprintf(msg2, sizeof(msg2), "Possible solution: %s", crash_possible_solution);
-	SDL_snprintf(msg3, sizeof(msg3), "Crashdump privacy: %s", is_privacy_crashdump_enabled);
-	
-	std::ofstream o;
-	time_t mtime = time(NULL);
-	struct tm *now = localtime(&mtime);
-	std::string time = std::to_string(now->tm_hour) + "." + std::to_string(now->tm_min) + "." + std::to_string(now->tm_sec);
-	o.open("crash_" + time + ".txt");
+	SDL_snprintf(msg3, sizeof(msg3), "Crashdump privacy: %s", is_privacy_crashdump_enabled);	
+	//creating file and timestamp
+	ofstream o;
+	time_t timestamp;
+	time(&timestamp);
+	string timeeeeee(ctime(&timestamp));
+	if (!timeeeeee.empty() && timeeeeee.back() == '\n') {
+	    timeeeeee.pop_back();
+	}
+	string file = "crash " + timeeeeee + ".txt";
+	SDL_snprintf(msg4, sizeof(msg4), "Path: %s%s", SDL_GetCurrentDirectory(), file.c_str());
+	o.open(file);
+
+	//collecting info and writing to crashdump
 	if (o.is_open()){
-		o << "REASON: " << msg << std::endl;
-		o << "[BOOST stacktrace()]" << std::endl;
-		o << boost::stacktrace::stacktrace() << std::endl;
+		o << "REASON: " << msg << endl;
+		o << "[BOOST stacktrace()]" << endl << endl;
+		o << boost::stacktrace::stacktrace() << endl;
+		o << "[LOG BUFFER]" << endl << endl;
+		for (const auto& s : logs) {
+		    o << s << endl;
+		}
+		o << endl << "[VERSIONS OF LIBS]" << endl;
 		const static int sdlcompiled = SDL_VERSION;
 		const static int sdllinked = SDL_GetVersion();
-		o << "SDL(compiled) version: " << SDL_VERSIONNUM_MAJOR(sdlcompiled) << "." << SDL_VERSIONNUM_MINOR(sdlcompiled) << "." << SDL_VERSIONNUM_MICRO(sdlcompiled) << std::endl;
-		o << "SDL(linked) version: " << SDL_VERSIONNUM_MAJOR(sdllinked) << "." << SDL_VERSIONNUM_MINOR(sdllinked) << "." << SDL_VERSIONNUM_MICRO(sdllinked) << std::endl;
-		o << "SDL_image(compiled) version: " << SDL_IMAGE_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << std::endl;
-		o << "SDL_sound(compiled) version: " << SDL_SOUND_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << std::endl;
-		o << "SDL_TTF(compiled) version: " << SDL_TTF_MAJOR_VERSION << "." << SDL_TTF_MINOR_VERSION << "." << SDL_TTF_MICRO_VERSION << std::endl;
-		o << "Ruby version: " << RUBY_API_VERSION_CODE << std::endl;
-		o << "ZLib version: " << ZLIB_VERSION << std::endl;
-		o << "OpenAL version: " << AL_VERSION << std::endl;
-		o << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << std::endl;
-		o << "Pixman version: " << PIXMAN_VERSION_STRING << std::endl;
-		o << "[Platform specific]" << std::endl;
+		o << "SDL(compiled) version: " << SDL_VERSIONNUM_MAJOR(sdlcompiled) << "." << SDL_VERSIONNUM_MINOR(sdlcompiled) << "." << SDL_VERSIONNUM_MICRO(sdlcompiled) << endl;
+		o << "SDL(linked) version: " << SDL_VERSIONNUM_MAJOR(sdllinked) << "." << SDL_VERSIONNUM_MINOR(sdllinked) << "." << SDL_VERSIONNUM_MICRO(sdllinked) << endl;
+		o << "SDL_image(compiled) version: " << SDL_IMAGE_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << endl;
+		o << "SDL_sound(compiled) version: " << SDL_SOUND_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << endl;
+		o << "SDL_TTF(compiled) version: " << SDL_TTF_MAJOR_VERSION << "." << SDL_TTF_MINOR_VERSION << "." << SDL_TTF_MICRO_VERSION << endl;
+		o << "Ruby version: " << RUBY_API_VERSION_CODE << endl;
+		o << "ZLib version: " << ZLIB_VERSION << endl;
+		o << "OpenAL version: " << AL_VERSION << endl;
+		o << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << endl;
+		o << "Pixman version: " << PIXMAN_VERSION_STRING << endl;
+		o << "[Platform specific]" << endl;
 		try{
-			o << "Detected OS: " << SDL_GetPlatform() << std::endl;
+			o << "Detected OS: " << SDL_GetPlatform() << endl;
 		}catch(const std::exception& e){
-			o << "Detected OS: " << e.what() << std::endl;
+			o << "Detected OS: " << e.what() << endl;
 		}
 		#ifdef unix_like
 			if(SDL_getenv("XDG_CURRENT_DESKTOP") != nullptr){
-				o << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << SDL_getenv("XDG_CURRENT_DESKTOP") << std::endl;
+				o << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << SDL_getenv("XDG_CURRENT_DESKTOP") << endl;
 			}
 		#elif android
-			o << "Android API version: " << android_get_device_api_level() << std::endl;
-			o << "External storage State: " << SDL_GetAndroidExternalStorageState() << std::endl;
-			o << "Internal storage path: " << SDL_GetAndroidInternalStoragePath() << std::endl;
-			o << "External Storage path: " << SDL_GetAndroidExternalStoragePath() << ats::endl;
-			o << "Cache path: " << SDL_GetAndroidCachePath() << std::endl;
+			o << "Android API version: " << android_get_device_api_level() << endl;
+			o << "External storage State: " << SDL_GetAndroidExternalStorageState() << endl;
+			o << "Internal storage path: " << SDL_GetAndroidInternalStoragePath() << endl;
+			o << "External Storage path: " << SDL_GetAndroidExternalStoragePath() << endl;
+			o << "Cache path: " << SDL_GetAndroidCachePath() << endl;
 			if(!is_privacy_crashdump_enabled){
-				o << "Is ChromeBook? " << SDL_IsChromebook() << std::endl;
-				o << "Is Phone? " << SDL_IsPhone() << std::endl;
-				o << "Is Tablet? " << SDL_IsTablet() << std::endl;
-				o << "Is Samsung DeX? " << SDL_IsDeXMode() << std::endl;
-				o << "Is TV? " << SDL_IsTV() << std::endl;
-				o << "Is Ubuntu Touch? " << SDL_IsUbuntuTouch() << std::endl;
+				o << "Is ChromeBook? " << SDL_IsChromebook() << endl;
+				o << "Is Phone? " << SDL_IsPhone() << endl;
+				o << "Is Tablet? " << SDL_IsTablet() << endl;
+				o << "Is Samsung DeX? " << SDL_IsDeXMode() << endl;
+				o << "Is TV? " << SDL_IsTV() << endl;
+				o << "Is Ubuntu Touch? " << SDL_IsUbuntuTouch() << endl;
 			}
 		#elif web
-			o << "Emscripten start address of the stack: " << emscripten_stack_get_base() << std::endl;
-			o << "Emscripten end address of the stack: " << emscripten_stack_get_end() << std::endl;
-			o << "Emscripten current stack pointer: " << emscripten_stack_get_current() << std::endl;
-			o << "Emscripten number of free bytes left on stack: " << emscripten_stack_get_free() << std::endl;
+			o << "Emscripten start address of the stack: " << emscripten_stack_get_base() << endl;
+			o << "Emscripten end address of the stack: " << emscripten_stack_get_end() << endl;
+			o << "Emscripten current stack pointer: " << emscripten_stack_get_current() << endl;
+			o << "Emscripten number of free bytes left on stack: " << emscripten_stack_get_free() << endl;
 		#elif psp
-			o << "PSPdev MIPS Stack Trace: " << pspDebugGetStackTrace() << std::endl;
-		#elif dos
-			o << "DPMI virtual interrupt state: " << __dpmi_get_virtual_interrupt_state() << std::endl;
-			o << "DPMI selector increment value: " << __dpmi_get_selector_increment_value() << std::endl;
-			o << "DPMI coprocessor status: " << __dpmi_get_coprocessor_status() << std::endl;	
-			o << "DPMI is 80387 processor?: " << _detect_80387() << std::endl;
+			o << "PSPdev MIPS Stack Trace: " << pspDebugGetStackTrace() << endl;
 		#endif
-		o << "[Hardware]" << std::endl;
-		o << "number of logical CPU cores: " << SDL_GetNumLogicalCPUCores() << std::endl;
-		o << "System RAM size: " << SDL_GetSystemRAM() << " MiB" << std::endl;
-		o << "[Ruby]" << std::endl;
-		o << "Is GC was busy? " << rb_during_gc() << std::endl;
-		o << "[OpenGL]" << std::endl;
+		o << "[Hardware]" << endl;
+		o << "number of logical CPU cores: " << SDL_GetNumLogicalCPUCores() << endl;
+		o << "System RAM size: " << SDL_GetSystemRAM() << " MiB" << endl;
+		o << "[Ruby]" << endl;
+		o << "Is GC was busy? " << rb_during_gc() << endl;
+		o << "[OpenGL]" << endl;
 		try{
-			o << "GL Vendor: " << glGetStringInt(GL_VENDOR) << std::endl;
-			o << "GL Renderer: " << glGetStringInt(GL_RENDERER) << std::endl;
-			o << "GL Version: " << glGetStringInt(GL_VERSION) << std::endl;
-			o << "GLSL Version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-			o << "Shading language version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-			o << "GL Extensions: " << glGetStringInt(GL_EXTENSIONS) << std::endl;
-		}catch(const std::exception& e){
-			o << "Crashed before OpenGL initialization: " << e.what() << std::endl;
+			o << "GL Vendor: " << glGetStringInt(GL_VENDOR) << endl;
+			o << "GL Renderer: " << glGetStringInt(GL_RENDERER) << endl;
+			o << "GL Version: " << glGetStringInt(GL_VERSION) << endl;
+			o << "GLSL Version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << endl;
+			o << "Shading language version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << endl;
+			o << "GL Extensions: " << glGetStringInt(GL_EXTENSIONS) << endl;
+		}catch(const exception& e){
+			o << "Crashed before OpenGL initialization: " << e.what() << endl;
 		}
 		o.close();
 	}else{
 		WarnMsg("[CRASHLOG] Failed to write crashdump file");
 	}		
 	
-
-
 	SDL_Event e;
 	bool quit = false;
 
+	int texW = 100, texH = 100;
+	int winW = 0, winH = 0;
+	SDL_GetWindowSize(win, &winW, &winH);
+	SDL_FRect dst{
+	    (float)((winW - 100) / 2),
+	    (float)((winH - 100) / 2),
+	    (float)100,
+	    (float)100
+	};
+	
 	while (!quit) {
 	    while (SDL_PollEvent(&e)) {
 	        if (e.type == SDL_EVENT_QUIT) quit = true;
 	    }
-	
+	    
+		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 	    SDL_RenderClear(ren);
-	    SDL_RenderTexture(ren, tex, NULL, NULL);
-	
+	    SDL_RenderTexture(ren, tex, NULL, &dst);
+		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);	
 	    SDL_RenderDebugText(ren, 10, 10, "World machine crashed, crashdump created in game directory");
 	    SDL_RenderDebugText(ren, 10, 20, msg);
 	    SDL_RenderDebugText(ren, 10, 30, msg1);
 	    SDL_RenderDebugText(ren, 10, 40, msg2);
 	    SDL_RenderDebugText(ren, 10, 50, msg3);
-	
+	    SDL_RenderDebugText(ren, 10, 60, msg4);
 	    SDL_RenderPresent(ren);
 	}
 }
@@ -243,8 +265,6 @@ void WarnMsg(const char *fmt, ...) {
 
     SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
     va_end(args);
-
-    if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", buf, NULL)) {
-        // TODO: error handling
-    }
+	Debug() << "[WARNMSG]" << buf;
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", buf, NULL);
 }

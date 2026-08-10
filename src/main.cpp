@@ -213,9 +213,6 @@ static void setGamePathInRegistry() {
 	//TODO handle this for Linux/Mac
 }
 int main(int argc, char *argv[]){
-    #if dos
-	__djgpp_nearptr_enable();
-    #endif
     startTime = boost::chrono::high_resolution_clock::now();
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
@@ -234,8 +231,6 @@ int main(int argc, char *argv[]){
 		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
 	#elif ps2
 		SFL_SetHint(SDL_HINT_PS2_GS_MODE, "NTSC");
-	#elif dos
-		SDL_SetHint(SDL_HINT_DOS_ALLOW_DIRECT_FRAMEBUFFER, "1");
 	#endif
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){

@@ -8,10 +8,6 @@
 	#define unix_like 1
 #endif
 
-#if defined(SDL_PLATFORM_DOS)
-	#define dos 1
-#endif
-
 #if defined(SDL_WINAPI_FAMILY_PHONE) || defined(SDL_PLATFORM_WINDOWS) || defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
 	#define windows 1
 #endif

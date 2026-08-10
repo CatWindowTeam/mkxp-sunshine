@@ -26,6 +26,7 @@
 #include <sstream>
 #include <vector>
 #include <ruby.h>
+#include "meow.h"
 #undef vsnprintf
 #undef snprintf
 
@@ -69,6 +70,7 @@ public:
 #elif __EMSCRIPTEN__
 		emscripten_console_log(buf.str().c_str());				
 #else
+		logs.push_back(buf.str());
 		std::cout << buf.str() << "\n";
 #endif
 	}
