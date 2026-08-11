@@ -4,7 +4,7 @@ set -euo pipefail
 oneshot_id="$(cat steam_appid.txt)"
 STEAMWORKS_PATH=$(realpath ..)/steamworks
 
-cmake . -B build/
+cmake . -B build/ "$@"
 cd build
 make -j$(nproc)
 cd ..
