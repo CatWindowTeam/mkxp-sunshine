@@ -59,6 +59,12 @@ void SunshineBindingInit(){
     rb_const_set(module, rb_intern("SDLVersion_minor"), INT2NUM(SDL_MINOR_VERSION));
     rb_const_set(module, rb_intern("SDLVersion_micro"), INT2NUM(SDL_MICRO_VERSION));
 	rb_const_set(module, rb_intern("SECURITYSTATE"), rb_str_new_cstr(securitystate));
+	rb_const_set(module, rb_intern("VERSION"), rb_str_new_cstr(VERSION_STRING));
+	#ifdef DEVBUILD
+		rb_const_set(module, rb_intern("DEVBUILD"), Qtrue);
+	#else
+		rb_const_set(module, rb_intern("DEVBUILD"), Qfalse);
+	#endif
 	rb_define_singleton_method(module, "crashprivacy", RUBY_METHOD_FUNC(sunshine_get_crash_privacy), 0);
 	rb_define_singleton_method(module, "crashprivacy=", RUBY_METHOD_FUNC(sunshine_set_crash_privacy), 1);
 	rb_define_singleton_method(module, "setSDLHint", RUBY_METHOD_FUNC(sunshine_set_hint), 2);

@@ -148,9 +148,12 @@ void crash_screen(SDL_Window* win){
 	string file = "crash " + timeeeeee + ".txt";
 	SDL_snprintf(msg4, sizeof(msg4), "Path: %s%s", SDL_GetCurrentDirectory(), file.c_str());
 	o.open(file);
-
 	//collecting info and writing to crashdump
 	if (o.is_open()){
+		#ifdef DEVBUILD
+			o << "EXPEREMENTAL BUILD" << endl;
+		#endif
+		o << "VERSION: " << VERSION_STRING << endl;
 		o << "REASON: " << msg << endl;
 		o << "[BOOST stacktrace()]" << endl << endl;
 		o << boost::stacktrace::stacktrace() << endl;
@@ -262,7 +265,7 @@ void crash_screen(SDL_Window* win){
 		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 	    SDL_RenderClear(ren);
 	    SDL_RenderTexture(ren, tex, NULL, &dst);
-		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);	
+		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 	    SDL_RenderDebugText(ren, 10, 10, "World machine crashed, crashdump created in game directory");
 	    SDL_RenderDebugText(ren, 10, 20, msg);
 	    SDL_RenderDebugText(ren, 10, 30, msg1);

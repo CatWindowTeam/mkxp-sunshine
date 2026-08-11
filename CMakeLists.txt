@@ -10,6 +10,8 @@ option(NATIVE "Use native instructions(for local use only)" OFF)
 option(STATIC "Build more static build" OFF)
 option(CPU_ARCH "CPU arch(x86, arm64, ia-64)" "x86")
 option(USE_OPENGL_ES2 "GLES2_HEADER define" OFF)
+set(VERSION_STRING "0.1.2" CACHE STRING "Version string")
+option(DEVBUILD "Developoment build" OFF)
 
 #Configuration
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
@@ -356,6 +358,13 @@ else()
 		${EMBEDDED_SOURCE}
 	)
 endif()
+
+if(DEVBUILD)
+	target_compile_definitions(${PROJECT_NAME} PRIVATE DEVBUILD)
+endif()
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+  VERSION_STRING=\"${VERSION_STRING}\"
+)
 
 find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)
