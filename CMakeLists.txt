@@ -19,6 +19,9 @@ set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 23)
 
+#disable niuse bullshit
+add_compile_options(-Wno-unused-parameter)
+
 if(STATIC)
 	add_compile_options(-static-libgcc -static-libstdc++)
 	set(ZLIB_USE_STATIC_LIBS ON)
@@ -308,9 +311,7 @@ if(DEBUG)
 	add_compile_options(
 		-g3
 		-fno-omit-frame-pointer
-		-Og
-		-Wall
-		-Wextra)
+		-Og)
 else()
 	add_compile_options(
 	-O2 
@@ -361,9 +362,7 @@ endif()
 if(DEVBUILD)
 	target_compile_definitions(${PROJECT_NAME} PRIVATE DEVBUILD)
 endif()
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-  VERSION_STRING=\"${VERSION_STRING}\"
-)
+target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION_STRING="${VERSION_STRING}")
 
 find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)
