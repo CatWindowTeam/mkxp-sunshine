@@ -21,7 +21,18 @@ module Audio
             @bgm_playback.play(-1, volume / 100.0, pitch / 100.0)
         end
         def bgm_fade(time)
+            if !@bgm_playback
+                return
+            end
+            @bgm_pos = @bgm_playback.position
             @bgm_playback.fade_out(time / 60.0)
+        end
+        def bgm_fade_in(time)
+            if !@bgm_playback
+                return
+            end
+            @bgm_playback.fade_in(time / 60.0, -1)
+            @bgm_playback.position = @bgm_pos
         end
         def bgm_stop
             if @bgm_playback
@@ -65,7 +76,7 @@ module Audio
             bgm_fade(20);
 
             @me_playback = self.create_sound(path, true, @sounds_group)
-            @me_playback.play(-1, volume / 100.0, pitch / 100.0)
+            @me_playback.play(0, volume / 100.0, pitch / 100.0)
         end
         def me_fade(time)
             @me_playback.fade_out(time / 60.0)
@@ -90,13 +101,12 @@ module Audio
         end
 
         def update
-            if !@me_playback && @bgm_playback && !@bgm_playback.playing
-                @bgm_playback.fade_in(40.0 / 60.0)
-                @bgm_playback.position = @bgm_pos
-            end
-
             if @me_playback && !@me_playback.playing
                 @me_playback = nil
+                if @bgm_playback && !@bgm_playback.playing
+                    @bgm_playback.fade_in(40.0 / 60.0)
+                    @bgm_playback.position = @bgm_pos
+                end
             end
 
             @se_playbacks.delete_if { |se| !se.playing }
