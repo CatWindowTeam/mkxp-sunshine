@@ -42,6 +42,9 @@ public:
 	AudioGroup* getGroup(int group) const;
 	void destroyGroup(int group);
 
+	float getMasterVolume() const;
+	void setMasterVolume(float volume);
+
 	float getGroupVolume(int group) const;
 	void setGroupVolume(int group, float volume);
 	void stopSoundsInGroup(int group, float fadeoutTime = 0.0f);

@@ -18,8 +18,7 @@ Target of sunshine mod - improve original game.
     * pixman
     * SDL3_image
     * SDL3_ttf
-    * [SDL3_sound](https://github.com/icculus/SDL_sound)
-    * OpenAL
+    * SDL3_mixer
     * PhysFS
     * sigc++-2.0
     * vorbisfile

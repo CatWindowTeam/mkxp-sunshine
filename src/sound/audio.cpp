@@ -123,6 +123,14 @@ void Audio::destroyGroup(int group) {
     p->groups[group] = nullptr;
 }
 
+float Audio::getMasterVolume() const {
+	return MIX_GetMixerGain(mixer);
+}
+
+void Audio::setMasterVolume(float volume) {
+	MIX_SetMixerGain(mixer, volume);
+}
+
 float Audio::getGroupVolume(int group) const {
 	AudioGroup* mixGroup = getGroup(group);
 	if (!mixGroup)
@@ -136,6 +144,7 @@ void Audio::setGroupVolume(int group, float volume) {
 	if (a_group)
 		a_group->setVolume(volume);
 }
+
 void Audio::stopSoundsInGroup(int group, float fadeoutTime) {
 	AudioGroup* a_group = getGroup(group);
 	if (a_group)

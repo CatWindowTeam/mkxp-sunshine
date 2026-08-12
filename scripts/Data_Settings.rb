@@ -3,6 +3,7 @@ module Settings
     def reset!
       @data = {
         # Audio
+        :master_volume                           => 100,
         :bgm_volume                              => 100,
         :sfx_volume                              => 100,
         :use_fight_crime_track                   => false,
@@ -154,6 +155,13 @@ class Window_Settings
       },
     ],
     "Audio" => [
+      {
+        :type => :slider,
+        :name => "Master Volume",
+        :parameter => :master_volume,
+        :min => 0,
+        :max => 100
+      },
       {
         :type => :slider,
         :name => "BGM Volume",

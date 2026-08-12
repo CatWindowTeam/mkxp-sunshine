@@ -11,7 +11,9 @@ module Settings
 	  def crashlog_privacy(value)
 		Sunshine.crashprivacy=value
 	  end
-      
+      def master_volume(value)
+        Audio.master_volume = value / 100.0
+      end
       def bgm_volume(value)
         Audio.bgm_volume = value
       end

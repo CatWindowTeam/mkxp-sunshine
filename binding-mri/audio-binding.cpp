@@ -46,6 +46,15 @@ static VALUE rb_audio_destroyGroup(VALUE self, VALUE groupId) {
 	return Qnil;
 }
 
+static VALUE rb_audio_getMasterVolume(VALUE self) {
+	return DBL2NUM(shState->audio().getMasterVolume());
+}
+
+static VALUE rb_audio_setMasterVolume(VALUE self, VALUE volume) {
+	shState->audio().setMasterVolume(NUM2DBL(volume));
+	return Qnil;
+}
+
 static VALUE rb_audio_getGroupVolume(VALUE self, VALUE groupId) {
 	return DBL2NUM(shState->audio().getGroupVolume(FIX2INT(groupId)));
 }
@@ -107,6 +116,9 @@ void audioBindingInit(){
 	// returns id of group, returns -1 if group not created
 	rb_define_singleton_method(module, "create_group", RUBY_METHOD_FUNC(rb_audio_createGroup), 0);
 	rb_define_singleton_method(module, "destroy_group", RUBY_METHOD_FUNC(rb_audio_destroyGroup), 1);
+
+	rb_define_singleton_method(module, "master_volume", RUBY_METHOD_FUNC(rb_audio_getMasterVolume), 0);
+	rb_define_singleton_method(module, "master_volume=", RUBY_METHOD_FUNC(rb_audio_setMasterVolume), 1);
 
 	rb_define_singleton_method(module, "get_group_volume", RUBY_METHOD_FUNC(rb_audio_getGroupVolume), 1);
 	rb_define_singleton_method(module, "set_group_volume", RUBY_METHOD_FUNC(rb_audio_setGroupVolume), 2);
