@@ -21,9 +21,9 @@ Target of sunshine mod - improve original game.
     * SDL3_mixer
     * PhysFS
     * sigc++-2.0
-    * vorbisfile
     * GTK3(*NIX only!)
     * libxfconf(*NIX only!)
+    * libseccomp(Linux only)
 
 (*NIX - Linux,FreeBSD and other UNIX and UNIX-like systems.)
 
