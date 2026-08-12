@@ -30,7 +30,6 @@
 #include <boost/stacktrace.hpp>
 #include <boost/version.hpp>
 #include <zlib.h>
-#include <AL/al.h>
 #include <physfs.h>
 #include <pixman.h>
 #include <SDL3/SDL_system.h>
@@ -180,7 +179,6 @@ void crash_screen(SDL_Window* win){
 		o << "SDL_TTF(compiled) version: " << SDL_TTF_MAJOR_VERSION << "." << SDL_TTF_MINOR_VERSION << "." << SDL_TTF_MICRO_VERSION << endl;
 		o << "Ruby version: " << RUBY_API_VERSION_CODE << endl;
 		o << "ZLib version: " << ZLIB_VERSION << endl;
-		o << "OpenAL version: " << AL_VERSION << endl;
 		o << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << endl;
 		o << "Pixman version: " << PIXMAN_VERSION_STRING << endl;
 
