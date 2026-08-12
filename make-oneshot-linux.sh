@@ -40,10 +40,7 @@ cp build/oneshot build/bandle
 
 cp -r ../SunshineAssets/* build/bandle
 cp oneshot.conf build/bandle
-
-cd build
-zip -r OneshotSunshine_Linux.zip bandle/*
-cd ..
+zip -r build/OneshotSunshine_Linux.zip build/bandle/*
 
 # Cleanup.
 rm -rf journal/unix/__pycache__
