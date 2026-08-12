@@ -6,7 +6,6 @@
 #include <SDL3/SDL_audio.h>
 #include <SDL3/SDL_video.h>
 #include <SDL3_image/SDL_image.h>
-#include <SDL3_sound/SDL_sound.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3/SDL_filesystem.h>
 #include "meow.h"
@@ -178,7 +177,6 @@ void crash_screen(SDL_Window* win){
 		o << "SDL(compiled) version: " << SDL_VERSIONNUM_MAJOR(sdlcompiled) << "." << SDL_VERSIONNUM_MINOR(sdlcompiled) << "." << SDL_VERSIONNUM_MICRO(sdlcompiled) << endl;
 		o << "SDL(linked) version: " << SDL_VERSIONNUM_MAJOR(sdllinked) << "." << SDL_VERSIONNUM_MINOR(sdllinked) << "." << SDL_VERSIONNUM_MICRO(sdllinked) << endl;
 		o << "SDL_image(compiled) version: " << SDL_IMAGE_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << endl;
-		o << "SDL_sound(compiled) version: " << SDL_SOUND_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << endl;
 		o << "SDL_TTF(compiled) version: " << SDL_TTF_MAJOR_VERSION << "." << SDL_TTF_MINOR_VERSION << "." << SDL_TTF_MICRO_VERSION << endl;
 		o << "Ruby version: " << RUBY_API_VERSION_CODE << endl;
 		o << "ZLib version: " << ZLIB_VERSION << endl;
