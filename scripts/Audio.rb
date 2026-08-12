@@ -11,6 +11,10 @@ module Audio
 
     class << self
         def bgm_play(path, volume = 100, pitch = 100)
+            if (@bgm_playback && @bgm_playback.path == path)
+                return
+            end
+
             bgm_stop
             @bgm_pos = 0
             @bgm_playback = self.create_sound(path, false, @music_group)

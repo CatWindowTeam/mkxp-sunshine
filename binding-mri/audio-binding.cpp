@@ -128,7 +128,6 @@ void audioBindingInit(){
 	rb_define_singleton_method(module, "play_tag_sounds", RUBY_METHOD_FUNC(rb_audio_playTagSounds), 1);
 	rb_define_singleton_method(module, "stop_tag_sounds", RUBY_METHOD_FUNC(rb_audio_stopTagSounds), -1);
 
-
 	rb_define_singleton_method(module, "unload", RUBY_METHOD_FUNC(rb_audio_unload), 1);
 	rb_define_singleton_method(module, "clear_cache", RUBY_METHOD_FUNC(rb_audio_clearCache), 0);
 

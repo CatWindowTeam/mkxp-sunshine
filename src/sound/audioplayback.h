@@ -5,7 +5,7 @@
 #include "audiogroup.h"
 #include "audiosource.h"
 
-constexpr float DEFAULT_FADE_IN = 0.001f; // no more clicks ;lskadfjjkfskljgsf
+constexpr float DEFAULT_FADE_IN = 0.0f;
 
 class AudioPlayback
 {
@@ -33,6 +33,7 @@ public:
     void setGroup(int group);
     int getGroup() const;
     MIX_Track* getTrack() const;
+    const std::string& getPath() const;
 
     void setLoops(int loops);
     int getLoops() const;

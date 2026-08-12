@@ -151,6 +151,12 @@ int AudioPlayback::getGroup() const {
     return p_group->id;
 }
 
+const std::string& AudioPlayback::getPath() const{
+    if (p_source)
+        return p_source->getPath();
+    return "";
+}
+
 MIX_Track* AudioPlayback::getTrack() const {
     return p_track;
 }
@@ -224,9 +230,18 @@ bool AudioPlayback::fadeIn(double time, int loops) {
     if (!p_track || !p_source)
         return false;
 
-    MIX_SetTrackLoops(p_track, loops);
+    bool result = MIX_SetTrackAudio(p_track, p_source->getAudio());
 
-    return fadeIn(time);
+    SDL_PropertiesID props = SDL_CreateProperties();
+    SDL_SetNumberProperty(props, MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, time * 1000.0);
+    SDL_SetNumberProperty(props, MIX_PROP_PLAY_LOOPS_NUMBER, loops);
+    if (result)
+    {
+        result = MIX_PlayTrack(p_track, props);
+    }
+    SDL_DestroyProperties(props);
+
+    return result;
 }
 
 bool AudioPlayback::fadeIn(double time) {

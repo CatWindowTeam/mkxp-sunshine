@@ -92,6 +92,11 @@ static VALUE rb_playbackGetGroup(VALUE self){
     return INT2FIX(pb->getGroup());
 }
 
+static VALUE rb_audio_getPath(VALUE self) {
+    PLAYBACK
+	return rb_utf8_str_new_cstr(pb->getPath().c_str());
+}
+
 static VALUE rb_playbackSetLoops(VALUE self, VALUE loops){
     PLAYBACK
     pb->setLoops(NUM2INT(loops));
@@ -190,6 +195,8 @@ void audioPlaybackBindingInit(){
 
     rb_define_method(audioplayback_klass, "group=", RUBY_METHOD_FUNC(rb_playbackSetGroup), 1);
     rb_define_method(audioplayback_klass, "group", RUBY_METHOD_FUNC(rb_playbackGetGroup), 0);
+
+	rb_define_method(audioplayback_klass, "path", RUBY_METHOD_FUNC(rb_audio_getPath), 0);
 
     rb_define_method(audioplayback_klass, "loops=", RUBY_METHOD_FUNC(rb_playbackSetLoops), 1);
     rb_define_method(audioplayback_klass, "loops", RUBY_METHOD_FUNC(rb_playbackGetLoops), 0);
