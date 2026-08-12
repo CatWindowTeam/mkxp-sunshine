@@ -32,7 +32,6 @@
 
 #include <physfs.h>
 
-#include <SDL3_sound/SDL_sound.h>
 #include <SDL3/SDL_stdinc.h>
 #include <algorithm>
 #include <vector>
