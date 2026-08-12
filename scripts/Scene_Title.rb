@@ -138,6 +138,8 @@ class Scene_Title
       Graphics.update
       # Update input information
       Input.update
+      # only for legacy funcs
+      Audio.update
       # Frame update
       update
 	    @window_settings_title.update

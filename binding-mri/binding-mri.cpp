@@ -30,7 +30,7 @@
 #include "sdl-util.h"
 #include "debugwriter.h"
 #include "graphics.h"
-#include "audio.h"
+#include "sound/audio.h"
 #include "boost-hash.h"
 #include "meow.h"
 #include "sunshine.h"
@@ -77,6 +77,7 @@ void TimeBindingInit();
 void SignalConnectionBindingInit();
 
 void inputBindingInit();
+void audioPlaybackBindingInit();
 void audioBindingInit();
 void graphicsBindingInit();
 
@@ -136,6 +137,7 @@ static void mriBindingInit(){
 	TimeBindingInit();
 	SignalConnectionBindingInit();
 	inputBindingInit();
+	audioPlaybackBindingInit();
 	audioBindingInit();
 	graphicsBindingInit();
 	fileIntBindingInit();

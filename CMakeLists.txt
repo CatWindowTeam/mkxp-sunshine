@@ -39,7 +39,6 @@ endif()
 # main stuff
 set(MAIN_HEADERS
 	src/quadarray.h
-	src/audio.h
 	src/binding.h
 	src/bitmap.h
 	src/disposable.h
@@ -77,17 +76,12 @@ set(MAIN_HEADERS
 	src/keybindings.h
 	src/tileatlas.h
 	src/sharedstate.h
-	src/al-util.h
 	src/boost-hash.h
 	src/debugwriter.h
 	src/gl-fun.h
 	src/gl-meta.h
 	src/vertex.h
-	src/soundemitter.h
 	src/security.h
-	src/aldatasource.h
-	src/alstream.h
-	src/audiostream.h
 	src/rgssad.h
 	src/sdl-util.h
 	src/oneshot.h
@@ -102,11 +96,15 @@ set(MAIN_HEADERS
 	src/signals/signalconnection.h
 	src/signals/rubydispatcher.h
 	src/signals/maindispatcher.h
+	src/sound/audio.h
+	src/sound/audiogroup.h
+	src/sound/audioplayback.h
+	src/sound/audiosource.h
+	src/sound/audioutil.h
 )
 
 set(MAIN_SOURCE
 	src/main.cpp
-	src/audio.cpp
 	src/bitmap.cpp
 	src/eventthread.cpp
 	src/filesystem.cpp
@@ -135,12 +133,7 @@ set(MAIN_SOURCE
 	src/gl-fun.cpp
 	src/gl-meta.cpp
 	src/vertex.cpp
-	src/soundemitter.cpp
-	src/sdlsoundsource.cpp
-	src/alstream.cpp
-	src/audiostream.cpp
 	src/rgssad.cpp
-	src/vorbissource.cpp
 	src/oneshot.cpp
 	src/screen.cpp
 	src/i18n.cpp
@@ -150,6 +143,10 @@ set(MAIN_SOURCE
 	src/lightmap.cpp
 	src/signals/rubydispatcher.cpp
 	src/signals/maindispatcher.cpp
+	src/sound/audio.cpp
+	src/sound/audiogroup.cpp
+	src/sound/audioplayback.cpp
+	src/sound/audiosource.cpp
 )
 
 
@@ -262,6 +259,7 @@ set(BINDING_HEADERS
 	binding-mri/flashable-binding.h
 	binding-mri/keybindings-binding.h
 	binding-mri/signalconnection-binding.h
+	binding-mri/audioplayback-binding.h
 )
 set(BINDING_SOURCE
 	binding-mri/binding-mri.cpp
@@ -294,6 +292,7 @@ set(BINDING_SOURCE
 	binding-mri/signalconnection-binding.cpp
 	binding-mri/gamepad-binding.cpp
 	binding-mri/profiler-binding.cpp
+	binding-mri/audioplayback-binding.cpp
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
@@ -368,15 +367,13 @@ find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(SDL3 CONFIG)
 find_package(SDL3_image CONFIG)
-find_package(SDL3_sound CONFIG)
+find_package(SDL3_mixer CONFIG REQUIRED)
 find_package(SDL3_ttf CONFIG)
-find_package(OpenAL CONFIG)
 find_package(Boost REQUIRED COMPONENTS program_options chrono)
 find_package(PhysFS CONFIG)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
 find_package(Ruby 3.0 REQUIRED COMPONENTS Development)
-pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
@@ -384,13 +381,13 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE src include ${PIXMAN_INCLUDE_DIR} ${SIGC2_INCLUDE_DIRS}
 ${Ruby_INCLUDE_DIRS} Boost::boost ${Boost_INCLUDE_DIRS} 
-${VORBISFILE_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
+${ZLIB_INCLUDE_DIRS} SDL3_mixer::SDL3_mixer)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image 
-SDL3_sound::SDL3_sound SDL3_ttf::SDL3_ttf OpenAL::OpenAL
+SDL3_mixer::SDL3_mixer SDL3_ttf::SDL3_ttf
 physfs ${PIXMAN_LIBRARY} ${SIGC2_LIBRARIES} ${PLATFORM_LIBRARIES} 
 ${Ruby_LIBRARIES} Boost::boost Boost::chrono ${Boost_LIBRARIES}
-${VORBISFILE_LIBRARIES} ZLIB::ZLIB ${PLATFORM_LIBS})
+ZLIB::ZLIB ${PLATFORM_LIBS})
 
 if(STEAM)
 	list(APPEND MAIN_HEADERS

@@ -19,12 +19,10 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <alc.h>
-
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include <SDL3_sound/SDL_sound.h>
+#include <SDL3_mixer/SDL_mixer.h>
 #include <physfs.h>
 
 #ifdef _MSC_VER
@@ -70,6 +68,10 @@
 	#ifdef DEBUG
 		SDL_PS2_SKIP_IOP_RESET();
 	#endif
+#endif
+
+#ifndef VERSION_STRING
+	#define VERSION_STRING ">w<"
 #endif
 
 static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
@@ -128,22 +130,10 @@ int rgssThreadFun(void *userdata){
 	GLDebugLogger dLogger;
 #endif
 
-	/* Setup AL context */
-	ALCcontext *alcCtx = alcCreateContext(threadData->alcDev, 0);
-
-	if (!alcCtx){
-		rgssThreadError(threadData, "Error creating OpenAL context");
-		SDL_GL_DestroyContext(glCtx);
-		return 0;
-	}
-
-	alcMakeContextCurrent(alcCtx);
-
 	try{
 		SharedState::initInstance(threadData);
 	}catch (const Exception &exc){
 		rgssThreadError(threadData, exc.msg);
-		alcDestroyContext(alcCtx);
 		SDL_GL_DestroyContext(glCtx);
 		return 0;
 	}
@@ -156,7 +146,6 @@ int rgssThreadFun(void *userdata){
 
 	SharedState::finiInstance();
 
-	alcDestroyContext(alcCtx);
 	SDL_GL_DestroyContext(glCtx);
 	return 0;
 }
@@ -217,7 +206,7 @@ int main(int argc, char *argv[]){
     startTime = boost::chrono::high_resolution_clock::now();
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
-	SDL_SetAppMetadata("Oneshot: Sunshine", "0.1.2", "com.catwindowteam.sunshine");
+	SDL_SetAppMetadata("Oneshot: Sunshine", "0.1.2", "meow.catwindowteam.sunshine");
 	//X11 work on *BSD,Solaris too!
 	#if unix_like
 		SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
@@ -298,8 +287,8 @@ int main(int argc, char *argv[]){
 		SDL_Quit();
 	}
 
-	if (Sound_Init() == false){
-		ErrorMsg("Error initializing SDL_sound: %s", Sound_GetError());
+	if (MIX_Init() == false){
+		ErrorMsg("Error initializing SDL_mixer: %s", SDL_GetError());
 		TTF_Quit();
 		SDL_Quit();
 
@@ -326,11 +315,17 @@ int main(int argc, char *argv[]){
 	(void) setupWindowIcon;
 #endif
 
-	ALCdevice *alcDev = alcOpenDevice(0);
+	SDL_AudioSpec spec{};
+	spec.format = SDL_AUDIO_F32;
+	spec.channels = 2;
+	spec.freq = 44100;
 
-	if (!alcDev){
+	MIX_Mixer* mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
+
+	if (!mixer){
 		SDL_DestroyWindow(win);
-		ErrorMsg("Error opening OpenAL device");
+		ErrorMsg("Error creating Mixer Device");
+		MIX_Quit();
 		TTF_Quit();
 		SDL_Quit();
 		return 0;
@@ -338,7 +333,7 @@ int main(int argc, char *argv[]){
 
 	SDL_DisplayMode mode;
 	EventThread eventThread;
-	RGSSThreadData rtData(&eventThread, win, alcDev, mode.refresh_rate, conf);
+	RGSSThreadData rtData(&eventThread, win, mixer, mode.refresh_rate, conf);
 
 #ifndef STEAM
 	/* Add controller bindings from embedded controller DB */
@@ -393,10 +388,10 @@ int main(int argc, char *argv[]){
 		crash_screen(win);
 	}
 	
-	alcCloseDevice(alcDev);
+	MIX_DestroyMixer(mixer);
 	SDL_DestroyWindow(win);
 
-	Sound_Quit();
+	MIX_Quit();
 	TTF_Quit();
 	SDL_Quit();
 

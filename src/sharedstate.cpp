@@ -25,7 +25,7 @@
 #include "filesystem.h"
 #include "graphics.h"
 #include "input.h"
-#include "audio.h"
+#include "sound/audio.h"
 #include "oneshot.h"
 #ifdef STEAM
 #include "steam.h"

@@ -19,142 +19,106 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "audio.h"
+#include "sound/audio.h"
 #include "sharedstate.h"
 #include "binding-util.h"
-#include "exception.h"
+#include "audioplayback-binding.h"
 
-#define DEF_PLAY_STOP_POS(entity) \
-	RB_METHOD(audio_##entity##Play) \
-	{ \
-		RB_UNUSED_PARAM; \
-		const char *filename; \
-		int volume = 100; \
-		int pitch = 100; \
-		double pos = 0.0; \
-		rb_get_args(argc, argv, "z|ii", &filename, &volume, &pitch RB_ARG_END); \
-		GUARD_EXC( shState->audio().entity##Play(filename, volume, pitch, pos); ) \
-		return Qnil; \
-	} \
-	RB_METHOD(audio_##entity##Stop) \
-	{ \
-		RB_UNUSED_PARAM; \
-		shState->audio().entity##Stop(); \
-		return Qnil; \
-	} \
-	RB_METHOD(audio_##entity##Pos) \
-	{ \
-		RB_UNUSED_PARAM; \
-		return rb_float_new(shState->audio().entity##Pos()); \
-	}
+#define TAG2CSTR(tag) SYMBOL_P(tag) ? rb_id2name(rb_sym2id(tag)) : StringValueCStr(tag)
 
-#define DEF_PLAY_STOP(entity) \
-	RB_METHOD(audio_##entity##Play) \
-	{ \
-		RB_UNUSED_PARAM; \
-		const char *filename; \
-		int volume = 100; \
-		int pitch = 100; \
-		rb_get_args(argc, argv, "z|ii", &filename, &volume, &pitch RB_ARG_END); \
-		GUARD_EXC( shState->audio().entity##Play(filename, volume, pitch); ) \
-		return Qnil; \
-	} \
-	RB_METHOD(audio_##entity##Stop) \
-	{ \
-		RB_UNUSED_PARAM; \
-		shState->audio().entity##Stop(); \
-		return Qnil; \
-	}
+RB_METHOD(rb_audio_createAudioPlayback) {
+	char* path;
+	int group = 0;
+	bool predecode = false;
+	rb_get_args(argc, argv, "z|bi", &path, &predecode, &group RB_ARG_END);
+	
+    AudioPlayback* pb = shState->audio().createAudioPlayback(path, group, predecode);
 
-#define DEF_FADE(entity) \
-RB_METHOD(audio_##entity##Fade) \
-{ \
-	RB_UNUSED_PARAM; \
-	int time; \
-	rb_get_args(argc, argv, "i", &time RB_ARG_END); \
-	shState->audio().entity##Fade(time); \
-	return Qnil; \
+    return TypedData_Wrap_Struct(audioplayback_klass, &audioplayback_type, pb);
 }
 
-#define DEF_POS(entity) \
-	RB_METHOD(audio_##entity##Pos) \
-	{ \
-		RB_UNUSED_PARAM; \
-		return rb_float_new(shState->audio().entity##Pos()); \
-	}
+static VALUE rb_audio_createGroup(VALUE self) {
+	return INT2FIX(shState->audio().createGroup());
+}
 
-#define DEF_AUD_PROP_I(PropName) \
-	RB_METHOD(audio##Get##PropName) \
-	{ \
-		RB_UNUSED_PARAM; \
-		return rb_fix_new(shState->audio().get##PropName()); \
-	} \
-	RB_METHOD(audio##Set##PropName) \
-	{ \
-		RB_UNUSED_PARAM; \
-		int value; \
-		rb_get_args(argc, argv, "i", &value RB_ARG_END); \
-		shState->audio().set##PropName(value); \
-		return rb_fix_new(value); \
-	}
+static VALUE rb_audio_destroyGroup(VALUE self, VALUE groupId) {
+	shState->audio().destroyGroup(FIX2INT(groupId));
+	return Qnil;
+}
 
-DEF_PLAY_STOP_POS( bgm )
-DEF_PLAY_STOP_POS( bgs )
+static VALUE rb_audio_getGroupVolume(VALUE self, VALUE groupId) {
+	return DBL2NUM(shState->audio().getGroupVolume(FIX2INT(groupId)));
+}
 
-DEF_PLAY_STOP( me )
+static VALUE rb_audio_setGroupVolume(VALUE self, VALUE groupId, VALUE volume) {
+	shState->audio().setGroupVolume(FIX2INT(groupId), NUM2DBL(volume));
+	return Qnil;
+}
 
-DEF_FADE( bgm )
-DEF_FADE( bgs )
-DEF_FADE( me )
+RB_METHOD(rb_audio_stopGroupSounds) {
+	int groupId;
+	double fadeOutTime = 0.0f;
+	rb_get_args(argc, argv, "i|f", &groupId, &fadeOutTime);
+	shState->audio().setGroupVolume(groupId, fadeOutTime);
+	return Qnil;
+}
 
-DEF_PLAY_STOP( se )
+static VALUE rb_audio_setTagVolume(VALUE self, VALUE tag, VALUE volume) {
+	shState->audio().setTagVolume(TAG2CSTR(tag), NUM2DBL(volume));
+	return Qnil;
+}
 
-DEF_AUD_PROP_I(BGM_Volume)
-DEF_AUD_PROP_I(SFX_Volume)
+static VALUE rb_audio_playTagSounds(VALUE self, VALUE tag) {
+	shState->audio().playSoundsInTag(TAG2CSTR(tag));
+	return Qnil;
+}
 
-RB_METHOD(audioReset){
+RB_METHOD(rb_audio_stopTagSounds) {
+    VALUE rb_tagName;
+    VALUE rb_fadeTime = DBL2NUM(0.0);
+    rb_scan_args(argc, argv, "11", &rb_tagName, &rb_fadeTime);
+	shState->audio().stopSoundsInTag(TAG2CSTR(rb_tagName), NUM2DBL(rb_fadeTime));
+	return Qnil;
+}
+
+static VALUE rb_audio_unload(VALUE self, VALUE path) {
+	shState->audio().unload(StringValueCStr(path));
+	return Qnil;
+}
+
+static VALUE rb_audio_clearCache(VALUE self) {
+	shState->audio().clearCache();
+	return Qnil;
+}
+
+RB_METHOD(audioReset) {
 	RB_UNUSED_PARAM;
 	shState->audio().reset();
 
 	return Qnil;
 }
 
-
-#define BIND_PLAY_STOP(entity) \
-	_rb_define_module_function(module, #entity "_play", audio_##entity##Play); \
-	_rb_define_module_function(module, #entity "_stop", audio_##entity##Stop);
-
-#define BIND_FADE(entity) \
-	_rb_define_module_function(module, #entity "_fade", audio_##entity##Fade);
-
-#define BIND_PLAY_STOP_FADE(entity) \
-	BIND_PLAY_STOP(entity) \
-	BIND_FADE(entity)
-
-#define BIND_POS(entity) \
-	_rb_define_module_function(module, #entity "_pos", audio_##entity##Pos);
-
-#define INIT_AUD_PROP_BIND(PropName, prop_name_s) \
-{ \
-	_rb_define_module_function(module, prop_name_s, audio##Get##PropName); \
-	_rb_define_module_function(module, prop_name_s "=", audio##Set##PropName); \
-}
-
 void audioBindingInit(){
 	printf("[audioBindingInit] Initialing Audio binding\n");
 	VALUE module = rb_define_module("Audio");
 
-	BIND_PLAY_STOP_FADE( bgm );
-	BIND_PLAY_STOP_FADE( bgs );
-	BIND_PLAY_STOP_FADE( me  );
+	rb_define_singleton_method(module, "create_sound", RUBY_METHOD_FUNC(rb_audio_createAudioPlayback), -1);
 
-	BIND_POS( bgm );
-	BIND_POS( bgs );
+	// returns id of group, returns -1 if group not created
+	rb_define_singleton_method(module, "create_group", RUBY_METHOD_FUNC(rb_audio_createGroup), 0);
+	rb_define_singleton_method(module, "destroy_group", RUBY_METHOD_FUNC(rb_audio_destroyGroup), 1);
 
-	BIND_PLAY_STOP( se )
+	rb_define_singleton_method(module, "get_group_volume", RUBY_METHOD_FUNC(rb_audio_getGroupVolume), 1);
+	rb_define_singleton_method(module, "set_group_volume", RUBY_METHOD_FUNC(rb_audio_setGroupVolume), 2);
+	rb_define_singleton_method(module, "stop_group_sounds", RUBY_METHOD_FUNC(rb_audio_stopGroupSounds), -1);
+
+	rb_define_singleton_method(module, "set_tag_volume", RUBY_METHOD_FUNC(rb_audio_setTagVolume), 2);
+	rb_define_singleton_method(module, "play_tag_sounds", RUBY_METHOD_FUNC(rb_audio_playTagSounds), 1);
+	rb_define_singleton_method(module, "stop_tag_sounds", RUBY_METHOD_FUNC(rb_audio_stopTagSounds), -1);
+
+
+	rb_define_singleton_method(module, "unload", RUBY_METHOD_FUNC(rb_audio_unload), 1);
+	rb_define_singleton_method(module, "clear_cache", RUBY_METHOD_FUNC(rb_audio_clearCache), 0);
 
 	_rb_define_module_function(module, "__reset__", audioReset);
-
-	INIT_AUD_PROP_BIND( BGM_Volume, "bgm_volume" );
-	INIT_AUD_PROP_BIND( SFX_Volume, "sfx_volume" );
 }

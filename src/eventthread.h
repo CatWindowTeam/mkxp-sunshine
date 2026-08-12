@@ -32,11 +32,9 @@
 #include <SDL3/SDL_gamepad.h>
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_mutex.h>
+#include <SDL3_mixer/SDL_mixer.h>
 
 #include <string>
-
-#include <alc.h>
-//typedef struct ALCdevice_struct ALCdevice;
 
 struct RGSSThreadData;
 struct SDL_Window;
@@ -250,7 +248,7 @@ struct RGSSThreadData{
 	SyncPoint syncPoint;
 
 	SDL_Window *window;
-	ALCdevice *alcDev;
+	MIX_Mixer *mixer;
 
 	Vec2 sizeResoRatio;
 	Vec2i screenOffset;
@@ -262,11 +260,11 @@ struct RGSSThreadData{
 	std::string inputText;
 	int inputTextLimit;
 
-	RGSSThreadData(EventThread *ethread, SDL_Window *window, ALCdevice *alcDev, int refreshRate, const Config& newconf)
+	RGSSThreadData(EventThread *ethread, SDL_Window *window, MIX_Mixer *mixer, int refreshRate, const Config& newconf)
 	    : allowExit(true),
 	      ethread(ethread),
 	      window(window),
-	      alcDev(alcDev),
+	      mixer(mixer),
 	      sizeResoRatio(1, 1),
 	      refreshRate(refreshRate),
 	      config(newconf)

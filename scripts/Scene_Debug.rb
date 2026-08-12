@@ -27,6 +27,8 @@ class Scene_Debug
       Graphics.update
       # Update input information
       Input.update
+      # only for legacy funcs
+      Audio.update
       # Frame update
       update
       # Abort loop if screen is changed

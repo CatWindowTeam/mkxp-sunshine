@@ -44,6 +44,7 @@ set(scripts
   Interpreter_5.rb
   Interpreter_6.rb
   Interpreter_7.rb
+  Audio.rb
   Main.rb
   Particles.rb
   Persistent.rb

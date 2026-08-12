@@ -28,6 +28,7 @@ Game_FastTravel
 Game_Light
 
 # yes.
+Audio
 Settings
 Settings_Classes
 Settings_Setters
