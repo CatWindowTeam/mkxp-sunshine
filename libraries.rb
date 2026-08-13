@@ -26,6 +26,8 @@ BLACKLIST = [
   "win32u.dll",
   "GDI32.dll",
   "gdi32full.dll",
+  "WINMM.dll",
+  "DWrite.dll"
 ]
 
 files = []

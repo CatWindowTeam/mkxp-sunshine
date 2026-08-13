@@ -15,6 +15,9 @@ public:
     AudioPlayback(MIX_Mixer* mixer, MIX_Audio* audio, AudioGroup* group);
     ~AudioPlayback();
 
+    int startSample = 0;
+    int maxSamples = -1;
+
     bool initialize(MIX_Mixer* mixer, AudioSource* source, AudioGroup* group);
     bool initialize(MIX_Mixer* mixer, MIX_Audio* audio, AudioGroup* group);
     void deinitilize();
@@ -58,6 +61,6 @@ private:
     AudioSource* p_source = nullptr;
     AudioGroup* p_group = nullptr;
 
-    float p_volume;
-    float p_pitch;
+    float p_volume = 1.0f;
+    float p_pitch = 1.0f;
 };

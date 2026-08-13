@@ -252,6 +252,8 @@ bool AudioPlayback::fadeIn(double time) {
 
     SDL_PropertiesID props = SDL_CreateProperties();
     SDL_SetNumberProperty(props, MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, time * 1000.0);
+    SDL_SetNumberProperty(props, MIX_PROP_PLAY_START_FRAME_NUMBER, startSample);
+    SDL_SetNumberProperty(props, MIX_PROP_PLAY_MAX_FRAME_NUMBER, maxSamples);
     if (result)
     {
         result = MIX_PlayTrack(p_track, props);

@@ -99,7 +99,7 @@ class Scene_OF
   end
 
   def update
-  
+    @viewport.scale_x -= 0.001
   end
 
   def map_input(input)
