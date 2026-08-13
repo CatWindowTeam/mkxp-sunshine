@@ -58,6 +58,7 @@ set(scripts
   Scene_Map.rb
   Scene_Name.rb
   Scene_Title.rb
+  Scene_OF.rb
   Script.rb
   Sprite_Character.rb
   Sprite_Footprint.rb

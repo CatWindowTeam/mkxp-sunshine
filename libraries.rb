@@ -1,5 +1,6 @@
 #!/usr/bin/ruby
 #encoding: utf-8
+puts "copying libraries..."
 require 'fileutils'
 
 # These libraries MUST NOT be packaged with OneShot
@@ -10,17 +11,32 @@ BLACKLIST = [
   'libc.so.6',
   'libpthread.so.0',
   'libdl.so.2',
-  'libm.so.6'
+  'libm.so.6',
+  # we dont need Windows dlls
+  "ntdll.dll",
+  "KERNEL32.DLL",
+  "KERNELBASE.dll",
+  "ADVAPI32.dll",
+  "msvcrt.dll",
+  "sechost.dll",
+  "RPCRT4.dll",
+  "ucrtbase.dll",
+  "SHLWAPI.dll",
+  "USER32.dll",
+  "win32u.dll",
+  "GDI32.dll",
+  "gdi32full.dll",
 ]
 
-line = gets
 files = []
-while line
+while line = gets
   if line =~ / => (\/.*) \(/
-    if not BLACKLIST.any? {|library| $1.end_with? library }
-      files << $1
-    end
+    path = $1
+    filename = File.basename(path)
+    next if BLACKLIST.any? { |library| filename.casecmp?(library) }
+    path = `cygpath -w "#{path}"`.strip if ENV['MSYSTEM'] && path.start_with?("/")
+    files << path
   end
-  line = gets
 end
 FileUtils.cp(files, 'libs')
+puts "copying libraries done."
