@@ -14,7 +14,6 @@
 // OS-Specific code
 #if windows
 #define SECURITY_WIN32
-	#include <cstring>
 	#include <windows.h>
 	#include <mmsystem.h>
 	#include <security.h>
@@ -254,16 +253,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
 	p->docsPath = path;
 	#ifdef windows
-	    const char* suffix = "\\My Games";
-	
-    	size_t len = std::strlen(path) + std::strlen(suffix) + 1;
-    	p->gamePath = (char*)SDL_malloc(len); 
-	
-    	if (p->gamePath) {
-    	    std::strcpy(p->gamePath, path);
-    	    std::strcat(p->gamePath, suffix);
-    	}
-    	SDL_free((void*)path);
+		p->gamePath = std::string(path) + "\\My Games";
 	#else
 		p->gamePath = path;
 	#endif
