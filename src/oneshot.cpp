@@ -14,6 +14,7 @@
 // OS-Specific code
 #if windows
 #define SECURITY_WIN32
+	#include <cstring>
 	#include <windows.h>
 	#include <mmsystem.h>
 	#include <security.h>
