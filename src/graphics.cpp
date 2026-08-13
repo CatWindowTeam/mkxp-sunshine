@@ -19,6 +19,10 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#if windows
+	#define HAVE_GETTIMEOFDAY 1
+#endif
+
 #include "graphics.h"
 
 #include "util.h"
@@ -46,6 +50,9 @@
 
 #include <time.h>
 #ifndef _MSC_VER
+#if windows
+	#define _SYS_TIME_H_
+#endif
 #include <sys/time.h>
 #endif
 #include <errno.h>
