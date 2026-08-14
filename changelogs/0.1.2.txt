@@ -58,3 +58,5 @@ Added setting "Use Old Self Contained Universe(Reprise) version"
 Rewrited audio system from SDL3_sound and OpenAL to SDL_mixer
 Added Master Volume setting
 Added viewports scaling
+Build script for Windows MinGW
+

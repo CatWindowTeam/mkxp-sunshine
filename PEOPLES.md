@@ -22,6 +22,7 @@
 # Donators:
 | Donator     |
 | ----------- |
+| The name sold |
 | Kodu        |
 
 ## Special thanks to
