@@ -1,15 +1,17 @@
 class Scene_OF
   BPM = 135
-  WAIT_TIME = 1.0 * (BPM / 60.0) * Graphics.frame_rate
+  BPM_TIME = 1.0 / (BPM / 60.0) * Graphics.frame_rate * 2
 
-  BUMP_SCALE = 1.2
-  BUMP_RETURN_SPEED = 0.2
+  BUMP_SCALE = 1.07
+  BUMP_RETURN_SPEED = 0.1
 
   ARROW_SIZE = 32
   ARROW_SCALE = 2
   ARROWS_PADDING = 12
   ARROWS_TOP_MARGIN = 32
   ARROWS_SIDES_MARGIN = 48
+
+  ARROWS_SPEED = 10
 
   SPRITES = {
     :cat_base_arrow_left       => Rect.new(0,   0, 32, 32),   :cat_base_arrow_down       => Rect.new(32,   0, 32, 32),  :cat_base_arrow_up       => Rect.new(64,   0, 32, 32),  :cat_base_arrow_right       => Rect.new(96,   0, 32, 32),
@@ -61,9 +63,22 @@ class Scene_OF
   def main
     Audio.bgm_stop
 
+    @arrows_states = [false, false, false, false]
+
+    @instruments = Audio.create_sound("Audio/.cats", false, Audio.music_group)
+    length = @instruments.length
+    @instruments.max_frame = length / 3
+    @voice_cat = Audio.create_sound("Audio/.cats", false, Audio.music_group)
+    @voice_cat.start_frame = length / 6
+    @voice_cat.max_frame = length / 3
+    @voice_niko = Audio.create_sound("Audio/.cats", false, Audio.music_group)
+    @voice_niko.start_frame = length / 3
+    @voice_niko.max_frame = length / 3 * 2
+
     @viewport_ui = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport_ui.ox = -Graphics.width / 2
-    @viewport_ui.oy = -Graphics.height / 2
+    @viewport_arrows = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @viewport_ui.ox = @viewport_arrows.ox = -Graphics.width / 2
+    @viewport_ui.oy = @viewport_arrows.oy = -Graphics.height / 2
     @spritesheet = RPG::Cache.misc(".cats")
 
     @player_arrows = []
@@ -86,10 +101,21 @@ class Scene_OF
       @cat_arrows << cat_arrow
     end
 
-    @bump_timeout = WAIT_TIME
+    @bst_debug = Sprite.new(@viewport_ui)
+    @bst_debug.bitmap = Bitmap.new(300, 40)
+
+    @total_time = 0
+    @bump_timeout = 0
+
+    make_mapping
 
     # Execute transition
     Graphics.transition(40)
+
+    @instruments.play
+    @voice_cat.play
+    @voice_niko.play
+    
     # Main loop
     while true
       # Update game screen
@@ -109,14 +135,37 @@ class Scene_OF
   end
 
   def update
+    @total_time += 1
+
+    # fl studio b:s:t :3
+    beat = (@total_time / BPM_TIME / 2).to_i + 1
+    step = (@total_time / BPM_TIME * 15 / 2).to_i % 15 + 1
+    tick = (@total_time / BPM_TIME * 24 * 15 / 2).to_i % 24
+    
+    @bst_debug.bitmap.clear
+    @bst_debug.bitmap.draw_text(Rect.new(0, 0, 300, 40), "#{beat} : #{step} : #{tick}")
+
+    @viewport_arrows.oy += ARROWS_SPEED
+
     @bump_timeout -= 1
     if @bump_timeout <= 0
-      @bump_timeout += WAIT_TIME
-      @viewport_ui.scale_x = BUMP_SCALE
-      @viewport_ui.scale_y = BUMP_SCALE
+      @bump_timeout += BPM_TIME
+      @viewport_arrows.scale_x = @viewport_ui.scale_x = BUMP_SCALE
+      @viewport_arrows.scale_y = @viewport_ui.scale_y = BUMP_SCALE
     end
-    @viewport_ui.scale_x = @viewport_ui.scale_x * (1.0 - BUMP_RETURN_SPEED) + BUMP_RETURN_SPEED
-    @viewport_ui.scale_y = @viewport_ui.scale_y * (1.0 - BUMP_RETURN_SPEED) + BUMP_RETURN_SPEED
+    @viewport_arrows.scale_x = @viewport_ui.scale_x = @viewport_ui.scale_x * (1.0 - BUMP_RETURN_SPEED) + BUMP_RETURN_SPEED
+    @viewport_arrows.scale_y = @viewport_ui.scale_y = @viewport_ui.scale_y * (1.0 - BUMP_RETURN_SPEED) + BUMP_RETURN_SPEED
+
+    # player
+    for i in 1..4
+      mapped = map_input(i * 2)
+      is_pressed = Input.press?(i * 2)
+      if @arrows_states[mapped] != is_pressed
+        @arrows_states[mapped] = is_pressed
+        @player_arrows[mapped].bitmap.clear
+        @player_arrows[mapped].bitmap.stretch_blt(Rect.new(0, 0, ARROW_SIZE, ARROW_SIZE), @spritesheet, SPRITES[PLAYER_ARROWS_SPRITES[@arrows_states[mapped] ? :pressed : :base][mapped]])
+      end
+    end
   end
 
   def map_input(input)
@@ -131,6 +180,53 @@ class Scene_OF
       2
     end
   end
+
+  def make_mapping
+    @cat_flying_arrows = []
+    @player_flying_arrows = []
+    #beat = (@total_time / BPM_TIME / 2).to_i + 1
+    #step = (@total_time / BPM_TIME * 15 / 2).to_i % 15 + 1
+    #tick = (@total_time / BPM_TIME * 24 * 15 / 2).to_i % 24
+    SONG_MAPPING.each do |line_data|
+      beat = line_data[1]
+      step = line_data[2]
+      tick = line_data[3]
+      for i in 0..3
+        if line_data[0][i] == '#'
+          arrow = make_arrow(i, true)
+          arrow.x = ARROWS_SIDES_MARGIN + (ARROW_SIZE * ARROW_SCALE + ARROWS_PADDING) * i - Graphics.width / 2
+          arrow.y = ARROWS_TOP_MARGIN - Graphics.height / 2 + 
+                    (beat - 1) * 2 * BPM_TIME * ARROWS_SPEED + 
+                    (step - 1) / 15.0 * 2 * BPM_TIME * ARROWS_SPEED + 
+                    (tick) / 24.0 / 15.0 * 2 * BPM_TIME * ARROWS_SPEED
+
+          @cat_flying_arrows << arrow
+        end
+      end
+    end
+  end
+
+  def make_arrow(direction, meow)
+    arrow = Sprite.new(@viewport_arrows)
+    arrow.bitmap = Bitmap.new(ARROW_SIZE, ARROW_SIZE)
+    arrow.bitmap.stretch_blt(Rect.new(0, 0, ARROW_SIZE, ARROW_SIZE), @spritesheet, SPRITES[(meow ? CAT_ARROWS_SPRITES : PLAYER_ARROWS_SPRITES)[:target][direction]])
+    arrow.zoom_x = arrow.zoom_y = ARROW_SCALE
+    arrow
+  end
+
+  SONG_MAPPING = [
+    #arrows,      B,  S, T
+    ["#   |    ", 5,  1, 0],
+    ["  # |    ", 5,  3, 0],
+    [" #  |    ", 5,  5, 0],
+    ["   #|    ", 5,  9, 0],
+    ["  # |    ", 5, 13, 0],
+    ["#   |    ", 6,  1, 0],
+    [" #  |    ", 6,  3, 0],
+    ["  # |    ", 6,  5, 0],
+    ["  # |    ", 6,  9, 0],
+    ["#   |    ", 6, 13, 0],
+  ]
 end
 
 # ████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████

@@ -112,6 +112,23 @@ bool AudioPlayback::isPlaying() const {
     return p_track && MIX_TrackPlaying(p_track);
 }
 
+long AudioPlayback::getLength() const {
+    if (p_source)
+        return MIX_GetAudioDuration(p_source->getAudio());
+    return 0.0;
+}
+
+double AudioPlayback::getLengthNormalized() const {
+    if (p_source)
+    {
+        MIX_Audio* audio = p_source->getAudio();
+        SDL_AudioSpec spec;
+        if (MIX_GetAudioFormat(audio, &spec))
+            return static_cast<double>(MIX_GetAudioDuration(audio)) / static_cast<double>(spec.freq);
+    }
+    return 0.0;
+}
+
 void AudioPlayback::addTag(std::string tagName) {
     if (!p_track)
         return;
@@ -253,7 +270,7 @@ bool AudioPlayback::fadeIn(double time) {
     SDL_PropertiesID props = SDL_CreateProperties();
     SDL_SetNumberProperty(props, MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, time * 1000.0);
     SDL_SetNumberProperty(props, MIX_PROP_PLAY_START_FRAME_NUMBER, startSample);
-    SDL_SetNumberProperty(props, MIX_PROP_PLAY_MAX_FRAME_NUMBER, maxSamples);
+    SDL_SetNumberProperty(props, MIX_PROP_PLAY_MAX_FRAME_NUMBER, maxSample);
     if (result)
     {
         result = MIX_PlayTrack(p_track, props);

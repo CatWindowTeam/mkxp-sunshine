@@ -44,16 +44,26 @@ static VALUE rb_playbackPlay(int argc, VALUE *argv, VALUE self) {
     return Qnil;
 }
 
-static VALUE rb_playbackStop(VALUE self){
+static VALUE rb_playbackStop(VALUE self) {
     PLAYBACK
     pb->stop();
 
     return Qnil;
 }
 
-static VALUE rb_playbackPlaying(VALUE self){
+static VALUE rb_playbackPlaying(VALUE self) {
     PLAYBACK
     return rb_bool_new(pb->isPlaying());
+}
+
+static VALUE rb_playbackLength(VALUE self) {
+    PLAYBACK
+    return INT2FIX(pb->getLength());
+}
+
+static VALUE rb_playbackLengthNormalized(VALUE self) {
+    PLAYBACK
+    return DBL2NUM(pb->getLengthNormalized());
 }
 
 static VALUE rb_playbackAddTag(int argc, VALUE *argv, VALUE self) {
@@ -141,15 +151,15 @@ static VALUE rb_playbackGetStartSample(VALUE self) {
     return INT2FIX(pb->startSample);
 }
 
-static VALUE rb_playbackSetMaxSamples(VALUE self, VALUE samples) {
+static VALUE rb_playbackSetMaxSample(VALUE self, VALUE samples) {
     PLAYBACK
-    pb->maxSamples = samples;
+    pb->maxSample = samples;
     return Qnil;
 }
 
-static VALUE rb_playbackGetMaxSamples(VALUE self) {
+static VALUE rb_playbackGetMaxSample(VALUE self) {
     PLAYBACK
-    return INT2FIX(pb->maxSamples);
+    return INT2FIX(pb->maxSample);
 }
 
 static VALUE rb_playbackSetPosition(VALUE self, VALUE position){
@@ -211,6 +221,9 @@ void audioPlaybackBindingInit(){
 
     rb_define_method(audioplayback_klass, "playing", RUBY_METHOD_FUNC(rb_playbackPlaying), 0);
 
+    rb_define_method(audioplayback_klass, "length", RUBY_METHOD_FUNC(rb_playbackLength), 0);
+    rb_define_method(audioplayback_klass, "length_normalized", RUBY_METHOD_FUNC(rb_playbackLengthNormalized), 0);
+
     rb_define_method(audioplayback_klass, "add_tag", RUBY_METHOD_FUNC(rb_playbackAddTag), -1);
     rb_define_method(audioplayback_klass, "remove_tag", RUBY_METHOD_FUNC(rb_playbackRemoveTag), -1);
     rb_define_method(audioplayback_klass, "clear_tags", RUBY_METHOD_FUNC(rb_playbackClearTags), 0);
@@ -227,10 +240,10 @@ void audioPlaybackBindingInit(){
     rb_define_method(audioplayback_klass, "pitch=", RUBY_METHOD_FUNC(rb_playbackSetPitch), 1);
     rb_define_method(audioplayback_klass, "pitch", RUBY_METHOD_FUNC(rb_playbackGetPitch), 0);
 
-    rb_define_method(audioplayback_klass, "start_sample=", RUBY_METHOD_FUNC(rb_playbackSetStartSample), 1);
-    rb_define_method(audioplayback_klass, "start_sample", RUBY_METHOD_FUNC(rb_playbackGetStartSample), 0);
-    rb_define_method(audioplayback_klass, "max_samples=", RUBY_METHOD_FUNC(rb_playbackSetMaxSamples), 1);
-    rb_define_method(audioplayback_klass, "max_samples", RUBY_METHOD_FUNC(rb_playbackGetMaxSamples), 0);
+    rb_define_method(audioplayback_klass, "start_frame=", RUBY_METHOD_FUNC(rb_playbackSetStartSample), 1);
+    rb_define_method(audioplayback_klass, "start_frame", RUBY_METHOD_FUNC(rb_playbackGetStartSample), 0);
+    rb_define_method(audioplayback_klass, "max_frame=", RUBY_METHOD_FUNC(rb_playbackSetMaxSample), 1);
+    rb_define_method(audioplayback_klass, "max_frame", RUBY_METHOD_FUNC(rb_playbackGetMaxSample), 0);
 
     rb_define_method(audioplayback_klass, "position=", RUBY_METHOD_FUNC(rb_playbackSetPosition), 1);
     rb_define_method(audioplayback_klass, "position", RUBY_METHOD_FUNC(rb_playbackGetPosition), 0);

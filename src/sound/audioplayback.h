@@ -15,8 +15,11 @@ public:
     AudioPlayback(MIX_Mixer* mixer, MIX_Audio* audio, AudioGroup* group);
     ~AudioPlayback();
 
-    int startSample = 0;
-    int maxSamples = -1;
+    long startSample = 0;
+    long maxSample = -1; 
+
+    long getLength() const;
+    double getLengthNormalized() const;
 
     bool initialize(MIX_Mixer* mixer, AudioSource* source, AudioGroup* group);
     bool initialize(MIX_Mixer* mixer, MIX_Audio* audio, AudioGroup* group);
