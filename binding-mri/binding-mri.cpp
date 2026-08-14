@@ -534,6 +534,7 @@ static void mriBindingExecute(){
 	RUBY_INIT_STACK;
 	ruby_init();
 	ruby_init_loadpath();
+	is_ruby_initialized = true;
 	rb_enc_set_default_external(rb_enc_from_encoding(rb_utf8_encoding()));
 	Config &conf = shState->rtData().config;
 	if (!conf.rubyLoadpaths.empty()){
@@ -558,6 +559,7 @@ static void mriBindingExecute(){
 		showExc(exc, btData);
 
 	shState->rtData().rqTermAck.set();
+	is_ruby_initialized = false;
 }
 
 static void mriBindingTerminate(){

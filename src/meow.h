@@ -7,10 +7,12 @@
 inline std::vector<std::string> logs = {};
 
 inline bool show_crash_sceen = false;
-inline char crash_reason[1024] = "Unknown";
+inline bool is_ruby_initialized = false;
 inline char crash_message[1024] = "";
-inline char crash_possible_solution[1024] = "Unknown";
+inline const char* crash_reason = "Unknown";
+inline const char* crash_possible_solution = "Unknown";
 void crash(Exception::Type t, const char *fmt, ...);
 void ErrorMsg(const char *fmt, ...);
+void ErrorMsg(Exception::Type t, const char *fmt, ...);
 void WarnMsg(const char *fmt, ...);
 void crash_screen(SDL_Window* win);

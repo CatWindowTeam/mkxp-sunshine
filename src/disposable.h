@@ -62,7 +62,7 @@ public:
 protected:
 	void guardDisposed() const{
 		if (isDisposed())
-			crash(Exception::RGSSError, "disposed %s", klassName());
+			ErrorMsg(Exception::RGSSError, "disposed %s", klassName());
 	}
 
 private:

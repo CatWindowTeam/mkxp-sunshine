@@ -202,7 +202,7 @@ static void setGamePathInRegistry() {
 	//TODO handle this for Linux/Mac
 }
 int main(int argc, char *argv[]){
-	Debug() << VERSION_STRING;
+	crash(Exception::SDLError, "DEBUGTEST");
     startTime = boost::chrono::high_resolution_clock::now();
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");

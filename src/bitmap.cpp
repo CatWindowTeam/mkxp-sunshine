@@ -48,7 +48,7 @@
 #define GUARD_MEGA \
 	{ \
 		if (p->megaSurface) \
-			crash(Exception::MKXPError, "Operation not supported for mega surfaces"); \
+			ErrorMsg(Exception::MKXPError, "Operation not supported for mega surfaces"); \
 	}
 
 #define OUTLINE_SIZE 1
@@ -225,7 +225,7 @@ Bitmap::Bitmap(const char *filename){
 	SDL_Surface *imgSurf = handler.surf;
 
 	if (!imgSurf)
-		crash(Exception::SDLError, "Error loading image '%s': %s", filename, SDL_GetError());
+		ErrorMsg(Exception::SDLError, "Error loading image '%s': %s", filename, SDL_GetError());
 
 	p->ensureFormat(imgSurf, SDL_PIXELFORMAT_ABGR8888);
 
@@ -261,7 +261,7 @@ Bitmap::Bitmap(const char *filename){
 
 Bitmap::Bitmap(int width, int height){
 	if (width <= 0 || height <= 0)
-		crash(Exception::RGSSError, "failed to create bitmap"); 
+		ErrorMsg(Exception::RGSSError, "failed to create bitmap"); 
 
 	TEXFBO tex = shState->texPool().request(width, height);
 

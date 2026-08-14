@@ -90,8 +90,13 @@ void initGLFunctions(){
 	/* Assume single digit */
 	int glMajor = *ver - '0';
 
-	if (glMajor < 2)
-		crash(Exception::MKXPError, "At least OpenGL (ES) 2.0 is required");
+	if (glMajor < 2){
+		#ifdef GLES2_HEADER
+			ErrorMsg("At least OpenGL ES 2.0 is required");
+		#else
+			ErrorMsg("At least OpenGL 2.0 is required");
+		#endif
+	}
 
 	if (gles){
 		GL_ES_FUN;
@@ -126,7 +131,7 @@ void initGLFunctions(){
 		}
 	}
 	else{
-		crash(Exception::MKXPError, "No FBO support available");
+		ErrorMsg("No FBO support available");
 	}
 
 	/* VAO entrypoints */

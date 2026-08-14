@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 #include <ruby/version.h>
+#include <ruby/internal/interpreter.h>
 #undef vsnprintf
 #undef snprintf
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__NetBSD__)
@@ -53,6 +54,57 @@ static inline const char* glGetStringInt(GLenum name){
 	return (const char*) gl.GetString(name);
 }
 
+static void get_reason_and_solution(Exception::Type t) {
+    switch (t) {
+        case Exception::ModLoaderError:
+            crash_reason = "Broken mod";
+            crash_possible_solution = "Fix mode manualy or ask developer to fix it or delete mod";
+            break;
+        case Exception::NoFileError:
+            crash_reason = "Broken installation";
+            crash_possible_solution = "Try reinstall game";
+            break;
+        case Exception::ShaderError:
+            crash_reason = "Broken Shader";
+            crash_possible_solution = "Try reinstall game";
+            break;
+        case Exception::RGSSError:
+            crash_reason = "Internal Error";
+            crash_possible_solution = "Try reinstall game or disable some mods";
+            break;
+        case Exception::RUBYError:
+            crash_reason = "Internal Error";
+            crash_possible_solution = "Try reinstall game or disable some mods";
+            break;
+        case Exception::IOError:
+            crash_reason = "Broken installation";
+            crash_possible_solution = "Try reinstall game";
+            break;
+        case Exception::TypeError:
+            crash_reason = "Internal Error";
+            crash_possible_solution = "Try reinstall game or disable some mods";
+            break;
+        case Exception::ArgumentError:
+            crash_reason = "Internal error";
+            crash_possible_solution = "Try reinstall game or disable some mods";
+            break;
+        case Exception::PHYSFSError:
+            crash_reason = "Internal error";
+            crash_possible_solution = "Maybe you tryed load corrupted mod via modloader, try delete it";
+            break;
+        case Exception::SDLError:
+            crash_reason = "Internal error";
+            crash_possible_solution = "Internal Engine Error, maybe something wrong with your device or operating system";
+            break;
+        case Exception::MKXPError:
+            crash_reason = "Internal error";
+            crash_possible_solution = "Try reinstall game or disable some mods";
+            break;
+        default:
+            break;
+    }
+}
+
 void crash(Exception::Type t, const char *fmt, ...) {
     static char crash_message[1024];
     static const char* crash_reason = nullptr;
@@ -70,44 +122,11 @@ void crash(Exception::Type t, const char *fmt, ...) {
 
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-
-	//TODO: rewrite to use switch :3
-    if (t == Exception::ModLoaderError) {
-        crash_reason = "Broken mod";
-        crash_possible_solution = "Fix mode manualy or ask developer to fix it or delete mod";
-    } else if (t == Exception::NoFileError) {
-        crash_reason = "Broken installation";
-        crash_possible_solution = "Try reinstall game";
-    } else if (t == Exception::ShaderError) {
-		crash_reason = "Broken Shader";
-		crash_possible_solution = "Try reinstall game";
-	} else if (t == Exception::RGSSError) {
-		crash_reason = "Internal Error";
-		crash_possible_solution = "Try reinstall game or disable some mods";
-	} else if (t == Exception::RUBYError) {
-		crash_reason = "Internal Error";
-		crash_possible_solution = "Try reinstall game or disable some mods";
-	} else if (t == Exception::IOError) {
-		crash_reason = "Broken installation";
-		crash_possible_solution = "Try reinstall game";
-	} else if (t == Exception::TypeError) {
-		crash_reason = "Internal Error";
-		crash_possible_solution = "Try reinstall game or disable some mods";
-	} else if (t == Exception::ArgumentError) {
-		crash_reason = "Internal error";
-		crash_possible_solution = "Try reinstall game or disable some mods";
-	} else if (t == Exception::PHYSFSError) {
-		crash_reason = "Internal error";
-		crash_possible_solution = "Maybe you tryed load corrupted mod via modloader, try delete it";
-	} else if (t == Exception::SDLError) {
-		crash_reason = "Internal error";
-		crash_possible_solution = "Internal Engine Error, maybe something wrong with your device or operating system";
-	} else if (t == Exception::MKXPError) {
-		crash_reason = "Internal error";
-		crash_possible_solution = "Try reinstall game or disable some mods";
-	}
+	get_reason_and_solution(t);
     show_crash_sceen = true;
-    rb_exit(-1);
+	//Protect against segfaults 
+    if(is_ruby_initialized)
+    	ruby_stop(-1);
 }
 
 void crash_screen(SDL_Window* win){
@@ -290,6 +309,26 @@ void ErrorMsg(const char *fmt, ...) {
     va_end(args);
 
 	SDL_snprintf(crash_message, sizeof(crash_message), "%s", buf);
+	show_crash_sceen = true;
+}
+
+void ErrorMsg(Exception::Type t, const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+
+    va_list args_copy;
+    va_copy(args_copy, args);
+    unsigned int len = (unsigned int)SDL_vsnprintf(NULL, 0, fmt, args_copy);
+    va_end(args_copy);
+
+    char *buf = (char*)SDL_malloc((size_t)len + 1);
+    if (!buf) { va_end(args); return; }
+
+    SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
+    va_end(args);
+
+	SDL_snprintf(crash_message, sizeof(crash_message), "%s", buf);
+	get_reason_and_solution(t);
 	show_crash_sceen = true;
 }
 
