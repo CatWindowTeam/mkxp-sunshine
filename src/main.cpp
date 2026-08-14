@@ -88,7 +88,7 @@ int rgssThreadFun(void *userdata){
 	RGSSThreadData *threadData = static_cast<RGSSThreadData*>(userdata);
 	const Config &conf = threadData->config;
 	SDL_Window *win = threadData->window;
-	char msg[512];
+	static char msg[512];
 	SDL_GLContext glCtx;
 
 	/* Setup GL context */
@@ -109,7 +109,6 @@ int rgssThreadFun(void *userdata){
 		initGLFunctions();
 	}
 	catch (const Exception &exc){
-		ErrorMsg(exc.msg.c_str());
 		rgssThreadError(threadData, exc.msg);
 		SDL_GL_DestroyContext(glCtx);
 		return 0;
@@ -224,19 +223,19 @@ int main(int argc, char *argv[]){
 	#endif
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
-		ErrorMsg("Error initializing SDL: %s", SDL_GetError());
+		WarnMsg("Error initializing SDL: %s", SDL_GetError());
 		return 0;
 	}
 
 #ifdef STEAM
 	if (!STEAMSHIM_init()){
-		ErrorMsg("Could not initialize Steamworks API");
+		WarnMsg("Could not initialize Steamworks API");
 		return 0;
 	}
 #endif
 
 	if (!EventThread::allocUserEvents()){
-		ErrorMsg("Error allocating SDL user events");
+		WarnMsg("Error allocating SDL user events");
 		return 0;
 	}
 
@@ -270,7 +269,7 @@ int main(int argc, char *argv[]){
 
 	if (!conf.gameFolder.empty()){
 		if (chdir(conf.gameFolder.c_str()) != 0){
-			ErrorMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
+			WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
 			return 0;
 		}
 	}
@@ -283,12 +282,12 @@ int main(int argc, char *argv[]){
 		conf.windowTitle = conf.game.title;
 
 	if (TTF_Init() == false){
-		ErrorMsg("Error initializing SDL_ttf: %s", SDL_GetError());
+		WarnMsg("Error initializing SDL_ttf: %s", SDL_GetError());
 		SDL_Quit();
 	}
 
 	if (MIX_Init() == false){
-		ErrorMsg("Error initializing SDL_mixer: %s", SDL_GetError());
+		WarnMsg("Error initializing SDL_mixer: %s", SDL_GetError());
 		TTF_Quit();
 		SDL_Quit();
 
