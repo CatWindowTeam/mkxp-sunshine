@@ -1,4 +1,10 @@
 class Scene_OF
+  BPM = 135
+  WAIT_TIME = 1.0 * (BPM / 60.0) * Graphics.frame_rate
+
+  BUMP_SCALE = 1.2
+  BUMP_RETURN_SPEED = 0.2
+
   ARROW_SIZE = 32
   ARROW_SCALE = 2
   ARROWS_PADDING = 12
@@ -55,28 +61,32 @@ class Scene_OF
   def main
     Audio.bgm_stop
 
-    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @viewport_ui = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @viewport_ui.ox = -Graphics.width / 2
+    @viewport_ui.oy = -Graphics.height / 2
     @spritesheet = RPG::Cache.misc(".cats")
 
     @player_arrows = []
     @cat_arrows = []
     for i in 0..3
-      player_arrow = Sprite.new(@viewport)
+      player_arrow = Sprite.new(@viewport_ui)
       player_arrow.bitmap = Bitmap.new(ARROW_SIZE, ARROW_SIZE)
       player_arrow.bitmap.stretch_blt(Rect.new(0, 0, ARROW_SIZE, ARROW_SIZE), @spritesheet, SPRITES[PLAYER_ARROWS_SPRITES[:base][i]])
       player_arrow.zoom_x = player_arrow.zoom_y = ARROW_SCALE
-      player_arrow.x = Graphics.width - ARROWS_SIDES_MARGIN + (ARROW_SIZE * ARROW_SCALE + ARROWS_PADDING) * i - (ARROW_SIZE * ARROW_SCALE * 4 + ARROWS_PADDING * 3)
-      player_arrow.y = ARROWS_TOP_MARGIN
+      player_arrow.x = Graphics.width / 2 - ARROWS_SIDES_MARGIN + (ARROW_SIZE * ARROW_SCALE + ARROWS_PADDING) * i - (ARROW_SIZE * ARROW_SCALE * 4 + ARROWS_PADDING * 3)
+      player_arrow.y = ARROWS_TOP_MARGIN - Graphics.height / 2
       @player_arrows << player_arrow
 
-      cat_arrow = Sprite.new(@viewport)
+      cat_arrow = Sprite.new(@viewport_ui)
       cat_arrow.bitmap = Bitmap.new(ARROW_SIZE, ARROW_SIZE)
       cat_arrow.bitmap.stretch_blt(Rect.new(0, 0, ARROW_SIZE, ARROW_SIZE), @spritesheet, SPRITES[CAT_ARROWS_SPRITES[:base][i]])
       cat_arrow.zoom_x = cat_arrow.zoom_y = ARROW_SCALE
-      cat_arrow.x = ARROWS_SIDES_MARGIN + (ARROW_SIZE * ARROW_SCALE + ARROWS_PADDING) * i
-      cat_arrow.y = ARROWS_TOP_MARGIN
+      cat_arrow.x = ARROWS_SIDES_MARGIN + (ARROW_SIZE * ARROW_SCALE + ARROWS_PADDING) * i - Graphics.width / 2
+      cat_arrow.y = ARROWS_TOP_MARGIN - Graphics.height / 2
       @cat_arrows << cat_arrow
     end
+
+    @bump_timeout = WAIT_TIME
 
     # Execute transition
     Graphics.transition(40)
@@ -99,7 +109,14 @@ class Scene_OF
   end
 
   def update
-    @viewport.scale_x -= 0.001
+    @bump_timeout -= 1
+    if @bump_timeout <= 0
+      @bump_timeout += WAIT_TIME
+      @viewport_ui.scale_x = BUMP_SCALE
+      @viewport_ui.scale_y = BUMP_SCALE
+    end
+    @viewport_ui.scale_x = @viewport_ui.scale_x * (1.0 - BUMP_RETURN_SPEED) + BUMP_RETURN_SPEED
+    @viewport_ui.scale_y = @viewport_ui.scale_y * (1.0 - BUMP_RETURN_SPEED) + BUMP_RETURN_SPEED
   end
 
   def map_input(input)

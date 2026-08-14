@@ -55,7 +55,9 @@ module Audio
             @bgs_playback.play(-1, volume / 100.0, pitch / 100.0)
         end
         def bgs_fade(time)
-            @bgs_playback.fade_out(time / 60.0)
+            if (@bgs_playback && @bgs_playback.playing)
+              @bgs_playback.fade_out(time / 60.0)
+            end
         end
         def bgs_stop
             if @bgs_playback
@@ -79,10 +81,12 @@ module Audio
             @me_playback.play(0, volume / 100.0, pitch / 100.0)
         end
         def me_fade(time)
-            @me_playback.fade_out(time / 60.0)
-            if @bgm_playback
-                @bgm_playback.position = @bgm_pos
-                @bgm_playback.fade_in(time / 60.0)
+            if (@me_playback && @me_playback.playing)
+                @me_playback.fade_out(time / 60.0)
+                if @bgm_playback
+                    @bgm_playback.position = @bgm_pos
+                    @bgm_playback.fade_in(time / 60.0)
+                end
             end
         end
         def me_stop

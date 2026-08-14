@@ -44,6 +44,9 @@ struct ViewportPrivate{
 	IntRect screenRect;
 	int isOnScreen;
 
+	double scaleX;
+	double scaleY;
+
 	EtcTemps tmp;
 
 	ViewportPrivate(int x, int y, unsigned int width, unsigned int height, Viewport *self)
@@ -51,6 +54,8 @@ struct ViewportPrivate{
 	      rect(&tmp.rect),
 	      color(&tmp.color),
 	      tone(&tmp.tone),
+	      scaleX(1.0),
+	      scaleY(1.0),
 	      isOnScreen(false)
 	{
 		rect->set(x, y, width, height);
@@ -61,7 +66,7 @@ struct ViewportPrivate{
 		rectCon.Disconnect();
 	}
 
-	void onRectChange(){
+	void onRectChange() {
 		self->geometry.rect = rect->toIntRect();
 		self->notifyGeometryChange();
 		recomputeOnScreen();
@@ -131,8 +136,11 @@ void Viewport::update(){
 	Flashable::update();
 }
 
-DEF_ATTR_RD_SIMPLE(Viewport, OX,   int,   geometry.orig.x)
-DEF_ATTR_RD_SIMPLE(Viewport, OY,   int,   geometry.orig.y)
+DEF_ATTR_RD_SIMPLE(Viewport, OX, int, geometry.orig.x)
+DEF_ATTR_RD_SIMPLE(Viewport, OY, int, geometry.orig.y)
+
+DEF_ATTR_RD_SIMPLE(Viewport, ScaleX, double, p->scaleX)
+DEF_ATTR_RD_SIMPLE(Viewport, ScaleY, double, p->scaleY)
 
 DEF_ATTR_SIMPLE(Viewport, Rect,  Rect&,  *p->rect)
 DEF_ATTR_SIMPLE(Viewport, Color, Color&, *p->color)
@@ -155,6 +163,26 @@ void Viewport::setOY(int value){
 		return;
 
 	geometry.orig.y = value;
+	notifyGeometryChange();
+}
+
+void Viewport::setScaleX(double value){
+	guardDisposed();
+
+	if (p->scaleX == value)
+		return;
+
+	p->scaleX = value;
+	notifyGeometryChange();
+}
+
+void Viewport::setScaleY(double value){
+	guardDisposed();
+
+	if (p->scaleY == value)
+		return;
+
+	p->scaleY = value;
 	notifyGeometryChange();
 }
 
