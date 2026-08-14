@@ -27,7 +27,18 @@ BLACKLIST = [
   "GDI32.dll",
   "gdi32full.dll",
   "WINMM.dll",
-  "DWrite.dll"
+  "DWrite.dll",
+  "VERSION.dll",
+  "Secur32.dll",
+  "IMM32.DLL",
+  "IPHLPAPI.DLL",
+  "ole32.dll",
+  "OLEAUT32.dll",
+  "SETUPAPI.dll",
+  "SHELL32.DLL",
+  "SSPICLI.DLL",
+  "USP10.DLL",
+  "WS2_32.dll"
 ]
 
 files = []
