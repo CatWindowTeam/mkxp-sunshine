@@ -103,6 +103,11 @@ public:
 		dirty = true;
 	}
 
+	void setGlobalScale(const Vec2 &value){
+		globalScale = value;
+		dirty = true;
+	}
+
 	const float *getMatrix(){
 		if (dirty){
 			updateMatrix();
@@ -121,18 +126,18 @@ private:
 
 		float angle  = rotation * 3.141592654f / 180.0f;
 		float cosine = (float) SDL_cos(angle);
-		float sine   = (float) sin(angle);
+		float sine   = (float) SDL_sin(angle);
 		float sxc    = scale.x * cosine;
 		float syc    = scale.y * cosine;
 		float sxs    = scale.x * sine;
 		float sys    = scale.y * sine;
-		float tx     = -origin.x * sxc - origin.y * sys + position.x + offset.x;
-		float ty     =  origin.x * sxs - origin.y * syc + position.y + offset.y;
+		float tx     = (-origin.x * sxc - origin.y * sys + position.x) * globalScale.x + offset.x;
+		float ty     = ( origin.x * sxs - origin.y * syc + position.y) * globalScale.y + offset.y;
 
-		matrix[0]  =  sxc;
-		matrix[1]  = -sxs;
-		matrix[4]  =  sys;
-		matrix[5]  =  syc;
+		matrix[0]  =  sxc * globalScale.x;
+		matrix[1]  = -sxs * globalScale.y;
+		matrix[4]  =  sys * globalScale.x;
+		matrix[5]  =  syc * globalScale.y;
 		matrix[12] =  tx;
 		matrix[13] =  ty;
 	}
@@ -144,6 +149,8 @@ private:
 
 	/* Silently added to position */
 	Vec2i offset;
+	/* Silently added to scale */
+	Vec2 globalScale;
 
 	float matrix[16];
 

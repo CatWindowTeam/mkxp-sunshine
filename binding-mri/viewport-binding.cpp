@@ -78,6 +78,9 @@ DEF_PROP_OBJ_VAL(Viewport, Tone,  Tone,  "tone")
 DEF_PROP_I(Viewport, OX)
 DEF_PROP_I(Viewport, OY)
 
+DEF_PROP_F(Viewport, ScaleX)
+DEF_PROP_F(Viewport, ScaleY)
+
 void viewportBindingInit(){
 	VALUE klass = rb_define_class("Viewport", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&ViewportType>);
@@ -88,10 +91,12 @@ void viewportBindingInit(){
 
 	_rb_define_method(klass, "initialize", viewportInitialize);
 
-	INIT_PROP_BIND( Viewport, Rect,  "rect"  );
-	INIT_PROP_BIND( Viewport, OX,    "ox"    );
-	INIT_PROP_BIND( Viewport, OY,    "oy"    );
-	INIT_PROP_BIND( Viewport, Color, "color" );
-	INIT_PROP_BIND( Viewport, Tone,  "tone"  );
+	INIT_PROP_BIND( Viewport, Rect,   "rect"   );
+	INIT_PROP_BIND( Viewport, OX,     "ox"     );
+	INIT_PROP_BIND( Viewport, OY,     "oy"     );
+	INIT_PROP_BIND( Viewport, ScaleX, "scale_x");
+	INIT_PROP_BIND( Viewport, ScaleY, "scale_y");
+	INIT_PROP_BIND( Viewport, Color,  "color"  );
+	INIT_PROP_BIND( Viewport, Tone,   "tone"   );
 }
 

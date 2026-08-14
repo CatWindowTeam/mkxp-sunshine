@@ -622,6 +622,11 @@ void Sprite::onGeometryChange(const Scene::Geometry &geo){
 	/* Offset at which the sprite will be drawn
 	 * relative to screen origin */
 	p->trans.setGlobalOffset(geo.offset());
+	Viewport* viewport = ViewportElement::getViewport();
+	if (viewport)
+		p->trans.setGlobalScale(Vec2(viewport->getScaleX(), viewport->getScaleY()));
+	else
+		p->trans.setGlobalScale(Vec2(1.0, 1.0));
 
 	p->sceneRect.setSize(geo.rect.size());
 	p->sceneOrig = geo.orig;
