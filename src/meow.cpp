@@ -187,7 +187,7 @@ void crash_screen(SDL_Window* win){
 		o << "SDL(compiled) version: " << SDL_VERSIONNUM_MAJOR(sdlcompiled) << "." << SDL_VERSIONNUM_MINOR(sdlcompiled) << "." << SDL_VERSIONNUM_MICRO(sdlcompiled) << endl;
 		o << "SDL_image(compiled) version: " << SDL_IMAGE_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << endl;
 		o << "SDL_TTF(compiled) version: " << SDL_TTF_MAJOR_VERSION << "." << SDL_TTF_MINOR_VERSION << "." << SDL_TTF_MICRO_VERSION << endl;
-		0 << "SDL_mixer version: " << MIX_Version() << endl;
+		o << "SDL_mixer version: " << MIX_Version() << endl;
 		o << "Ruby version: " << RUBY_API_VERSION_CODE << endl;
 		o << "ZLib version: " << ZLIB_VERSION << endl;
 		o << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << endl;
