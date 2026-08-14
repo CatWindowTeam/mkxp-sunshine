@@ -38,7 +38,11 @@ BLACKLIST = [
   "SHELL32.DLL",
   "SSPICLI.DLL",
   "USP10.DLL",
-  "WS2_32.dll"
+  "WS2_32.dll",
+  "bcrypt.dll",
+  "combase.dll",
+  "imagehlp.dll",
+  "msvcp_win.dll"
 ]
 
 files = []

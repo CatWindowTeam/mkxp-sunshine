@@ -163,6 +163,7 @@ void crash_screen(SDL_Window* win){
 	    timeeeeee.pop_back();
 	}
 	string file = "crash " + timeeeeee + ".txt";
+	std::erase(file, ':');
 	SDL_snprintf(msg4, sizeof(msg4), "Path: %s%s", SDL_GetCurrentDirectory(), file.c_str());
 	o.open(file);
 	//collecting info and writing to crashdump
