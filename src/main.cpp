@@ -303,8 +303,10 @@ int main(int argc, char *argv[]){
 		SDL_SetWindowFullscreen(win, true);
 
 	if (!win){
-		ErrorMsg("Error creating window: %s", SDL_GetError());
-		return 0;
+		WarnMsg("Error creating window: %s", SDL_GetError());
+		MIX_Quit();
+		TTF_Quit();
+		SDL_Quit();
 	}
 
 	/* OSX and Windows have their own native ways of
@@ -324,7 +326,7 @@ int main(int argc, char *argv[]){
 
 	if (!mixer){
 		SDL_DestroyWindow(win);
-		ErrorMsg("Error creating Mixer Device");
+		WarnMsg("Error creating Mixer Device, check your system audio configuration");
 		MIX_Quit();
 		TTF_Quit();
 		SDL_Quit();
