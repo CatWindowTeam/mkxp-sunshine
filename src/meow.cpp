@@ -47,7 +47,6 @@
 	#include <dpmi.h>
 #endif
 #include "crash.png.xxd"
-
 using namespace std;
 
 static inline const char* glGetStringInt(GLenum name){
@@ -106,10 +105,6 @@ static void get_reason_and_solution(Exception::Type t) {
 }
 
 void crash(Exception::Type t, const char *fmt, ...) {
-    static char crash_message[1024];
-    static const char* crash_reason = nullptr;
-    static const char* crash_possible_solution = nullptr;
-
     va_list args;
     va_start(args, fmt);
 
@@ -130,30 +125,27 @@ void crash(Exception::Type t, const char *fmt, ...) {
 }
 
 void crash_screen(SDL_Window* win){
-	static char msg[1024] = "";
-	static char msg1[1024] = "";
-	static char msg2[1024] = "";
-	static char msg3[1024] = "";
-	static char msg4[1024] = "";
+	// Skil Crash screen if failed initialize
+	static bool skip_crash_screen = false;
 	//creating render
 	SDL_Renderer* ren = SDL_CreateRenderer(win, NULL);
 	if (ren == nullptr) {
-		WarnMsg("Failed to create crash sceen, please check if your device is too strong to run game: ", SDL_GetError());
+		WarnMsg("Failed to create renderer, please check if your device is too strong to run game or report bug.Error Message: ", SDL_GetError());
+		skip_crash_screen = true;
 	}
 	SDL_Surface* crash_img = IMG_Load_IO(SDL_IOFromConstMem(assets_crash_png, assets_crash_png_len), true);
 	if (crash_img == nullptr) {
-		WarnMsg("Failed to create crash sceen, please check if your device is too strong to run game: ", SDL_GetError());
+		WarnMsg("Failed to create surface, please check if your device is too strong to run game or report bug.Error Message: ", SDL_GetError());
+		skip_crash_screen = true;
 	}
 	SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, crash_img);
 	SDL_DestroySurface(crash_img);	
 	if (tex == nullptr) {
-		WarnMsg("Failed to create crash sceen, please check if your device is too strong to run game: ", SDL_GetError());
+		WarnMsg("Failed to create texture, please check if your device is too strong to run game or report bug.Error Message: ", SDL_GetError());
+		skip_crash_screen = true;
+	}else{
+			SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
 	}
-	//stringsssssssssssss
-	SDL_snprintf(msg, sizeof(msg), "Message: %s", crash_message);
-	SDL_snprintf(msg1, sizeof(msg1), "Possible reason: %s", crash_reason);
-	SDL_snprintf(msg2, sizeof(msg2), "Possible solution: %s", crash_possible_solution);
-	SDL_snprintf(msg3, sizeof(msg3), "Crashdump privacy: %s", is_privacy_crashdump_enabled);	
 	//creating file and timestamp
 	ofstream o;
 	time_t timestamp;
@@ -164,7 +156,6 @@ void crash_screen(SDL_Window* win){
 	}
 	string file = "crash " + timeeeeee + ".txt";
 	std::erase(file, ':');
-	SDL_snprintf(msg4, sizeof(msg4), "Path: %s%s", SDL_GetCurrentDirectory(), file.c_str());
 	o.open(file);
 	//collecting info and writing to crashdump
 	if (o.is_open()){
@@ -172,7 +163,7 @@ void crash_screen(SDL_Window* win){
 			o << "EXPEREMENTAL BUILD" << endl;
 		#endif
 		o << "VERSION: " << VERSION_STRING << endl;
-		o << "REASON: " << msg << endl;
+		o << "REASON: " << crash_message << endl;
 		o << "[BOOST stacktrace()]" << endl << endl;
 		o << boost::stacktrace::stacktrace() << endl;
 
@@ -216,7 +207,6 @@ void crash_screen(SDL_Window* win){
 			}
 		#elif android
 			o << "Android API version: " << android_get_device_api_level() << endl;
-			o << "External storage State: " << SDL_GetAndroidExternalStorageState() << endl;
 			o << "Internal storage path: " << SDL_GetAndroidInternalStoragePath() << endl;
 			o << "External Storage path: " << SDL_GetAndroidExternalStoragePath() << endl;
 			o << "Cache path: " << SDL_GetAndroidCachePath() << endl;
@@ -241,7 +231,9 @@ void crash_screen(SDL_Window* win){
 		o << "[Hardware]" << endl;
 		o << "number of logical CPU cores: " << SDL_GetNumLogicalCPUCores() << endl;
 		o << "System RAM size: " << SDL_GetSystemRAM() << " MiB" << endl;
-		o << "L1 cache size: " << SDL_GetCPUCacheLineSize() << endl;
+		if(!is_privacy_crashdump_enabled){
+			o << "L1 cache size: " << SDL_GetCPUCacheLineSize() << endl;
+		}
 		
 		o << endl;
 		o << "[OpenGL]" << endl;
@@ -259,38 +251,42 @@ void crash_screen(SDL_Window* win){
 	}else{
 		WarnMsg("[CRASHLOG] Failed to write crashdump file");
 	}		
-	
-	SDL_Event e;
-	bool quit = false;
 
-	int texW = 100, texH = 100;
-	int winW = 0, winH = 0;
-	SDL_GetWindowSize(win, &winW, &winH);
-	SDL_FRect dst{
-	    (float)((winW - 100) / 2),
-	    (float)((winH - 100) / 2),
-	    (float)100,
-	    (float)100
-	};
+	if(!skip_crash_screen){
+		SDL_Event e;
+		bool quit = false;
+
+		int texW = 100, texH = 100;
+		int winW = 0, winH = 0;
+		SDL_GetWindowSize(win, &winW, &winH);
+		SDL_FRect dst{
+	    	(float)((winW - 100) / 2),
+	    	(float)((winH - 100) / 2),
+	    	(float)100,
+	    	(float)100
+		};
 	
-	while (!quit) {
-	    while (SDL_PollEvent(&e)) {
-	        if (e.type == SDL_EVENT_QUIT) quit = true;
-	    }
+		while (!quit) {
+	    	while (SDL_PollEvent(&e)) {
+	        	if (e.type == SDL_EVENT_QUIT) quit = true;
+	    	}
 	    
-		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-	    SDL_RenderClear(ren);
-	    SDL_RenderTexture(ren, tex, NULL, &dst);
-		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-	    SDL_RenderDebugText(ren, 10, 10, "World machine crashed, crashdump created in game directory");
-	    SDL_RenderDebugText(ren, 10, 20, msg);
-	    SDL_RenderDebugText(ren, 10, 30, msg1);
-	    SDL_RenderDebugText(ren, 10, 40, msg2);
-	    SDL_RenderDebugText(ren, 10, 50, msg3);
-	    SDL_RenderDebugText(ren, 10, 60, msg4);
-	    SDL_RenderDebugText(ren, 10, 70, "If you are sure that the problem is not in your modifications,");
-	    SDL_RenderDebugText(ren, 10, 80, "your hands or in your device - please report the bug to the developers");
-	    SDL_RenderPresent(ren);
+			SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+	    	SDL_RenderClear(ren);
+	    	SDL_RenderTexture(ren, tex, NULL, &dst);
+			SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+	    	SDL_RenderDebugTextFormat(ren, 10, 10, "World machine crashed, crashdump created in game directory");
+	    	SDL_RenderDebugTextFormat(ren, 10, 20, "%s", crash_message);
+	    	SDL_RenderDebugTextFormat(ren, 10, 30, "Possible reason: %s", crash_reason);
+	    	SDL_RenderDebugTextFormat(ren, 10, 40, "Possible solution: %s", crash_possible_solution);
+	    	SDL_RenderDebugTextFormat(ren, 10, 50, "Path: %s%s", SDL_GetCurrentDirectory(), file.c_str());
+	    	SDL_RenderDebugTextFormat(ren, 10, 60, "Crashdump privacy: %s", is_privacy_crashdump_enabled ? "enabled" : "disabled");
+	    	SDL_RenderDebugTextFormat(ren, 10, 70, "If you are sure that the problem is not in your modifications,");
+	    	SDL_RenderDebugTextFormat(ren, 10, 80, "your hands or in your device - please report the bug to the developers");
+	    	SDL_RenderPresent(ren);
+		}
+		SDL_DestroyTexture(tex);
+		SDL_DestroyRenderer(ren);
 	}
 }
 

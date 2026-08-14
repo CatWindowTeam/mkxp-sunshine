@@ -7,6 +7,7 @@
 inline std::vector<std::string> logs = {};
 
 inline bool show_crash_sceen = false;
+inline bool is_privacy_crashdump_enabled = false;
 inline bool is_ruby_initialized = false;
 inline char crash_message[1024] = "";
 inline const char* crash_reason = "Unknown";

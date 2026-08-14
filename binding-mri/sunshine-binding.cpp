@@ -11,7 +11,7 @@
 #include "security.h"
 #include "eventthread.h"
 #include "sunshine.h"
-bool is_privacy_crashdump_enabled = false;
+#include "meow.h"
 
 static VALUE sunshine_get_crash_privacy(VALUE self) {
   return is_privacy_crashdump_enabled ? Qtrue : Qfalse;
