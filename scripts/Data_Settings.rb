@@ -34,6 +34,7 @@ module Settings
         :oneshot_mode                            => false,
         :twm_shader_footprint                    => true,
         :disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already => false,
+        :wallpaper_mode                          => 0,
 
         # Advanced
         :crashlog_privacy                        => false,
@@ -308,6 +309,12 @@ class Window_Settings
         :type => :bool,
         :name => "Disable System API Dependent Puzzles(For wayland users)",
         :parameter => :disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already
+      },
+      {
+        :type => :enum,
+        :name => "Wallpaper mode",
+        :parameter => :wallpaper_mode,
+        :values => ["Normal", "Fallback", "Disabled"]
       },
     ],
     "Controls" => [

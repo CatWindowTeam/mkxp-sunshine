@@ -265,7 +265,7 @@ int main(int argc, char *argv[]){
     			freopen("CONOUT$", "w", stderr);
 		}
 	#endif
-
+	
 	if (!conf.gameFolder.empty()){
 		if (chdir(conf.gameFolder.c_str()) != 0){
 			WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());

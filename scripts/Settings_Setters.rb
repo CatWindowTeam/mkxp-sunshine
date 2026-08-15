@@ -100,6 +100,15 @@ module Settings
       def profiller(value)
 		Profiler.set(value)
       end
+      def wallpaper_mode(value)
+		if value == 0
+			Sunshine.wallpapermode="normal" 
+		elsif value == 1
+			Sunshine.wallpapermode="fallback"
+		else
+			Sunshine.wallpapermode="disabled"
+		end				
+      end
     end
   end
 end

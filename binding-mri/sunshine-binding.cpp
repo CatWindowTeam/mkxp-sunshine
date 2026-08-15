@@ -12,13 +12,16 @@
 #include "eventthread.h"
 #include "sunshine.h"
 #include "meow.h"
-
-static VALUE sunshine_get_crash_privacy(VALUE self) {
-  return is_privacy_crashdump_enabled ? Qtrue : Qfalse;
-}
+#include "sharedstate.h"
 
 static VALUE sunshine_set_crash_privacy(VALUE, VALUE v) {
   is_privacy_crashdump_enabled = RTEST(v);
+  return v;
+}
+
+static VALUE sunshine_set_wallpaper_mode(VALUE, VALUE v) {
+  std::string s(StringValueCStr(v));
+  shState->config().wallpaperMode = s;
   return v;
 }
 
@@ -65,8 +68,8 @@ void SunshineBindingInit(){
 	#else
 		rb_const_set(module, rb_intern("DEVBUILD"), Qfalse);
 	#endif
-	rb_define_singleton_method(module, "crashprivacy", RUBY_METHOD_FUNC(sunshine_get_crash_privacy), 0);
 	rb_define_singleton_method(module, "crashprivacy=", RUBY_METHOD_FUNC(sunshine_set_crash_privacy), 1);
+	rb_define_singleton_method(module, "wallpapermode=", RUBY_METHOD_FUNC(sunshine_set_wallpaper_mode), 1);
 	rb_define_singleton_method(module, "setSDLHint", RUBY_METHOD_FUNC(sunshine_set_hint), 2);
     //если методы доступны то просто не перезаписываем их
 	if (!rb_respond_to(rb_cObject, rb_intern("class"))) {
