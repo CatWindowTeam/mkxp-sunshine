@@ -4,6 +4,8 @@ class Scene_OF
 
   BUMP_SCALE = 1.07
   BUMP_RETURN_SPEED = 0.1
+  ICONS_BUMP_SCALE = 1.17
+  ICONS_BUMP_RETURN_SPEED = 0.2
 
   ARROW_SIZE = 32
   ARROW_SCALE = 2
@@ -48,6 +50,9 @@ class Scene_OF
     :cat_sign_down1  => Rect.new(0, 1056, 128, 128), :cat_sign_down2  => Rect.new(128, 1056, 128, 128), :cat_sign_down3  => Rect.new(256, 1056, 128, 128), :cat_miss_down  => Rect.new(384, 1056, 128, 128),
     :cat_sign_up1    => Rect.new(0, 1194, 128, 128), :cat_sign_up2    => Rect.new(128, 1194, 128, 128), :cat_sign_up3    => Rect.new(256, 1194, 128, 128), :cat_miss_up    => Rect.new(384, 1194, 128, 128),
     :cat_sign_right1 => Rect.new(0, 1322, 128, 128), :cat_sign_right2 => Rect.new(128, 1322, 128, 128), :cat_sign_right3 => Rect.new(256, 1322, 128, 128), :cat_miss_right => Rect.new(384, 1322, 128, 128),
+  
+    :hpbar_cat_lose    => Rect.new(320,  0, 32, 32), :hpbar_cat_normal    => Rect.new(288,  0, 32, 32), :hpbar_cat_win    => Rect.new(256,  0, 32, 32),
+    :hpbar_player_lose => Rect.new(320, 32, 32, 32), :hpbar_player_normal => Rect.new(288, 32, 32, 32), :hpbar_player_win => Rect.new(256, 32, 32, 32),
   }
 
   PLAYER_ARROWS_SPRITES = {
@@ -145,13 +150,21 @@ class Scene_OF
     @hp_white.y = -HP_HEIGHT / 2 - 2 + Graphics.height / 2 - ARROWS_SIDES_MARGIN
     @hp_white.z = @hp_bg.z + 2
 
-    @hp = 50
+    @hp_icons = Sprite.new(@viewport_ui)
+    @hp_icons.bitmap = Bitmap.new(128, 64)
+    @hp_icons.ox = 64
+    @hp_icons.oy = 64
+    @hp_icons.y = Graphics.height / 2 - ARROWS_SIDES_MARGIN + HP_HEIGHT / 2 - 6
+    @hp_icons.z = @hp_white.z + 1
+
+    self.hp = 50
 
     @bst_debug = Sprite.new(@viewport_ui)
     @bst_debug.bitmap = Bitmap.new(300, 40)
 
     @total_time = 0
     @bump_timeout = 0
+    @icons_bump_timeout = 0
     @miss_timeout = 0
 
     make_mapping
@@ -193,7 +206,22 @@ class Scene_OF
     
     @bst_debug.bitmap.clear
     @bst_debug.bitmap.draw_text(Rect.new(0, 0, 300, 40), "#{beat} : #{step} : #{tick}")
-2
+
+    @bump_timeout -= 1
+    @icons_bump_timeout -= 1
+    if @bump_timeout <= 0
+      @bump_timeout += BPM_TIME
+      @viewport_arrows.scale_y = @viewport_ui.scale_y =
+      @viewport_arrows.scale_x = @viewport_ui.scale_x = BUMP_SCALE
+    end
+    if @icons_bump_timeout <= 0
+      @icons_bump_timeout += BPM_TIME / 2.0
+      @hp_icons.zoom_x = @hp_icons.zoom_y = ICONS_BUMP_SCALE
+    end
+    @viewport_arrows.scale_x = @viewport_ui.scale_x =
+    @viewport_arrows.scale_y = @viewport_ui.scale_y = @viewport_ui.scale_x * (1.0 - BUMP_RETURN_SPEED) + BUMP_RETURN_SPEED
+    @hp_icons.zoom_x = @hp_icons.zoom_y = @hp_icons.zoom_x * (1.0 - ICONS_BUMP_RETURN_SPEED) + ICONS_BUMP_RETURN_SPEED
+
     # Cat Arrows
     i = 0
     while i < @cat_flying_arrows.length
@@ -283,15 +311,6 @@ class Scene_OF
       end
       i += 1
     end
-
-    @bump_timeout -= 1
-    if @bump_timeout <= 0
-      @bump_timeout += BPM_TIME
-      @viewport_arrows.scale_x = @viewport_ui.scale_x = BUMP_SCALE
-      @viewport_arrows.scale_y = @viewport_ui.scale_y = BUMP_SCALE
-    end
-    @viewport_arrows.scale_x = @viewport_ui.scale_x = @viewport_ui.scale_x * (1.0 - BUMP_RETURN_SPEED) + BUMP_RETURN_SPEED
-    @viewport_arrows.scale_y = @viewport_ui.scale_y = @viewport_ui.scale_y * (1.0 - BUMP_RETURN_SPEED) + BUMP_RETURN_SPEED
 
     # player
     for dir in 1..4
@@ -384,6 +403,18 @@ class Scene_OF
   def hp=(val)
     @hp = val.clamp(0, 100)
     @hp_white.zoom_x = (HP_WIDTH - 4) * (100 - @hp) / 100.0
+    @hp_icons.x = -HP_WIDTH / 2 - 2 + (HP_WIDTH - 4) * (100 - @hp) / 100.0
+    @hp_icons.bitmap.clear
+    if @hp <= 25
+      @hp_icons.bitmap.stretch_blt(Rect.new(64, 0, 64, 64), @spritesheet, SPRITES[:hpbar_player_lose])
+      @hp_icons.bitmap.stretch_blt(Rect.new(0,  0, 64, 64), @spritesheet, SPRITES[:hpbar_cat_win])
+    elsif @hp >= 75
+      @hp_icons.bitmap.stretch_blt(Rect.new(64, 0, 64, 64), @spritesheet, SPRITES[:hpbar_player_win])
+      @hp_icons.bitmap.stretch_blt(Rect.new(0,  0, 64, 64), @spritesheet, SPRITES[:hpbar_cat_lose])
+    else
+      @hp_icons.bitmap.stretch_blt(Rect.new(64, 0, 64, 64), @spritesheet, SPRITES[:hpbar_player_normal])
+      @hp_icons.bitmap.stretch_blt(Rect.new(0,  0, 64, 64), @spritesheet, SPRITES[:hpbar_cat_normal])
+    end
   end
 
   def map_input(input)
