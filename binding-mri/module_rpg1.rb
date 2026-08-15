@@ -65,7 +65,7 @@ module RPG
     end
     def self.face(filename)
       filename = filename.downcase
-      if (CTime.month == 4 && CTime.day == 1 && filename.start_with?("niko")) or Settings[:enforce_april_fools]
+      if ($game_temp.message_face != nil && ((CTime.month == 4 && CTime.day == 1) or Settings[:enforce_april_fools]) && filename.start_with?("niko"))
         filename = "af"
       end	  
       if $game_switches[160] && filename.start_with?("niko")
