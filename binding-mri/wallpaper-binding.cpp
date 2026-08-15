@@ -39,6 +39,7 @@
 		#include <string>
 		#include <sstream>
 		#include <cstdlib>
+		#include <sys/stat.h>
 		static std::string desktop = "uninitialized";
 		// GNOME settings
 		static GSettings *bgsetting;
@@ -58,6 +59,10 @@
 		static std::string originalBgMode = "";
 		// LXQT
 		static std::string DBUS_SESSION_BUS_ADDRESS = "";
+		// Wallpaper utility (feh/nitrogen), used when no known DE is detected
+		static std::string wpTool = "";
+		static std::string originalFehbgCmd = "";
+		static bool originalFehbgExists = false;
 		// Fallback settings
 		static std::string fallbackPath;
 	#endif
@@ -68,7 +73,7 @@
 		printf("[desktopEnvironmentInit] desktopEnvironmentInit()\n");
 		if (desktop != "uninitialized")
     		return;
-		
+
 		desktop = shState->oneshot().desktopEnv;
 		if (desktop == "nope") {
     			return;
@@ -153,8 +158,8 @@
 			}
 			infile.close();
 		}
-		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
-			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
+			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
 				if (desktop == "cinnamon") bgsetting = g_settings_new("org.cinnamon.desktop.background");
 				else if (desktop == "deepin") bgsetting = g_settings_new("com.deepin.wrap.gnome.desktop.background");
 				else bgsetting = g_settings_new("org.gnome.desktop.background");
@@ -252,7 +257,34 @@
 				desktop = "kde_error";
 			}
 		} else {
-			fallbackPath = std::string(SDL_getenv("HOME")) + "/Desktop/ONESHOT_hint.png";
+			const char* homeC = SDL_getenv("HOME");
+			std::string home = homeC ? homeC : "";
+			std::string fehbgPath = home + "/.fehbg";
+			std::string nitrogenPath = home + "/.config/nitrogen/bg-saved.cfg";
+
+			struct stat fehStat, nitrogenStat;
+			bool fehExists = !home.empty() && stat(fehbgPath.c_str(), &fehStat) == 0;
+			bool nitrogenExists = !home.empty() && stat(nitrogenPath.c_str(), &nitrogenStat) == 0;
+
+			if (fehExists && (!nitrogenExists || fehStat.st_mtime >= nitrogenStat.st_mtime)) {
+				wpTool = "feh";
+				std::ifstream infile(fehbgPath);
+				if (infile) {
+					std::stringstream buffer;
+					buffer << infile.rdbuf();
+					originalFehbgCmd = buffer.str();
+					originalFehbgExists = !originalFehbgCmd.empty();
+					infile.close();
+				}
+			} else if (nitrogenExists) {
+				wpTool = "nitrogen";
+			} else if (std::system("command -v feh >/dev/null 2>&1") == 0) {
+				wpTool = "feh";
+			} else if (std::system("command -v nitrogen >/dev/null 2>&1") == 0) {
+				wpTool = "nitrogen";
+			} else {
+				fallbackPath = home + "/Desktop/ONESHOT_hint.png";
+			}
 		}
 	}
 #endif
@@ -358,13 +390,13 @@ end:
 		}
 		std::string gameDirStr(gameDir);
 		desktopEnvironmentInit();
-		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
 			std::stringstream hexColor;
 			hexColor << "#" << std::hex << color;
 			g_settings_set_string(bgsetting, "picture-options", "scaled");
 			g_settings_set_string(bgsetting, "primary-color", hexColor.str().c_str());
 			g_settings_set_string(bgsetting, "color-shading-type", "solid");
-			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
+			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
 				g_settings_set_string(bgsetting, "picture-uri", ("file://" + gameDirStr + path).c_str());
 			} else {
 				g_settings_set_string(bgsetting, "picture-filename", (gameDirStr + path).c_str());
@@ -462,6 +494,20 @@ end:
 				if (status != 0) {
 				    Debug() << "bliat ono slomalos\n";
 				}
+		} else if (wpTool == "feh") {
+				std::string concatPath = gameDirStr + path;
+				std::string cmd = "feh --bg-scale \"" + concatPath + "\"";
+				int status = std::system(cmd.c_str());
+				if (status != 0) {
+				    Debug() << "bliat ono slomalos\n";
+				}
+		} else if (wpTool == "nitrogen") {
+				std::string concatPath = gameDirStr + path;
+				std::string cmd = "nitrogen --set-scaled \"" + concatPath + "\"";
+				int status = std::system(cmd.c_str());
+				if (status != 0) {
+				    Debug() << "bliat ono slomalos\n";
+				}
 		} else {
 			std::ifstream srcHint(gameDirStr + path);
 			std::ofstream dstHint(fallbackPath);
@@ -506,8 +552,8 @@ RB_METHOD(wallpaperReset){
 		MacDesktop::ResetBackground();
 	#else
 		desktopEnvironmentInit();
-		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
-			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
+			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
 				g_settings_set_string(bgsetting, "picture-uri", defPictureURI.c_str());
 			} else {
 				g_settings_set_string(bgsetting, "picture-filename", defPictureURI.c_str());
@@ -605,6 +651,17 @@ RB_METHOD(wallpaperReset){
 				if (status != 0) {
 					Debug() << "bliat ono slomalos";
 				}
+			}
+		} else if (wpTool == "feh") {
+			std::string cmd = originalFehbgExists ? originalFehbgCmd : "xsetroot -solid black";
+			int status = std::system(cmd.c_str());
+			if (status != 0) {
+				Debug() << "bliat ono slomalos";
+			}
+		} else if (wpTool == "nitrogen") {
+			int status = std::system("nitrogen --restore");
+			if (status != 0) {
+				Debug() << "bliat ono slomalos";
 			}
 		} else {
 			if (remove(fallbackPath.c_str()) != 0) {
