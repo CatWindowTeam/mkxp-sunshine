@@ -45,6 +45,8 @@
 		// GNOME settings
 		static GSettings *bgsetting;
 		static std::string defPictureURI, defPictureOptions, defPrimaryColor, defColorShading;
+		static std::string defPictureURIDark;
+		static bool hasPictureURIDark = false;
 		// XFCE settings
 		static XfconfChannel* bgchannel;
 		static int defPictureStyle;
@@ -70,6 +72,16 @@
 #endif
 
 #ifdef unix_like
+	static bool gsettingsHasKey(GSettings *settings, const char *key){
+		GSettingsSchema *schema = NULL;
+		g_object_get(settings, "settings-schema", &schema, NULL);
+		if (!schema)
+			return false;
+		bool has = g_settings_schema_has_key(schema, key);
+		g_settings_schema_unref(schema);
+		return has;
+	}
+
 	void desktopEnvironmentInit(){
 		printf("[desktopEnvironmentInit] desktopEnvironmentInit()\n");
 		if (desktop != "uninitialized")
@@ -165,6 +177,9 @@
 				else if (desktop == "deepin") bgsetting = g_settings_new("com.deepin.wrap.gnome.desktop.background");
 				else bgsetting = g_settings_new("org.gnome.desktop.background");
 				defPictureURI = g_settings_get_string(bgsetting, "picture-uri");
+				hasPictureURIDark = gsettingsHasKey(bgsetting, "picture-uri-dark");
+				if (hasPictureURIDark)
+					defPictureURIDark = g_settings_get_string(bgsetting, "picture-uri-dark");
 			} else {
 				bgsetting = g_settings_new("org.mate.background");
 				defPictureURI = g_settings_get_string(bgsetting, "picture-filename");
@@ -428,6 +443,8 @@ end:
 			g_settings_set_string(bgsetting, "color-shading-type", "solid");
 			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
 				g_settings_set_string(bgsetting, "picture-uri", ("file://" + gameDirStr + path).c_str());
+				if (hasPictureURIDark)
+					g_settings_set_string(bgsetting, "picture-uri-dark", ("file://" + gameDirStr + path).c_str());
 			} else {
 				g_settings_set_string(bgsetting, "picture-filename", (gameDirStr + path).c_str());
 			}
@@ -596,6 +613,8 @@ RB_METHOD(wallpaperReset){
 		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
 			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
 				g_settings_set_string(bgsetting, "picture-uri", defPictureURI.c_str());
+				if (hasPictureURIDark)
+					g_settings_set_string(bgsetting, "picture-uri-dark", defPictureURIDark.c_str());
 			} else {
 				g_settings_set_string(bgsetting, "picture-filename", defPictureURI.c_str());
 			}
