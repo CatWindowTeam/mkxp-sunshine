@@ -39,7 +39,7 @@ struct Config{
 	int defScreenW;
 	int defScreenH;
 	std::string windowTitle;
-	
+
 	int fixedFramerate;
 	bool frameSkip;
 	bool syncToRefreshrate;
@@ -57,10 +57,12 @@ struct Config{
 
 	std::string iconPath;
 
+	std::string wallpaperMode;
+
 	struct{
 		int sourceCount;
 	} SE;
-	
+
 	struct{
 			std::string ModsDirPath;
 			bool use_default_save_path;

@@ -88,6 +88,7 @@ void Config::read(int argc, char *argv[]){
 	PO_DESC(gameFolder, std::string, ".") \
 	PO_DESC(allowSymlinks, bool, false) \
 	PO_DESC(iconPath, std::string, "") \
+	PO_DESC(wallpaperMode, std::string, "normal") \
 	PO_DESC(SE.sourceCount, int, 6) \
 	PO_DESC(pathCache, bool, true) \
 	PO_DESC(Windows_AllocConsole, bool, false) \
