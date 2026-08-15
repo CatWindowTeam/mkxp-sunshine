@@ -291,6 +291,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 			desktopEnv = "deepin";
 		}else if (desktop.find("budgie") != std::string::npos){
 			desktopEnv = "budgie";
+		}else if (desktop.find("pantheon") != std::string::npos){
+			desktopEnv = "pantheon";
 		}
 	}
 

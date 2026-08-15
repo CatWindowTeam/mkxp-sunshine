@@ -153,8 +153,8 @@
 			}
 			infile.close();
 		}
-		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin" || desktop == "budgie") {
-			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin" || desktop == "budgie") {
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
+			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
 				if (desktop == "cinnamon") bgsetting = g_settings_new("org.cinnamon.desktop.background");
 				else if (desktop == "deepin") bgsetting = g_settings_new("com.deepin.wrap.gnome.desktop.background");
 				else bgsetting = g_settings_new("org.gnome.desktop.background");
@@ -358,13 +358,13 @@ end:
 		}
 		std::string gameDirStr(gameDir);
 		desktopEnvironmentInit();
-		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin" || desktop == "budgie") {
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
 			std::stringstream hexColor;
 			hexColor << "#" << std::hex << color;
 			g_settings_set_string(bgsetting, "picture-options", "scaled");
 			g_settings_set_string(bgsetting, "primary-color", hexColor.str().c_str());
 			g_settings_set_string(bgsetting, "color-shading-type", "solid");
-			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin" || desktop == "budgie") {
+			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
 				g_settings_set_string(bgsetting, "picture-uri", ("file://" + gameDirStr + path).c_str());
 			} else {
 				g_settings_set_string(bgsetting, "picture-filename", (gameDirStr + path).c_str());
@@ -506,8 +506,8 @@ RB_METHOD(wallpaperReset){
 		MacDesktop::ResetBackground();
 	#else
 		desktopEnvironmentInit();
-		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin" || desktop == "budgie") {
-			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin" || desktop == "budgie") {
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
+			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
 				g_settings_set_string(bgsetting, "picture-uri", defPictureURI.c_str());
 			} else {
 				g_settings_set_string(bgsetting, "picture-filename", defPictureURI.c_str());
