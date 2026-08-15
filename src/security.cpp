@@ -9,6 +9,7 @@
 	#include <sys/socket.h>
 	#include <seccomp.h>
 	//Yes its not best way, anyway better than nothing.
+	// https://www.man7.org/linux/man-pages/man2/syscalls.2.html
 	scmp_filter_ctx ctx;
 	const int seccomplist[] = {SCMP_SYS(bpf),
 	SCMP_SYS(set_mempolicy),
@@ -60,6 +61,20 @@
 	SCMP_SYS(setfsgid),
 	SCMP_SYS(setdomainname),
 	SCMP_SYS(setns),
+	SCMP_SYS(unshare),
+	
+	#ifdef __ARM_NR
+	SCMP_SYS(breakpoint),
+	#endif
+	
+	#ifdef __powerpc__
+	SCMP_SYS(sys_debug_setcontext),
+	SCMP_SYS(rtas),
+	#endif
+	
+	#ifdef __alpha
+	SCMP_SYS(oldumount),
+	#endif
 	SCMP_SYS(setpgid),
 	SCMP_SYS(pciconfig_write)};
 #endif
