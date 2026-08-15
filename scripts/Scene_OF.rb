@@ -21,7 +21,7 @@ class Scene_OF
   HP_WIDTH = 400
   HP_HEIGHT = 16
 
-  MISS_TIME = 90
+  MISS_TIME = 60
 
   SPRITES = {
     :cat_base_arrow_left       => Rect.new(0,   0, 32, 32),   :cat_base_arrow_down       => Rect.new(32,   0, 32, 32),  :cat_base_arrow_up       => Rect.new(64,   0, 32, 32),  :cat_base_arrow_right       => Rect.new(96,   0, 32, 32),
@@ -91,9 +91,8 @@ class Scene_OF
     @miss_sound = Audio.create_sound("Audio/SE/shatter")
 
     @viewport_ui = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport_arrows = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport_ui.ox = @viewport_arrows.ox = -Graphics.width / 2
-    @viewport_ui.oy = @viewport_arrows.oy = -Graphics.height / 2
+    @viewport_ui.ox = -Graphics.width / 2
+    @viewport_ui.oy = -Graphics.height / 2
     @spritesheet = RPG::Cache.misc(".cats")
 
     @cat_flying_arrows = []
@@ -104,6 +103,7 @@ class Scene_OF
     @player_tails_end = []
     @cat_arrows = []
     @player_arrows = []
+    @events = []
     for i in 0..3
       cat_arrow = Sprite.new(@viewport_ui)
       cat_arrow.bitmap = Bitmap.new(ARROW_SIZE, ARROW_SIZE)
@@ -157,6 +157,9 @@ class Scene_OF
     @hp_icons.y = Graphics.height / 2 - ARROWS_SIDES_MARGIN + HP_HEIGHT / 2 - 6
     @hp_icons.z = @hp_white.z + 1
 
+    @rotate_power = 0
+    @reverse = false;
+
     self.hp = 50
 
     @bst_debug = Sprite.new(@viewport_ui)
@@ -199,6 +202,13 @@ class Scene_OF
     @miss_timeout -= 1
     @voice_niko.volume = @miss_timeout <= 0 ? 1.0 : 0.0
 
+    @events.each do |event|
+      if @total_time * ARROWS_SPEED >= event[1]
+        instance_exec(&event[0])
+        @events.delete(event)
+      end
+    end
+
     # fl studio b:s:t :3
     beat = (@total_time / BPM_TIME / 2).to_i + 1
     step = (@total_time / BPM_TIME * 15 / 2).to_i % 15 + 1
@@ -211,16 +221,17 @@ class Scene_OF
     @icons_bump_timeout -= 1
     if @bump_timeout <= 0
       @bump_timeout += BPM_TIME
-      @viewport_arrows.scale_y = @viewport_ui.scale_y =
-      @viewport_arrows.scale_x = @viewport_ui.scale_x = BUMP_SCALE
+      @viewport_ui.scale_y = @viewport_ui.scale_x = BUMP_SCALE
     end
     if @icons_bump_timeout <= 0
       @icons_bump_timeout += BPM_TIME / 2.0
       @hp_icons.zoom_x = @hp_icons.zoom_y = ICONS_BUMP_SCALE
+      @viewport_ui.rotation = @reverse ? -@rotate_power : @rotate_power
+      @reverse = !@reverse
     end
-    @viewport_arrows.scale_x = @viewport_ui.scale_x =
-    @viewport_arrows.scale_y = @viewport_ui.scale_y = @viewport_ui.scale_x * (1.0 - BUMP_RETURN_SPEED) + BUMP_RETURN_SPEED
+    @viewport_ui.scale_x = @viewport_ui.scale_y = @viewport_ui.scale_x * (1.0 - BUMP_RETURN_SPEED) + BUMP_RETURN_SPEED
     @hp_icons.zoom_x = @hp_icons.zoom_y = @hp_icons.zoom_x * (1.0 - ICONS_BUMP_RETURN_SPEED) + ICONS_BUMP_RETURN_SPEED
+    @viewport_ui.rotation = @viewport_ui.rotation * (1.0 - BUMP_RETURN_SPEED)
 
     # Cat Arrows
     i = 0
@@ -273,10 +284,6 @@ class Scene_OF
         arrow[0].dispose
         @player_flying_arrows.delete(arrow)
         i -= 1
-      #elsif arrow[0].y < ARROW_SIZE * ARROW_SCALE
-      #  arrow[0].dispose
-      #  @player_flying_arrows.delete(arrow)
-      #  i -= 1
       end
       i += 1
     end
@@ -375,7 +382,7 @@ class Scene_OF
                 arrow[0].dispose
                 @player_flying_arrows.delete(arrow)
                 self.hp += 5
-                @miss_sound.stop
+                @miss_sound.fade_out(0.2)
                 @miss_timeout = 0
               else
                 miss
@@ -451,7 +458,6 @@ class Scene_OF
           arrow = make_arrow(dir, true)
           arrow.x = cat_arrow_x
           arrow.y = ARROWS_TOP_MARGIN - Graphics.height / 2 + bst2time(beat, step, tick) - 32
-          arrow.z += 1
 
           @cat_flying_arrows << [arrow, dir]
           
@@ -475,7 +481,6 @@ class Scene_OF
           arrow = make_arrow(dir, false)
           arrow.x = player_arrow_x
           arrow.y = ARROWS_TOP_MARGIN - Graphics.height / 2 + bst2time(beat, step, tick) - 32
-          arrow.z += 1
 
           @player_flying_arrows << [arrow, dir]
 
@@ -496,6 +501,10 @@ class Scene_OF
         end
       end
 
+      if line_data[7] != nil
+        @events << [line_data[7], bst2time(beat, step, tick)]
+      end
+
       i += 1
     end
   end
@@ -505,26 +514,29 @@ class Scene_OF
   end
 
   def make_arrow(direction, meow)
-    arrow = Sprite.new(@viewport_arrows)
+    arrow = Sprite.new(@viewport_ui)
     arrow.bitmap = Bitmap.new(ARROW_SIZE, ARROW_SIZE)
     arrow.bitmap.stretch_blt(Rect.new(0, 0, ARROW_SIZE, ARROW_SIZE), @spritesheet, SPRITES[(meow ? CAT_ARROWS_SPRITES : PLAYER_ARROWS_SPRITES)[:target][direction]])
     arrow.zoom_x = arrow.zoom_y = ARROW_SCALE
+    arrow.z = 20
     arrow
   end
 
   def make_tail(direction, meow)
-    arrow = Sprite.new(@viewport_arrows)
+    arrow = Sprite.new(@viewport_ui)
     arrow.bitmap = Bitmap.new(ARROW_SIZE, ARROW_SIZE / 2)
     arrow.bitmap.stretch_blt(Rect.new(0, 0, ARROW_SIZE, ARROW_SIZE / 2), @spritesheet, SPRITES[(meow ? CAT_ARROWS_SPRITES : PLAYER_ARROWS_SPRITES)[:tail][direction]])
     arrow.zoom_x = arrow.zoom_y = ARROW_SCALE
+    arrow.z = 18
     arrow
   end
 
   def make_tail_end(direction, meow)
-    arrow = Sprite.new(@viewport_arrows)
+    arrow = Sprite.new(@viewport_ui)
     arrow.bitmap = Bitmap.new(ARROW_SIZE, ARROW_SIZE / 2)
     arrow.bitmap.stretch_blt(Rect.new(0, 0, ARROW_SIZE, ARROW_SIZE / 2), @spritesheet, SPRITES[(meow ? CAT_ARROWS_SPRITES : PLAYER_ARROWS_SPRITES)[:tail_end][direction]])
     arrow.zoom_x = arrow.zoom_y = ARROW_SCALE
+    arrow.z = 19
     arrow
   end
 
@@ -535,7 +547,7 @@ class Scene_OF
   end
 
   SONG_MAPPING = [            # Length
-    # arrows,      B,  S,  T, | B, S, T
+    # arrows,      B,  S,  T, | B, S, T | proc
     ["#   |    ",  5,  1,  0,   0, 1, 0],
     ["  # |    ",  5,  3,  0,   0, 1, 0],
     [" #  |    ",  5,  5,  0,   0, 1, 0],
@@ -589,7 +601,7 @@ class Scene_OF
    #["    |#   ", 12, 16, 12],
    #["    |#   ", 13,  1,  0],
     
-    ["#   |    ", 13,  1,  0],
+    ["#   |    ", 13,  1,  0,   0, 0, 0,    proc { @rotate_power = 1 }],
     [" #  |    ", 13,  2,  0],
     ["  # |    ", 13,  3,  0],
     [" #  |    ", 13,  4,  0],
@@ -694,7 +706,7 @@ class Scene_OF
     ["    | #  ", 20, 12,  0],
     ["    |   #", 20, 13,  0,   0, 1, 0],
     
-    [" #  |    ", 21,  1,  0],
+    [" #  |    ", 21,  1,  0,   0, 0, 0,    proc { @rotate_power = 0 }],
     ["  # |    ", 21,  2,  0],
     ["#   |    ", 21,  3,  0],
     ["# # |    ", 21,  5,  0],
@@ -807,6 +819,20 @@ class Scene_OF
     ["  ##|    ", 36,  9,  0,   0, 1, 0],
     ["    | #  ", 36, 11,  0,   0, 1, 0],
     ["#  #|   #", 36, 13,  0,   0, 1, 0],
+
+    ["   #|   #", 37,  1,  0,   0, 0, 0,    proc { @rotate_power = 1 }],
+    [" #  | #  ", 37,  2,  0],
+    ["#   |#   ", 37,  3,  0],
+    [" #  | #  ", 37,  4,  0],
+    ["   #|   #", 37,  6,  0],
+    ["  # |  # ", 37,  7,  0],
+    [" #  | #  ", 37,  8,  0],
+    ["  # |  # ", 37,  9,  0],
+    ["   #|   #", 37, 10,  0],
+    [" #  | #  ", 37, 11,  0],
+    ["  # |  # ", 37, 12,  0],
+    ["   #|   #", 37, 13,  0,   0, 1, 0],
+    [" #  | #  ", 37, 15,  0],
   ]
 end
 
