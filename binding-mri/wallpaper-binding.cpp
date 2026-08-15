@@ -58,6 +58,9 @@
 		static std::string originalBgMode = "";
 		// LXQT
 		static std::string DBUS_SESSION_BUS_ADDRESS = "";
+		// dwm (feh)
+		static std::string originalFehbgCmd = "";
+		static bool originalFehbgExists = false;
 		// Fallback settings
 		static std::string fallbackPath;
 	#endif
@@ -112,6 +115,19 @@
 			    }
 			}
 			infile.close();
+		}
+		if (desktop == "dwm"){
+			const char* homeC = SDL_getenv("HOME");
+			if (!homeC) return;
+			std::string path = std::string(homeC) + "/.fehbg";
+			std::ifstream infile(path);
+			if (infile) {
+				std::stringstream buffer;
+				buffer << infile.rdbuf();
+				originalFehbgCmd = buffer.str();
+				originalFehbgExists = !originalFehbgCmd.empty();
+				infile.close();
+			}
 		}
 		//just reuse code :3
 		if (desktop == "lxqt"){
@@ -462,6 +478,13 @@ end:
 				if (status != 0) {
 				    Debug() << "bliat ono slomalos\n";
 				}
+		} else if (desktop == "dwm") {
+				std::string concatPath = gameDirStr + path;
+				std::string cmd = "feh --bg-scale \"" + concatPath + "\"";
+				int status = std::system(cmd.c_str());
+				if (status != 0) {
+				    Debug() << "bliat ono slomalos\n";
+				}
 		} else {
 			std::ifstream srcHint(gameDirStr + path);
 			std::ofstream dstHint(fallbackPath);
@@ -605,6 +628,12 @@ RB_METHOD(wallpaperReset){
 				if (status != 0) {
 					Debug() << "bliat ono slomalos";
 				}
+			}
+		} else if(desktop == "dwm"){
+			std::string cmd = originalFehbgExists ? originalFehbgCmd : "xsetroot -solid black";
+			int status = std::system(cmd.c_str());
+			if (status != 0) {
+				Debug() << "bliat ono slomalos";
 			}
 		} else {
 			if (remove(fallbackPath.c_str()) != 0) {
