@@ -46,6 +46,7 @@ struct ViewportPrivate{
 
 	double scaleX;
 	double scaleY;
+	double rotation;
 
 	EtcTemps tmp;
 
@@ -56,6 +57,7 @@ struct ViewportPrivate{
 	      tone(&tmp.tone),
 	      scaleX(1.0),
 	      scaleY(1.0),
+	      rotation(0.0),
 	      isOnScreen(false)
 	{
 		rect->set(x, y, width, height);
@@ -139,8 +141,9 @@ void Viewport::update(){
 DEF_ATTR_RD_SIMPLE(Viewport, OX, int, geometry.orig.x)
 DEF_ATTR_RD_SIMPLE(Viewport, OY, int, geometry.orig.y)
 
-DEF_ATTR_RD_SIMPLE(Viewport, ScaleX, double, p->scaleX)
-DEF_ATTR_RD_SIMPLE(Viewport, ScaleY, double, p->scaleY)
+DEF_ATTR_RD_SIMPLE(Viewport, ScaleX,   double, p->scaleX)
+DEF_ATTR_RD_SIMPLE(Viewport, ScaleY,   double, p->scaleY)
+DEF_ATTR_RD_SIMPLE(Viewport, Rotation, double, p->rotation)
 
 DEF_ATTR_SIMPLE(Viewport, Rect,  Rect&,  *p->rect)
 DEF_ATTR_SIMPLE(Viewport, Color, Color&, *p->color)
@@ -183,6 +186,16 @@ void Viewport::setScaleY(double value){
 		return;
 
 	p->scaleY = value;
+	notifyGeometryChange();
+}
+
+void Viewport::setRotation(double value){
+	guardDisposed();
+
+	if (p->rotation == value)
+		return;
+
+	p->rotation = value;
 	notifyGeometryChange();
 }
 

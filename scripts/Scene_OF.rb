@@ -2,7 +2,7 @@ class Scene_OF
   BPM = 100
   BPM_TIME = 1.0 / (BPM / 60.0) * Graphics.frame_rate * 2
 
-  BUMP_SCALE = 1.07
+  BUMP_SCALE = 1.04
   BUMP_RETURN_SPEED = 0.1
   ICONS_BUMP_SCALE = 1.17
   ICONS_BUMP_RETURN_SPEED = 0.2
@@ -21,7 +21,7 @@ class Scene_OF
   HP_WIDTH = 400
   HP_HEIGHT = 16
 
-  MISS_TIME = 90
+  MISS_TIME = 60
 
   SPRITES = {
     :cat_base_arrow_left       => Rect.new(0,   0, 32, 32),   :cat_base_arrow_down       => Rect.new(32,   0, 32, 32),  :cat_base_arrow_up       => Rect.new(64,   0, 32, 32),  :cat_base_arrow_right       => Rect.new(96,   0, 32, 32),
@@ -91,9 +91,8 @@ class Scene_OF
     @miss_sound = Audio.create_sound("Audio/SE/shatter")
 
     @viewport_ui = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport_arrows = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport_ui.ox = @viewport_arrows.ox = -Graphics.width / 2
-    @viewport_ui.oy = @viewport_arrows.oy = -Graphics.height / 2
+    @viewport_ui.ox = -Graphics.width / 2
+    @viewport_ui.oy = -Graphics.height / 2
     @spritesheet = RPG::Cache.misc(".cats")
 
     @cat_flying_arrows = []
@@ -104,6 +103,7 @@ class Scene_OF
     @player_tails_end = []
     @cat_arrows = []
     @player_arrows = []
+    @events = []
     for i in 0..3
       cat_arrow = Sprite.new(@viewport_ui)
       cat_arrow.bitmap = Bitmap.new(ARROW_SIZE, ARROW_SIZE)
@@ -157,13 +157,17 @@ class Scene_OF
     @hp_icons.y = Graphics.height / 2 - ARROWS_SIDES_MARGIN + HP_HEIGHT / 2 - 6
     @hp_icons.z = @hp_white.z + 1
 
+    @rotate_power = 0
+    @reverse = false;
+
     self.hp = 50
 
     @bst_debug = Sprite.new(@viewport_ui)
     @bst_debug.bitmap = Bitmap.new(300, 40)
 
     @total_time = 0
-    @bump_timeout = 0
+    @bump_timeout = 999999
+    @bump_time = 999999
     @icons_bump_timeout = 0
     @miss_timeout = 0
 
@@ -199,6 +203,13 @@ class Scene_OF
     @miss_timeout -= 1
     @voice_niko.volume = @miss_timeout <= 0 ? 1.0 : 0.0
 
+    @events.each do |event|
+      if @total_time * ARROWS_SPEED >= event[1]
+        instance_exec(&event[0])
+        @events.delete(event)
+      end
+    end
+
     # fl studio b:s:t :3
     beat = (@total_time / BPM_TIME / 2).to_i + 1
     step = (@total_time / BPM_TIME * 15 / 2).to_i % 15 + 1
@@ -210,17 +221,18 @@ class Scene_OF
     @bump_timeout -= 1
     @icons_bump_timeout -= 1
     if @bump_timeout <= 0
-      @bump_timeout += BPM_TIME
-      @viewport_arrows.scale_y = @viewport_ui.scale_y =
-      @viewport_arrows.scale_x = @viewport_ui.scale_x = BUMP_SCALE
+      @bump_timeout += @bump_time
+      @viewport_ui.scale_y = @viewport_ui.scale_x = BUMP_SCALE
     end
     if @icons_bump_timeout <= 0
       @icons_bump_timeout += BPM_TIME / 2.0
       @hp_icons.zoom_x = @hp_icons.zoom_y = ICONS_BUMP_SCALE
+      @viewport_ui.rotation = @reverse ? -@rotate_power : @rotate_power
+      @reverse = !@reverse
     end
-    @viewport_arrows.scale_x = @viewport_ui.scale_x =
-    @viewport_arrows.scale_y = @viewport_ui.scale_y = @viewport_ui.scale_x * (1.0 - BUMP_RETURN_SPEED) + BUMP_RETURN_SPEED
+    @viewport_ui.scale_x = @viewport_ui.scale_y = @viewport_ui.scale_x * (1.0 - BUMP_RETURN_SPEED) + BUMP_RETURN_SPEED
     @hp_icons.zoom_x = @hp_icons.zoom_y = @hp_icons.zoom_x * (1.0 - ICONS_BUMP_RETURN_SPEED) + ICONS_BUMP_RETURN_SPEED
+    @viewport_ui.rotation = @viewport_ui.rotation * (1.0 - BUMP_RETURN_SPEED)
 
     # Cat Arrows
     i = 0
@@ -273,10 +285,6 @@ class Scene_OF
         arrow[0].dispose
         @player_flying_arrows.delete(arrow)
         i -= 1
-      #elsif arrow[0].y < ARROW_SIZE * ARROW_SCALE
-      #  arrow[0].dispose
-      #  @player_flying_arrows.delete(arrow)
-      #  i -= 1
       end
       i += 1
     end
@@ -375,7 +383,7 @@ class Scene_OF
                 arrow[0].dispose
                 @player_flying_arrows.delete(arrow)
                 self.hp += 5
-                @miss_sound.stop
+                @miss_sound.fade_out(0.2)
                 @miss_timeout = 0
               else
                 miss
@@ -450,8 +458,7 @@ class Scene_OF
         if line_data[0][dir] == '#'
           arrow = make_arrow(dir, true)
           arrow.x = cat_arrow_x
-          arrow.y = ARROWS_TOP_MARGIN - Graphics.height / 2 + bst2time(beat, step, tick) - 32
-          arrow.z += 1
+          arrow.y = ARROWS_TOP_MARGIN - Graphics.height / 2 + bst2time(beat, step, tick) - 16
 
           @cat_flying_arrows << [arrow, dir]
           
@@ -474,8 +481,7 @@ class Scene_OF
         if line_data[0][dir + 5] == '#'
           arrow = make_arrow(dir, false)
           arrow.x = player_arrow_x
-          arrow.y = ARROWS_TOP_MARGIN - Graphics.height / 2 + bst2time(beat, step, tick) - 32
-          arrow.z += 1
+          arrow.y = ARROWS_TOP_MARGIN - Graphics.height / 2 + bst2time(beat, step, tick) - 16
 
           @player_flying_arrows << [arrow, dir]
 
@@ -496,6 +502,10 @@ class Scene_OF
         end
       end
 
+      if line_data[7] != nil
+        @events << [line_data[7], bst2time(beat, step, tick)]
+      end
+
       i += 1
     end
   end
@@ -505,26 +515,29 @@ class Scene_OF
   end
 
   def make_arrow(direction, meow)
-    arrow = Sprite.new(@viewport_arrows)
+    arrow = Sprite.new(@viewport_ui)
     arrow.bitmap = Bitmap.new(ARROW_SIZE, ARROW_SIZE)
     arrow.bitmap.stretch_blt(Rect.new(0, 0, ARROW_SIZE, ARROW_SIZE), @spritesheet, SPRITES[(meow ? CAT_ARROWS_SPRITES : PLAYER_ARROWS_SPRITES)[:target][direction]])
     arrow.zoom_x = arrow.zoom_y = ARROW_SCALE
+    arrow.z = 20
     arrow
   end
 
   def make_tail(direction, meow)
-    arrow = Sprite.new(@viewport_arrows)
+    arrow = Sprite.new(@viewport_ui)
     arrow.bitmap = Bitmap.new(ARROW_SIZE, ARROW_SIZE / 2)
     arrow.bitmap.stretch_blt(Rect.new(0, 0, ARROW_SIZE, ARROW_SIZE / 2), @spritesheet, SPRITES[(meow ? CAT_ARROWS_SPRITES : PLAYER_ARROWS_SPRITES)[:tail][direction]])
     arrow.zoom_x = arrow.zoom_y = ARROW_SCALE
+    arrow.z = 18
     arrow
   end
 
   def make_tail_end(direction, meow)
-    arrow = Sprite.new(@viewport_arrows)
+    arrow = Sprite.new(@viewport_ui)
     arrow.bitmap = Bitmap.new(ARROW_SIZE, ARROW_SIZE / 2)
     arrow.bitmap.stretch_blt(Rect.new(0, 0, ARROW_SIZE, ARROW_SIZE / 2), @spritesheet, SPRITES[(meow ? CAT_ARROWS_SPRITES : PLAYER_ARROWS_SPRITES)[:tail_end][direction]])
     arrow.zoom_x = arrow.zoom_y = ARROW_SCALE
+    arrow.z = 19
     arrow
   end
 
@@ -535,8 +548,8 @@ class Scene_OF
   end
 
   SONG_MAPPING = [            # Length
-    # arrows,      B,  S,  T, | B, S, T
-    ["#   |    ",  5,  1,  0,   0, 1, 0],
+    # arrows,      B,  S,  T, | B, S, T | proc
+    ["#   |    ",  5,  1,  0,   0, 1, 0,  proc { @bump_time = BPM_TIME * 2; @bump_timeout = 0 }],
     ["  # |    ",  5,  3,  0,   0, 1, 0],
     [" #  |    ",  5,  5,  0,   0, 1, 0],
     ["   #|    ",  5,  9,  0,   0, 1, 0],
@@ -571,7 +584,7 @@ class Scene_OF
     ["    | #  ", 11,  1,  0,   0, 1, 0],
     ["    |   #", 11,  3,  0,   0, 1, 0],
     ["    |  # ", 11,  5,  0,   0, 1, 0],
-    ["    |#   ", 11,  9,  0,   0, 1, 0],
+    ["    |#   ", 11,  9,  0,   0, 1, 0,    proc { @bump_time = BPM_TIME / 2; @bump_timeout = 0 }],
     ["    |#   ", 11, 13,  0,   0, 1, 0],
     ["    |#   ", 12,  1,  0,   0, 1, 0],
     ["    | #  ", 12,  3,  0,   0, 1, 0],
@@ -579,17 +592,17 @@ class Scene_OF
     ["    | #  ", 12,  6,  0],
     ["    | #  ", 12,  7,  0],
     ["    |  # ", 12,  8,  0],
-    ["    | #  ", 12,  9,  0],
+    ["    | #  ", 12,  9,  0,   0, 0, 0,    proc { @bump_time = BPM_TIME / 4; @bump_timeout = 0 }],
     ["    |   #", 12, 10,  0],
     ["    | #  ", 12, 11,  0,   0, 1, 0],
-    ["    |#   ", 12, 13,  0],
+    ["    |#   ", 12, 13,  0,   0, 0, 0,    proc { @bump_time = BPM_TIME / 8; @bump_timeout = 0 }],
     ["    |#   ", 12, 15,  0],
    #["    |#   ", 12, 15, 12],
     ["    |#   ", 12, 16,  0],
    #["    |#   ", 12, 16, 12],
    #["    |#   ", 13,  1,  0],
     
-    ["#   |    ", 13,  1,  0],
+    ["#   |    ", 13,  1,  0,   0, 0, 0,    proc { @rotate_power = 1; @bump_time = BPM_TIME / 2; @bump_timeout = 0 }],
     [" #  |    ", 13,  2,  0],
     ["  # |    ", 13,  3,  0],
     [" #  |    ", 13,  4,  0],
@@ -694,7 +707,7 @@ class Scene_OF
     ["    | #  ", 20, 12,  0],
     ["    |   #", 20, 13,  0,   0, 1, 0],
     
-    [" #  |    ", 21,  1,  0],
+    [" #  |    ", 21,  1,  0,   0, 0, 0,    proc { @rotate_power = 0; @bump_time = BPM_TIME; @bump_timeout = 0 }],
     ["  # |    ", 21,  2,  0],
     ["#   |    ", 21,  3,  0],
     ["# # |    ", 21,  5,  0],
@@ -762,7 +775,7 @@ class Scene_OF
     ["    |#  #", 28, 11,  0],
     ["    | ## ", 28, 13,  0],
 
-    ["#   |    ", 29,  1,  0,   0, 1, 0],
+    ["#   |    ", 29,  1,  0,   0, 1, 0,    proc { @rotate_power = 0; @bump_time = 999999; @bump_timeout = 999999}],
     ["  # |    ", 29,  3,  0,   0, 1, 0],
     [" #  |    ", 29,  5,  0,   0, 1, 0],
     ["   #|    ", 29,  9,  0,   0, 1, 0],
@@ -807,6 +820,321 @@ class Scene_OF
     ["  ##|    ", 36,  9,  0,   0, 1, 0],
     ["    | #  ", 36, 11,  0,   0, 1, 0],
     ["#  #|   #", 36, 13,  0,   0, 1, 0],
+
+    ["   #|   #", 37,  1,  0,   0, 0, 0,    proc { @rotate_power = 1; @bump_time = BPM_TIME / 2; @bump_timeout = 0}],
+    [" #  | #  ", 37,  2,  0],
+    ["#   |#   ", 37,  3,  0],
+    [" #  | #  ", 37,  4,  0],
+    ["   #|   #", 37,  6,  0],
+    ["  # |  # ", 37,  7,  0],
+    [" #  | #  ", 37,  8,  0],
+    ["  # |  # ", 37,  9,  0],
+    ["   #|   #", 37, 10,  0],
+    [" #  | #  ", 37, 11,  0],
+    ["  # |  # ", 37, 12,  0],
+    ["   #|   #", 37, 13,  0,   0, 1, 0],
+    [" #  | #  ", 37, 15,  0],
+    ["   #|   #", 38,  1,  0],
+    ["#   |#   ", 38,  2,  0],
+    ["   #|   #", 38,  3,  0],
+    ["  # |  # ", 38,  4,  0],
+    ["#   |#   ", 38,  6,  0],
+    ["  # |  # ", 38,  7,  0],
+    ["   #|   #", 38,  8,  0],
+    [" #  | #  ", 38,  9,  0],
+    ["#   |#   ", 38, 10,  0],
+    ["  # |  # ", 38, 11,  0],
+    [" #  | #  ", 38, 12,  0],
+    ["   #|   #", 38, 13,  0,   0, 1, 0],
+    [" #  | #  ", 38, 15,  0],
+    ["#   |#   ", 39,  1,  0],
+    [" #  | #  ", 39,  2,  0],
+    ["  # |  # ", 39,  3,  0],
+    ["   #|   #", 39,  4,  0],
+    [" #  | #  ", 39,  6,  0],
+    ["#   |#   ", 39,  7,  0],
+    ["   #|   #", 39,  8,  0],
+    [" #  | #  ", 39,  9,  0],
+    ["#   |#   ", 39, 10,  0],
+    ["   #|   #", 39, 11,  0],
+    [" #  | #  ", 39, 12,  0],
+    ["#   |#   ", 39, 13,  0,   0, 1, 0],
+    [" #  | #  ", 39, 15,  0],
+    ["#   |#   ", 40,  1,  0],
+    ["  # |  # ", 40,  2,  0],
+    ["   #|   #", 40,  3,  0],
+    ["#   |#   ", 40,  4,  0],
+    ["   #|   #", 40,  6,  0],
+    ["  # |  # ", 40,  7,  0],
+    ["   #|   #", 40,  8,  0],
+    ["  # |  # ", 40,  9,  0],
+    [" #  | #  ", 40, 10,  0],
+    ["#   |#   ", 40, 11,  0],
+    [" #  | #  ", 40, 12,  0],
+    ["#   |#   ", 40, 13,  0,   0, 1, 0],
+    ["   #|   #", 40, 15,  0],
+    
+    ["   #|   #", 41,  1,  0],
+    ["  # |  # ", 41,  2,  0],
+    [" #  | #  ", 41,  3,  0],
+    ["#   |#   ", 41,  4,  0],
+    ["#   |#   ", 41,  6,  0],
+    [" #  | #  ", 41,  7,  0],
+    ["  # |  # ", 41,  8,  0],
+    ["   #|   #", 41,  9,  0,   0, 1, 0],
+    [" #  | #  ", 41, 11,  0,   0, 1, 0],
+    ["   #|   #", 41, 13,  0,   0, 1, 0],
+    [" #  | #  ", 41, 15,  0,   0, 1, 0],
+    ["   #|   #", 42,  1,  0],
+    ["  # |  # ", 42,  2,  0],
+    [" #  | #  ", 42,  3,  0],
+    ["#   |#   ", 42,  4,  0],
+    ["   #|   #", 42,  6,  0],
+    ["  # |  # ", 42,  7,  0],
+    [" #  | #  ", 42,  8,  0],
+    ["  # |  # ", 42,  9,  0,   0, 1, 0],
+    ["#   |#   ", 42, 11,  0,   0, 1, 0],
+    ["  # |  # ", 42, 13,  0,   0, 1, 0],
+    ["#   |#   ", 42, 15,  0,   0, 1, 0],
+    ["  # |  # ", 43,  1,  0],
+    ["#   |#   ", 43,  2,  0],
+    ["   #|   #", 43,  3,  0],
+    ["  # |  # ", 43,  4,  0],
+    [" #  | #  ", 43,  6,  0],
+    ["  # |  # ", 43,  7,  0],
+    ["   #|   #", 43,  8,  0],
+    ["  # |  # ", 43,  9,  0,   0, 1, 0],
+    [" #  | #  ", 43, 11,  0,   0, 1, 0],
+    ["  # |  # ", 43, 13,  0,   0, 1, 0],
+    [" #  | #  ", 43, 15,  0,   0, 1, 0],
+    ["#   |#   ", 44,  1,  0],
+    [" #  | #  ", 44,  2,  0],
+    ["  # |  # ", 44,  3,  0],
+    ["   #|   #", 44,  4,  0],
+    [" #  | #  ", 44,  6,  0],
+    ["  # |  # ", 44,  7,  0],
+    [" #  | #  ", 44,  8,  0],
+    ["   #|   #", 44,  9,  0,   0, 1, 0],
+    ["#   |#   ", 44, 11,  0,   0, 1, 0],
+    ["   #|   #", 44, 13,  0,   0, 1, 0],
+    ["#   |#   ", 44, 15,  0,   0, 1, 0],
+
+    ["   #|   #", 45,  1,  0,   0, 0, 0,    proc { @rotate_power = 0; @bump_time = 9999999 }],
+    ["    |  # ", 45,  3,  0],
+    ["    | #  ", 45,  5,  0],
+    ["#   |#   ", 45,  9,  0],
+    ["    | #  ", 45, 11,  0],
+    ["  # |  # ", 45, 13,  0],
+    ["   #|   #", 46,  1,  0],
+    ["    |#   ", 46,  3,  0],
+    ["    | #  ", 46,  5,  0],
+    ["   #|   #", 46,  9,  0],
+    ["    |  # ", 46, 11,  0],
+    [" #  | #  ", 46, 13,  0],
+    ["  # |  # ", 47,  1,  0],
+    ["    | #  ", 47,  3,  0],
+    ["    |#   ", 47,  5,  0],
+    ["   #|   #", 47,  9,  0],
+    ["    | #  ", 47, 11,  0],
+    ["  # |  # ", 47, 13,  0],
+    [" #  |  # ", 48,  1,  0],
+    ["    |#   ", 48,  3,  0],
+    ["    | #  ", 48,  5,  0],
+    ["   #|   #", 48,  9,  0],
+    ["    | #  ", 48, 11,  0],
+    ["#   |#   ", 48, 13,  0],
+
+    ["   #|    ", 49,  1,  0,   0, 0, 0,    proc { @rotate_power = 0; @bump_time = BPM_TIME; @bump_timeout = 0 }],
+    [" #  |    ", 49,  3,  0],
+    ["#   |    ", 49,  5,  0],
+    ["  # |    ", 49,  7,  0],
+    ["#   |    ", 49,  9,  0],
+    [" #  |    ", 49, 11,  0],
+    ["#   |    ", 49, 13,  0],
+    ["   #|    ", 50,  1,  0],
+    [" #  |    ", 50,  3,  0],
+    ["  # |    ", 50,  5,  0],
+    ["   #|    ", 50,  7,  0],
+    [" #  |    ", 50,  9,  0],
+    ["#   |    ", 50, 11,  0],
+    [" #  |    ", 50, 13,  0],
+    ["#   |    ", 51,  1,  0],
+    [" #  |    ", 51,  3,  0],
+    ["  # |    ", 51,  5,  0],
+    ["   #|    ", 51,  7,  0],
+    [" #  |    ", 51,  9,  0],
+    ["   #|    ", 51, 11,  0],
+    ["#   |    ", 51, 13,  0],
+    ["   #|    ", 52,  1,  0],
+    ["#   |    ", 52,  3,  0],
+    ["  # |    ", 52,  5,  0],
+    ["#   |    ", 52,  7,  0],
+    ["  # |    ", 52,  9,  0],
+    [" #  |    ", 52, 11,  0],
+    ["#   |    ", 52, 13,  0],
+
+    ["    |   #", 53,  1,  0],
+    ["    | #  ", 53,  3,  0],
+    ["    |#   ", 53,  5,  0],
+    ["    |  # ", 53,  7,  0],
+    ["    |#   ", 53,  9,  0],
+    ["    | #  ", 53, 11,  0],
+    ["    |#   ", 53, 13,  0],
+    ["    |   #", 54,  1,  0],
+    ["    | #  ", 54,  3,  0],
+    ["    |  # ", 54,  5,  0],
+    ["    |   #", 54,  7,  0],
+    ["    | #  ", 54,  9,  0],
+    ["    |#   ", 54, 11,  0],
+    ["    | #  ", 54, 13,  0],
+    ["    |#   ", 55,  1,  0],
+    ["    | #  ", 55,  3,  0],
+    ["    |  # ", 55,  5,  0],
+    ["    |   #", 55,  7,  0],
+    ["    | #  ", 55,  9,  0],
+    ["    |   #", 55, 11,  0],
+    ["    |#   ", 55, 13,  0],
+    ["    |   #", 56,  1,  0],
+    ["    |#   ", 56,  3,  0],
+    ["    |  # ", 56,  5,  0],
+    ["    |#   ", 56,  7,  0],
+    [" ## | ## ", 56,  9,  0, 0, 2, 0, proc {@bump_time = BPM_TIME / 8; @bump_timeout = 0 }],
+    ["#  #|#  #", 56, 13,  0, 0, 2, 0, proc {@bump_time = BPM_TIME / 4; @bump_timeout = 0 }],
+    
+    ["#   |    ", 57,  1,  0,   0, 0, 0,    proc { @rotate_power = 1; @bump_time = BPM_TIME / 2; @bump_timeout = 0 }],
+    [" #  |    ", 57,  2,  0],
+    ["  # |    ", 57,  3,  0],
+    [" #  |    ", 57,  4,  0],
+    ["#   |    ", 57,  5,  0,   0, 1, 0],
+    ["   #|    ", 57,  7,  0],
+    ["#   |    ", 57,  8,  0],
+    ["  # |    ", 57,  9,  0],
+    ["#   |    ", 57, 10,  0],
+    ["  # |    ", 57, 11,  0],
+    ["   #|    ", 57, 12,  0],
+    [" #  |    ", 57, 13,  0,   0, 1, 0],
+    ["  # |    ", 57, 15,  0],
+    ["   #|    ", 58,  1,  0],
+    ["  # |    ", 58,  2,  0],
+    ["#   |    ", 58,  3,  0],
+    [" #  |    ", 58,  4,  0],
+    ["#   |    ", 58,  5,  0,   0, 1, 0],
+    ["  # |    ", 58,  7,  0],
+    ["#   |    ", 58,  8,  0],
+    ["  # |    ", 58,  9,  0],
+    ["   #|    ", 58, 10,  0],
+    ["  # |    ", 58, 11,  0],
+    ["   #|    ", 58, 12,  0],
+    [" #  |    ", 58, 13,  0,   0, 1, 0],
+    ["#   |    ", 58, 15,  0],
+    ["  # |    ", 59,  1,  0],
+    ["   #|    ", 59,  2,  0],
+    [" #  |    ", 59,  3,  0],
+    ["#   |    ", 59,  4,  0],
+    ["#   |    ", 59,  5,  0,   0, 1, 0],
+    ["  # |    ", 59,  7,  0],
+    ["   #|    ", 59,  8,  0],
+    [" #  |    ", 59,  9,  0],
+    ["  # |    ", 59, 10,  0],
+    [" #  |    ", 59, 11,  0],
+    ["  # |    ", 59, 12,  0],
+    ["   #|    ", 59, 13,  0,   0, 1, 0],
+    ["#   |    ", 59, 15,  0,   0, 1, 0],
+    ["   #|    ", 60,  1,  0],
+    ["  # |    ", 60,  2,  0],
+    [" #  |    ", 60,  3,  0],
+    ["#   |    ", 60,  4,  0],
+    [" #  |    ", 60,  5,  0],
+    ["  # |    ", 60,  7,  0],
+    [" #  |    ", 60,  8,  0],
+    ["#   |    ", 60,  9,  0],
+    ["   #|    ", 60, 10,  0],
+    ["  # |    ", 60, 11,  0],
+    [" #  |    ", 60, 12,  0],
+    ["   #|    ", 60, 13,  0,   0, 1, 0],
+    ["   #|    ", 60, 15,  0,   0, 1, 0],
+    
+    ["    |#   ", 61,  1,  0],
+    ["    | #  ", 61,  2,  0],
+    ["    |  # ", 61,  3,  0],
+    ["    | #  ", 61,  4,  0],
+    ["    |#   ", 61,  5,  0,   0, 1, 0],
+    ["    |   #", 61,  7,  0],
+    ["    |#   ", 61,  8,  0],
+    ["    |  # ", 61,  9,  0],
+    ["    |#   ", 61, 10,  0],
+    ["    |  # ", 61, 11,  0],
+    ["    |   #", 61, 12,  0],
+    ["    | #  ", 61, 13,  0,   0, 1, 0],
+    ["    |  # ", 61, 15,  0],
+    ["    |   #", 62,  1,  0],
+    ["    |  # ", 62,  2,  0],
+    ["    |#   ", 62,  3,  0],
+    ["    | #  ", 62,  4,  0],
+    ["    |#   ", 62,  5,  0,   0, 1, 0],
+    ["    |  # ", 62,  7,  0],
+    ["    |#   ", 62,  8,  0],
+    ["    |  # ", 62,  9,  0],
+    ["    |   #", 62, 10,  0],
+    ["    |  # ", 62, 11,  0],
+    ["    |   #", 62, 12,  0],
+    ["    | #  ", 62, 13,  0,   0, 1, 0],
+    ["    |#   ", 62, 15,  0],
+    ["    |  # ", 63,  1,  0],
+    ["    |   #", 63,  2,  0],
+    ["    | #  ", 63,  3,  0],
+    ["    |#   ", 63,  4,  0],
+    ["    |#   ", 63,  5,  0,   0, 1, 0],
+    ["    |  # ", 63,  7,  0],
+    ["    |   #", 63,  8,  0],
+    ["    | #  ", 63,  9,  0],
+    ["    |  # ", 63, 10,  0],
+    ["    | #  ", 63, 11,  0],
+    ["    |  # ", 63, 12,  0],
+    ["    |   #", 63, 13,  0,   0, 1, 0],
+    ["    |#   ", 63, 15,  0,   0, 1, 0],
+    ["    |   #", 64,  1,  0],
+    ["    |  # ", 64,  2,  0],
+    ["    | #  ", 64,  3,  0],
+    ["    |#   ", 64,  4,  0],
+    ["    | #  ", 64,  5,  0,   0, 1, 0],
+    ["    |  # ", 64,  7,  0],
+    ["    | #  ", 64,  8,  0],
+    ["    |#   ", 64,  9,  0],
+    ["    |   #", 64, 10,  0],
+    ["    |  # ", 64, 11,  0],
+    ["    | #  ", 64, 12,  0],
+    ["    |   #", 64, 13,  0,   0, 1, 0],
+    ["    |   #", 64, 15,  0,   0, 1, 0],
+
+    [" #  | #  ", 65,  1,  0,   0, 1, 0,    proc { @rotate_power = 0; @bump_time = 9999999; @bump_timeout = 9999999 }],
+    ["   #|   #", 65,  3,  0],
+    ["  # |  # ", 65,  6,  0],
+    [" #  | #  ", 65,  7,  0,   0, 1, 0],
+    ["   #|   #", 65,  9,  0,   0, 1, 0],
+    ["#   |#   ", 65, 11,  0,   0, 1, 0],
+    ["   #|   #", 65, 13,  0,   0, 1, 0],
+    ["   #|   #", 66,  1,  0,   0, 1, 0],
+    [" #  | #  ", 66,  3,  0],
+    ["  # |  # ", 66,  5,  0],
+    ["#   |#   ", 66,  6,  0,   0, 1, 0],
+    ["   #|   #", 66,  8,  0,   0, 1, 0],
+    [" #  | #  ", 66, 11,  0,   0, 1, 0],
+    [" #  | #  ", 66, 13,  0,   0, 1, 0],
+    [" #  | #  ", 67,  1,  0,   0, 1, 0],
+    ["   #|   #", 67,  3,  0],
+    ["  # |  # ", 67,  6,  0],
+    [" #  | #  ", 67,  7,  0,   0, 1, 0],
+    ["   #|   #", 67,  9,  0,   0, 1, 0],
+    ["#   |#   ", 67, 11,  0,   0, 1, 0],
+    ["   #|   #", 67, 13,  0,   0, 1, 0],
+    ["#   |#   ", 68,  1,  0,   0, 1, 0],
+    ["   #|   #", 68,  3,  0],
+    ["#   |#   ", 68,  5,  0],
+    ["  # |  # ", 68,  6,  0,   0, 1, 0],
+    ["   #|   #", 68,  8,  0,   0, 1, 0],
+    ["   #|   #", 68, 11,  0,   0, 1, 0],
+    ["#   |#   ", 68, 13,  0,   0, 1, 0],
   ]
 end
 

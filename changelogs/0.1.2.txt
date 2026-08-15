@@ -63,3 +63,4 @@ Added Pantheon DE support
 Added Badgi DE support
 Added Wallpaper Manager Settings
 Added X11 Window Managers support
+GNOME support fixed
