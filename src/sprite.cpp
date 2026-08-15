@@ -623,10 +623,14 @@ void Sprite::onGeometryChange(const Scene::Geometry &geo){
 	 * relative to screen origin */
 	p->trans.setGlobalOffset(geo.offset());
 	Viewport* viewport = ViewportElement::getViewport();
-	if (viewport)
+	if (viewport) {
 		p->trans.setGlobalScale(Vec2(viewport->getScaleX(), viewport->getScaleY()));
-	else
+		p->trans.setGlobalRotation(viewport->getRotation());
+	}
+	else {
 		p->trans.setGlobalScale(Vec2(1.0, 1.0));
+		p->trans.setGlobalRotation(0);
+	}
 
 	p->sceneRect.setSize(geo.rect.size());
 	p->sceneOrig = geo.orig;
