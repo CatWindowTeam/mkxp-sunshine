@@ -53,6 +53,26 @@ static inline const char* glGetStringInt(GLenum name){
 	return (const char*) gl.GetString(name);
 }
 
+#define STR2(x) #x
+#define STR(x) STR2(x)
+
+#if defined(__clang__)
+  #define COMPILER_NAME "Clang"
+  #define COMPILER_VER  STR(__clang_major__) "." STR(__clang_minor__) "." STR(__clang_patchlevel__)
+#elif defined(__GNUC__)
+  #define COMPILER_NAME "GCC"
+  #define COMPILER_VER  STR(__GNUC__) "." STR(__GNUC_MINOR__) "." STR(__GNUC_PATCHLEVEL__)
+#elif defined(_MSC_VER)
+  #define COMPILER_NAME "MSVC"
+  #define COMPILER_VER  STR(_MSC_VER)
+#elif defined(__INTEL_COMPILER)
+  #define COMPILER_NAME "Intel"
+  #define COMPILER_VER  "n/a"
+#else
+  #define COMPILER_NAME "Unknown compiler"
+  #define COMPILER_VER  "n/a"
+#endif
+
 static void get_reason_and_solution(Exception::Type t) {
     switch (t) {
         case Exception::ModLoaderError:
@@ -164,6 +184,8 @@ void crash_screen(SDL_Window* win){
 		#endif
 		o << "VERSION: " << VERSION_STRING << endl;
 		o << "REASON: " << crash_message << endl;
+		o << "Compiler info: " << COMPILER_NAME << " " << COMPILER_VER << endl << endl;
+		
 		o << "[BOOST stacktrace()]" << endl << endl;
 		o << boost::stacktrace::stacktrace() << endl;
 

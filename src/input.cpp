@@ -833,7 +833,7 @@ int Input::mouseY(){
 	return (EventThread::mouseState.y - rtData.screenOffset.y) * rtData.sizeResoRatio.y;
 }
 
-void Input::setBinding(std::vector<SourceDesc> descs, Input::ButtonCode target){
+void Input::setBinding(const std::vector<SourceDesc> descs, Input::ButtonCode target){
 	p->setBindingDescs(descs, target);
 }
 

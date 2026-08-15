@@ -129,13 +129,13 @@ double AudioPlayback::getLengthNormalized() const {
     return 0.0;
 }
 
-void AudioPlayback::addTag(std::string tagName) {
+void AudioPlayback::addTag(const std::string tagName) {
     if (!p_track)
         return;
     
     MIX_TagTrack(p_track, tagName.data());
 }
-void AudioPlayback::removeTag(std::string tagName) {
+void AudioPlayback::removeTag(const std::string tagName) {
     if (!p_track)
         return;
     

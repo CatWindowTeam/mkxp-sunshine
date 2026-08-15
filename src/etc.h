@@ -205,7 +205,7 @@ struct LightSource {
 	  : x(0), y(0), power(0), radius(0), color(Color())
 	{};
 	
-	LightSource(float x, float y, float power, float radius, Color color)
+	LightSource(float x, float y, float power, float radius, const Color color)
 	  : x(x), y(y), power(power), radius(radius), color(color)
 	{};
 

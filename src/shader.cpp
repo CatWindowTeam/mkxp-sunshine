@@ -310,7 +310,7 @@ void DynamicLightShader::setTileMapOffset(int x, int y){
 	gl.Uniform2f(u_tileMapOffset, x, y);
 }
 
-void DynamicLightShader::setLightSources(std::vector<LightSource> sources){
+void DynamicLightShader::setLightSources(const std::vector<LightSource> sources){
 	int count = 0;
 	int screenWidth = shState->graphics().width();
 	int screenHeight = shState->graphics().height();

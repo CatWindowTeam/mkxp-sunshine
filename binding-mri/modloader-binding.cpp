@@ -20,7 +20,7 @@
 
 namespace fs = std::filesystem;
 
-VALUE meow(std::vector<std::string> vec){
+VALUE meow(const std::vector<std::string> vec){
     VALUE ary = rb_ary_new_capa((long)vec.size());
     for (const std::string &s : vec) {
         VALUE str = rb_str_new_cstr(s.c_str());

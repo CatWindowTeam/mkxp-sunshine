@@ -464,10 +464,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title){
 
 	// Message boxes and UI changes must be performed from the main thread on macOS Mojave and above.
 	// This block ensures the message box will show from the main thread.
-	dispatch_sync(dispatch_get_main_queue(),
-				  ^{
-					SDL_ShowMessageBox(&data, btn);
-				  });
+	dispatch_sync(dispatch_get_main_queue(), { SDL_ShowMessageBox(&data, btn); });
 #else
 	SDL_ShowMessageBox(&data, &button);
 #endif
