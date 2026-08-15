@@ -39,6 +39,7 @@
 		#include <string>
 		#include <sstream>
 		#include <cstdlib>
+		#include <sys/stat.h>
 		static std::string desktop = "uninitialized";
 		// GNOME settings
 		static GSettings *bgsetting;
@@ -58,7 +59,8 @@
 		static std::string originalBgMode = "";
 		// LXQT
 		static std::string DBUS_SESSION_BUS_ADDRESS = "";
-		// dwm (feh)
+		// Wallpaper utility (feh/nitrogen), used when no known DE is detected
+		static std::string wpTool = "";
 		static std::string originalFehbgCmd = "";
 		static bool originalFehbgExists = false;
 		// Fallback settings
@@ -71,7 +73,7 @@
 		printf("[desktopEnvironmentInit] desktopEnvironmentInit()\n");
 		if (desktop != "uninitialized")
     		return;
-		
+
 		desktop = shState->oneshot().desktopEnv;
 		if (desktop == "nope") {
     			return;
@@ -115,19 +117,6 @@
 			    }
 			}
 			infile.close();
-		}
-		if (desktop == "dwm"){
-			const char* homeC = SDL_getenv("HOME");
-			if (!homeC) return;
-			std::string path = std::string(homeC) + "/.fehbg";
-			std::ifstream infile(path);
-			if (infile) {
-				std::stringstream buffer;
-				buffer << infile.rdbuf();
-				originalFehbgCmd = buffer.str();
-				originalFehbgExists = !originalFehbgCmd.empty();
-				infile.close();
-			}
 		}
 		//just reuse code :3
 		if (desktop == "lxqt"){
@@ -268,7 +257,34 @@
 				desktop = "kde_error";
 			}
 		} else {
-			fallbackPath = std::string(SDL_getenv("HOME")) + "/Desktop/ONESHOT_hint.png";
+			const char* homeC = SDL_getenv("HOME");
+			std::string home = homeC ? homeC : "";
+			std::string fehbgPath = home + "/.fehbg";
+			std::string nitrogenPath = home + "/.config/nitrogen/bg-saved.cfg";
+
+			struct stat fehStat, nitrogenStat;
+			bool fehExists = !home.empty() && stat(fehbgPath.c_str(), &fehStat) == 0;
+			bool nitrogenExists = !home.empty() && stat(nitrogenPath.c_str(), &nitrogenStat) == 0;
+
+			if (fehExists && (!nitrogenExists || fehStat.st_mtime >= nitrogenStat.st_mtime)) {
+				wpTool = "feh";
+				std::ifstream infile(fehbgPath);
+				if (infile) {
+					std::stringstream buffer;
+					buffer << infile.rdbuf();
+					originalFehbgCmd = buffer.str();
+					originalFehbgExists = !originalFehbgCmd.empty();
+					infile.close();
+				}
+			} else if (nitrogenExists) {
+				wpTool = "nitrogen";
+			} else if (std::system("command -v feh >/dev/null 2>&1") == 0) {
+				wpTool = "feh";
+			} else if (std::system("command -v nitrogen >/dev/null 2>&1") == 0) {
+				wpTool = "nitrogen";
+			} else {
+				fallbackPath = home + "/Desktop/ONESHOT_hint.png";
+			}
 		}
 	}
 #endif
@@ -478,9 +494,16 @@ end:
 				if (status != 0) {
 				    Debug() << "bliat ono slomalos\n";
 				}
-		} else if (desktop == "dwm") {
+		} else if (wpTool == "feh") {
 				std::string concatPath = gameDirStr + path;
 				std::string cmd = "feh --bg-scale \"" + concatPath + "\"";
+				int status = std::system(cmd.c_str());
+				if (status != 0) {
+				    Debug() << "bliat ono slomalos\n";
+				}
+		} else if (wpTool == "nitrogen") {
+				std::string concatPath = gameDirStr + path;
+				std::string cmd = "nitrogen --set-scaled \"" + concatPath + "\"";
 				int status = std::system(cmd.c_str());
 				if (status != 0) {
 				    Debug() << "bliat ono slomalos\n";
@@ -629,9 +652,14 @@ RB_METHOD(wallpaperReset){
 					Debug() << "bliat ono slomalos";
 				}
 			}
-		} else if(desktop == "dwm"){
+		} else if (wpTool == "feh") {
 			std::string cmd = originalFehbgExists ? originalFehbgCmd : "xsetroot -solid black";
 			int status = std::system(cmd.c_str());
+			if (status != 0) {
+				Debug() << "bliat ono slomalos";
+			}
+		} else if (wpTool == "nitrogen") {
+			int status = std::system("nitrogen --restore");
 			if (status != 0) {
 				Debug() << "bliat ono slomalos";
 			}

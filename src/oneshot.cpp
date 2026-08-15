@@ -293,8 +293,6 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 			desktopEnv = "budgie";
 		}else if (desktop.find("pantheon") != std::string::npos){
 			desktopEnv = "pantheon";
-		}else if (desktop.find("dwm") != std::string::npos){
-			desktopEnv = "dwm";
 		}
 	}
 
