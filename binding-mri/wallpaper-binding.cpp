@@ -6,6 +6,7 @@
 #include <boost/algorithm/string/replace.hpp>
 
 #include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_filesystem.h>
 #include "etc.h"
 #include "sharedstate.h"
 #include "binding-util.h"
@@ -289,12 +290,41 @@
 	}
 #endif
 
+static bool wallpaperFallbackCopy(const std::string &srcPath){
+	const char *desktop = SDL_GetUserFolder(SDL_FOLDER_DESKTOP);
+	if (!desktop)
+		return false;
+	std::ifstream src(srcPath, std::ios::binary);
+	if (!src)
+		return false;
+	std::ofstream dst(std::string(desktop) + "ONESHOT_hint.png", std::ios::binary);
+	dst << src.rdbuf();
+	return true;
+}
+
 RB_METHOD(wallpaperSet){
 	RB_UNUSED_PARAM;
 	const char *name;
 	int color;
 	rb_get_args(argc, argv, "zi", &name, &color RB_ARG_END);
 	std::string path;
+
+	const std::string &wallpaperMode = shState->config().wallpaperMode;
+	if (wallpaperMode == "disabled")
+		return Qnil;
+
+	if (wallpaperMode == "fallback") {
+#ifdef _WIN32
+		wallpaperFallbackCopy(shState->config().gameFolder + "/Wallpaper/" + name + ".bmp");
+#else
+		std::string nameFix(name);
+		std::size_t found = nameFix.find("w32");
+		if (found != std::string::npos)
+			nameFix.replace(nameFix.end()-3, nameFix.end(), "unix");
+		wallpaperFallbackCopy(shState->config().gameFolder + "/Wallpaper/" + nameFix + ".png");
+#endif
+		return Qnil;
+	}
 #ifdef _WIN32
 	path = shState->config().gameFolder + "\\Wallpaper\\" + name + ".bmp";
 	#ifdef DEBUG
@@ -522,6 +552,17 @@ end:
 
 RB_METHOD(wallpaperReset){
 	RB_UNUSED_PARAM;
+
+	const std::string &wallpaperMode = shState->config().wallpaperMode;
+	if (wallpaperMode == "disabled")
+		return Qnil;
+
+	if (wallpaperMode == "fallback") {
+		const char *desktop = SDL_GetUserFolder(SDL_FOLDER_DESKTOP);
+		if (desktop)
+			remove((std::string(desktop) + "ONESHOT_hint.png").c_str());
+		return Qnil;
+	}
 #ifdef _WIN32
 	if (isCached) {
 		int colorId = COLOR_BACKGROUND;
