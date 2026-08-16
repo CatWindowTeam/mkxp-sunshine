@@ -72,6 +72,11 @@ public:
 	DECL_ATTR( WavePhase,    float   )
 	DECL_ATTR( Obscured,     bool    )
 	DECL_ATTR( Shader,       int     )
+	// 3D test shit
+	DECL_ATTR( PerspectiveMode,      bool  )
+	DECL_ATTR( PerspectiveZ,         int   )
+	DECL_ATTR( PerspectiveRotationX, float )
+	DECL_ATTR( PerspectiveRotationY, float )
 
 	void initDynAttribs();
 

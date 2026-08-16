@@ -69,6 +69,7 @@ public:
 	 * calculates the corresponding ortho projection matrix
 	 * and loads it into the shaders uniform */
 	void applyViewportProj();
+	void applyPerspectiveProj();
 
 	void setTexSize(const Vec2i &value);
 	void setTranslation(const Vec2i &value);

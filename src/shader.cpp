@@ -237,6 +237,34 @@ void ShaderBase::applyViewportProj(){
 	projMat.set(Vec2i(vp.w, vp.h));
 }
 
+void ShaderBase::applyPerspectiveProj()
+{
+	const IntRect &vp = glState.viewport.get();
+    const float width  = (float)vp.w;
+    const float height = (float)vp.h;
+
+    const float cameraDistance = 1000.0f;
+
+    const float nearPlane = 1.0f;
+    const float farPlane  = 10000.0f;
+
+    const float sx = 2.0f * cameraDistance / width;
+    const float sy = 2.0f * cameraDistance / height;
+
+    const float A = -(farPlane + nearPlane) / (farPlane - nearPlane);
+
+    const float B = -(2.0f * farPlane * nearPlane) / (farPlane - nearPlane);
+
+    GLfloat mat[16] = {
+                     sx,               0, 0,              0,
+                      0,              sy, 0,              0,
+                      0,               0, A,             -1,
+        -cameraDistance, -cameraDistance, B, cameraDistance
+    };
+
+    gl.UniformMatrix4fv(projMat.u_mat, 1, GL_FALSE, mat);
+}
+
 void ShaderBase::setTexSize(const Vec2i &value){
 	gl.Uniform2f(u_texSizeInv, 1.f / value.x, 1.f / value.y);
 }

@@ -26,6 +26,8 @@
 
 #include <SDL3/SDL_rect.h>
 
+constexpr float PI = 3.14159265358979323846f;
+
 struct Vec2{
 	float x, y;
 
