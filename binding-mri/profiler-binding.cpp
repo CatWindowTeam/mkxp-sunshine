@@ -66,12 +66,7 @@ static VALUE profiler_set(VALUE, VALUE v) {
 
 void ProfilerInit() {
     VALUE module = rb_define_module("Profiler");
-    tp = rb_tracepoint_new(
-        Qnil,
-        RUBY_EVENT_CALL | RUBY_EVENT_RETURN,
-        tp_cb,
-        nullptr
-    );
+    tp = rb_tracepoint_new(Qnil, RUBY_EVENT_CALL | RUBY_EVENT_RETURN, tp_cb, nullptr);
     
     rb_gc_register_address(&tp);
     rb_define_singleton_method(module, "set", RUBY_METHOD_FUNC(profiler_set), 1);

@@ -79,15 +79,15 @@ module Settings
         end
       end
 
-	  def vsync(value)
-		if value == 0
-			Graphics.setVsync(1)
-		elsif value == 1
-			Graphics.setVsync(-1)
-		else
-			Graphics.setVsync(0)
-		end				
-	  end
+      def vsync(value)
+        if value == 0
+          Graphics.setVsync(1)
+        elsif value == 1
+          Graphics.setVsync(-1)
+        else
+          Graphics.setVsync(0)
+        end				
+      end
 	  
       def SDL_HINT_SHUTDOWN_DBUS_ON_QUIT(value)
         if value
@@ -97,17 +97,18 @@ module Settings
         end
       end
 
-      def profiller(value)
-		Profiler.set(value)
+      def profiler(value)
+        Profiler.set(value)
       end
+      
       def wallpaper_mode(value)
-		if value == 0
-			Sunshine.wallpapermode="normal" 
-		elsif value == 1
-			Sunshine.wallpapermode="fallback"
-		else
-			Sunshine.wallpapermode="disabled"
-		end				
+        if value == 0
+          Sunshine.wallpapermode="normal" 
+        elsif value == 1
+          Sunshine.wallpapermode="fallback"
+        else
+          Sunshine.wallpapermode="disabled"
+        end				
       end
     end
   end

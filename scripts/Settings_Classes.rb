@@ -850,6 +850,8 @@ class Window_Settings
       redraw
     end
   end
+
+  # ----------------------------------------------------------------------------------------
   class ActionParameter < BaseParameter
     TYPE = :action
 
@@ -881,6 +883,7 @@ class Window_Settings
     end
   end
 
+  # ----------------------------------------------------------------------------------------
   class CustomParameter < BaseParameter
     TYPE = :custom
     def initialize(settings_content, screen_id, position, name, icon, parameter, init_value, callbacks)
