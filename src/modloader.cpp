@@ -60,8 +60,6 @@ static int renderer_thread(void* data){
 	    SDL_RenderPresent(ren);
 	    SDL_Delay(16);
 	}
-	SDL_RenderClear(ren);
-	SDL_RenderPresent(ren);
 	SDL_DestroyTexture(tex);
 	SDL_DestroyRenderer(ren);
     return(0);
