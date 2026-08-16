@@ -50,6 +50,7 @@
 #include "security.h"
 
 #include "sunshine.h"
+#include "modloader.h"
 
 #include "define.h"
 #include "meow.h"
@@ -272,7 +273,6 @@ int main(int argc, char *argv[]){
 			return 0;
 		}
 	}
-	
 	extern int screenMain(Config &conf);
 	if (conf.screenMode)
 		return screenMain(conf);
@@ -348,6 +348,8 @@ int main(int argc, char *argv[]){
 	SDL_GetWindowSize(win, &winW, &winH); // SDL_GL_GetDrawableSize(win, &winW, &winH);
 	rtData.windowSizeMsg.post(Vec2i(winW, winH));
 
+	ModLoader(conf, win);
+	
 	/* Load and post key bindings */
 	rtData.bindingUpdateMsg.post(loadBindings(conf));
 	/* Start RGSS thread */

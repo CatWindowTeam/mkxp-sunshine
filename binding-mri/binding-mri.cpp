@@ -75,14 +75,12 @@ void windowVXBindingInit();
 void tilemapVXBindingInit();
 void TimeBindingInit();
 void SignalConnectionBindingInit();
-
 void inputBindingInit();
 void audioPlaybackBindingInit();
 void audioBindingInit();
 void graphicsBindingInit();
-
 void fileIntBindingInit();
-
+void ModLoaderBindingInit();
 void journalBindingInit();
 void wallpaperBindingInit();
 #ifdef unix_like
@@ -93,7 +91,6 @@ void oneshotBindingInit();
 void SunshineBindingInit();
 void steamBindingInit();
 void shaderBindingInit();
-void ModLoaderBindingInit();
 void keybindingsBindingInit();
 void lightmapBindingInit();
 void ProfilerInit();
@@ -148,7 +145,6 @@ static void mriBindingInit(){
     SunshineBindingInit();
 	steamBindingInit();
 	shaderBindingInit();
-	ModLoader();
 	ModLoaderBindingInit();
 	keybindingsBindingInit();
 	lightmapBindingInit();
@@ -168,7 +164,6 @@ static void mriBindingInit(){
 	script[binding_mri_module_rpg1_rb_len] = '\0';
 
 	rb_eval_string(script);
-
 	SDL_free(script);
 
 	VALUE mod = rb_define_module("MKXP");

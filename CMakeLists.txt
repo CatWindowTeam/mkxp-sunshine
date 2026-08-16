@@ -242,6 +242,7 @@ set(EMBEDDED_INPUT
 	assets/icon.png
 	assets/gamecontrollerdb.txt
 	assets/crash.png
+	assets/the_modded_machine.png
 	binding-mri/module_rpg1.rb
 )
 

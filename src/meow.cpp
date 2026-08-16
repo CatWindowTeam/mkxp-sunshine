@@ -8,6 +8,9 @@
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3/SDL_filesystem.h>
+#include <SDL3/SDL_timer.h>
+#include <SDL3/SDL_system.h>
+#include <SDL3/SDL_cpuinfo.h>
 #include "meow.h"
 #include "eventthread.h"
 #include "exception.h"
@@ -33,8 +36,6 @@
 #include <zlib.h>
 #include <physfs.h>
 #include <pixman.h>
-#include <SDL3/SDL_system.h>
-#include <SDL3/SDL_cpuinfo.h>
 #include "sunshine.h"
 #ifdef unix_like
 	#include <gtk/gtk.h>
@@ -43,8 +44,6 @@
 	#include <android/api-level.h>
 #elif web
 	#include <emscripten/console.h>
-#elif dos
-	#include <dpmi.h>
 #endif
 #include "crash.png.xxd"
 using namespace std;
@@ -145,7 +144,7 @@ void crash(Exception::Type t, const char *fmt, ...) {
 }
 
 void crash_screen(SDL_Window* win){
-	// Skil Crash screen if failed initialize
+	// Skip Crash screen if failed initialize
 	static bool skip_crash_screen = false;
 	//creating render
 	SDL_Renderer* ren = SDL_CreateRenderer(win, NULL);
@@ -306,6 +305,7 @@ void crash_screen(SDL_Window* win){
 	    	SDL_RenderDebugTextFormat(ren, 10, 70, "If you are sure that the problem is not in your modifications,");
 	    	SDL_RenderDebugTextFormat(ren, 10, 80, "your hands or in your device - please report the bug to the developers");
 	    	SDL_RenderPresent(ren);
+	    	SDL_Delay(32);
 		}
 		SDL_DestroyTexture(tex);
 		SDL_DestroyRenderer(ren);

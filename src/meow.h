@@ -5,6 +5,7 @@
 #include <string>
 
 inline std::vector<std::string> logs = {};
+inline std::vector<std::string> modloader_logs = {};
 
 inline bool show_crash_sceen = false;
 inline bool is_privacy_crashdump_enabled = false;
