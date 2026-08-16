@@ -89,7 +89,7 @@ class Scene_Title
     @debug.y = 5
     @debug.z += 1
     @debug.visible = Settings[:debug_text_scene_title] || false
-    @debug.bitmap = Bitmap.new(200, ENTRY_HEIGHT * 6)
+    @debug.bitmap = Bitmap.new(400, ENTRY_HEIGHT * 6)
     redraw_debug
 
     Language.register_text_sprite(self.class.name + "_contents", @menu)
@@ -190,13 +190,13 @@ class Scene_Title
     end
 
     @debug.bitmap.clear
-    @debug.bitmap.draw_text(0, 0, 200, ENTRY_HEIGHT, "Ruby #{RUBY_VERSION}")
-    @debug.bitmap.draw_text(0, ENTRY_HEIGHT, 200, ENTRY_HEIGHT, "SDL #{Sunshine::SDLVersion_major}.#{Sunshine::SDLVersion_minor}.#{Sunshine::SDLVersion_micro}")
-    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 2, 200, ENTRY_HEIGHT, "Sunshine #{Sunshine::VERSION}")
-    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 3, 200, ENTRY_HEIGHT, tr("sec_#{Sunshine::SECURITYSTATE}"))
+    @debug.bitmap.draw_text(0, 0, 400, ENTRY_HEIGHT, "Ruby #{RUBY_VERSION}")
+    @debug.bitmap.draw_text(0, ENTRY_HEIGHT, 400, ENTRY_HEIGHT, "SDL #{Sunshine::SDLVersion_major}.#{Sunshine::SDLVersion_minor}.#{Sunshine::SDLVersion_micro}")
+    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 2, 400, ENTRY_HEIGHT, "Sunshine #{Sunshine::VERSION}")
+    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 3, 400, ENTRY_HEIGHT, tr("sec_#{Sunshine::SECURITYSTATE}"))
     if ModLoader::IS_ENABLED
-      @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 4, 200, ENTRY_HEIGHT, tr("Mods loaded: ") + ModLoader::COUNT.to_s)
-      @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 5, 200, ENTRY_HEIGHT, tr("PreloadScripts loaded: ") + ModLoader::PRELOAD_SCRIPTS_COUNT.to_s)
+      @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 4, 400, ENTRY_HEIGHT, tr("Mods loaded: ") + ModLoader::COUNT.to_s)
+      @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 5, 400, ENTRY_HEIGHT, tr("PreloadScripts loaded: ") + ModLoader::PRELOAD_SCRIPTS_COUNT.to_s)
     end
   end
 
