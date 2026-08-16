@@ -243,23 +243,22 @@ void ShaderBase::applyPerspectiveProj()
     const float width  = (float)vp.w;
     const float height = (float)vp.h;
 
-    const float cameraDistance = 1000.0f;
+    const float camDist = (height * 0.5f) / SDL_tan(shState->graphics().globalFov * PI / 360.0f);
 
-    const float nearPlane = 1.0f;
+    const float nearPlane = 0.01f;
     const float farPlane  = 10000.0f;
 
-    const float sx = 2.0f * cameraDistance / width;
-    const float sy = 2.0f * cameraDistance / height;
+    const float sx = 2.0f * camDist / width;
+    const float sy = 2.0f * camDist / height;
 
-    const float A = -(farPlane + nearPlane) / (farPlane - nearPlane);
-
-    const float B = -(2.0f * farPlane * nearPlane) / (farPlane - nearPlane);
+    const float A = (farPlane + nearPlane) / (farPlane - nearPlane);
+    const float B = (2.0f * farPlane * nearPlane) / (farPlane - nearPlane);
 
     GLfloat mat[16] = {
-                     sx,               0, 0,              0,
-                      0,              sy, 0,              0,
-                      0,               0, A,             -1,
-        -cameraDistance, -cameraDistance, B, cameraDistance
+              sx,        0,               0,       0,
+               0,       sy,               0,       0,
+               0,        0,              -A,      -1,
+        -camDist, -camDist, A * camDist - B, camDist
     };
 
     gl.UniformMatrix4fv(projMat.u_mat, 1, GL_FALSE, mat);

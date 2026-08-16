@@ -61,10 +61,12 @@ public:
 	void setVsync(int value);
 
 	/* Non-standard extension */
-	DECL_ATTR( Fullscreen, bool )
-	DECL_ATTR( ShowCursor, bool )
-	DECL_ATTR( Smooth,     bool )
-	DECL_ATTR( Frameskip,  bool )
+	DECL_ATTR( Fullscreen, bool  )
+	DECL_ATTR( ShowCursor, bool  )
+	DECL_ATTR( Smooth,     bool  )
+	DECL_ATTR( Frameskip,  bool  )
+
+	float globalFov = 70;
 
 	/* <internal> */
 	Scene *getScreen() const;

@@ -224,7 +224,7 @@ DEF_GRA_PROP_B(Frameskip)
 	_rb_define_module_function(module, prop_name_s "=", graphics##Set##PropName); \
 }
 
-static VALUE graphicsWindowMoved(VALUE self){
+static VALUE graphicsWindowMoved(VALUE){
 	RUBY_CONNECTION
 	conn->connection = shState->windowSignals.moved.Connect([conn](int x, int y){
 		shState->rubyDispatcher().invoke([conn, x, y]{
@@ -239,7 +239,7 @@ static VALUE graphicsWindowMoved(VALUE self){
 	return TypedData_Wrap_Struct(rb_cRubyConnection, &rubyConnection_type, conn);
 }
 
-static VALUE graphicsWindowResized(VALUE self){
+static VALUE graphicsWindowResized(VALUE){
 	RUBY_CONNECTION
 	conn->connection = shState->windowSignals.resized.Connect([conn](int w, int h){
 		shState->rubyDispatcher().invoke([conn, w, h]{
@@ -254,7 +254,7 @@ static VALUE graphicsWindowResized(VALUE self){
 	return TypedData_Wrap_Struct(rb_cRubyConnection, &rubyConnection_type, conn);
 }
 
-static VALUE graphicsViewportResized(VALUE self){
+static VALUE graphicsViewportResized(VALUE){
 	RUBY_CONNECTION
 	conn->connection = shState->graphicsSignals.resized.Connect([conn](int w, int h){
 		//shState->rubyDispatcher().invoke([conn, w, h]{
@@ -269,6 +269,15 @@ static VALUE graphicsViewportResized(VALUE self){
 	return TypedData_Wrap_Struct(rb_cRubyConnection, &rubyConnection_type, conn);
 }
 
+static VALUE graphicsGetFOV(VALUE) {
+	return DBL2NUM(shState->graphics().globalFov);
+}
+
+static VALUE graphicsSetFOV(VALUE, VALUE fov) {
+	shState->graphics().globalFov = NUM2DBL(fov);
+	return Qnil;
+}
+
 void graphicsBindingInit(){
 	VALUE module = rb_define_module("Graphics");
 
@@ -277,6 +286,10 @@ void graphicsBindingInit(){
 	rb_define_module_function(module, "window_moved", RUBY_METHOD_FUNC(graphicsWindowMoved), 0);
 	rb_define_module_function(module, "window_resized", RUBY_METHOD_FUNC(graphicsWindowResized), 0);
 	rb_define_module_function(module, "viewport_resized", RUBY_METHOD_FUNC(graphicsViewportResized), 0);
+
+
+	rb_define_module_function(module, "fov", RUBY_METHOD_FUNC(graphicsGetFOV), 0);
+	rb_define_module_function(module, "fov=", RUBY_METHOD_FUNC(graphicsSetFOV), 1);
 
 	// Functions
 	_rb_define_module_function(module, "x", graphicsPosX);
