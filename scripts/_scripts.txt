@@ -77,7 +77,6 @@ Scene_Name
 Scene_Debug
 Scene_Save
 Scene_Load
-Scene_OF
 
 # Persistent data
 Persistent

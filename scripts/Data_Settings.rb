@@ -50,12 +50,12 @@ module Settings
         # Debug
         :debug                                   => false,
         :debug_character                         => false,
-        :debug_text                              => false,
         :debug_text_scene_title                  => true,
+        :debug_text                              => false,
         :debug_picture_names                     => false,
         :debug_lightmap                          => false,
         :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT          => false,
-        :profiller								 => false,
+        :profiler								                 => false,
       }
       reset_controls!
     end
@@ -557,7 +557,7 @@ class Window_Settings
         :type => :bool,
         :name => "Show debug text",
         :parameter => :debug_text,
-		:icon => [1, 0],
+        :icon => [1, 0],
       },
       {
         :type => :bool,
@@ -579,9 +579,9 @@ class Window_Settings
       },
       {
         :type => :bool,
-        :name => "Profiller",
+        :name => "Profiler",
+        :parameter => :profiler,
         :icon => [1, 0],
-        :parameter => :profiller
       },
       { :type => :sep },
       {
