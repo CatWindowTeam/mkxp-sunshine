@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 VALUE tp = Qnil;
-static std::vector<uint64_t> call_stack;  // Глобальный стек вместо thread-local
+static std::vector<uint64_t> call_stack;
 
 static uint64_t now_ns(void) {
     timespec ts;
@@ -35,12 +35,11 @@ static void tp_cb(VALUE tpval, void *) {
         call_stack.pop_back();
         uint64_t dur_ns = end_ns - start_ns;
 
-        // Сохраняем VALUE в переменные ПЕРЕД StringValuePtr
         VALUE path_val = rb_tracearg_path(trace_arg);
         VALUE class_val = rb_tracearg_defined_class(trace_arg);
         
         const char *path = StringValuePtr(path_val);
-        const char *class_name = StringValuePtr(class_val);
+        const char *class_name = rb_class2name(class_val);
         long line = FIX2LONG(rb_tracearg_lineno(trace_arg));
         const char *method = rb_id2name((ID)rb_tracearg_method_id(trace_arg));
 
@@ -48,7 +47,6 @@ static void tp_cb(VALUE tpval, void *) {
                 << " class=" << class_name << " dur_ns=" << dur_ns << "\n";
     }
 }
-
 
 static VALUE profiler_set(VALUE, VALUE v) {
     if (NIL_P(tp)) {
