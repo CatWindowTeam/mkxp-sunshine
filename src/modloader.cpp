@@ -49,7 +49,7 @@ static int renderer_thread(void* data){
 		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 	    SDL_RenderClear(ren);
 	    SDL_RenderTexture(ren, tex, NULL, NULL);
-		SDL_SetRenderDrawColor(ren, 109, 0, 198, 255);
+		SDL_SetRenderDrawColor(ren, 150, 100, 255, 255);
 		std::size_t size = modloader_logs.size();
 		std::size_t n = std::min<std::size_t>(static_cast<std::size_t>(N), size);
 		std::size_t start = size > n ? (size - n) : 0;
