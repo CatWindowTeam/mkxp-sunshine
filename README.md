@@ -1,16 +1,10 @@
-# mkxp-sunshine
-This is a specialized fork of [mkxp-oneshot](https://github.com/elizagamedev/mkxp-oneshot) designed for OneShot: Sunshine mod.
-Target of sunshine mod - improve original game.
-
-## xScripts.rxdata
-
-./rpgscript.rb scripts/ [GameDir]
+# Sunshine Engine
+It is a specialized fork of [mkxp-oneshot](https://github.com/elizagamedev/mkxp-oneshot) developed for the OneShot: Sunshine mod, aimed at optimization, running on old and new hardware, support for multiple platforms, and mod download security.
 
 ## Build
-
 1. Install required packages
     * Cmake
-    * C/C++ compiler, GCC 14+ or MinGW
+    * C/C++ compiler, GCC 14, MinGW, Clang and maybe MSVC
     * xxd
     * Ruby 3.4+
     * Boost
@@ -28,9 +22,5 @@ Target of sunshine mod - improve original game.
 (*NIX - Linux,FreeBSD and other UNIX and UNIX-like systems.)
 
 2. build
-    * In project dir create build dir
-    * cmake . -B build -DDEBUG=(ON/OFF) -DCMAKE_TOOLCHAIN_FILE=toolchain/arch/(x86/arm64/ia-64).cmake
-    * cd build
-    * make -jn (n - count of threads for compilation)
-
-also you can use build scripts like make-oneshot-linux.sh
+Use build scripts.
+make-oneshot-(OS).sh -DCMAKE_TOOLCHAIN_FILE=toolchain/arch/(x86/arm/ia-64).cmake

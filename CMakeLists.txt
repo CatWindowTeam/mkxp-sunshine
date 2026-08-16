@@ -1,6 +1,34 @@
 cmake_minimum_required(VERSION 3.28.3)
 project(oneshot)
 include(FindPackageHandleStandardArgs)
+include(CheckCXXCompilerFlag)
+include(CheckCCompilerFlag)
+message(STATUS "CXX compiler: ${CMAKE_CXX_COMPILER_ID}")
+
+# Helper for checking if options supported
+function(check_option var a)
+  set(all ${a})
+  set(var "")
+  list(APPEND all ${ARGN})
+  
+  foreach(x IN LISTS all)
+    check_cxx_compiler_flag(${x} HAVE_OPTION)  
+    if(HAVE_OPTION)
+		message(STATUS "${x} SUPPORTED")
+		list(APPEND var ${x})
+	else()
+		check_c_compiler_flag(${x} HAVE_OPTION_C)
+		if(HAVE_OPTION_C)
+			message(STATUS "${x} SUPPORTED")
+			list(APPEND var ${x})
+		else()
+			message(STATUS "${x} UNSUPPORTED")
+		endif()
+    endif()
+    
+  endforeach()  
+  set(${var} "${var}" PARENT_SCOPE)
+endfunction()
 
 # Options
 option(STEAM "Build for Steam" OFF)
@@ -12,22 +40,21 @@ option(USE_OPENGL_ES2 "GLES2_HEADER define" OFF)
 set(VERSION_STRING "0.1.2" CACHE STRING "Version string")
 option(DEVBUILD "Developoment build" OFF)
 
-#Configuration
+# Configuration
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
-set(VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "5.1.2600.0")
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 23)
-
-#disable niuse bullshit
 add_compile_options(-Wno-unused-parameter)
 
+# Make build more static
 if(STATIC)
-	add_compile_options(-static-libgcc -static-libstdc++)
+	check_option(OPTIONS_STATIC -static-libgcc -static-libstdc++)
+	add_compile_options(${OPTIONS_STATIC})
 	set(ZLIB_USE_STATIC_LIBS ON)
-	set(OPENSSL_USE_STATIC_LIBS ON)
 endif()
 
+# Use OpenGL ES2
 if(USE_OPENGL_ES2)
 	add_definitions(-DGLES2_HEADER)
 endif()
@@ -149,7 +176,7 @@ set(MAIN_SOURCE
 	src/sound/audiosource.cpp
 )
 
-
+# Platform specific bullshit
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     list(APPEND MAIN_SOURCE assets/resources.rc)
     list(APPEND DEFINES UNICODE)
@@ -182,7 +209,6 @@ elseif(APPLE)
 endif()
 
 source_group("MKXP Source" FILES ${MAIN_SOURCE} ${MAIN_HEADERS})
-
 set(EMBEDDED_INPUT
 	shader/common.h
 	shader/transSimple.frag
@@ -297,32 +323,45 @@ set(BINDING_SOURCE
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
 if(NATIVE)
-	add_compile_options(-march=native
-	-mtune=native)
+	check_option(OPTIONS_NATIVE -march=native -mtune=native)
+	add_compile_options(${OPTIONS_NATIVE})
 endif()
+
+# Common arguments on specific CPU arch
+if("${ARCH_COMMON}" STREQUAL "")
+	message(STATUS "ARCH_COMMON empty")
+else()
+  check_option(ARCH_COMMON_OPTIONS ${ARCH_COMMON})
+  add_compile_options(${ARCH_COMMON_OPTIONS})
+endif()
+
 if(SANITIZERS)
 	# ASan + Ruby = SEGFAULT
 	set(SANITIZERS "undefined,leak,shift,shift-base,shift-exponent,integer-divide-by-zero,unreachable,vla-bound,null,signed-integer-overflow,bounds,bounds-strict,alignment,object-size,float-divide-by-zero,float-cast-overflow,nonnull-attribute,returns-nonnull-attribute,bool,enum,vptr,pointer-overflow,builtin,pointer-subtract,pointer-compare")
-	add_compile_options(-fsanitize=${SANITIZERS})
-	add_link_options(-fsanitize=${SANITIZERS})
+	check_option(SANITIZERS_OPTIONS -fsanitize=${SANITIZERS})
+	add_compile_options(${SANITIZERS_OPTIONS})
+	add_link_options(${SANITIZERS_OPTIONS})
 endif()
 if(DEBUG)
-	add_compile_options(
+	check_option(OPTIONS_DEBUG
 		-g3
 		-fno-omit-frame-pointer
 		-Og)
+	add_compile_options(${OPTIONS_DEBUG})
+	check_option(ARCH_DEBUG_OPTIONS ${ARCH_DEBUG})
+	add_compile_options(${ARCH_DEBUG_OPTIONS})
 else()
-	add_compile_options(
-	-O2 
-	-ffast-math 
-	-fipa-pta 
-	-ftree-vectorize 
-	-fstdarg-opt 
-	-fomit-frame-pointer 
-	-frename-registers 
-	-ffunction-sections 
-	-fdata-sections 
-	-fvisibility=hidden)
+	check_option(OPTIONS_RELEASE -O2 
+		-ffast-math 
+		-fipa-pta 
+		-ftree-vectorize 
+		-fstdarg-opt 
+		-fomit-frame-pointer 
+		-frename-registers 
+		-ffunction-sections 
+		-fdata-sections 
+		-fvisibility=hidden)
+	add_compile_options(${OPTIONS_RELEASE})
 		
 	add_link_options(-Wl,-O2 
 	-Wl,--gc-sections 
@@ -331,13 +370,12 @@ else()
 	-Wl,--strip-all
 	-Wl,--no-copy-dt-needed-entries)
 	if(NOT WIN32)
-		add_compile_options(-flto)
-		add_link_options(-flto)
+		check_option(OPTIONS_RELEASE_WIN32_FLTO -flto)
+		add_compile_options(${OPTIONS_RELEASE_WIN32_FLTO})
+		add_link_options(${OPTIONS_RELEASE_WIN32_FLTO})
 	endif()
-
-	if(LINUX)
-		add_compile_options(-fno-plt)
-	endif()
+	check_option(ARCH_RELEASE_OPTIONS ${ARCH_RELEASE})
+	add_compile_options(${ARCH_RELEASE_OPTIONS})
 endif()
 
 if(ANDROID)
