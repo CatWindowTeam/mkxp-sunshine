@@ -346,7 +346,8 @@ if(DEBUG)
 	check_option(OPTIONS_DEBUG
 		-g3
 		-fno-omit-frame-pointer
-		-Og)
+		-Og
+		-fcheck-new)
 	add_compile_options(${OPTIONS_DEBUG})
 
 	if("${ARCH_DEBUG}" STREQUAL "")
@@ -356,19 +357,20 @@ if(DEBUG)
 	  	add_compile_options(${ARCH_DEBUG_OPTIONS})
 	endif()
 else()
-	check_option(OPTIONS_RELEASE -O2
-		-ffast-math
-		-fipa-pta
-		-fipa-sra
-		-ftree-vectorize
-		-fstdarg-opt
-		-fomit-frame-pointer
-		-frename-registers
-		-ffunction-sections
-		-fdata-sections
-		-fvisibility=hidden
-		-fno-asynchronous-unwind-tables
-		-fno-semantic-interposition)
+	check_option(OPTIONS_RELEASE -O3
+	-ffast-math
+	-fvisibility=hidden
+	-fno-math-errno
+	-fno-trapping-math
+	-ffunction-sections
+	-fsection-anchors
+	-fdata-sections
+	-fvirtual-function-elimination
+	-fstdarg-opt
+	-frename-registers
+	-fuse-linker-plugin
+	-fipa-pta
+	-fext-dce)
 	add_compile_options(${OPTIONS_RELEASE})
 		
 	add_link_options(-Wl,-O2 
@@ -378,13 +380,9 @@ else()
 	-Wl,--strip-all
 	-Wl,--no-copy-dt-needed-entries)
 	if(NOT WIN32)
-		check_option(OPTIONS_RELEASE_WIN32_FLTO -flto=auto)
+		check_option(OPTIONS_RELEASE_WIN32_FLTO -flto=thin)
 		add_compile_options(${OPTIONS_RELEASE_WIN32_FLTO})
 		add_link_options(${OPTIONS_RELEASE_WIN32_FLTO})
-	endif()
-	if(LINUX)
-		check_option(MEOW_OPT -fno-semantic-interposition)
-		add_compile_options(${MEOW_OPT})
 	endif()
 	if("${ARCH_RELEASE}" STREQUAL "")
 		message(STATUS "ARCH_RELEASE empty")
