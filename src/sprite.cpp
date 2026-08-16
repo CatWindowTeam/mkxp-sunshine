@@ -318,6 +318,11 @@ DEF_ATTR_RD_SIMPLE(Sprite, WaveAmp,      int,     p->wave.amp)
 DEF_ATTR_RD_SIMPLE(Sprite, WaveLength,   int,     p->wave.length)
 DEF_ATTR_RD_SIMPLE(Sprite, WaveSpeed,    int,     p->wave.speed)
 DEF_ATTR_RD_SIMPLE(Sprite, WavePhase,    float,   p->wave.phase)
+// 3D shit
+DEF_ATTR_RD_SIMPLE(Sprite, PerspectiveMode,      bool,  p->trans.getPerspectiveMode())
+DEF_ATTR_RD_SIMPLE(Sprite, PerspectiveZ,         int,   p->trans.getPerspectiveZ())
+DEF_ATTR_RD_SIMPLE(Sprite, PerspectiveRotationX, float, p->trans.getPerspectiveRotation().x)
+DEF_ATTR_RD_SIMPLE(Sprite, PerspectiveRotationY, float, p->trans.getPerspectiveRotation().y)
 
 DEF_ATTR_SIMPLE(Sprite, BushOpacity,  int,        p->bushOpacity)
 DEF_ATTR_SIMPLE(Sprite, Opacity,      int,        p->opacity)
@@ -462,6 +467,42 @@ void Sprite::setBlendType(int type){
 	}
 }
 
+void Sprite::setPerspectiveMode(bool value){
+	guardDisposed();
+
+	if (p->trans.getPerspectiveMode() == value)
+		return;
+
+	p->trans.setPerspectiveMode(value);
+}
+
+void Sprite::setPerspectiveZ(int value){
+	guardDisposed();
+
+	if (p->trans.getPerspectiveZ() == value)
+		return;
+
+	p->trans.setPerspectiveZ(value);
+}
+
+void Sprite::setPerspectiveRotationX(float value){
+	guardDisposed();
+
+	if (p->trans.getPerspectiveRotation().x == value)
+		return;
+
+	p->trans.setPerspectiveRotation(Vec2(value, p->trans.getPerspectiveRotation().y));
+}
+
+void Sprite::setPerspectiveRotationY(float value){
+	guardDisposed();
+
+	if (p->trans.getPerspectiveRotation().y == value)
+		return;
+
+	p->trans.setPerspectiveRotation(Vec2(p->trans.getPerspectiveRotation().x, value));
+}
+
 #define DEF_WAVE_SETTER(Name, name, type) \
 	void Sprite::setWave##Name(type value) \
 	{ \
@@ -517,7 +558,6 @@ void Sprite::draw(){
 	if (p->obscured || p->shader == ShaderType::SHADER_obscured){
 		ObscuredShader &shader = shState->shaders().obscured;
 		shader.bind();
-		shader.applyViewportProj();
 		shader.setObscured(shState->graphics().obscuredTex());
 		base = &shader;
 	}
@@ -529,7 +569,6 @@ void Sprite::draw(){
 				PlaneShader &shader = shState->shaders().plane;
 			
 				shader.bind();
-				shader.applyViewportProj();
 				shader.setTone(p->tone->norm);
 				shader.setColor(p->color->norm);
 				shader.setFlash(Vec4());
@@ -586,7 +625,6 @@ void Sprite::draw(){
 				
 					shader.setSpriteMat(p->trans.getMatrix());
 					shader.setAlpha(p->opacity.norm);
-					shader.applyViewportProj();
 					base = &shader;
 				}
 				else{
@@ -594,7 +632,6 @@ void Sprite::draw(){
 					shader.bind();
 				
 					shader.setSpriteMat(p->trans.getMatrix());
-					shader.applyViewportProj();
 					base = &shader;
 				}
 
@@ -605,6 +642,10 @@ void Sprite::draw(){
 	boost::chrono::high_resolution_clock::time_point currentTime = boost::chrono::high_resolution_clock::now();
 	boost::chrono::duration<float> elapsed = currentTime - startTime;
 	base->setTime(elapsed.count());
+
+	base->applyViewportProj();
+	if(p->trans.getPerspectiveMode())
+		base->applyPerspectiveProj();
 
 	glState.blendMode.pushSet(p->blendType);
 
@@ -644,7 +685,6 @@ void Sprite::releaseResources(){
 
 void Sprite::defaultSpriteShaderInit(SpriteShaderBase &shader){
 	shader.bind();
-	shader.applyViewportProj();
 	shader.setSpriteMat(p->trans.getMatrix());
 
 	shader.setTone(p->tone->norm);

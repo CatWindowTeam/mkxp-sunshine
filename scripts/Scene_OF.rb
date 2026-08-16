@@ -90,9 +90,10 @@ class Scene_OF
 
     @miss_sound = Audio.create_sound("Audio/SE/shatter")
 
+    @viewport_bg = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @viewport_ui = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport_ui.ox = -Graphics.width / 2
-    @viewport_ui.oy = -Graphics.height / 2
+    @viewport_ui.ox = @viewport_bg.ox = -Graphics.width / 2
+    @viewport_ui.oy = @viewport_bg.oy = -Graphics.height / 2
     @spritesheet = RPG::Cache.misc(".cats")
 
     @cat_flying_arrows = []
@@ -165,6 +166,20 @@ class Scene_OF
     @bst_debug = Sprite.new(@viewport_ui)
     @bst_debug.bitmap = Bitmap.new(300, 40)
 
+    @test_bitmap = Bitmap.new(64, 64)
+    @test_bitmap.stretch_blt(Rect.new(0, 0, 64, 64), @spritesheet, SPRITES[:player_target_arrow_down])
+    @threeD_test1 = Sprite.new(@viewport_bg)
+    @threeD_test2 = Sprite.new(@viewport_bg)
+    @threeD_test1.bitmap = @test_bitmap
+    @threeD_test2.bitmap = @simple_bitmap
+    @threeD_test1.x = -300
+    @threeD_test1.ry = 90
+    @threeD_test1.pm = @threeD_test2.pm = true
+    @threeD_test1.zoom_x = @threeD_test1.zoom_y = 2
+    @threeD_test2.zoom_x = @threeD_test2.zoom_y = 128
+    @threeD_test1.ox = @threeD_test1.oy = 32
+    @threeD_test2.ox = @threeD_test2.oy = 0.5
+
     @total_time = 0
     @bump_timeout = 999999
     @bump_time = 999999
@@ -213,10 +228,13 @@ class Scene_OF
     # fl studio b:s:t :3
     beat = (@total_time / BPM_TIME / 2).to_i + 1
     step = (@total_time / BPM_TIME * 15 / 2).to_i % 15 + 1
-    tick = (@total_time / BPM_TIME * 24 * 15 / 2).to_i % 24
+    tick = (@total_time / BPM_TIME * 24 * 15 / 2).to_i % 24 
     
     @bst_debug.bitmap.clear
     @bst_debug.bitmap.draw_text(Rect.new(0, 0, 300, 40), "#{beat} : #{step} : #{tick}")
+
+    @threeD_test1.pz = Math.sin(@total_time / 180.0 * Math::PI) * 400 + 400
+    @threeD_test2.rx += 4
 
     @bump_timeout -= 1
     @icons_bump_timeout -= 1
