@@ -29,7 +29,7 @@ function(check_option var a)
 endfunction()
 
 # Options
-option(STEAM "Build for Steam" OFF)
+option(STEAM "Build with Steam Support" OFF)
 option(DEBUG "Debug mode" ON)
 option(SANITIZERS "Enable sanitizers" OFF)
 option(NATIVE "Use native instructions(for local use only)" OFF)
