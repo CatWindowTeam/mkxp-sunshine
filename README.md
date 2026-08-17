@@ -24,3 +24,6 @@ It is a specialized fork of [mkxp-oneshot](https://github.com/elizagamedev/mkxp-
 2. build
 Use build scripts.
 make-oneshot-(OS).sh -DCMAKE_TOOLCHAIN_FILE=toolchain/arch/(x86/arm/ia-64).cmake
+
+# Mirrors
+[Github](https://github.com/CatWindowTeam/mkxp-sunshine/tree/master)
