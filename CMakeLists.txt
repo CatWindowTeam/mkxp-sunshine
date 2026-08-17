@@ -3,8 +3,6 @@ project(oneshot)
 include(FindPackageHandleStandardArgs)
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
-message(STATUS "CXX compiler: ${CMAKE_CXX_COMPILER_ID}")
-
 # Helper for checking if options supported
 function(check_option var a)
   set(all ${a})
