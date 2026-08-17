@@ -46,6 +46,7 @@
 #include <zlib.h>
 #include <inttypes.h>
 #include <time.h>
+#include <algorithm>
 #include <SDL3/SDL_filesystem.h>
 extern const char binding_mri_module_rpg1_rb[];
 extern const int binding_mri_module_rpg1_rb_len;
@@ -421,7 +422,7 @@ static void runRMXPScripts(BacktraceData &btData){
 		rb_ary_store(script, 3, rb_str_new_cstr(decodeBuffer.c_str()));
 	}
 
-	/* Execute preloaded scripts */
+	//Execute preloaded scripts
 	for (std::set<std::string>::iterator i = preloadScripts.begin();
 	     i != preloadScripts.end(); ++i)
 		runCustomScript(*i);

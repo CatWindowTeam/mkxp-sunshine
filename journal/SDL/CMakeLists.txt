@@ -3,13 +3,12 @@ project(_______)
 include(FindPackageHandleStandardArgs)
 option(DEBUG "Debug mode" ON)
 option(SANITIZERS "Enable sanitizers" OFF)
-option(NATIVE "Use native instructions(for local use only)" OFF)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
-set(VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "5.1.2600.0")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(EMBEDDED_INPUT
 	assets/icon.png
+	assets/default.png
 )
 
 ## Process Embeddeds ##
@@ -43,7 +42,8 @@ endforeach()
 
 source_group("Embedded Source" FILES ${EMBEDDED_INPUT} ${EMBEDDED_SOURCE})
 add_executable(${PROJECT_NAME} ${EMBEDDED_SOURCE} main.c)
-find_package(SDL3 CONFIG)
-find_package(SDL3_image CONFIG)
+find_package(SDL3 CONFIG REQUIRED)
+find_package(SDL3_image CONFIG REQUIRED)
+find_package(SDL3_net CONFIG REQUIRED)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_net::SDL3_net)

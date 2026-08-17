@@ -23,7 +23,9 @@
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
+#include <SDL3/SDL_stdinc.h>
 #include <physfs.h>
+#include <stdio.h>
 
 #ifdef _MSC_VER
 #include <direct.h>
@@ -31,7 +33,6 @@
 #else
 #include <unistd.h>
 #endif
-#include <SDL3/SDL_stdinc.h>
 #include <assert.h>
 #include <string>
 #include <iostream>
@@ -166,41 +167,6 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 	}
 }
 
-// mainly doing this so journal app knows where to load images from
-static void setGamePathInRegistry() {
-#if defined WIN32
-	// this logic is currently windows specific
-	const char* dataDir = SDL_GetBasePath();
-	if (dataDir){
-		HKEY key;
-		long keyOpenError = RegOpenKey(HKEY_CURRENT_USER, TEXT("Software\\OneShot\\"), &key);
-
-		if (keyOpenError != ERROR_SUCCESS) {
-			// try creating the key first
-			long keyCreateError = RegCreateKeyEx(HKEY_CURRENT_USER, TEXT("Software\\OneShot\\"), 0L, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &key, NULL);
-
-			if (keyCreateError != ERROR_SUCCESS){
-				WarnMsg("Unable to create key in registry");
-			}
-			else {
-				keyOpenError = ERROR_SUCCESS;
-			}
-		}
-
-		if (keyOpenError != ERROR_SUCCESS){
-			WarnMsg("Unable to open registry.");
-		}
-		else {
-			DWORD dataSize = (SDL_strlen(dataDir) + 1) * sizeof(char);
-			if (RegSetValueEx(key, TEXT("GameDirectory"), 0, REG_SZ, (LPBYTE)dataDir, dataSize) != ERROR_SUCCESS){
-				WarnMsg("Unable to set GameDirectory registry value");
-			}
-			RegCloseKey(key);
-		}
-	}
-#endif
-	//TODO handle this for Linux/Mac
-}
 int main(int argc, char *argv[]){
     startTime = boost::chrono::high_resolution_clock::now();
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
@@ -247,9 +213,6 @@ int main(int argc, char *argv[]){
 		(void)result;
 	}
 #endif
-
-	setGamePathInRegistry();
-
 	/* Initialize physfs here so that config can call PHYSFS_getPrefDir */
 	PHYSFS_init(argv[0]);
 
@@ -266,13 +229,33 @@ int main(int argc, char *argv[]){
     			freopen("CONOUT$", "w", stderr);
 		}
 	#endif
-	
+
 	if (!conf.gameFolder.empty()){
 		if (chdir(conf.gameFolder.c_str()) != 0){
 			WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
 			return 0;
 		}
 	}
+
+	std::string path;
+	
+	if (!conf.gameFolder.empty()) {
+	    if (conf.gameFolder == ".") {
+	        path = std::filesystem::current_path().string();
+	    } else {
+	        path = std::filesystem::absolute(conf.gameFolder).string();
+	    }
+	} else {
+	    path = std::filesystem::current_path().string();
+	}
+	
+	std::ofstream out(std::filesystem::temp_directory_path() / "sunshine");
+	if (!out) {
+	    WarnMsg("Failed to write game directory path to temp file, problems with journal app expected!");
+	} else {
+	    out << path;
+	}
+	
 	extern int screenMain(Config &conf);
 	if (conf.screenMode)
 		return screenMain(conf);
@@ -283,13 +266,13 @@ int main(int argc, char *argv[]){
 	if (TTF_Init() == false){
 		WarnMsg("Error initializing SDL_ttf: %s", SDL_GetError());
 		SDL_Quit();
+		return 0;
 	}
 
 	if (MIX_Init() == false){
 		WarnMsg("Error initializing SDL_mixer: %s", SDL_GetError());
 		TTF_Quit();
 		SDL_Quit();
-
 		return 0;
 	}
 
@@ -305,7 +288,6 @@ int main(int argc, char *argv[]){
 		MIX_Quit();
 		TTF_Quit();
 		SDL_Quit();
-
 		return 0;
 	}
 
@@ -329,8 +311,7 @@ int main(int argc, char *argv[]){
 		WarnMsg("Error creating Mixer Device, check your system audio configuration");
 		MIX_Quit();
 		TTF_Quit();
-		SDL_Quit();
-		
+		SDL_Quit();	
 		return 0;
 	}
 
