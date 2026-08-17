@@ -625,7 +625,7 @@ Graphics::~Graphics(){
 
 void Graphics::update(bool limitFps){
 	// TODO: move this to ruby thread update, idk where it is
-	shState->rubyDispatcher().process();
+	shState->rubyDispatcher().process(); // <-'
 
 	p->checkShutDownReset();
 	p->checkSyncLock();
