@@ -131,7 +131,9 @@ class Scene_Map
         return
       else
         if Settings[:oneshot_mode] == true
-          File.new("badend.lock", "w")
+          if($game_switches[179] == false)
+			File.new("badend.lock", "w")
+          end
           $game_temp.common_event_id = 35
         else
           $game_temp.common_event_id = 35
