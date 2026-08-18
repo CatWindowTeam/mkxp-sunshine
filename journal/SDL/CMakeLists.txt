@@ -41,7 +41,7 @@ foreach(item ${EMBEDDED_INPUT})
 endforeach()
 
 source_group("Embedded Source" FILES ${EMBEDDED_INPUT} ${EMBEDDED_SOURCE})
-add_executable(${PROJECT_NAME} ${EMBEDDED_SOURCE} main.c)
+add_executable(${PROJECT_NAME} ${EMBEDDED_SOURCE} main.cpp debugwriter.h)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(SDL3_image CONFIG REQUIRED)
 find_package(SDL3_net CONFIG REQUIRED)

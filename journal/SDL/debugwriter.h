@@ -25,11 +25,6 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <ruby.h>
-#include <source_location>
-#include "meow.h"
-#undef vsnprintf
-#undef snprintf
 
 #ifdef __ANDROID__
 	#include <android/SDL_log.h>
@@ -39,8 +34,8 @@
 
 class Debug{
 public:
-	explicit Debug(const std::source_location location = std::source_location::current()) : location(location){
-	    buf << std::boolalpha;
+	Debug(){
+		buf << std::boolalpha;
 	}
 
 	template<typename T>
@@ -59,28 +54,18 @@ public:
 		return *this;
 	}
 
-	template<typename T>
-	Debug &operator<<(const VALUE &v){
-		buf << rb_inspect(v);
-		return *this;
-	}
-
 	~Debug(){
-		std::ostringstream result;
-		result << "[" << location.line() << ":" << location.function_name() << "] " << buf.str();
 #ifdef __ANDROID__
-		__android_log_write(ANDROID_LOG_DEBUG, "sunshine", result.str().c_str());
+		__android_log_write(ANDROID_LOG_DEBUG, "sunshine", buf.str().c_str());
 #elif __EMSCRIPTEN__
-		emscripten_console_log(result.str().c_str());				
+		emscripten_console_log(buf.str().c_str());				
 #else
-		logs.push_back(result.str());
-		std::cout << result.str() << "\n";
+		std::cout << buf.str() << "\n";
 #endif
 	}
 
 private:
 	std::stringstream buf;
-	std::source_location location;
 };
 
 #endif // DEBUGWRITER_H

@@ -76,6 +76,9 @@ void ModLoader(Config conf, SDL_Window* win){
     }
     
 	SDL_Thread* render_thread_pointer = SDL_CreateThread(renderer_thread, "ModRenderer", win);
+	if (!render_thread_pointer) {
+	    //TODO: Error handling
+	}
     std::vector<std::string> mod_list = {};
     try {
         // 1.check if any zip(mod) file, 2. calculate sha256 hash of zip(mod) files 3.mount mod via PhysFS

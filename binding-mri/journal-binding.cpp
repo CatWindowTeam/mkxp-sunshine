@@ -4,145 +4,48 @@
 #include "debugwriter.h"
 #include "i18n.h"
 #include "define.h"
-
-//OS-Specific code
-#if defined _WIN32
-	#define OS_W32
-#elif unix_like
-	#define LINUX
-	#ifdef __APPLE__
-		#define OS_OSX
-	#else
-		#define OS_LINUX
-	#endif
-
-	#include <fcntl.h>
-	#include <sys/stat.h>
-	#include <sys/types.h>
-	#ifdef __linux__
-		#include <sys/inotify.h>
-	#endif
-	#include <unistd.h>
-	#include <cstdio>
-	#include <pwd.h>
-	#include <string>
-#endif
-
 #include <SDL3/SDL.h>
+#include <SDL3/SDL.h>
+#include <SDL3_net/SDL_net.h>
 
-#define BUFFER_SIZE 256
+void SendRaw(const char *address, int port, const char *raw){
+    NET_Address *addr = NET_ResolveHostname(address);
+    if (!addr) {
+        Debug() << "Failed to resolve " << address << " : " <<  SDL_GetError();
+        return;
+    }
 
-static SDL_Thread *thread = NULL;
-static SDL_Mutex *mutex = NULL;
-static volatile char lang_buffer[BUFFER_SIZE];
-static volatile char message_buffer[BUFFER_SIZE];
-static volatile bool active = false;
-static volatile int message_len = 0;
+    if (NET_WaitUntilResolved(addr, -1) == NET_FAILURE) {
+        Debug() << "NET_FAILURE " << address << " : " <<  SDL_GetError();
+        return;
+    }
 
-#ifdef unix_like
-	static std::string PIPE_PATH = std::string(getpwuid(getuid())->pw_dir) + "/.oneshot-pipe";
-	static volatile int out_pipe = -1;
-	void cleanup_pipe(){
-		unlink(PIPE_PATH.c_str());
-		remove(PIPE_PATH.c_str());
-	}
-#endif
+    NET_StreamSocket *socket = NET_CreateClient(addr, port, 0);
+    if (!socket) {
+        Debug() << "Failed to create connection: " <<  SDL_GetError();
+        return;
+    }
 
-int server_thread(void *data){
-	(void)data;
-#if defined OS_W32
-	HANDLE pipe = CreateNamedPipeW(L"\\\\.\\pipe\\oneshot-journal-to-game",
-	                               PIPE_ACCESS_OUTBOUND,
-	                               PIPE_TYPE_BYTE | PIPE_WAIT,
-	                               PIPE_UNLIMITED_INSTANCES,
-	                               BUFFER_SIZE,
-	                               BUFFER_SIZE,
-	                               0,
-	                               NULL);
-	for (;;) {
-		ConnectNamedPipe(pipe, NULL);
-		SDL_LockMutex(mutex);
-		DWORD written;
-		WriteFile(pipe, (const void*)message_buffer, BUFFER_SIZE, &written, NULL);
-		active = true;
-		SDL_UnlockMutex(mutex);
-		FlushFileBuffers(pipe);
-		DisconnectNamedPipe(pipe);
-	}
-	CloseHandle(pipe);
-#else
-	if (access(PIPE_PATH.c_str(), F_OK) != -1){
-		out_pipe = open(PIPE_PATH.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
-		SDL_LockMutex(mutex);
-		active = true;
-		if (message_len > 0){
-			if (write(out_pipe, (char*)message_buffer, message_len) == -1){
-				#ifdef DEBUG
-					Debug() << "[journal-binding>server_thread()]Failure writing to journal's pipe!";
-				#endif
-			}
-		}
-		SDL_UnlockMutex(mutex);
-	}
-	return 0;
-#endif
+    if (NET_WaitUntilConnected(socket, -1) == NET_FAILURE) {
+        Debug() << "Failed to connect to " <<  address << ":" <<  port << " " << SDL_GetError();
+        NET_DestroyStreamSocket(socket);
+        return;
+    }
+
+    int length = (int)SDL_strlen(raw);
+
+    if (!NET_WriteToStreamSocket(socket, raw, length)) {
+       Debug() << "Failed to send: " <<  SDL_GetError();
+    } else if (NET_WaitUntilStreamSocketDrained(socket, -1) < 0) {
+        Debug() << "Error: " <<  SDL_GetError();
+    }
+    NET_DestroyStreamSocket(socket);
 }
 
 RB_METHOD(journalSet){
 	RB_UNUSED_PARAM;
 	const char *name;
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);
-	// Record message
-	SDL_LockMutex(mutex);
-	message_len = SDL_strlen(name);
-	strcpy((char*)message_buffer, name);
-	if (message_len > 0) {
-		// in the case where journal is being sent empty string
-		// do not append the language suffix, because empty string
-		// is the signifier to terminate the journal
-		strcpy((char*)message_buffer + message_len, (char*)lang_buffer);
-		message_len += SDL_strlen((char*)lang_buffer);
-	}
-	SDL_UnlockMutex(mutex);
-
-#if defined _WIN32
-	HANDLE pipe = CreateFileW(L"\\\\.\\pipe\\oneshot-game-to-journal",
-	                          GENERIC_WRITE,
-	                          0,
-	                          NULL,
-	                          OPEN_EXISTING,
-	                          0,
-	                          NULL);
-	if (pipe != INVALID_HANDLE_VALUE) {
-		active = true;
-		DWORD written;
-		WriteFile(pipe, (const void*)message_buffer, BUFFER_SIZE, &written, NULL);
-		FlushFileBuffers(pipe);
-		CloseHandle(pipe);
-	}
-	if (thread == NULL) {
-		thread = SDL_CreateThread(server_thread, "journal", NULL);
-	}
-#else
-	// Clean up connection thread
-	if (thread != NULL && out_pipe != -1) {
-		SDL_WaitThread(thread, NULL);
-		thread = NULL;
-	}
-	// Attempt to send it over the tubes
-	if (out_pipe != -1) {
-		// We have a connection, so send it over
-		if (write(out_pipe, (char*)message_buffer, message_len) <= 0) {
-			// In the case of an error, close
-			close(out_pipe);
-			out_pipe = -1;
-		}
-	}
-	if (out_pipe == -1) {
-		// We don't have a pipe open, so spawn the connection thread
-		thread = SDL_CreateThread(server_thread, "journal", NULL);
-	}
-#endif
 	return Qnil;
 }
 
@@ -150,25 +53,19 @@ RB_METHOD(journalSetLang){
 	RB_UNUSED_PARAM;
 	const char *lang;
 	rb_get_args(argc, argv, "z", &lang RB_ARG_END);
-	strcpy((char*)lang_buffer+1, lang);
-	loadLocale(lang);
+	printf(lang);
 	return Qnil;
 }
 
 RB_METHOD(journalActive){
 	RB_UNUSED_PARAM;
-	return active ? Qtrue : Qfalse;
+	return Qfalse;
 }
 
 void journalBindingInit(){
-	mutex = SDL_CreateMutex();
-	SDL_memset((char*)lang_buffer, 0, BUFFER_SIZE);
-	lang_buffer[0] = '_';
-#ifdef unix_like
-	mkfifo(PIPE_PATH.c_str(), 0666);
-	atexit(cleanup_pipe);
-#endif
-
+	if (!NET_Init()) {
+		Debug() << "NET_Init() failed: " << SDL_GetError();
+	}
 	VALUE module = rb_define_module("Journal");
 	_rb_define_module_function(module, "set", journalSet);
 	_rb_define_module_function(module, "active?", journalActive);

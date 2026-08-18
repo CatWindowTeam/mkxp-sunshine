@@ -94,7 +94,9 @@ void Config::read(int argc, char *argv[]){
 	PO_DESC(Windows_AllocConsole, bool, false) \
 	PO_DESC(Modloader.use_default_save_path, bool, false) \
 	PO_DESC(pancakes, bool, false) \
-	PO_DESC(SecurityEngine, bool, true)
+	PO_DESC(SecurityEngine, bool, true) \
+	PO_DESC(journal_address, std::string, "127.0.0.1") \
+	PO_DESC(journal_port, int, 23821)
 	
 // Not gonna take your shit boost
 #define GUARD_ALL( SDL_exp ) try { SDL_exp } catch(...) {}

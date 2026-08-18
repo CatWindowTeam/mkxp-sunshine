@@ -58,23 +58,23 @@ struct Config{
 	std::string iconPath;
 
 	std::string wallpaperMode;
+	std::string journal_address;
+	int journal_port;
 
 	struct{
 		int sourceCount;
 	} SE;
 
 	struct{
-			std::string ModsDirPath;
-			bool use_default_save_path;
+		std::string ModsDirPath;
+		bool use_default_save_path;
 	} Modloader;
 
 	bool useScriptNames;
 
 	std::string customScript;
 	std::vector<std::string> rtps;
-
 	std::vector<std::string> fontSubs;
-
 	std::vector<std::string> rubyLoadpaths;
 	/* Game INI contents */
 	struct {

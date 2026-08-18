@@ -55,7 +55,7 @@ module Settings
         :debug_picture_names                     => false,
         :debug_lightmap                          => false,
         :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT          => false,
-        :profiler								                 => false,
+        :profiler								 => false,
       }
       reset_controls!
     end

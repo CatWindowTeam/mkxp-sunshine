@@ -416,10 +416,11 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION_STRING="${VERSION_STR
 
 find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)
-find_package(SDL3 CONFIG)
-find_package(SDL3_image CONFIG)
-find_package(SDL3_mixer CONFIG REQUIRED)
-find_package(SDL3_ttf CONFIG)
+find_package(SDL3 CONFIG REQUIRED)
+find_package(SDL3_image CONFIG REQUIRED)
+find_package(SDL3_mixer CONFIG REQUIRED REQUIRED)
+find_package(SDL3_ttf CONFIG REQUIRED)
+find_package(SDL3_net CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options chrono)
 find_package(PhysFS)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
@@ -432,10 +433,10 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE src include ${PIXMAN_INCLUDE_DIR} ${SIGC2_INCLUDE_DIRS}
 ${Ruby_INCLUDE_DIRS} Boost::boost ${Boost_INCLUDE_DIRS} 
-${ZLIB_INCLUDE_DIRS} SDL3_mixer::SDL3_mixer)
+${ZLIB_INCLUDE_DIRS} SDL3_mixer::SDL3_mixer SDL3_net::SDL3_net)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image 
-SDL3_mixer::SDL3_mixer SDL3_ttf::SDL3_ttf
+SDL3_mixer::SDL3_mixer SDL3_ttf::SDL3_ttf SDL3_net::SDL3_net
 physfs ${PIXMAN_LIBRARY} ${SIGC2_LIBRARIES} ${PLATFORM_LIBRARIES} 
 ${Ruby_LIBRARIES} Boost::boost Boost::chrono ${Boost_LIBRARIES}
 ZLIB::ZLIB ${PLATFORM_LIBS})
