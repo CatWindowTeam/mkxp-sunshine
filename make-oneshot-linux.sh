@@ -22,6 +22,18 @@ mkdir -p build/bandle/Data
 #cp "$STEAMWORKS_PATH/redistributable_bin/linux64/libsteam_api.so" .
 #make -j${make_threads} > steamshim.make.out
 #cd ../..
+
+#creating venv and installing python packages if not exsist
+if [ ! -d "venv" ]; then
+    echo "Creating venv folder and install pip packages"
+    python3 -m venv venv
+    # the pakages themselves
+    pip install --upgrade pip
+    pip install pyqt5 pyinstaller
+else
+    echo "The 'venv' folder already exists."
+fi
+
 pyinstaller journal/unix/journal.spec #--windowed
 ruby rpgscript.rb scripts/ build/bandle/
 
