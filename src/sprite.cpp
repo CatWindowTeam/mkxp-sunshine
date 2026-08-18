@@ -650,6 +650,12 @@ void Sprite::draw(){
 	glState.blendMode.pushSet(p->blendType);
 
 	p->bitmap->bindTex(*base);
+	
+	if (smooth)
+	{
+		//TEX::generateMipMaps();
+		TEX::setSmooth(true);
+	}
 
 	if (p->wave.active)
 		p->wave.qArray.draw();
@@ -657,6 +663,8 @@ void Sprite::draw(){
 		p->quad.draw();
 
 	glState.blendMode.pop();
+	if (smooth)
+		TEX::setSmooth(false);
 }
 
 void Sprite::onGeometryChange(const Scene::Geometry &geo){

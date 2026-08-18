@@ -54,6 +54,7 @@ typedef void (APIENTRYP _PFNGLTEXIMAGE2DPROC) (GLenum target, GLint level, GLint
 typedef void (APIENTRYP _PFNGLTEXSUBIMAGE2DPROC) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels);
 typedef void (APIENTRYP _PFNGLTEXPARAMETERIPROC) (GLenum target, GLenum pname, GLint param);
 typedef void (APIENTRYP _PFNGLACTIVETEXTUREPROC) (GLenum texture);
+typedef void (APIENTRYP _PFNGLGENERATEMIPMAPPROC) (GLenum texture);
 
 /* Debugging */
 typedef void (APIENTRY * _GLDEBUGPROC) (GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void *userParam);
@@ -148,6 +149,7 @@ typedef void (APIENTRYP _PFNGLRELEASESHADERCOMPILERPROC) (void);
 	GL_FUN(TexSubImage2D, _PFNGLTEXSUBIMAGE2DPROC) \
 	GL_FUN(TexParameteri, _PFNGLTEXPARAMETERIPROC) \
 	GL_FUN(ActiveTexture, _PFNGLACTIVETEXTUREPROC) \
+	GL_FUN(GenerateMipmap, _PFNGLGENERATEMIPMAPPROC) \
 	/* Buffer object */ \
 	GL_FUN(GenBuffers, _PFNGLGENBUFFERSPROC) \
 	GL_FUN(DeleteBuffers, _PFNGLDELETEBUFFERSPROC) \
