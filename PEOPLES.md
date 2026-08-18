@@ -18,6 +18,8 @@
 | Ouzly | Tester and telegram moderator | |
 | anmitali | Ports programmer | |
 | Kyronix Team | Kyronix Port developers | |
+| theboxyguy | programmer | |
+| Каламус | tester | |
 
 # Donators:
 | Donator     |
