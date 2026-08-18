@@ -390,10 +390,20 @@ void EventThread::process(RGSSThreadData &rtData){
 				break;
 			case REQUEST_SETFULLSCREEN :
 				setFullscreen(win, static_cast<bool>(event.user.code));
+				if (!fullscreen)
+					SDL_SetWindowSize(win, shState->graphics().width(), shState->graphics().height());
 				break;
 
 			case REQUEST_WINRESIZE :
-				SDL_SetWindowSize(win, event.window.data1, event.window.data2);
+				if (fullscreen)
+				{
+					int winW;
+					int winH;
+					SDL_GetWindowSize(win, &winW, &winH);
+					windowSizeMsg.post(Vec2i(winW, winH));
+				}
+				else
+					SDL_SetWindowSize(win, event.window.data1, event.window.data2);
 				break;
 			case REQUEST_WINMOVETO :
 				rtData.ethread->winX = event.window.data1;
