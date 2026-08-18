@@ -35,6 +35,7 @@ else
     source venv/bin/activate
 fi
 pyinstaller journal/unix/journal.spec #--windowed
+deactivate
 ruby rpgscript.rb scripts/ build/bandle/
 
 cp -r dist/_______/* build/bandle/
