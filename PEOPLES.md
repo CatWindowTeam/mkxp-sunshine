@@ -19,6 +19,7 @@
 | anmitali | Ports programmer | |
 | Kyronix Team | Kyronix Port developers | |
 | theboxyguy | programmer | |
+| Каламус | tester | |
 
 # Donators:
 | Donator     |
