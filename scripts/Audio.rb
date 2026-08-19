@@ -117,7 +117,7 @@ module Audio
         end
 
         def bgm_volume
-            self.get_group_volume(@music_group * 100.0)
+            self.get_group_volume(@music_group) * 100.0
         end
         def bgm_volume=(val)
             self.set_group_volume(@music_group, val / 100.0)
