@@ -151,7 +151,7 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 
 int main(int argc, char *argv[]){
 	//I WANT FUCKING OPTIMIZE EVERYFING IN THIS BULLSHIT
-	std::ios::sync_with_stdio(false);
+	//std::ios::sync_with_stdio(false); // fuck this
 	std::cin.tie(nullptr);
     startTime = boost::chrono::high_resolution_clock::now();
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
