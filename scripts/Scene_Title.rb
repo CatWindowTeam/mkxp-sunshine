@@ -216,7 +216,7 @@ class Scene_Title
     if File.exist?("badend.lock")
       @sprite.visible = false
       @badend_sprite.visible = true
-      Audio.bgm_play("Audio/BGM/MyBurdenIsDead.ogg", Audio.bgm_volume, 100)
+      Audio.bgm_play("Audio/BGM/MyBurdenIsDead")
     else
       case Settings[:mainmenu_background]
       when 0
@@ -226,7 +226,7 @@ class Scene_Title
       when 1
         @sprite.visible = false
         @badend_sprite.visible = true
-        Audio.bgm_play("Audio/BGM/MyBurdenIsDead.ogg", Audio.bgm_volume, 100)
+        Audio.bgm_play("Audio/BGM/MyBurdenIsDead")
       when 2
         @sprite.visible = false
         @badend_sprite.visible = false
