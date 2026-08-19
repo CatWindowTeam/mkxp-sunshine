@@ -52,7 +52,7 @@ module Settings
 
       VSYNC_MODES = [1, -1, 0]
       def vsync(value)
-        Graphics.setVsync(VSYNC_MODES[value])
+        Graphics.vsync_mode = VSYNC_MODES[value]
       end
 
       # ----------------------------------------------- UI -----------------------------------------------
