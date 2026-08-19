@@ -26,7 +26,6 @@
 #include <sstream>
 #include <vector>
 #include <ruby.h>
-#include <source_location>
 #include "meow.h"
 #undef vsnprintf
 #undef snprintf
@@ -39,7 +38,7 @@
 
 class Debug{
 public:
-	explicit Debug(const std::source_location location = std::source_location::current()) : location(location){
+	explicit Debug(){
 	    buf << std::boolalpha;
 	}
 
@@ -65,22 +64,19 @@ public:
 		return *this;
 	}
 
-	~Debug(){
-		std::ostringstream result;
-		result << "[" << location.line() << ":" << location.function_name() << "] " << buf.view();
+	~Debug() noexcept {
 #ifdef __ANDROID__
 		__android_log_write(ANDROID_LOG_DEBUG, "sunshine", result.view().c_str());
 #elif __EMSCRIPTEN__
 		emscripten_console_log(result.view().c_str());				
 #else
-		logs.emplace_back(result.view());
-		std::cout << std::move(result).str() << '\n';
+		logs.emplace_back(buf.view());
+		std::cout << buf.view() << '\n';
 #endif
 	}
 
 private:
 	std::ostringstream buf;
-	std::source_location location;
 };
 
 #endif // DEBUGWRITER_H

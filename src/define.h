@@ -1,5 +1,4 @@
 #include <SDL3/SDL_platform_defines.h>
-
 #if defined(SDL_PLATFORM_AIX) || defined(SDL_PLATFORM_BSDI) || defined(SDL_PLATFORM_FREEBSD) || \
     defined(SDL_PLATFORM_HPUX) || defined(SDL_PLATFORM_HURD) || defined(SDL_PLATFORM_IRIX) || \
     defined(SDL_PLATFORM_LINUX) || defined(SDL_PLATFORM_MACOS) || defined(SDL_PLATFORM_NETBSD) || \
@@ -42,10 +41,6 @@
 
 #if defined(SDL_PLATFORM_OS2)
 	#define os2 1
-#endif
-
-#if SDL_PLATFORM_PS2
-	#define ps2 1
 #endif
 
 #if SDL_PLATFORM_PSP

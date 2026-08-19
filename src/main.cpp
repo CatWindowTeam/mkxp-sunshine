@@ -18,7 +18,6 @@
 ** You should have received a copy of the GNU General Public License
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -337,10 +336,11 @@ int main(int argc, char *argv[]){
 
 	/* If RGSS thread ack'd request, wait for it to shutdown,
 	 * otherwise abandon hope and just end the process as is. */
-	if (rtData.rqTermAck)
+	if (rtData.rqTermAck){
 		SDL_WaitThread(rgssThread, 0);
-	else
+	}else{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and Sunshine will now force quit", win);
+	}
 
 	if (!rtData.rgssErrorMsg.empty())
 		ErrorMsg(rtData.rgssErrorMsg.c_str());

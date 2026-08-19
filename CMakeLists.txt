@@ -380,7 +380,8 @@ else()
 	-fipa-pta
 	-fext-dce
 	-fstrict-enums
-	-fimplicit-constexpr)
+	-fimplicit-constexpr
+	-fomit-frame-pointer)
 	add_compile_options(${OPTIONS_RELEASE})
 		
 	add_link_options(-Wl,-O2 
