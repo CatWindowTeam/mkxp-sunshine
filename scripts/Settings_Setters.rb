@@ -72,11 +72,7 @@ module Settings
       end
 
       def SDL_HINT_INVALID_PARAM_CHECKS(value)
-        if value
-          Sunshine.setSDLHint("SDL_HINT_INVALID_PARAM_CHECKS", "1")
-        else
-          Sunshine.setSDLHint("SDL_HINT_INVALID_PARAM_CHECKS", "2")
-        end
+        Sunshine.setSDLHint("SDL_HINT_INVALID_PARAM_CHECKS", value ? "1" : "2")
       end
 
       def vsync(value)
