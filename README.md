@@ -4,7 +4,7 @@ It is a specialized fork of [mkxp-oneshot](https://github.com/elizagamedev/mkxp-
 ## Build
 1. Install required packages
     * Cmake
-    * C/C++ compiler, GCC 14, MinGW, Clang and maybe MSVC
+    * C/C++ compiler, GCC or MinG or Clang
     * xxd
     * Ruby 3.4+
     * Boost
@@ -13,6 +13,7 @@ It is a specialized fork of [mkxp-oneshot](https://github.com/elizagamedev/mkxp-
     * SDL3_image
     * SDL3_ttf
     * SDL3_mixer
+    * SDL3_net
     * PhysFS
     * sigc++-2.0
     * GTK3(*NIX only!)
