@@ -570,9 +570,9 @@ class Window_Settings
     end
 
     def redraw()
-      redraw_icon
       offset = !!@icon_position ? ICON_SIZE * 2 + 8 : 0
       @sprite.bitmap.clear
+      redraw_icon
       @sprite.bitmap.font.color = Color.new(255, 255, 255)
 
       @sprite.bitmap.draw_text(offset, 0, @sprite.bitmap.width - @value_width - offset, @sprite.bitmap.height, tr(@name))
