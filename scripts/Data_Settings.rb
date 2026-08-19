@@ -237,7 +237,7 @@ class Window_Settings
         :type => :slider,
         :name => "Density of glen fireflies",
         :parameter => :max_particle_count_firefly,
-		:icon => [1, 1],
+        :icon => [1, 1],
         :min => 0,
         :max => 30
       },
