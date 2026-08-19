@@ -233,6 +233,7 @@ class Window_Settings
         :name => "World machine shader",
         :parameter => :twm_shader
       },
+      { :type => :sep, :name => "Particles"},
       {
         :type => :slider,
         :name => "Density of glen fireflies",
