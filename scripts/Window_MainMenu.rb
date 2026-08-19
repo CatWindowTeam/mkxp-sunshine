@@ -30,7 +30,7 @@ class Window_MainMenu < Window_Selectable
     # Render menu
     self.contents = Bitmap.new(width - 32, 32)
     Language.register_text_sprite(self.class.name + "_contents", self.contents)
-    for i in 0...@item_max
+    (0...@item_max).each do |i|
       draw_item(i, normal_color)
     end
     self.z = 9998
@@ -74,7 +74,7 @@ class Window_MainMenu < Window_Selectable
   # Open/show the menu
   def open
     # redraw in case language has been updated
-    for i in 0...@item_max
+    (0...@item_max).each do |i|
       draw_item(i, normal_color)
     end
     self.opacity = 0

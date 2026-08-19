@@ -90,7 +90,7 @@ class Window_InputNumber < Window_Base
     self.contents.font.color = normal_color
     s = sprintf("%0*d", @digits_max, @number)
     if($game_switches[179] == true)
-      for i in 0...@digits_max
+      (0...@digits_max).each do |i|
         case i
         when 0
           self.contents.font.color = Window_Base.text_color(4)
@@ -104,7 +104,7 @@ class Window_InputNumber < Window_Base
         self.contents.draw_text(i * @cursor_width + 4, 0, 32, 32, s[i,1])
       end
     else
-      for i in 0...@digits_max
+      (0...@digits_max).each do |i|
         self.contents.draw_text(i * @cursor_width + 4, 0, 32, 32, s[i,1])
       end
     end

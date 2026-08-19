@@ -47,7 +47,7 @@ class Window_Item < Window_Selectable
     end
     @data = []
     # Add item
-    for i in 1...$data_items.size
+    (1...$data_items.size).each do |i|
       if $game_party.item_number(i) > 0
         @data.push($data_items[i])
       end
@@ -56,7 +56,7 @@ class Window_Item < Window_Selectable
     @item_max = @data.size
     if @item_max > 0
       self.contents = Bitmap.new(width - 32, row_max * 32)
-      for i in 0...@item_max
+      (0...@item_max).each do |i|
         draw_item(i)
       end
       self.index = 0 if self.index == -1

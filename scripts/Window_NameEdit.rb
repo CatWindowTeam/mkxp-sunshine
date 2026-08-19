@@ -28,7 +28,7 @@ class Window_NameEdit < Window_Base
     # Fit name within maximum number of characters
     name_array = @name.split(//)[0...@max_char]
     @name = ""
-    for i in 0...name_array.size
+    (0...name_array.size).each do |i|
       @name += name_array[i]
     end
     @default_name = @name
@@ -66,7 +66,7 @@ class Window_NameEdit < Window_Base
       # Delete 1 text character
       name_array = @name.split(//)
       @name = ""
-      for i in 0...name_array.size-1
+      (0...name_array.size-1).each do |i|
         @name += name_array[i]
       end
       @index -= 1
@@ -81,7 +81,7 @@ class Window_NameEdit < Window_Base
     self.contents.clear
     # Draw name
     name_array = @name.split('')
-    for i in 0...@max_char
+    (0...@max_char).each do |i|
       c = name_array[i]
       if c == nil
         c = "_"

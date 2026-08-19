@@ -218,7 +218,7 @@ class Window_Settings
     # navigation
     if Input.wheel_y != 0
       if (Input::key_press?(Input::key_from_name("Left Shift")))
-        for _ in 0...Input.wheel_y.round.abs
+        (0...Input.wheel_y.round.abs).each do |_|
           Input.wheel_y.round > 0 ? @content.parameter_right : @content.parameter_left
         end
       else
