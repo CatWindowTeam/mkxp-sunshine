@@ -29,7 +29,6 @@ VALUE meow(const std::vector<std::string> vec){
     return ary;
 }
 
-
 static VALUE hooks(int argc, VALUE *argv, VALUE self) {
     VALUE v_path = Qnil;
     rb_scan_args(argc, argv, "01", &v_path);

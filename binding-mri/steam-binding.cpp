@@ -55,7 +55,6 @@ RB_METHOD(steamUnlocked){
 }
 
 void steamBindingInit(){
-	printf("[steamBindingInit] Initializing Steam binding\n");
     VALUE module = rb_define_module("Steam");
 
 	/* Constants */

@@ -108,7 +108,6 @@ RB_METHOD(audioReset) {
 }
 
 void audioBindingInit(){
-	printf("[audioBindingInit] Initialing Audio binding\n");
 	VALUE module = rb_define_module("Audio");
 
 	rb_define_singleton_method(module, "create_sound", RUBY_METHOD_FUNC(rb_audio_createAudioPlayback), -1);

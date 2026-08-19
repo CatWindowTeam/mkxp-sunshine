@@ -163,7 +163,7 @@ void crash_screen(SDL_Window* win){
 		WarnMsg("Failed to create texture, please check if your device is too strong to run game or report bug.Error Message: ", SDL_GetError());
 		skip_crash_screen = true;
 	}else{
-			SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
+		SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
 	}
 	//creating file and timestamp
 	ofstream o;
@@ -368,4 +368,3 @@ void WarnMsg(const char *fmt, ...) {
 	Debug() << "[WARNMSG]" << buf;
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", buf, NULL);
 }
-

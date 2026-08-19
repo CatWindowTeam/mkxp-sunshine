@@ -67,19 +67,19 @@ public:
 
 	~Debug(){
 		std::ostringstream result;
-		result << "[" << location.line() << ":" << location.function_name() << "] " << buf.str();
+		result << "[" << location.line() << ":" << location.function_name() << "] " << buf.view();
 #ifdef __ANDROID__
-		__android_log_write(ANDROID_LOG_DEBUG, "sunshine", result.str().c_str());
+		__android_log_write(ANDROID_LOG_DEBUG, "sunshine", result.view().c_str());
 #elif __EMSCRIPTEN__
-		emscripten_console_log(result.str().c_str());				
+		emscripten_console_log(result.view().c_str());				
 #else
-		logs.push_back(result.str());
-		std::cout << result.str() << "\n";
+		logs.emplace_back(result.view());
+		std::cout << std::move(result).str() << '\n';
 #endif
 	}
 
 private:
-	std::stringstream buf;
+	std::ostringstream buf;
 	std::source_location location;
 };
 

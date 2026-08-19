@@ -423,9 +423,13 @@ static void runRMXPScripts(BacktraceData &btData){
 	}
 
 	//Execute preloaded scripts
-	for (std::set<std::string>::iterator i = preloadScripts.begin();
-	     i != preloadScripts.end(); ++i)
-		runCustomScript(*i);
+	if(modloader_is_enabled){
+		for (std::set<std::string>::iterator i = preloadScripts.begin();
+			i != preloadScripts.end(); ++i){
+			    runCustomScript(*i);	
+			}
+	}
+
 
 	VALUE exc = rb_gv_get("$!");
 	if (exc != Qnil)

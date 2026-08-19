@@ -3,6 +3,14 @@ project(oneshot)
 include(FindPackageHandleStandardArgs)
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
+include(CheckIPOSupported)
+
+check_ipo_supported(
+    RESULT ipo_supported
+    OUTPUT ipo_error
+    LANGUAGES CXX C
+)
+
 # Helper for checking if options supported
 function(check_option var a)
   set(all ${a})
@@ -346,7 +354,8 @@ if(DEBUG)
 		-g3
 		-fno-omit-frame-pointer
 		-Og
-		-fcheck-new)
+		-fcheck-new
+		-fstrict-flex-arrays=3)
 	add_compile_options(${OPTIONS_DEBUG})
 
 	if("${ARCH_DEBUG}" STREQUAL "")
@@ -369,7 +378,9 @@ else()
 	-frename-registers
 	-fuse-linker-plugin
 	-fipa-pta
-	-fext-dce)
+	-fext-dce
+	-fstrict-enums
+	-fimplicit-constexpr)
 	add_compile_options(${OPTIONS_RELEASE})
 		
 	add_link_options(-Wl,-O2 
@@ -378,11 +389,7 @@ else()
 	-Wl,--no-undefined
 	-Wl,--strip-all
 	-Wl,--no-copy-dt-needed-entries)
-	if(NOT WIN32)
-		check_option(OPTIONS_RELEASE_WIN32_FLTO -flto=thin)
-		add_compile_options(${OPTIONS_RELEASE_WIN32_FLTO})
-		add_link_options(${OPTIONS_RELEASE_WIN32_FLTO})
-	endif()
+	
 	if("${ARCH_RELEASE}" STREQUAL "")
 		message(STATUS "ARCH_RELEASE empty")
 	else()
@@ -407,6 +414,17 @@ else()
 		${BINDING_SOURCE}
 		${EMBEDDED_SOURCE}
 	)
+endif()
+
+if(NOT DEBUG)
+	if(ipo_supported)
+	    set_property(
+	        TARGET ${PROJECT_NAME}
+	        PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
+	    )
+	else()
+	    message(WARNING "IPO/LTO is not supported: ${ipo_error}")
+	endif()
 endif()
 
 if(DEVBUILD)

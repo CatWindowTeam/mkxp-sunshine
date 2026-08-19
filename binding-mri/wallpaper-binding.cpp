@@ -83,7 +83,6 @@
 	}
 
 	void desktopEnvironmentInit(){
-		printf("[desktopEnvironmentInit] desktopEnvironmentInit()\n");
 		if (desktop != "uninitialized")
     		return;
 

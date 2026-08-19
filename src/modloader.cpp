@@ -2,6 +2,7 @@
 #include "debugwriter.h"
 #include "meow.h"
 #include "config.h"
+#include "security.h"
 
 #include <filesystem>
 #include <string>
@@ -24,7 +25,7 @@ const static std::size_t N = 46;
 
 static void modloader_add_to_log(const std::string data){
 	Debug() << "[MODLOADER] " << data;
-	modloader_logs.push_back(data);
+	modloader_logs.emplace_back(data);
 }
 
 static int renderer_thread(void* data){
@@ -74,7 +75,9 @@ void ModLoader(Config conf, SDL_Window* win){
         Debug() << "[MODLOADER] Mods directory empty, skip.";
         return;
     }
-    
+    if(conf.SecurityEngine){
+    	SecurityManagerInit();	
+    }
 	SDL_Thread* render_thread_pointer = SDL_CreateThread(renderer_thread, "ModRenderer", win);
 	if (!render_thread_pointer) {
 	    //TODO: Error handling
@@ -92,7 +95,7 @@ void ModLoader(Config conf, SDL_Window* win){
 
             if (ext == ".zip") {
                 int ok = PHYSFS_mount(full.c_str(), "/mod-storage", 0);
-                mod_list.push_back(full);
+                mod_list.emplace_back(full);
                 modloader_add_to_log("Added mod " + full);
                 mods_count++;
             } else if (ext == ".rb") {

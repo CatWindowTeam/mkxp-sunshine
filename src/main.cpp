@@ -33,7 +33,6 @@
 #else
 #include <unistd.h>
 #endif
-#include <assert.h>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -48,7 +47,6 @@
 #include "exception.h"
 #include "gl-fun.h"
 #include "i18n.h"
-#include "security.h"
 
 #include "sunshine.h"
 #include "modloader.h"
@@ -59,17 +57,10 @@
 #include "binding.h"
 
 #include "icon.png.xxd"
-#include <SDL3/SDL_system.h>
 #ifdef STEAM
 	#include "steamshim/steamshim_child.h"
 #else
 	#include "gamecontrollerdb.txt.xxd"
-#endif
-
-#ifdef ps2
-	#ifdef DEBUG
-		SDL_PS2_SKIP_IOP_RESET();
-	#endif
 #endif
 
 #ifndef VERSION_STRING
@@ -80,10 +71,6 @@ static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
 	rtData->rgssErrorMsg = msg;
 	rtData->ethread->requestTerminate();
 	rtData->rqTermAck.set();
-}
-
-static inline const char* glGetStringInt(GLenum name){
-	return (const char*) gl.GetString(name);
 }
 
 int rgssThreadFun(void *userdata){
@@ -123,10 +110,6 @@ int rgssThreadFun(void *userdata){
 	gl.Clear(GL_COLOR_BUFFER_BIT);
 	SDL_GL_SwapWindow(win);
 
-	Debug() << "[main] GL Vendor    :" << glGetStringInt(GL_VENDOR);
-    Debug() << "[main] GL Renderer  :" << glGetStringInt(GL_RENDERER);
-    Debug() << "[main] GL Version   :" << glGetStringInt(GL_VERSION);
-    Debug() << "[main] GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
 #ifndef NDEBUG
 	GLDebugLogger dLogger;
 #endif
@@ -168,10 +151,13 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 }
 
 int main(int argc, char *argv[]){
+	//I WANT FUCKING OPTIMIZE EVERYFING IN THIS BULLSHIT
+	std::ios::sync_with_stdio(false);
+	std::cin.tie(nullptr);
     startTime = boost::chrono::high_resolution_clock::now();
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
-	SDL_SetAppMetadata("Oneshot: Sunshine", "0.1.2", "meow.catwindowteam.sunshine");
+	SDL_SetAppMetadata("Oneshot: Sunshine", VERSION_STRING, "meow.catwindowteam.sunshine");
 	//X11 work on *BSD,Solaris too!
 	#if unix_like
 		SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
@@ -184,8 +170,6 @@ int main(int argc, char *argv[]){
 		SDL_SetHint(SDL_HINT_ANDROID_ALLOW_PERSISTENT_FOLDER_ACCESS, "1");
 	#elif vita
 		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
-	#elif ps2
-		SFL_SetHint(SDL_HINT_PS2_GS_MODE, "NTSC");
 	#endif
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
@@ -219,9 +203,6 @@ int main(int argc, char *argv[]){
 	/* now we load the config */
 	Config conf;
 	conf.read(argc, argv);
-	if(conf.SecurityEngine){
-		SecurityManagerInit();	
-	}
 	#if windows
 		if(conf.Windows_AllocConsole == true){
     			AllocConsole();

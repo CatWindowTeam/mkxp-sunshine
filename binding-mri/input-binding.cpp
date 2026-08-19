@@ -343,7 +343,6 @@ static buttonCodes[] = {
 static elementsN(buttonCodes);
 
 void inputBindingInit(){
-	printf("[inputBindingInit] Initializing Input binding\n");
 	VALUE module = rb_define_module("Input");
 
 	initGamepadBinding(module);

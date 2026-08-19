@@ -139,9 +139,6 @@ RB_METHOD(kernelSaveData){
 	VALUE filename;
 
 	rb_get_args(argc, argv, "oS", &obj, &filename);
-	#ifdef DEBUG
-		printf("[kernelSaveData] Filename: %s\n", rb_str_to_str(filename));
-	#endif
 	VALUE file = rb_file_open_str(filename, "wb");
 
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));

@@ -67,3 +67,4 @@ GNOME support fixed
 Fixed small defect on cg_wake5
 Added ModLoader loading screen
 Added [Function():string number] debug information in logs
+SecurityEngine now enabled only when Modloader is active
