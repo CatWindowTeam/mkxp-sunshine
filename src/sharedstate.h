@@ -152,28 +152,3 @@ private:
 };
 
 #endif // SHAREDSTATE_H
-
-
-
-/* this is not part of mkxp :|
-          meow                               meow
-          meow                               meow
-          meow meow                     meow meow
-          meow meow                     meow meow
-          meow meow meow           meow meow meow
-          meow meow meow           meow meow meow
-          meow meow meow meow meow meow meow meow
-          meow meow meow meow meow meow meow meow
-          meow meow meow meow meow meow meow meow
-          meow meow meow meow meow meow meow meow
-          meow meow      meow meow      meow meow
-          meow meow      meow meow      meow meow
-meow      meow meow meow meow meow meow meow meow      meow
-meow      meow meow meow meow meow meow meow meow      meow
-     meow meow      meow      meow meow      meow meow
-     meow meow      meow      meow meow      meow meow
-meow      meow meow      meow           meow meow      meow
-meow      meow meow      meow           meow meow      meow
-          meow meow meow meow meow meow meow meow
-          meow meow meow meow meow meow meow meow
-*/
