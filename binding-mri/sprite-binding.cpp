@@ -78,6 +78,26 @@ DEF_PROP_B(Sprite, MirrorY)
 DEF_PROP_B(Sprite, Obscured)
 DEF_PROP_B(Sprite, PerspectiveMode)
 
+
+RB_METHOD(SpriteGetSmooth)
+{
+    RB_UNUSED_PARAM;
+    Sprite *k = getPrivateData<Sprite>(self);
+    bool value = false;
+    GUARD_EXC( value = k->smooth; )
+    return rb_bool_new(value);
+}
+
+RB_METHOD(SpriteSetSmooth)
+{
+    rb_check_argc(argc, 1);
+    Sprite *k = getPrivateData<Sprite>(self);
+    bool value;
+    rb_bool_arg(*argv, &value);
+    GUARD_EXC( k->smooth = value; )
+    return *argv;
+}
+
 RB_METHOD(spriteWidth){
 	RB_UNUSED_PARAM;
 
@@ -129,6 +149,7 @@ void spriteBindingInit(){
 	INIT_PROP_BIND( Sprite, Modulate,     "modulate"      );
 	INIT_PROP_BIND( Sprite, Obscured,     "obscured"      );
 	INIT_PROP_BIND( Sprite, Shader,       "shader"        );
+	INIT_PROP_BIND( Sprite, Smooth,       "smooth"        );
 	INIT_PROP_BIND( Sprite, PerspectiveMode,      "pm");
 	INIT_PROP_BIND( Sprite, PerspectiveZ,         "pz");
 	INIT_PROP_BIND( Sprite, PerspectiveRotationX, "rx");

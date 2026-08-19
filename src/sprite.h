@@ -46,6 +46,8 @@ public:
 	int getWidth()  const;
 	int getHeight() const;
 
+	bool smooth = false;
+
 	void update();
  
 	DECL_ATTR( Bitmap,       Bitmap* )
