@@ -28,3 +28,4 @@ make-oneshot-(OS).sh -DCMAKE_TOOLCHAIN_FILE=toolchain/arch/(x86/arm/ia-64).cmake
 
 # Mirrors
 [Github](https://github.com/CatWindowTeam/mkxp-sunshine/tree/master)
+[git.snxrzx.xyz](https://git.snxrzx.xyz/snxrzx/mkxp-sunshine)
