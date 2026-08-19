@@ -18,6 +18,7 @@ module Settings
         :light                                   => true,
         :scaling_mode                            => 0,
         :vsync                                   => 0,
+        :max_particle_count_firefly				 => 30,
 
         # UI
         :in_game_timer                           => false,
@@ -231,6 +232,14 @@ class Window_Settings
         :type => :bool,
         :name => "World machine shader",
         :parameter => :twm_shader
+      },
+      {
+        :type => :slider,
+        :name => "Density of glen fireflies",
+        :parameter => :max_particle_count_firefly,
+		:icon => [1, 1],
+        :min => 0,
+        :max => 30
       },
     ],
     "UI" => [
