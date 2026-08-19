@@ -8,9 +8,9 @@ module Settings
 
       # name must be same as the parameter identifier
 
-	  def crashlog_privacy(value)
-		Sunshine.crashprivacy=value
-	  end
+      def crashlog_privacy(value)
+        Sunshine.crash_privacy = value
+      end
       def master_volume(value)
         Audio.master_volume = value / 100.0
       end
@@ -36,13 +36,9 @@ module Settings
         end
       end
 
-	  def scaling_mode(value)
-		if value == 0
-			Graphics.smooth = false
-		else 
-			Graphics.smooth = true
-		end
-	  end
+      def scaling_mode(value)
+        Graphics.smooth = value != 0
+      end
       
       def colorblind(value)
         $game_switches[252] = value
@@ -71,40 +67,26 @@ module Settings
         Graphics.frameskip = value
       end
 
-      def SDL_HINT_INVALID_PARAM_CHECKS(value)
-        Sunshine.setSDLHint("SDL_HINT_INVALID_PARAM_CHECKS", value ? "1" : "2")
+      def invalid_param_checks(value)
+        Sunshine.set_sdl_hint("SDL_HINT_INVALID_PARAM_CHECKS", value ? "1" : "2")
       end
 
+      VSYNC_MODES = [1, -1, 0]
       def vsync(value)
-        if value == 0
-          Graphics.setVsync(1)
-        elsif value == 1
-          Graphics.setVsync(-1)
-        else
-          Graphics.setVsync(0)
-        end				
+        Graphics.setVsync(VSYNC_MODES[value])
       end
 	  
-      def SDL_HINT_SHUTDOWN_DBUS_ON_QUIT(value)
-        if value
-          Sunshine.setSDLHint("SDL_HINT_SHUTDOWN_DBUS_ON_QUIT", "1")
-        else
-          Sunshine.setSDLHint("SDL_HINT_SHUTDOWN_DBUS_ON_QUIT", "0")
-        end
+      def shutdown_dbus_on_quit(value)
+        Sunshine.set_sdl_hint("SDL_HINT_SHUTDOWN_DBUS_ON_QUIT", value ? "1" : "0")
       end
 
       def profiler(value)
         Profiler.set(value)
       end
-      
+
+      WALLPAPER_MODES = ["normal", "fallback", "disbled"]
       def wallpaper_mode(value)
-        if value == 0
-          Sunshine.wallpapermode="normal" 
-        elsif value == 1
-          Sunshine.wallpapermode="fallback"
-        else
-          Sunshine.wallpapermode="disabled"
-        end				
+        Sunshine.wallpaper_mode = WALLPAPER_MODES[value]
       end
     end
   end
