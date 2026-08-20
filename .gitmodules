@@ -1,0 +1,3 @@
+[submodule "external/SDL_PhysFS"]
+	path = external/SDL_PhysFS
+	url = https://github.com/RobLoach/SDL_PhysFS.git
