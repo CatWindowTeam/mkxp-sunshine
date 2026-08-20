@@ -162,7 +162,7 @@ class Window_Base < Window
     brackets_width = self.contents.text_size("[]").width
     # Make text string for state names
     text = ""
-    for i in battler.states
+    battler.states.each do |i|
       if $data_states[i].rating >= 1
         if text == ""
           text = $data_states[i].name

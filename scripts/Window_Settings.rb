@@ -50,7 +50,6 @@ class Window_Settings
 	  @down_hold_timer = 0
 
     @visible = self.visible = false
-    RPG::Mod.exec_hooks("hooks/Window_Settings/init", binding)
   end
 
   def init_content

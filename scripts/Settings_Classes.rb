@@ -748,7 +748,7 @@ class Window_Settings
       end
       
       @sprite.bitmap.draw_text(offset, 0, @sprite.bitmap.width - PARAMETER_KEY_WIDTH * 4 - offset, @sprite.bitmap.height, tr(@name))
-      for i in 0..3
+      (0..3).each do |i|
         offset = (@selected && i == @selection ? SELECTED_KEYS_MARGIN : 4)
         parameter_x = @sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i)
         key_bind = @key_binds[i]

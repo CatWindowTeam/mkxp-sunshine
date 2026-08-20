@@ -16,10 +16,13 @@ module Settings
         :frameskip                               => true,
         :twm_shader                              => true,
         :light                                   => true,
+        :fog                                     => true,
         :scaling_mode                            => 0,
         :vsync                                   => 0,
         :max_particle_count_firefly				 => 30,
-
+        :footprints                              => true,
+		:footsplashes                                => true,
+		
         # UI
         :in_game_timer                           => false,
         :language                                => 0,
@@ -233,6 +236,12 @@ class Window_Settings
         :name => "World machine shader",
         :parameter => :twm_shader
       },
+      {
+        :type => :bool,
+        :name => "Fog",
+        :icon => [1, 1],
+        :parameter => :fog
+      },
       { :type => :sep, :name => "Particles"},
       {
         :type => :slider,
@@ -241,6 +250,16 @@ class Window_Settings
         :icon => [1, 1],
         :min => 0,
         :max => 30
+      },
+      {
+        :type => :bool,
+        :name => "Footprints",
+        :parameter => :footprints
+      },
+      {
+        :type => :bool,
+        :name => "Footsplashes",
+        :parameter => :footsplashes
       },
     ],
     "UI" => [

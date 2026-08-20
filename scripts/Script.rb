@@ -97,7 +97,7 @@ module Script
   end
 
   def self.lose_all_items
-    for i in 1..99
+    (1..99).each do |i|
 		#skip debug testing items
 		if i == 54 or i == 81 or i == 82
 			next
@@ -144,7 +144,7 @@ module Script
   end
 
   def self.eve_x(name)
-    for event in $game_map.events.values
+    $game_map.events.values.each do |event|
       if event.name == name
         return logpos(event.x, event.real_x, event.direction == 6)
       end
@@ -153,7 +153,7 @@ module Script
   end
 
   def self.eve_y(name)
-    for event in $game_map.events.values
+  	$game_map.events.values.each do |event|
       if event.name == name
         return logpos(event.y, event.real_y, event.direction == 2)
       end
@@ -269,7 +269,7 @@ module Script
   end
 
   def self.niko_reflection_enc_update
-    for event in $game_map.events.values
+    $game_map.events.values.each do |event|
       if event.name == "niko reflection"
         event.real_y = 20*128 - ($game_player.real_y - 20*128)
         event.real_x = $game_player.real_x
@@ -308,7 +308,7 @@ module Script
 
 
   def self.niko_reflection_peng_update
-    for event in $game_map.events.values
+    $game_map.events.values.each do |event|
       if event.name == "niko reflection"
         event.real_y = 20*128 - ($game_player.real_y - 20*128)
         event.real_x = $game_player.real_x
@@ -618,10 +618,10 @@ def check_exit(min, max, x: -1, y: -1)
 end
 
 def kill_perma_flags
-  for i in 151..175
+  (151..175).each do |i|
     $game_switches[i] = false
-  end
-  for i in 76..100
+  end 
+  (76..100).each do |i|
     $game_variables[i] = 0
   end
 end

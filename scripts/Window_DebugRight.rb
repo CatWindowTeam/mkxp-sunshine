@@ -29,7 +29,7 @@ class Window_DebugRight < Window_Selectable
   #--------------------------------------------------------------------------
   def refresh
     self.contents.clear
-    for i in 0..9
+    (0..9).each do |i|
       if @mode == 0
         name = $data_system.switches[@top_id+i]
         status = $game_switches[@top_id+i] ? "[ON]" : "[OFF]"

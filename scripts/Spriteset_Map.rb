@@ -56,7 +56,7 @@ class Spriteset_Map
           @tilemap.tileset = RPG::Cache.tileset($game_map.tileset_name)
       end
     end
-    for i in 0..6
+    (0..6).each do |i|
       autotile_name = $game_map.autotile_names[i]
       @tilemap.autotiles[i] = RPG::Cache.autotile(autotile_name)
     end
@@ -78,7 +78,7 @@ class Spriteset_Map
     @fog.z = 3000
     # Make character sprites
     @character_sprites = []
-    for i in $game_map.events.keys.sort
+    $game_map.events.keys.sort.each do |i|
       sprite = Sprite_Character.new(@viewport, @viewport_lights, $game_map.events[i])
       @character_sprites.push(sprite)
     end
@@ -92,7 +92,7 @@ class Spriteset_Map
     @weather = RPG::Weather.new(@viewport)
     # Make picture sprites
     @picture_sprites = []
-    for i in 1..50
+    (1..50).each do |i|
       @picture_sprites.push(Sprite_Picture.new(@viewport_pics, $game_screen.pictures[i]))
     end
     # Make timer sprite
@@ -101,7 +101,6 @@ class Spriteset_Map
     @dynamic_light = DynamicLight.new(@viewport_lights)
     # Panorama animation timer
     @pan_animate_timer = 0
-    RPG::Mod.exec_hooks("hooks/Spriteset_Map/init", binding)
     # Frame update
     update
   end
@@ -112,7 +111,7 @@ class Spriteset_Map
     @update_connection.disconnect
     # Dispose of tilemap
     @tilemap.tileset.dispose if @tilemap.tileset
-    for i in 0..6
+    (0..6).each do |i|
       @tilemap.autotiles[i].dispose
     end
     @tilemap.dispose
@@ -136,7 +135,7 @@ class Spriteset_Map
     # Dispose of weather
     @weather.dispose
     # Dispose of picture sprites
-    for sprite in @picture_sprites
+    @picture_sprites.each do |sprite|
       sprite.dispose
     end
     # Dispose of bg
@@ -363,7 +362,7 @@ class Spriteset_Map
     @weather.oy = $game_map.display_y / 4
     @weather.update
     # Update picture sprites
-    for sprite in @picture_sprites
+    @picture_sprites.each do |sprite|
       sprite.update
     end
     
@@ -387,16 +386,20 @@ class Spriteset_Map
   # * Misc operations
   #--------------------------------------------------------------------------
   def new_footprint(direction, x, y, character_name)
-    @footprint_sprites << Sprite_Footprint.new(@viewport, direction, x, y, character_name)
+  	if Settings[:footprints]
+    	@footprint_sprites << Sprite_Footprint.new(@viewport, direction, x, y, character_name)
+    end
   end
   def new_maptext(text, x, y)
     @footprint_sprites << Sprite_MapText.new(@viewport, text, x, y)
   end
   def new_footsplash(direction, x, y)
-    @footprint_sprites << Sprite_Footsplash.new(@viewport, direction, x, y)
+  	if Settings[:footsplashes]
+    	@footprint_sprites << Sprite_Footsplash.new(@viewport, direction, x, y)
+    end
   end
   def fix_footsplashes(x, y)
-    for footprint in @footprint_sprites
+    @footprint_sprites.each do |footprint|
       footprint.correctX(x)
       footprint.correctY(y)
     end

@@ -16,7 +16,6 @@ class Sprite_Timer < Sprite
     self.x = 640 - self.bitmap.width
     self.y = 0
     self.z = 500
-    RPG::Mod.exec_hooks("hooks/Sprite_Timer/init", binding)
     update
   end
   #--------------------------------------------------------------------------
@@ -44,10 +43,9 @@ class Sprite_Timer < Sprite
       # Make a string for displaying the timer
       min = @total_sec / 60
       sec = @total_sec % 60
-      text = sprintf("%02d:%02d", min, sec)
       # Draw timer
       self.bitmap.font.color.set(255, 255, 255)
-      self.bitmap.draw_text(self.bitmap.rect, text, 1)
+      self.bitmap.draw_text(self.bitmap.rect, "#{min}:#{sec}", 1)
     end
   end
 end
