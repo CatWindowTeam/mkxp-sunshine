@@ -311,11 +311,6 @@ class Window_Settings
       @selection_sprite.opacity = value
       @screen_panel_selection_sprite.opacity = value
       @switch_panels_hint_right.opacity = @switch_panels_hint_left.opacity = (value * 127) / 255
-      @parameters.each do |screen_name, screen_parameters|
-        screen_parameters.each do |parameter|
-          parameter.update
-        end
-      end
     end
 
     def waiting_for_key=(value)
@@ -896,7 +891,7 @@ class Window_Settings
       callback(:init, settings_content, screen_id, position, name, icon, parameter, init_value, callbacks) do
         super(settings_content, screen_id, position, name, icon, parameter, init_value)
       end
-    end
+-    end
     def callback(name, *args)
       original = proc { yield if block_given? }
 

@@ -49,11 +49,15 @@
 		static bool hasPictureURIDark = false;
 		// XFCE settings
 		static XfconfChannel* bgchannel;
-		static int defPictureStyle;
-		static int defColorStyle;
-		static GValue defColor = G_VALUE_INIT;
-		static bool defColorExists;
-		static std::string optionImage, optionColor, optionImageStyle, optionColorStyle;
+		static std::vector<std::string> xfceMonitorPrefixes;
+		static std::map<std::string, std::string> defXfcePictureURI;
+		static std::map<std::string, int> defXfcePictureStyle;
+		static std::map<std::string, int> defXfceColorStyle;
+		static std::map<std::string, GValue> defXfceColor;
+		static std::map<std::string, bool> defXfceColorExists;
+		static bool xfceHasSingleWorkspaceProps = false;
+		static bool xfceSingleWorkspaceMode = false;
+		static int xfceSingleWorkspaceNumber = 0;
 		// KDE settings
 		static std::map<std::string, std::string> defPlugins, defPictures, defColors, defModes;
 		static std::map<std::string, bool> defBlurs;
@@ -190,15 +194,55 @@
 			GError *xferror = NULL;
 			if (xfconf_init(&xferror)) {
 				bgchannel = xfconf_channel_get("xfce4-desktop");
-				std::string optionPrefix = "/backdrop/screen0/monitor0/workspace0/";
-				optionImage = optionPrefix + "last-image";
-				optionColor = optionPrefix + "color1";
-				optionImageStyle = optionPrefix + "image-style";
-				optionColorStyle = optionPrefix + "color-style";
-				defPictureURI = xfconf_channel_get_string(bgchannel, optionImage.c_str(), "");
-				defPictureStyle = xfconf_channel_get_int(bgchannel, optionImageStyle.c_str(), -1);
-				defColorExists = xfconf_channel_get_property(bgchannel, optionColor.c_str(), &defColor);
-				defColorStyle = xfconf_channel_get_int(bgchannel, optionColorStyle.c_str(), -1);
+
+				GHashTable *props = xfconf_channel_get_properties(bgchannel, "/backdrop");
+				if (props) {
+					const std::string suffix = "/last-image";
+					GHashTableIter iter;
+					gpointer key, value;
+					g_hash_table_iter_init(&iter, props);
+					while (g_hash_table_iter_next(&iter, &key, &value)) {
+						std::string propPath((const char*)key);
+						if (propPath.size() > suffix.size() &&
+						    propPath.compare(propPath.size() - suffix.size(), suffix.size(), suffix) == 0) {
+							xfceMonitorPrefixes.push_back(propPath.substr(0, propPath.size() - suffix.size() + 1));
+						}
+					}
+					g_hash_table_destroy(props);
+				}
+				if (xfceMonitorPrefixes.empty()) {
+					xfceMonitorPrefixes.push_back("/backdrop/screen0/monitor0/workspace0/");
+				}
+
+				xfceHasSingleWorkspaceProps = xfconf_channel_has_property(bgchannel, "/backdrop/single-workspace-mode");
+				if (xfceHasSingleWorkspaceProps) {
+					xfceSingleWorkspaceMode = xfconf_channel_get_bool(bgchannel, "/backdrop/single-workspace-mode", true);
+					xfceSingleWorkspaceNumber = xfconf_channel_get_int(bgchannel, "/backdrop/single-workspace-number", 0);
+				}
+				if (xfceHasSingleWorkspaceProps && xfceSingleWorkspaceMode) {
+					std::vector<std::string> extraPrefixes;
+					for (const std::string &prefix : xfceMonitorPrefixes) {
+						std::size_t workspacePos = prefix.rfind("/workspace");
+						if (workspacePos == std::string::npos)
+							continue;
+						std::string monitorBase = prefix.substr(0, workspacePos + 1);
+						std::string activePrefix = monitorBase + "workspace" + std::to_string(xfceSingleWorkspaceNumber) + "/";
+						if (std::find(xfceMonitorPrefixes.begin(), xfceMonitorPrefixes.end(), activePrefix) == xfceMonitorPrefixes.end() &&
+						    std::find(extraPrefixes.begin(), extraPrefixes.end(), activePrefix) == extraPrefixes.end()) {
+							extraPrefixes.push_back(activePrefix);
+						}
+					}
+					xfceMonitorPrefixes.insert(xfceMonitorPrefixes.end(), extraPrefixes.begin(), extraPrefixes.end());
+				}
+
+				for (const std::string &prefix : xfceMonitorPrefixes) {
+					defXfcePictureURI[prefix] = xfconf_channel_get_string(bgchannel, (prefix + "last-image").c_str(), "");
+					defXfcePictureStyle[prefix] = xfconf_channel_get_int(bgchannel, (prefix + "image-style").c_str(), -1);
+					defXfceColorStyle[prefix] = xfconf_channel_get_int(bgchannel, (prefix + "color-style").c_str(), -1);
+					GValue colorVal = G_VALUE_INIT;
+					defXfceColorExists[prefix] = xfconf_channel_get_property(bgchannel, (prefix + "color1").c_str(), &colorVal);
+					defXfceColor[prefix] = colorVal;
+				}
 			} else {
 				// Configuration failed to initialize, we won't set the wallpaper
 				printf("[desktopEnvironmentInit] Configuration failed to initialize, we won't set the wallpaper\n");
@@ -456,49 +500,47 @@ end:
 			unsigned int ub = b * 256 + b;
 			unsigned int alpha = 65535;
 			std::string concatPath(gameDirStr + path);
-			xfconf_channel_set_string(bgchannel, optionImage.c_str(), concatPath.c_str());
-			xfconf_channel_set_int(bgchannel, optionColorStyle.c_str(), 0);
-			xfconf_channel_set_int(bgchannel, optionImageStyle.c_str(), 4);
-			GValue colorValue = G_VALUE_INIT;
-			GPtrArray *colorArr = g_ptr_array_sized_new(4);
-			GType colorArrType = g_type_from_name("GPtrArray_GValue_");
-			//TODO:fix later
-			//if (!colorArrType) {
-				std::stringstream colorCommand;
-				colorCommand << "xfconf-query -c xfce4-desktop -n -p " << optionColor
-							 << " -t uint -t uint -t uint -t uint -s " << ub
-							 << " -s " << ug << " -s " << ub << " -s " << alpha;
-				Debug() << "xfconf-query -c xfce4-desktop -n -p " << optionColor
-						<< " -t uint -t uint -t uint -t uint -s " << ub
-						<< " -s " << ug << " -s " << ub << " -s " << alpha;
-				int colorCommandRes = system(colorCommand.str().c_str());
-				defColorExists = xfconf_channel_get_property(bgchannel, optionColor.c_str(), &defColor);
-				colorArrType = g_type_from_name("GPtrArray_GValue_");
-				if (!colorArrType) {
-					// Let's do some debug output here and skip changing the color
-					Debug() << "[wallpaperSet] WALLPAPER ERROR: xfconf-query call returned" << colorCommandRes;
-					return Qnil;
+			for (const std::string &prefix : xfceMonitorPrefixes) {
+				std::string optionImage = prefix + "last-image";
+				std::string optionColor = prefix + "color1";
+				std::string optionImageStyle = prefix + "image-style";
+				std::string optionColorStyle = prefix + "color-style";
+
+				xfconf_channel_set_string(bgchannel, optionImage.c_str(), concatPath.c_str());
+				xfconf_channel_set_int(bgchannel, optionColorStyle.c_str(), 0);
+				xfconf_channel_set_int(bgchannel, optionImageStyle.c_str(), 4);
+
+				GPtrArray *colorArr = g_ptr_array_sized_new(4);
+				GValue *vr = g_new0(GValue, 1);
+				GValue *vg = g_new0(GValue, 1);
+				GValue *vb = g_new0(GValue, 1);
+				GValue *va = g_new0(GValue, 1);
+				g_value_init(vr, G_TYPE_UINT);
+				g_value_init(vg, G_TYPE_UINT);
+				g_value_init(vb, G_TYPE_UINT);
+				g_value_init(va, G_TYPE_UINT);
+				g_value_set_uint(vr, ur);
+				g_value_set_uint(vg, ug);
+				g_value_set_uint(vb, ub);
+				g_value_set_uint(va, alpha);
+				g_ptr_array_add(colorArr, vr);
+				g_ptr_array_add(colorArr, vg);
+				g_ptr_array_add(colorArr, vb);
+				g_ptr_array_add(colorArr, va);
+				if (!xfconf_channel_set_arrayv(bgchannel, optionColor.c_str(), colorArr)) {
+					Debug() << "[wallpaperSet] WALLPAPER ERROR: xfconf_channel_set_arrayv failed for" << optionColor;
 				}
-			//}
-			g_value_init(&colorValue, colorArrType);
-			GValue *vr = g_new0(GValue, 1);
-			GValue *vg = g_new0(GValue, 1);
-			GValue *vb = g_new0(GValue, 1);
-			GValue *va = g_new0(GValue, 1);
-			g_value_init(vr, G_TYPE_UINT);
-			g_value_init(vg, G_TYPE_UINT);
-			g_value_init(vb, G_TYPE_UINT);
-			g_value_init(va, G_TYPE_UINT);
-			g_value_set_uint(vr, ur);
-			g_value_set_uint(vg, ug);
-			g_value_set_uint(vb, ub);
-			g_value_set_uint(va, alpha);
-			g_ptr_array_add(colorArr, vr);
-			g_ptr_array_add(colorArr, vg);
-			g_ptr_array_add(colorArr, vb);
-			g_ptr_array_add(colorArr, va);
-			g_value_set_boxed(&colorValue, colorArr);
-			xfconf_channel_set_property(bgchannel, optionColor.c_str(), &colorValue);
+				g_value_unset(vr);
+				g_value_unset(vg);
+				g_value_unset(vb);
+				g_value_unset(va);
+				g_free(vr);
+				g_free(vg);
+				g_free(vb);
+				g_free(va);
+				g_ptr_array_free(colorArr, TRUE);
+			}
+			system("xfdesktop --reload &");
 		} else if (desktop == "kde") {
 			std::stringstream command;
 			std::string concatPath(gameDirStr + path);
@@ -621,26 +663,38 @@ RB_METHOD(wallpaperReset){
 			g_settings_set_string(bgsetting, "primary-color", defPrimaryColor.c_str());
 			g_settings_set_string(bgsetting, "color-shading-type", defColorShading.c_str());
 		} else if (desktop == "xfce") {
-			if (defColorExists) {
-				xfconf_channel_set_property(bgchannel, optionColor.c_str(), &defColor);
-			} else {
-				xfconf_channel_reset_property(bgchannel, optionColor.c_str(), false);
+			for (const std::string &prefix : xfceMonitorPrefixes) {
+				std::string optionImage = prefix + "last-image";
+				std::string optionColor = prefix + "color1";
+				std::string optionImageStyle = prefix + "image-style";
+				std::string optionColorStyle = prefix + "color-style";
+
+				if (defXfceColorExists[prefix]) {
+					xfconf_channel_set_property(bgchannel, optionColor.c_str(), &defXfceColor[prefix]);
+				} else {
+					xfconf_channel_reset_property(bgchannel, optionColor.c_str(), false);
+				}
+				if (defXfcePictureURI[prefix] == "") {
+					xfconf_channel_reset_property(bgchannel, optionImage.c_str(), false);
+				} else {
+					xfconf_channel_set_string(bgchannel, optionImage.c_str(), defXfcePictureURI[prefix].c_str());
+				}
+				if (defXfcePictureStyle[prefix] == -1) {
+					xfconf_channel_reset_property(bgchannel, optionImageStyle.c_str(), false);
+				} else {
+					xfconf_channel_set_int(bgchannel, optionImageStyle.c_str(), defXfcePictureStyle[prefix]);
+				}
+				if (defXfceColorStyle[prefix] == -1) {
+					xfconf_channel_reset_property(bgchannel, optionColorStyle.c_str(), false);
+				} else {
+					xfconf_channel_set_int(bgchannel, optionColorStyle.c_str(), defXfceColorStyle[prefix]);
+				}
 			}
-			if (defPictureURI == "") {
-				xfconf_channel_reset_property(bgchannel, optionImage.c_str(), false);
-			} else {
-				xfconf_channel_set_string(bgchannel, optionImage.c_str(), defPictureURI.c_str());
+			if (xfceHasSingleWorkspaceProps && xfceSingleWorkspaceMode) {
+				xfconf_channel_set_bool(bgchannel, "/backdrop/single-workspace-mode", false);
+				xfconf_channel_set_bool(bgchannel, "/backdrop/single-workspace-mode", true);
 			}
-			if (defPictureStyle == -1) {
-				xfconf_channel_reset_property(bgchannel, optionImageStyle.c_str(), false);
-			} else {
-				xfconf_channel_set_int(bgchannel, optionImageStyle.c_str(), defPictureStyle);
-			}
-			if (defColorStyle == -1) {
-				xfconf_channel_reset_property(bgchannel, optionColorStyle.c_str(), false);
-			} else {
-				xfconf_channel_set_int(bgchannel, optionColorStyle.c_str(), defColorStyle);
-			}
+			system("xfdesktop --reload &");
 		} else if (desktop == "kde") {
 			std::stringstream command;
 			command << "qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<

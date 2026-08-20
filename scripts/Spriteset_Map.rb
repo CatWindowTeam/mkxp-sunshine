@@ -259,7 +259,7 @@ class Spriteset_Map
         case @particles_type
         when :fireflies
           klass = Particle_Firefly
-          count = Settings[:max_particle_count_firefly]
+          count = Settings[:max_firefly_count]
           layer = :front
         when :shrimp
           klass = Particle_Shrimp

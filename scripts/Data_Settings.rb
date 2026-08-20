@@ -2,133 +2,132 @@ module Settings
   class << self
     def reset!
       @data = {
-        # Audio
-        :master_volume                           => 100,
-        :bgm_volume                              => 100,
-        :sfx_volume                              => 100,
-        :use_fight_crime_track                   => false,
-        :use_old_self_contained_universe_reprise => false,
+        # ------------ Audio ------------
+        :master_volume          => 100,
+        :bgm_volume             => 100,
+        :sfx_volume             => 100,
+        :fight_crime_track      => false,
+        :old_reprise_song       => false,
 
-        # Video
-        :fullscreen                              => false,
-        :resolution                              => 0,
-        :colorblind                              => false,
-        :frameskip                               => true,
-        :twm_shader                              => true,
-        :light                                   => true,
-        :fog                                     => true,
-        :scaling_mode                            => 0,
-        :vsync                                   => 0,
-        :max_particle_count_firefly				 => 30,
-        :footprints                              => true,
-		:footsplashes                                => true,
+        # ------------ Video ------------
+        :fullscreen             => false,
+        :resolution             => 0,
+        :colorblind             => false,
+        :frameskip              => true,
+        :twm_shader             => true,
+        :light                  => true,
+        :scaling_mode           => 0,
+        :vsync                  => 0,
+        :max_firefly_count      => 30,
+		:footprints             => true,
+		:footsplashes           => true,
+	
+        # ------------- UI --------------
+        :in_game_timer          => false,
+        :language               => 0,
+        :fasttravel_ui          => 0,
+        :mainmenu_background    => 0,
+
+        # ---------- Gameplay -----------
+        :movement               => 0,
+        :skip_text              => false,
+        :en_purple_messagebox   => true,
+        :enforce_april_fools    => false,
+        :true_memory_mode       => false,
+        :oneshot_mode           => false,
+        :twm_shader_footprint   => true,
+        :disable_api_puzzles    => false, #disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already
+        :wallpaper_mode         => 0,
+
+        # ---------- Advanced -----------
+        :crashlog_privacy       => false,
+        :streamer_privacy       => false,
+        :invalid_param_checks   => false,
 		
-        # UI
-        :in_game_timer                           => false,
-        :language                                => 0,
-        :fasttravel_ui                           => 0,
-        :mainmenu_background                     => 0,
+        # ---------- Сontrols -----------
+        :gamepad_type           => -1,
+        :gamepad_face_style     => 0,
+        :gamepad_led            => true,
+        :gamepad_deadzone       => 5,
 
-        # Gameplay
-        :movement                                => 0,
-        :skip_text                               => false,
-        :en_purple_messagebox                    => true,
-        :enforce_april_fools                     => false,
-        :true_memory_mode                        => false,
-        :oneshot_mode                            => false,
-        :twm_shader_footprint                    => true,
-        :disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already => false,
-        :wallpaper_mode                          => 0,
-
-        # Advanced
-        :crashlog_privacy                        => false,
-        :streamer_privacy                        => false,
-        :SDL_HINT_INVALID_PARAM_CHECKS           => false,
-		
-        #controls
-        :gamepad_type                            => -1,
-        :gamepad_face_style                      => 0,
-        :gamepad_led                             => true,
-        :gamepad_deadzone                        => 5,
-
-        # Debug
-        :debug                                   => false,
-        :debug_character                         => false,
-        :debug_text_scene_title                  => true,
-        :debug_text                              => false,
-        :debug_picture_names                     => false,
-        :debug_lightmap                          => false,
-        :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT          => false,
-        :profiler								 => false,
+        # ------------ Debug ------------
+        :debug                  => false,
+        :debug_character        => false,
+        :debug_text_scene_title => true,
+        :debug_text             => false,
+        :debug_picture_names    => false,
+        :debug_lightmap         => false,
+        :shutdown_dbus_on_quit  => false,
+        :profiler               => false,
       }
       reset_controls!
     end
 
     def reset_controls!
       @data.merge!({
-        :controls_walk_down          => [
-                                          KeyBind.key(Input::key_from_name("Down")),
-                                          KeyBind.caxis(Input::c_axis_from_name("LeftY"), KeyBind::Positive),
-                                          KeyBind.cbutton(Input::c_button_from_name("DpDown"))
-                                        ],
-        :controls_walk_left          => [
-                                          KeyBind.key(Input::key_from_name("Left")),
-                                          KeyBind.caxis(Input::c_axis_from_name("LeftX"), KeyBind::Negative),
-                                          KeyBind.cbutton(Input::c_button_from_name("DpLeft"))
-                                        ],
-        :controls_walk_right         => [
-                                          KeyBind.key(Input::key_from_name("Right")),
-                                          KeyBind.caxis(Input::c_axis_from_name("LeftX"), KeyBind::Positive),
-                                          KeyBind.cbutton(Input::c_button_from_name("DpRight"))
-                                        ],
-        :controls_walk_up            => [
-                                          KeyBind.key(Input::key_from_name("Up")),
-                                          KeyBind.caxis(Input::c_axis_from_name("LeftY"), KeyBind::Negative),
-                                          KeyBind.cbutton(Input::c_button_from_name("DpUp"))
-                                        ],
-        :controls_run                => [
-                                          KeyBind.key(Input::key_from_name("Left Shift")),
-                                          KeyBind.caxis(Input::c_axis_from_name("righttrigger"), KeyBind::Positive),
-                                          KeyBind.cbutton(Input::c_button_from_name("x"))
-                                        ],
+        :controls_walk_down  => [
+                                  KeyBind.key(Input::key_from_name("Down")),
+                                  KeyBind.caxis(Input::c_axis_from_name("LeftY"), KeyBind::Positive),
+                                  KeyBind.cbutton(Input::c_button_from_name("DpDown"))
+                                ],
+        :controls_walk_left  => [
+                                  KeyBind.key(Input::key_from_name("Left")),
+                                  KeyBind.caxis(Input::c_axis_from_name("LeftX"), KeyBind::Negative),
+                                  KeyBind.cbutton(Input::c_button_from_name("DpLeft"))
+                                ],
+        :controls_walk_right => [
+                                  KeyBind.key(Input::key_from_name("Right")),
+                                  KeyBind.caxis(Input::c_axis_from_name("LeftX"), KeyBind::Positive),
+                                  KeyBind.cbutton(Input::c_button_from_name("DpRight"))
+                                ],
+        :controls_walk_up    => [
+                                  KeyBind.key(Input::key_from_name("Up")),
+                                  KeyBind.caxis(Input::c_axis_from_name("LeftY"), KeyBind::Negative),
+                                  KeyBind.cbutton(Input::c_button_from_name("DpUp"))
+                                ],
+        :controls_run        => [
+                                  KeyBind.key(Input::key_from_name("Left Shift")),
+                                  KeyBind.caxis(Input::c_axis_from_name("righttrigger"), KeyBind::Positive),
+                                  KeyBind.cbutton(Input::c_button_from_name("x"))
+                                ],
         # -----------------------------------------------------------------------------------------------------------
-        :controls_action             => [
-                                          KeyBind.key(Input::key_from_name("Z")),
-                                          KeyBind.key(Input::key_from_name("Space")),
-                                          KeyBind.cbutton(Input::c_button_from_name("a")),
-                                        ],
-        :controls_deactivate         => [
-                                          KeyBind.key(Input::key_from_name("Left Shift")),
-                                          KeyBind.cbutton(Input::c_button_from_name("back")),
-                                          KeyBind.caxis(Input::c_axis_from_name("lefttrigger"), KeyBind::Positive),
-                                        ],
-        :controls_cancel             => [
-                                          KeyBind.key(Input::key_from_name("X")),
-                                          KeyBind.key(Input::key_from_name("Escape")),
-                                          KeyBind.cbutton(Input::c_button_from_name("b")),
-                                        ],
-        :controls_menu               => [
-                                          KeyBind.key(Input::key_from_name("A")),
-                                          KeyBind.key(Input::key_from_name("Return")),
-                                          KeyBind.cbutton(Input::c_button_from_name("start")),
-                                        ],
-        :controls_items              => [
-                                          KeyBind.key(Input::key_from_name("S")),
-                                          KeyBind.cbutton(Input::c_button_from_name("y")),
-                                        ],
-        :controls_nav_left           => [
-                                          KeyBind.key(Input::key_from_name("Q")),
-                                          KeyBind.cbutton(Input::c_button_from_name("leftshoulder")),
-                                        ],
-        :controls_nav_right          => [
-                                          KeyBind.key(Input::key_from_name("W")),
-                                          KeyBind.cbutton(Input::c_button_from_name("rightshoulder")),
-                                        ],
+        :controls_action     => [
+                                  KeyBind.key(Input::key_from_name("Z")),
+                                  KeyBind.key(Input::key_from_name("Space")),
+                                  KeyBind.cbutton(Input::c_button_from_name("a")),
+                                ],
+        :controls_deactivate => [
+                                  KeyBind.key(Input::key_from_name("Left Shift")),
+                                  KeyBind.cbutton(Input::c_button_from_name("back")),
+                                  KeyBind.caxis(Input::c_axis_from_name("lefttrigger"), KeyBind::Positive),
+                                ],
+        :controls_cancel     => [
+                                  KeyBind.key(Input::key_from_name("X")),
+                                  KeyBind.key(Input::key_from_name("Escape")),
+                                  KeyBind.cbutton(Input::c_button_from_name("b")),
+                                ],
+        :controls_menu       => [
+                                  KeyBind.key(Input::key_from_name("A")),
+                                  KeyBind.key(Input::key_from_name("Return")),
+                                  KeyBind.cbutton(Input::c_button_from_name("start")),
+                                ],
+        :controls_items      => [
+                                  KeyBind.key(Input::key_from_name("S")),
+                                  KeyBind.cbutton(Input::c_button_from_name("y")),
+                                ],
+        :controls_nav_left   => [
+                                  KeyBind.key(Input::key_from_name("Q")),
+                                  KeyBind.cbutton(Input::c_button_from_name("leftshoulder")),
+                                ],
+        :controls_nav_right  => [
+                                  KeyBind.key(Input::key_from_name("W")),
+                                  KeyBind.cbutton(Input::c_button_from_name("rightshoulder")),
+                                ],
         # -----------------------------------------------------------------------------------------------------------
-        :controls_debug              => [
-                                          KeyBind.key(Input::key_from_name("Left Ctrl")),
-                                          KeyBind.cbutton(Input::c_button_from_name("rightstick")),
-                                        ],
+        :controls_debug      => [
+                                  KeyBind.key(Input::key_from_name("Left Ctrl")),
+                                  KeyBind.cbutton(Input::c_button_from_name("rightstick")),
+                                ],
       })
     end
   end
@@ -185,13 +184,13 @@ class Window_Settings
       {
         :type => :bool,
         :name => "ITS TIME FOR FIGHT CRIME",
-        :parameter => :use_fight_crime_track
+        :parameter => :fight_crime_track
       },
       {
         :type => :bool,
         :name => "Use Old Self Contained Universe(Reprise) version",
         :icon => [1, 1],
-        :parameter => :use_old_self_contained_universe_reprise
+        :parameter => :old_reprise_song
       },
     ],
     "Video" => [
@@ -246,7 +245,7 @@ class Window_Settings
       {
         :type => :slider,
         :name => "Density of glen fireflies",
-        :parameter => :max_particle_count_firefly,
+        :parameter => :max_firefly_count,
         :icon => [1, 1],
         :min => 0,
         :max => 30
@@ -337,7 +336,7 @@ class Window_Settings
       {
         :type => :bool,
         :name => "Disable System API Dependent Puzzles(For wayland users)",
-        :parameter => :disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already
+        :parameter => :disable_api_puzzles
       },
       {
         :type => :enum,
@@ -560,7 +559,7 @@ class Window_Settings
         :type => :bool,
         :name => "SDL_HINT_INVALID_PARAM_CHECKS",
         :icon => [1, 0],
-        :parameter => :SDL_HINT_INVALID_PARAM_CHECKS
+        :parameter => :invalid_param_checks
       },
     ],
     "Debug" => [
@@ -603,7 +602,7 @@ class Window_Settings
       {
         :type => :bool,
         :name => "SDL_HINT_SHUTDOWN_DBUS_ON_QUIT",
-        :parameter => :SDL_HINT_SHUTDOWN_DBUS_ON_QUIT,
+        :parameter => :shutdown_dbus_on_quit,
         :icon => [1, 0],
       },
       {

@@ -14,18 +14,18 @@
 #include "meow.h"
 #include "sharedstate.h"
 
-static VALUE sunshine_set_crash_privacy(VALUE, VALUE v) {
+static VALUE sunshineSetCrashPrivacy(VALUE, VALUE v) {
   is_privacy_crashdump_enabled = RTEST(v);
   return v;
 }
 
-static VALUE sunshine_set_wallpaper_mode(VALUE, VALUE v) {
+static VALUE sunshineSetWallpaperMode(VALUE, VALUE v) {
   std::string s(StringValueCStr(v));
   shState->config().wallpaperMode = s;
   return v;
 }
 
-static VALUE sunshine_set_hint(VALUE, VALUE h, VALUE v) {
+static VALUE sunshineSetHint(VALUE, VALUE h, VALUE v) {
   return SDL_SetHint(StringValueCStr(h), StringValueCStr(v));
 }
 
@@ -48,9 +48,8 @@ static VALUE int_times(VALUE self) {
 
     if (n <= 0) return self;
 
-    for (long i = 0; i < n; ++i) {
+    for (long i = 0; i < n; ++i)
         rb_yield(LONG2NUM(i));
-    }
 
     return self;
 }
@@ -68,19 +67,16 @@ void SunshineBindingInit(){
 	#else
 		rb_const_set(module, rb_intern("DEVBUILD"), Qfalse);
 	#endif
-	rb_define_singleton_method(module, "crashprivacy=", RUBY_METHOD_FUNC(sunshine_set_crash_privacy), 1);
-	rb_define_singleton_method(module, "wallpapermode=", RUBY_METHOD_FUNC(sunshine_set_wallpaper_mode), 1);
-	rb_define_singleton_method(module, "setSDLHint", RUBY_METHOD_FUNC(sunshine_set_hint), 2);
-    //если методы доступны то просто не перезаписываем их
-	if (!rb_respond_to(rb_cObject, rb_intern("class"))) {
-	        rb_define_method(rb_cObject, "class", rb_obj_class, 0);
-	}
-	//сразу для всех обьектов
-	if (!rb_respond_to(rb_cObject, rb_intern("clone"))) {
-	        rb_define_method(rb_cObject, "clone", RUBY_METHOD_FUNC(obj_clone), 0);
-	}
+	rb_define_singleton_method(module, "crash_privacy=", RUBY_METHOD_FUNC(sunshineSetCrashPrivacy), 1);
+	rb_define_singleton_method(module, "wallpaper_mode=", RUBY_METHOD_FUNC(sunshineSetWallpaperMode), 1);
+	rb_define_singleton_method(module, "set_sdl_hint", RUBY_METHOD_FUNC(sunshineSetHint), 2);
+    
+	if (!rb_respond_to(rb_cObject, rb_intern("class")))
+	    rb_define_method(rb_cObject, "class", rb_obj_class, 0);
+	
+	if (!rb_respond_to(rb_cObject, rb_intern("clone")))
+	    rb_define_method(rb_cObject, "clone", RUBY_METHOD_FUNC(obj_clone), 0);
 
-	if (!rb_respond_to(rb_cInteger, rb_intern("times"))) {
+	if (!rb_respond_to(rb_cInteger, rb_intern("times")))
 	    rb_define_method(rb_cInteger, "times", RUBY_METHOD_FUNC(int_times), 0);
-	}
 }

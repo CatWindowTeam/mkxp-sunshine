@@ -7,23 +7,25 @@ module Settings
       # if you do not take the value from settings directly.
 
       # name must be same as the parameter identifier
-
-	  def crashlog_privacy(value)
-		Sunshine.crashprivacy=value
-	  end
+      
+      # ---------------------------------------------- Audio --------------------------------------------
       def master_volume(value)
         Audio.master_volume = value / 100.0
       end
+
       def bgm_volume(value)
         Audio.bgm_volume = value
       end
+
       def sfx_volume(value)
         Audio.sfx_volume = value
       end
       
+      # ---------------------------------------------- Video --------------------------------------------
       def fullscreen(value)
         Graphics.fullscreen = $console = value
       end
+      
       def resolution(value)
         if (!Graphics::RESOLUTION_OVERRIDDEN)
           res_data = Graphics::RESOLUTIONS&.[](value) || {:width => 480, :height => 640}
@@ -35,81 +37,70 @@ module Settings
           Graphics.resize_screen(new_width, new_height)
         end
       end
-
-	  def scaling_mode(value)
-		if value == 0
-			Graphics.smooth = false
-		else 
-			Graphics.smooth = true
-		end
-	  end
       
       def colorblind(value)
         $game_switches[252] = value
-      end
-
-      # UI
-      def in_game_timer(value)
-        $game_temp.igt_timer_visible = value
-        if $scene.is_a?(Scene_Map) && $scene&.in_game_timer
-          $scene.in_game_timer.visible = $game_temp.igt_timer_visible
-        end
-      end
-      def language(value)
-        $persistent.lang = Language::LANGUAGES[value]
-        $scene&.redraw
-      end
-
-      def movement(value)
-        $game_switches[251] = value != 0
-      end
-      def skip_text(value)
-        $game_switches[253] = value != 0
       end
 
       def frameskip(value)
         Graphics.frameskip = value
       end
 
-      def SDL_HINT_INVALID_PARAM_CHECKS(value)
-        if value
-          Sunshine.setSDLHint("SDL_HINT_INVALID_PARAM_CHECKS", "1")
-        else
-          Sunshine.setSDLHint("SDL_HINT_INVALID_PARAM_CHECKS", "2")
+      def scaling_mode(value)
+        Graphics.smooth = value != 0
+      end
+
+      VSYNC_MODES = [1, -1, 0]
+      def vsync(value)
+        Graphics.vsync_mode = VSYNC_MODES[value]
+      end
+
+      # ----------------------------------------------- UI -----------------------------------------------
+      def in_game_timer(value)
+        $game_temp.igt_timer_visible = value
+        if $scene.is_a?(Scene_Map) && $scene&.in_game_timer
+          $scene.in_game_timer.visible = $game_temp.igt_timer_visible
         end
       end
 
-      def vsync(value)
-        if value == 0
-          Graphics.setVsync(1)
-        elsif value == 1
-          Graphics.setVsync(-1)
-        else
-          Graphics.setVsync(0)
-        end				
+      def language(value)
+        $persistent.lang = Language::LANGUAGES[value]
+        $scene&.redraw
       end
-	  
-      def SDL_HINT_SHUTDOWN_DBUS_ON_QUIT(value)
-        if value
-          Sunshine.setSDLHint("SDL_HINT_SHUTDOWN_DBUS_ON_QUIT", "1")
-        else
-          Sunshine.setSDLHint("SDL_HINT_SHUTDOWN_DBUS_ON_QUIT", "0")
-        end
+
+      # -------------------------------------------- Gameplay --------------------------------------------
+      def movement(value)
+        $game_switches[251] = value != 0
+      end
+
+      def skip_text(value)
+        $game_switches[253] = value != 0
+      end
+
+      WALLPAPER_MODES = ["normal", "fallback", "disbled"]
+      def wallpaper_mode(value)
+        Sunshine.wallpaper_mode = WALLPAPER_MODES[value]
+      end
+
+      # -------------------------------------------- Advanced --------------------------------------------
+      def crashlog_privacy(value)
+        Sunshine.crash_privacy = value
+      end
+
+      def invalid_param_checks(value)
+        Sunshine.set_sdl_hint("SDL_HINT_INVALID_PARAM_CHECKS", value ? "1" : "2")
+      end
+      
+      # --------------------------------------------- Debug ----------------------------------------------
+      def shutdown_dbus_on_quit(value)
+        Sunshine.set_sdl_hint("SDL_HINT_SHUTDOWN_DBUS_ON_QUIT", value ? "1" : "0")
       end
 
       def profiler(value)
         Profiler.set(value)
       end
-      
-      def wallpaper_mode(value)
-        if value == 0
-          Sunshine.wallpapermode="normal" 
-        elsif value == 1
-          Sunshine.wallpapermode="fallback"
-        else
-          Sunshine.wallpapermode="disabled"
-        end				
-      end
+
+      # --------------------------------------------- End :3 ---------------------------------------------
     end
   end
 end
