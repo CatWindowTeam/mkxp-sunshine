@@ -891,7 +891,7 @@ class Window_Settings
       callback(:init, settings_content, screen_id, position, name, icon, parameter, init_value, callbacks) do
         super(settings_content, screen_id, position, name, icon, parameter, init_value)
       end
--    end
+    end
     def callback(name, *args)
       original = proc { yield if block_given? }
 
