@@ -164,6 +164,9 @@ class Game_Player < Game_Character
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
+    if (Settings[:debug] && Input::key_press?(Input::key_from_name("F6")))
+      unlock
+    end
     old_center_x = @center_x
     old_center_y = @center_y
     @center_x = ((Graphics.width / 2) - 16) * 4   # Center screen x-coordinate * 4
@@ -190,21 +193,21 @@ class Game_Player < Game_Character
         # Move player in the direction the directional button is being pressed
         case Input.dir4
         when 2
-		  if $game_switches[112] == false
+          if $game_switches[112] == false
             move_down
-		  else
-		    turn_down
-		  end
+          else
+            turn_down
+          end
         when 4
           move_left
         when 6
           move_right
         when 8
-		  if $game_switches[112] == false
+          if $game_switches[112] == false
             move_up
-		  else
-		    turn_up
-		  end
+          else
+            turn_up
+          end
         end
       end
     else

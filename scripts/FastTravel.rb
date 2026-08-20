@@ -165,11 +165,11 @@ class FastTravel
     end
 
     #Not WME
-    @fade_in = true
     @data = $game_fasttravel.unlocked_maps.keys.sort
     zone = ZONES[$game_fasttravel.zone]
 
     # Set cursor to current map
+    @selected_location = @data[0]
     @data.each_with_index do |map, i|
       if $game_fasttravel.unlocked_maps[map].id == $game_map.map_id
         @index = i
@@ -177,6 +177,7 @@ class FastTravel
         break
       end
     end
+    @fade_in = true
 
     # Create title
     @title.bitmap.clear
