@@ -63,7 +63,7 @@
 #endif
 
 #ifndef VERSION_STRING
-	#define VERSION_STRING ">w<"
+	#define VERSION_STRING "Unknown"
 #endif
 
 static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
@@ -157,9 +157,7 @@ int main(int argc, char *argv[]){
 	//X11 work on *BSD,Solaris too!
 	#if unix_like
 		SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
-		#if SDL_VERSION_ATLEAST(3, 4, 10)
-			SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
-		#endif
+		SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
 	#elif windows
 		SDL_SetHint(SDL_HINT_WINDOWS_RAW_KEYBOARD, "1");
 	#elif android
@@ -215,7 +213,6 @@ int main(int argc, char *argv[]){
 	}
 
 	std::string path;
-	
 	if (!conf.gameFolder.empty()) {
 	    if (conf.gameFolder == ".") {
 	        path = std::filesystem::current_path().string();
@@ -225,14 +222,14 @@ int main(int argc, char *argv[]){
 	} else {
 	    path = std::filesystem::current_path().string();
 	}
-	
+
 	std::ofstream out(std::filesystem::temp_directory_path() / "sunshine");
 	if (!out) {
 	    WarnMsg("Failed to write game directory path to temp file, problems with journal app expected!");
 	} else {
 	    out << path;
 	}
-	
+
 	extern int screenMain(Config &conf);
 	if (conf.screenMode)
 		return screenMain(conf);
@@ -288,7 +285,7 @@ int main(int argc, char *argv[]){
 		WarnMsg("Error creating Mixer Device, check your system audio configuration");
 		MIX_Quit();
 		TTF_Quit();
-		SDL_Quit();	
+		SDL_Quit();
 		return 0;
 	}
 
@@ -303,55 +300,59 @@ int main(int argc, char *argv[]){
 #endif
 
 	int winW, winH;
-	SDL_GetWindowSize(win, &winW, &winH); // SDL_GL_GetDrawableSize(win, &winW, &winH);
+	SDL_GetWindowSize(win, &winW, &winH);
 	rtData.windowSizeMsg.post(Vec2i(winW, winH));
 
 	ModLoader(conf, win);
-	
 	/* Load and post key bindings */
 	rtData.bindingUpdateMsg.post(loadBindings(conf));
 	/* Start RGSS thread */
-	SDL_Thread *rgssThread = SDL_CreateThread(rgssThreadFun, "rgss", &rtData);
+	try{
+		SDL_Thread *rgssThread = SDL_CreateThread(rgssThreadFun, "rgss", &rtData);
+		if(rgssThread){
+			WarnMsg("Thread creation failed: %s", SDL_GetError());
+			return -1;
+		}
+		/* Start event processing */
+		eventThread.process(rtData);
 
-	/* Start event processing */
-	eventThread.process(rtData);
+		/* Request RGSS thread to stop */
+		rtData.rqTerm.set();
 
-	/* Request RGSS thread to stop */
-	rtData.rqTerm.set();
+		/* Wait for RGSS thread response */
+		for (int i = 0; i < 1000; ++i){
+			/* We can stop waiting when the request was ack'd */
+			if (rtData.rqTermAck){
+				Debug() << "[main] RGSS thread ack'd request after" << i*10 << "ms";
+				break;
+			}
 
-	/* Wait for RGSS thread response */
-	for (int i = 0; i < 1000; ++i){
-		/* We can stop waiting when the request was ack'd */
-		if (rtData.rqTermAck){
-			Debug() << "[main] RGSS thread ack'd request after" << i*10 << "ms";
-			break;
+			/* Give RGSS thread some time to respond */
+			SDL_Delay(10);
 		}
 
-		/* Give RGSS thread some time to respond */
-		SDL_Delay(10);
+		/* If RGSS thread ack'd request, wait for it to shutdown,
+	 	* otherwise abandon hope and just end the process as is. */
+		if (rtData.rqTermAck){
+			SDL_WaitThread(rgssThread, 0);
+		}else{
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and Sunshine will now force quit", win);
+		}
+
+		if (!rtData.rgssErrorMsg.empty())
+			ErrorMsg(rtData.rgssErrorMsg.c_str());
+
+		/* Clean up any remainin events */
+		eventThread.cleanup();
+
+		unloadLocale();
+		unloadLanguageMetadata();
+	}catch(const char* msg){
+		ErrorMsg(msg);
 	}
-
-	/* If RGSS thread ack'd request, wait for it to shutdown,
-	 * otherwise abandon hope and just end the process as is. */
-	if (rtData.rqTermAck){
-		SDL_WaitThread(rgssThread, 0);
-	}else{
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and Sunshine will now force quit", win);
-	}
-
-	if (!rtData.rgssErrorMsg.empty())
-		ErrorMsg(rtData.rgssErrorMsg.c_str());
-	
-	/* Clean up any remainin events */
-	eventThread.cleanup();
-
-	unloadLocale();
-	unloadLanguageMetadata();
-
 	if(show_crash_sceen){
 		crash_screen(win);
 	}
-	
 	MIX_DestroyMixer(mixer);
 	SDL_DestroyWindow(win);
 

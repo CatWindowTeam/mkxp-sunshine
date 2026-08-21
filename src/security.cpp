@@ -5,6 +5,7 @@
 #include <SDL3/SDL_system.h>
 // this component is needed to protect users from mod attacks.
 
+#ifndef __ANDROID__
 #ifdef __linux__
 	#include <sys/socket.h>
 	#include <seccomp.h>
@@ -17,7 +18,7 @@
 	SCMP_SYS(vhangup),
 	SCMP_SYS(settimeofday),
 	SCMP_SYS(stime),
-	SCMP_SYS(clock_settime), 
+	SCMP_SYS(clock_settime),
 	SCMP_SYS(clock_settime64),
 	SCMP_SYS(iopl),
 	SCMP_SYS(ioperm),
@@ -62,24 +63,23 @@
 	SCMP_SYS(setdomainname),
 	SCMP_SYS(setns),
 	SCMP_SYS(unshare),
-	
 	#ifdef __ARM_NR
 	SCMP_SYS(breakpoint),
 	#endif
-	
 	#ifdef __powerpc__
 	SCMP_SYS(sys_debug_setcontext),
 	SCMP_SYS(rtas),
 	#endif
-	
 	#ifdef __alpha
 	SCMP_SYS(oldumount),
 	#endif
 	SCMP_SYS(setpgid),
 	SCMP_SYS(pciconfig_write)};
 #endif
+#endif
 
 void SecurityManagerInit(){
+	#ifndef __ANDROID__
 	#ifdef __linux__
 		Debug() << "[SECURITY] initializing SECCOMP filter...";
 		ctx = seccomp_init(SCMP_ACT_ALLOW); // Default action: Kill the process
@@ -123,10 +123,13 @@ void SecurityManagerInit(){
 	#else
 		Debug() << "[SECURITY] SecurityManager doesn't support this platform.";
 	#endif
+	#endif
 }
 
 void SecurityManagerDeInit(){
+	#ifndef __ANDROID__
 	#ifdef __linux__
 		seccomp_release(ctx);
+	#endif
 	#endif
 }

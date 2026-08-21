@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28.3)
+cmake_minimum_required(VERSION 3.9)
 project(oneshot)
 include(FindPackageHandleStandardArgs)
 include(CheckCXXCompilerFlag)
@@ -16,9 +16,8 @@ function(check_option var a)
   set(all ${a})
   set(var "")
   list(APPEND all ${ARGN})
-  
   foreach(x IN LISTS all)
-    check_cxx_compiler_flag(${x} HAVE_OPTION)  
+    check_cxx_compiler_flag(${x} HAVE_OPTION)
     if(HAVE_OPTION)
 		message(STATUS "${x} SUPPORTED")
 		list(APPEND var ${x})
@@ -31,8 +30,7 @@ function(check_option var a)
 			message(STATUS "${x} UNSUPPORTED")
 		endif()
     endif()
-    
-  endforeach()  
+  endforeach()
   set(${var} "${var}" PARENT_SCOPE)
 endfunction()
 
@@ -45,6 +43,7 @@ option(STATIC "Build more static build" OFF)
 option(USE_OPENGL_ES2 "GLES2_HEADER define" OFF)
 set(VERSION_STRING "0.1.2" CACHE STRING "Version string")
 option(DEVBUILD "Developoment build" OFF)
+option(TERMUX "Build for TERMUX" OFF)
 
 # Configuration
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
@@ -197,6 +196,14 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     include_directories(${LINUXPKGS_INCLUDE_DIRS})
     add_compile_options(${LINUXPKGS_CFLAGS_OTHER})
     list(APPEND PLATFORM_LIBRARIES ${LINUXPKGS_LDFLAGS})
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
+    if(TERMUX)
+    	find_package(PkgConfig REQUIRED)
+    	pkg_check_modules(ANDROIDPKGS REQUIRED gtk+-3.0 libxfconf-0)
+    	include_directories(${ANDROIDPKGS_INCLUDE_DIRS})
+    	add_compile_options(${ANDROIDPKGS_CFLAGS_OTHER})
+    	list(APPEND PLATFORM_LIBRARIES ${ANDROIDPKGS_LDFLAGS})
+    endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(LINUXPKGS REQUIRED gtk+-3.0 libxfconf-0)
@@ -384,14 +391,14 @@ else()
 	-fimplicit-constexpr
 	-fomit-frame-pointer)
 	add_compile_options(${OPTIONS_RELEASE})
-		
-	add_link_options(-Wl,-O2 
-	-Wl,--gc-sections 
-	-Wl,--as-needed  
+
+	add_link_options(-Wl,-O2
+	-Wl,--gc-sections
+	-Wl,--as-needed
 	-Wl,--no-undefined
 	-Wl,--strip-all
 	-Wl,--no-copy-dt-needed-entries)
-	
+
 	if("${ARCH_RELEASE}" STREQUAL "")
 		message(STATUS "ARCH_RELEASE empty")
 	else()
@@ -401,21 +408,28 @@ else()
 endif()
 
 if(ANDROID)
-	add_library(main SHARED
-		${MAIN_HEADERS}
-		${MAIN_SOURCE}
-		${BINDING_HEADERS}
-		${BINDING_SOURCE}
-		${EMBEDDED_SOURCE}
-	)
+	if(TERMUX)
+		add_executable(${PROJECT_NAME}
+                	${MAIN_HEADERS}
+                	${MAIN_SOURCE}
+                	${BINDING_HEADERS}
+                	${BINDING_SOURCE}
+                	${EMBEDDED_SOURCE})
+	else()
+		add_library(main SHARED
+                	${MAIN_HEADERS}
+                	${MAIN_SOURCE}
+                	${BINDING_HEADERS}
+                	${BINDING_SOURCE}
+                	${EMBEDDED_SOURCE})
+	endif()
 else()
 	add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 		${MAIN_HEADERS}
 		${MAIN_SOURCE}
 		${BINDING_HEADERS}
 		${BINDING_SOURCE}
-		${EMBEDDED_SOURCE}
-	)
+		${EMBEDDED_SOURCE})
 endif()
 
 if(NOT DEBUG)
@@ -433,6 +447,9 @@ if(DEVBUILD)
 	target_compile_definitions(${PROJECT_NAME} PRIVATE DEVBUILD)
 endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION_STRING="${VERSION_STRING}")
+if(TERMUX)
+	target_compile_definitions(${PROJECT_NAME} PRIVATE TERMUX=1)
+endif()
 
 find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)

@@ -32,6 +32,8 @@
 	#include <dlfcn.h>
 	#include <gtk/gtk.h>
 	#include <gdk/gdk.h>
+#elif android
+	//idk
 #else
 	#error "Operating system not detected or unsupported."
 #endif
@@ -177,6 +179,12 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 #elif unix_like
 	//TODO: FIX IT
 	p->os = "linux";
+#elif android
+	#ifdef TERMUX
+		p->os = "linux";
+	#else
+		p->os = "Android";
+	#endif
 #endif
 
 	/********************
@@ -231,6 +239,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 #elif unix_like
 	struct passwd *pwd = getpwuid(getuid());
 #endif
+	#ifdef unix_like
 	if (pwd){
 		if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ','){
 			// Get the user's full name
@@ -241,6 +250,9 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 		else
 			p->userName = pwd->pw_name;
 	}
+	#elif android
+		p->userName = "Player";
+	#endif
 
 #ifdef apple
 	p->journal = "_______.app";
@@ -257,7 +269,6 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	#else
 		p->gamePath = path;
 	#endif
-	
 	Debug() << "[oneshot] Game path    :" << p->gamePath;
 	Debug() << "[oneshot] Docs path    :" << p->docsPath;
 

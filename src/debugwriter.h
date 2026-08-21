@@ -31,7 +31,7 @@
 #undef snprintf
 
 #ifdef __ANDROID__
-	#include <android/SDL_log.h>
+	#include <android/log.h>
 #elif __EMSCRIPTEN__
 	#include <emscripten/console.h>
 #endif
@@ -66,13 +66,17 @@ public:
 
 	~Debug() noexcept {
 #ifdef __ANDROID__
-		__android_log_write(ANDROID_LOG_DEBUG, "sunshine", result.view().c_str());
+		//TODO: Linking error
+		//__android_log_write(ANDROID_LOG_DEBUG, "sunshine", buf.str().c_str());
+		#ifdef TERMUX
+			std::cout << buf.view() << '\n';
+		#endif
 #elif __EMSCRIPTEN__
-		emscripten_console_log(result.view().c_str());				
+		emscripten_console_log(result.view().c_str());
 #else
-		logs.emplace_back(buf.view());
 		std::cout << buf.view() << '\n';
 #endif
+		logs.emplace_back(buf.view());
 	}
 
 private:
