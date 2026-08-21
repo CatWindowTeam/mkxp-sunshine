@@ -1,3 +1,4 @@
+// Based on: https://github.com/Scorbutics/ruby-physfs
 #include <physfs.h>
 #include "binding-util.h"
 #include "sharedstate.h"
