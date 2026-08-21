@@ -16,11 +16,12 @@ module Settings
         :frameskip              => true,
         :twm_shader             => true,
         :light                  => true,
+      #  :light_layer_detect     => true,
         :scaling_mode           => 0,
         :vsync                  => 0,
         :max_firefly_count      => 30,
-		:footprints             => true,
-		:footsplashes           => true,
+        :footprints             => true,
+        :footsplashes           => true,
 	
         # ------------- UI --------------
         :in_game_timer          => false,
@@ -230,6 +231,11 @@ class Window_Settings
         :name => "Dynamic Light",
         :parameter => :light,
       },
+      #{
+      #  :type => :bool,
+      #  :name => "Light Layer Detecting",
+      #  :parameter => :light_layer_detect,
+      #},
       {
         :type => :bool,
         :name => "World machine shader",
