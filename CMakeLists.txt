@@ -326,6 +326,7 @@ set(BINDING_SOURCE
 	binding-mri/gamepad-binding.cpp
 	binding-mri/profiler-binding.cpp
 	binding-mri/audioplayback-binding.cpp
+	binding-mri/physfs-binding.cpp
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})

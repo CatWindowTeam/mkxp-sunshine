@@ -95,6 +95,7 @@ void shaderBindingInit();
 void keybindingsBindingInit();
 void lightmapBindingInit();
 void ProfilerInit();
+void PhysFS_binding_init();
 
 RB_METHOD(mriPrint);
 RB_METHOD(mriP);
@@ -150,6 +151,7 @@ static void mriBindingInit(){
 	keybindingsBindingInit();
 	lightmapBindingInit();
 	ProfilerInit();
+	PhysFS_binding_init();
 
 	_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
 	_rb_define_module_function(rb_mKernel, "rgss_stop", mriRgssStop);

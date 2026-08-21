@@ -1,6 +1,5 @@
 module Kernel
   alias_method :original_puts, :puts
-
   def puts(*args)
     string = ""
     args.each do |arg|
@@ -9,7 +8,6 @@ module Kernel
     MKXP.puts string
     return nil
   end
-  
   module_function :puts
 end
 
@@ -17,15 +15,7 @@ module RPG
   module Cache
     @cache = {}
     def self.load_bitmap(folder_name, filename, hue = 0)
-      if ModLoader::IS_ENABLED
-        if File.exist?("/mod-storage/" + folder_name + filename)
-          path = Graphics.adapted_file("/mod-storage/" + folder_name + filename)
-        else
-          path = Graphics.adapted_file(folder_name + filename)
-        end
-      else
-        path = Graphics.adapted_file(folder_name + filename)
-      end
+      path = Graphics.adapted_file(folder_name + filename)
       if not @cache.include?(path) or @cache[path].disposed?
         if filename != ""
           @cache[path] = Bitmap.new(path)
@@ -1323,7 +1313,7 @@ module RPG
 	  return unless ModLoader::IS_ENABLED
 	  return unless path.is_a?(String)
 	  ModLoader.hooks(path).each do |item|
-	  	eval(File.read(item), b)
+	  	eval(PhysFS.read(item), b)
 	  end
 	end
   end

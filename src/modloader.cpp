@@ -15,11 +15,12 @@
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_timer.h>
 #include <SDL3_image/SDL_image.h>
-
+#include <physfs.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "the_modded_machine.png.xxd"
-
 namespace fs = std::filesystem;
-
 static bool stop_render = false;
 const static std::size_t N = 46;
 
@@ -94,7 +95,7 @@ void ModLoader(Config conf, SDL_Window* win){
             std::string full = p.string();
 
             if (ext == ".zip") {
-                int ok = PHYSFS_mount(full.c_str(), "/mod-storage", 0);
+                int ok = PHYSFS_mount(full.c_str(), "", 0);
                 mod_list.emplace_back(full);
                 modloader_add_to_log("Added mod " + full);
                 mods_count++;
