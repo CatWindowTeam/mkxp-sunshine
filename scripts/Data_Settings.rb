@@ -20,6 +20,7 @@ module Settings
         :scaling_mode           => 0,
         :vsync                  => 0,
         :max_firefly_count      => 30,
+        :max_shrimp_count       => 0,
         :footprints             => true,
         :footsplashes           => true,
 	
@@ -255,6 +256,14 @@ class Window_Settings
         :icon => [1, 1],
         :min => 0,
         :max => 30
+      },
+      {
+        :type => :slider,
+        :name => "Density of shrims (!EXPEREMENTAL!)",
+        :parameter => :max_shrimp_count,
+        :icon => [1, 1],
+        :min => 0,
+        :max => 80
       },
       {
         :type => :bool,

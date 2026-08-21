@@ -263,7 +263,7 @@ class Spriteset_Map
           layer = :front
         when :shrimp
           klass = Particle_Shrimp
-          count = 80
+          count = Settings[:max_shrimp_count]
           layer = :back
         else
           raise 'invalid particle type'
