@@ -100,7 +100,6 @@ RB_METHOD(graphicsFrameReset){
 		shState->graphics().set##PropName(value); \
 		return rb_bool_new(value); \
 	}
-	
 
 RB_METHOD(graphicsPosX){
 	RB_UNUSED_PARAM;
@@ -317,7 +316,7 @@ void graphicsBindingInit(){
 	INIT_GRA_PROP_BIND( ShowCursor, "show_cursor" );
 	INIT_GRA_PROP_BIND( Smooth,     "smooth"      );
 	INIT_GRA_PROP_BIND( Frameskip,  "frameskip"   );
-	
+
 	const Config &conf = shState->rtData().config;
 	rb_define_const(module, "RESOLUTION_OVERRIDDEN", rb_bool_new(conf.resolutionOverridden));
 }

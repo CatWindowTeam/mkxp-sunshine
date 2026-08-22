@@ -1,13 +1,4 @@
-#==============================================================================
-# ** Main
-#------------------------------------------------------------------------------
-#  After defining each class, actual processing begins here.
-#==============================================================================
-
-#at_exit do
-#  Wallpaper.reset
-#  save unless $game_switches[99] || ($game_system.map_interpreter.running? || !$scene.is_a?(Scene_Map))
-#end
+# After defining each class, actual processing begins here.
 
 class Float
   def to_f

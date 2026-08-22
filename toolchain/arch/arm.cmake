@@ -2,5 +2,7 @@ set(ARCH_COMMON "")
 set(ARCH_RELEASE -momit-leaf-frame-pointer
 -mlow-precision-recip-sqrt
 -mlow-precision-sqrt
--mlow-precision-div)
-set(ARCH_DEBUG -menable-sysreg-checking)
+-mlow-precision-div
+-mearly-ra=all)
+set(ARCH_DEBUG -menable-sysreg-checking
+-mpoke-function-name)

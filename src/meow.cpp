@@ -129,7 +129,7 @@ static void get_reason_and_solution(Exception::Type t) {
             break;
         case Exception::NoFileError:
             crash_reason = "Broken installation";
-            crash_possible_solution = "Try reinstall game";
+            crash_possible_solution = "Try reinstall game or mods if you load some mods.";
             break;
         case Exception::ShaderError:
             crash_reason = "Broken Shader";
@@ -185,9 +185,9 @@ void crash(Exception::Type t, const char *fmt, ...) {
 
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-	get_reason_and_solution(t);
-    show_crash_sceen = true;
-	//Protect against segfaults
+    get_reason_and_solution(t);
+    show_crash_screen = true;
+    //Protect against segfaults
     if(is_ruby_initialized){
     	ruby_stop(-1);
     }

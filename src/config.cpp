@@ -77,6 +77,7 @@ void Config::read(int argc, char *argv[]){
 	PO_DESC(windowTitle, std::string, "") \
 	PO_DESC(commonDataPath, std::string, "") \
 	PO_DESC(Modloader.ModsDirPath, std::string,"mods") \
+	PO_DESC(Modloader.skip_modloader_screen, bool, false) \
 	PO_DESC(fixedFramerate, int, 0) \
 	PO_DESC(frameSkip, bool, true) \
 	PO_DESC(syncToRefreshrate, bool, false) \
@@ -91,7 +92,6 @@ void Config::read(int argc, char *argv[]){
 	PO_DESC(SE.sourceCount, int, 6) \
 	PO_DESC(pathCache, bool, true) \
 	PO_DESC(Windows_AllocConsole, bool, false) \
-	PO_DESC(Modloader.use_default_save_path, bool, false) \
 	PO_DESC(pancakes, bool, false) \
 	PO_DESC(SecurityEngine, bool, true) \
 	PO_DESC(journal_address, std::string, "127.0.0.1") \
@@ -170,3 +170,4 @@ void Config::read(int argc, char *argv[]){
 	}
 #endif
 }
+

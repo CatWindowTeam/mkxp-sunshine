@@ -340,7 +340,7 @@ int main(int argc, char *argv[]){
 
 	unloadLocale();
 	unloadLanguageMetadata();
-	if(show_crash_sceen){
+	if(show_crash_screen){
 		crash_screen(win);
 	}
 	MIX_DestroyMixer(mixer);

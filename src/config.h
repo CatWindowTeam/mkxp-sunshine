@@ -67,7 +67,7 @@ struct Config{
 
 	struct{
 		std::string ModsDirPath;
-		bool use_default_save_path;
+		bool skip_modloader_screen;
 	} Modloader;
 
 	bool useScriptNames;

@@ -49,8 +49,8 @@ static int renderer_thread(void* data){
 	while(!stop_render){
 		index_on_screen = 10;
 		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-	    SDL_RenderClear(ren);
-	    SDL_RenderTexture(ren, tex, NULL, NULL);
+	        SDL_RenderClear(ren);
+	        SDL_RenderTexture(ren, tex, NULL, NULL);
 		SDL_SetRenderDrawColor(ren, 150, 100, 255, 255);
 		std::size_t size = modloader_logs.size();
 		std::size_t n = std::min<std::size_t>(static_cast<std::size_t>(N), size);
@@ -68,25 +68,24 @@ static int renderer_thread(void* data){
 }
 
 void ModLoader(Config conf, SDL_Window* win){
-    std::string path = "mods";
-    if (!fs::exists(path) || !fs::is_directory(path)) {
+    if (!fs::exists(conf.Modloader.ModsDirPath) || !fs::is_directory(conf.Modloader.ModsDirPath)) {
         Debug() << "[MODLOADER] Mods directory not found, skip.";
         return;
-    }else if (fs::is_empty(path)) {
+    }else if (fs::is_empty(conf.Modloader.ModsDirPath)) {
         Debug() << "[MODLOADER] Mods directory empty, skip.";
         return;
     }
     if(conf.SecurityEngine){
-    	SecurityManagerInit();	
+    	SecurityManagerInit();
     }
-	SDL_Thread* render_thread_pointer = SDL_CreateThread(renderer_thread, "ModRenderer", win);
-	if (!render_thread_pointer) {
-	    //TODO: Error handling
-	}
+    SDL_Thread* render_thread_pointer = NULL;
+    if(!conf.Modloader.skip_modloader_screen){
+    	render_thread_pointer = SDL_CreateThread(renderer_thread, "ModRenderer", win);
+    }
     std::vector<std::string> mod_list = {};
     try {
-        // 1.check if any zip(mod) file, 2. calculate sha256 hash of zip(mod) files 3.mount mod via PhysFS
-        for (const auto &entry : fs::directory_iterator(path, fs::directory_options::skip_permission_denied)) {
+        // 1.check if any zip(mod) file, 2.mount mod via PhysFS
+        for (const auto &entry : fs::directory_iterator(conf.Modloader.ModsDirPath, fs::directory_options::skip_permission_denied)) {
             std::error_code ec;
             auto p = entry.path();
             if (!fs::is_regular_file(p, ec) || ec) continue;
@@ -107,7 +106,9 @@ void ModLoader(Config conf, SDL_Window* win){
         }
         sleep(1);
         stop_render = true;
-        SDL_WaitThread(render_thread_pointer, NULL);
+	if(!conf.Modloader.skip_modloader_screen){
+        	SDL_WaitThread(render_thread_pointer, NULL);
+	}
         modloader_is_enabled = true;
     } catch (const std::exception& e) {
         crash(Exception::ModLoaderError, "Something is wrong, Exception: %s ", e.what());
