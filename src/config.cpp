@@ -69,7 +69,6 @@ void Config::read(int argc, char *argv[]){
 #define PO_DESC_ALL \
 	PO_DESC(debugMode, bool, false) \
 	PO_DESC(screenMode, bool, false) \
-	PO_DESC(printFPS, bool, false) \
 	PO_DESC(fullscreen, bool, false) \
 	PO_DESC(fixedAspectRatio, bool, true) \
 	PO_DESC(smoothScaling, bool, false) \
@@ -97,7 +96,7 @@ void Config::read(int argc, char *argv[]){
 	PO_DESC(SecurityEngine, bool, true) \
 	PO_DESC(journal_address, std::string, "127.0.0.1") \
 	PO_DESC(journal_port, int, 23821)
-	
+
 // Not gonna take your shit boost
 #define GUARD_ALL( SDL_exp ) try { SDL_exp } catch(...) {}
 #define PO_DESC(key, type, def) (#key, po::value< type >()->default_value(def))

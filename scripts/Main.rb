@@ -17,7 +17,6 @@ end
 
 begin
   RPG::Mod.exec_hooks("hooks/Main/start", binding)
-  print PhysFS.exist?("gaysex")
   $console = Graphics.fullscreen
   Graphics.frame_rate = 60
   Font.default_size = 20

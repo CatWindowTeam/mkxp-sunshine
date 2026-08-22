@@ -264,7 +264,6 @@ int main(int argc, char *argv[]){
 		SDL_Quit();
 		return 0;
 	}
-
 	/* OSX and Windows have their own native ways of
 	 * dealing with icons; don't interfere with them */
 #ifdef unix_like
@@ -279,7 +278,6 @@ int main(int argc, char *argv[]){
 	spec.freq = 44100;
 
 	MIX_Mixer* mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
-
 	if (!mixer){
 		SDL_DestroyWindow(win);
 		WarnMsg("Error creating Mixer Device, check your system audio configuration");
@@ -307,49 +305,41 @@ int main(int argc, char *argv[]){
 	/* Load and post key bindings */
 	rtData.bindingUpdateMsg.post(loadBindings(conf));
 	/* Start RGSS thread */
-	try{
-		SDL_Thread *rgssThread = SDL_CreateThread(rgssThreadFun, "rgss", &rtData);
-		if(rgssThread){
-			WarnMsg("Thread creation failed: %s", SDL_GetError());
-			return -1;
-		}
-		/* Start event processing */
-		eventThread.process(rtData);
+	SDL_Thread *rgssThread = SDL_CreateThread(rgssThreadFun, "rgss", &rtData);
+	/* Start event processing */
+	eventThread.process(rtData);
 
-		/* Request RGSS thread to stop */
-		rtData.rqTerm.set();
+	/* Request RGSS thread to stop */
+	rtData.rqTerm.set();
 
-		/* Wait for RGSS thread response */
-		for (int i = 0; i < 1000; ++i){
-			/* We can stop waiting when the request was ack'd */
-			if (rtData.rqTermAck){
-				Debug() << "[main] RGSS thread ack'd request after" << i*10 << "ms";
-				break;
-			}
-
-			/* Give RGSS thread some time to respond */
-			SDL_Delay(10);
-		}
-
-		/* If RGSS thread ack'd request, wait for it to shutdown,
-	 	* otherwise abandon hope and just end the process as is. */
+	/* Wait for RGSS thread response */
+	for (int i = 0; i < 1000; ++i){
+		/* We can stop waiting when the request was ack'd */
 		if (rtData.rqTermAck){
-			SDL_WaitThread(rgssThread, 0);
-		}else{
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and Sunshine will now force quit", win);
+			Debug() << "[main] RGSS thread ack'd request after" << i*10 << "ms";
+			break;
 		}
 
-		if (!rtData.rgssErrorMsg.empty())
-			ErrorMsg(rtData.rgssErrorMsg.c_str());
-
-		/* Clean up any remainin events */
-		eventThread.cleanup();
-
-		unloadLocale();
-		unloadLanguageMetadata();
-	}catch(const char* msg){
-		ErrorMsg(msg);
+		/* Give RGSS thread some time to respond */
+		SDL_Delay(10);
 	}
+
+	/* If RGSS thread ack'd request, wait for it to shutdown,
+	 * otherwise abandon hope and just end the process as is. */
+	if (rtData.rqTermAck){
+		SDL_WaitThread(rgssThread, 0);
+	}else{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and Sunshine will now force quit", win);
+	}
+
+	if (!rtData.rgssErrorMsg.empty())
+		ErrorMsg(rtData.rgssErrorMsg.c_str());
+
+	/* Clean up any remainin events */
+	eventThread.cleanup();
+
+	unloadLocale();
+	unloadLanguageMetadata();
 	if(show_crash_sceen){
 		crash_screen(win);
 	}

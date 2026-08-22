@@ -33,7 +33,7 @@
 	#include <gtk/gtk.h>
 	#include <gdk/gdk.h>
 #elif android
-	//idk
+	#include <SDL3/SDL_system.h>
 #else
 	#error "Operating system not detected or unsupported."
 #endif
@@ -263,6 +263,14 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 
 	// Get documents path
 	const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
+	if(path == NULL){
+		path = SDL_GetUserFolder(SDL_FOLDER_HOME);
+		if(path == NULL){
+			WarnMsg("Failed to get user dir's, using current sirectory as fallback.");
+			//use SDL instead this
+			path == ".";
+		}
+	}
 	p->docsPath = path;
 	#ifdef windows
 		p->gamePath = std::string(path) + "\\My Games";

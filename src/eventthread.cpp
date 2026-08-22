@@ -59,7 +59,7 @@ enum{
 	REQUEST_MESSAGEBOX,
 	REQUEST_SETCURSORVISIBLE,
 	REQUEST_VSYNC,
-	
+
 	UPDATE_FPS,
 	UPDATE_SCREEN_RECT,
 
@@ -243,7 +243,7 @@ void EventThread::process(RGSSThreadData &rtData){
 		case SDL_EVENT_QUIT:
 			if (rtData.allowExit) {
 				terminate = true;
-				Debug() << "[EventThread::process] EventThread termination requested";
+				Debug() << "EventThread termination requested";
 			} else {
 				rtData.triedExit.set();
 			}
@@ -385,7 +385,7 @@ void EventThread::process(RGSSThreadData &rtData){
 		default :
 			/* Handle user events */
 			switch(event.type - usrIdStart){
-			case REQUEST_VSYNC: 
+			case REQUEST_VSYNC:
 				SDL_GL_SetSwapInterval(event.user.code);
 				break;
 			case REQUEST_SETFULLSCREEN :
@@ -530,7 +530,6 @@ void EventThread::setFullscreen(SDL_Window *win, bool mode){
 void EventThread::updateCursorState(bool inWindow, const SDL_Rect &screen){
 	SDL_Point pos = { mouseState.x, mouseState.y };
 	bool inScreen = inWindow && SDL_PointInRect(&pos, &screen);
-
 	if (inScreen)
 		SDL_ShowCursor();
 	else
