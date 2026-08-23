@@ -132,13 +132,13 @@ double AudioPlayback::getLengthNormalized() const {
 void AudioPlayback::addTag(const std::string tagName) {
     if (!p_track)
         return;
-    
+
     MIX_TagTrack(p_track, tagName.data());
 }
 void AudioPlayback::removeTag(const std::string tagName) {
     if (!p_track)
         return;
-    
+
     MIX_UntagTrack(p_track, tagName.data());
 }
 

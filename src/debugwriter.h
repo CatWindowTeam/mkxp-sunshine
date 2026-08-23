@@ -38,7 +38,7 @@
 
 class Debug{
 public:
-	explicit Debug(){
+	Debug() noexcept {
 	    buf << std::boolalpha;
 	}
 

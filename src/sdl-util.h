@@ -25,7 +25,7 @@ struct AtomicFlag{
 		SDL_SetAtomicInt(&atom, 0);
 	}
 
-	operator bool() const{
+	operator bool() const {
 		return SDL_GetAtomicInt(&atom);
 	}
 
@@ -131,11 +131,11 @@ public:
 			SDL_CloseIO(ops);
 	}
 
-	operator bool() const{
+	operator bool() const noexcept {
 		return ops != 0;
 	}
 
-	std::istream &stream(){
+	std::istream &stream() noexcept {
 		return s;
 	}
 

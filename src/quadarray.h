@@ -106,7 +106,7 @@ struct QuadArray{
 		draw(0, quadCount);
 	}
 
-	size_t count() const{
+	size_t count() const noexcept {
 		return quadCount;
 	}
 };

@@ -113,7 +113,7 @@ struct FlashMap{
 		dataCon.Disconnect();
 	}
 
-	Table *getData() const{
+	Table *getData() const noexcept {
 		return data;
 	}
 
@@ -167,7 +167,7 @@ struct FlashMap{
 	}
 
 private:
-	void setDirty(){
+	void setDirty() noexcept {
 		dirty = true;
 	}
 

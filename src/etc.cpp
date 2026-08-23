@@ -87,7 +87,7 @@ void Color::setAlpha(double value){
 }
 
 /* Serializable */
-int Color::serialSize() const{
+int Color::serialSize() const noexcept {
 	return 4 * 8;
 }
 
@@ -206,7 +206,7 @@ void Tone::setGray(double value){
 }
 
 /* Serializable */
-int Tone::serialSize() const{
+int Tone::serialSize() const noexcept{
 	return 4 * 8;
 }
 
@@ -337,7 +337,7 @@ void Rect::setHeight(int value){
 	valueChanged();
 }
 
-int Rect::serialSize() const{
+int Rect::serialSize() const noexcept {
 	return 4 * 4;
 }
 

@@ -33,14 +33,11 @@
 
 class Disposable{
 public:
-	Disposable()
-	    : disposed(false),
-	      link(this)
-	{
+	Disposable() : disposed(false), link(this){
 		shState->graphics().addDisposable(this);
 	}
 
-	virtual ~Disposable(){
+	virtual ~Disposable() noexcept {
 		shState->graphics().remDisposable(this);
 	}
 
@@ -53,7 +50,7 @@ public:
 		wasDisposed();
 	}
 
-	bool isDisposed() const{
+	bool isDisposed() const noexcept {
 		return disposed;
 	}
 

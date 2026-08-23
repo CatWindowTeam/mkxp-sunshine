@@ -94,7 +94,7 @@ public:
 
 	/* Sets initial reference without copying by value,
 	 * use at construction */
-	void setInitFont(Font *value);
+	void setInitFont(Font *value) noexcept;
 
 	/* <internal> */
 	TEXFBO &getGLTypes();

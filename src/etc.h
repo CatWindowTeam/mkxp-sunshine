@@ -65,7 +65,7 @@ struct Color : public Serializable{
 	double getAlpha() const { return alpha; }
 
 	/* Serializable */
-	int serialSize() const;
+	int serialSize() const noexcept ;
 	void serialize(char *buffer) const;
 	static Color *deserialize(const char *data, int len);
 
@@ -115,7 +115,7 @@ struct Tone : public Serializable{
 	double getGray()  const { return gray;  }
 
 	/* Serializable */
-	int serialSize() const;
+	int serialSize() const noexcept;
 	void serialize(char *buffer) const;
 	static Tone *deserialize(const char *data, int len);
 
@@ -172,7 +172,7 @@ struct Rect : public Serializable{
 	int getHeight() const { return height; }
 
 	/* Serializable */
-	int serialSize() const;
+	int serialSize() const noexcept;
 	void serialize(char *buffer) const;
 	static Rect *deserialize(const char *data, int len);
 

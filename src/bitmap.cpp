@@ -984,7 +984,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 			outline = TTF_RenderText_Blended(font, str, SDL_strlen(str), co);
 
 		p->ensureFormat(outline, SDL_PIXELFORMAT_ABGR8888);
-		SDL_Rect outRect = {OUTLINE_SIZE, OUTLINE_SIZE, txtSurf->w, txtSurf->h}; 
+		SDL_Rect outRect = {OUTLINE_SIZE, OUTLINE_SIZE, txtSurf->w, txtSurf->h};
 
 		SDL_SetSurfaceBlendMode(txtSurf, SDL_BLENDMODE_BLEND);
 		SDL_BlitSurface(txtSurf, NULL, outline, &outRect);
@@ -1201,19 +1201,19 @@ IntRect Bitmap::textSize(const char *str){
 
 DEF_ATTR_RD_SIMPLE(Bitmap, Font, Font&, *p->font)
 
-void Bitmap::setFont(Font &value){
+void Bitmap::setFont(Font &value) {
 	*p->font = value;
 }
 
-void Bitmap::setInitFont(Font *value){
+void Bitmap::setInitFont(Font *value) noexcept {
 	p->font = value;
 }
 
-TEXFBO &Bitmap::getGLTypes(){
+TEXFBO &Bitmap::getGLTypes() {
 	return p->gl;
 }
 
-SDL_Surface *Bitmap::megaSurface() const{
+SDL_Surface *Bitmap::megaSurface() const {
 	return p->megaSurface;
 }
 

@@ -98,7 +98,7 @@ public:
 		size--;
 	}
 
-	void clear(){
+	void clear() noexcept {
 		remove(root);
 		root.prev = &root;
 		root.next = &root;
@@ -114,19 +114,19 @@ public:
 		return node->data;
 	}
 
-	IntruListLink<T> *begin(){
+	IntruListLink<T> *begin() noexcept {
 		return root.next;
 	}
 
-	IntruListLink<T> *end(){
+	IntruListLink<T> *end() noexcept {
 		return &root;
 	}
 
-	bool isEmpty() const{
+	bool isEmpty() const noexcept {
 		return root.next == &root;
 	}
 
-	int getSize() const{
+	int getSize() const noexcept {
 		return size;
 	}
 };

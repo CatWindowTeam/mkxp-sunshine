@@ -273,7 +273,7 @@ struct NormValue{
 		return unNorm == clamp(value, 0, 255);
 	}
 
-	operator int() const{
+	operator int() const noexcept {
 		return unNorm;
 	}
 };

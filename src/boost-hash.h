@@ -46,11 +46,11 @@ public:
 		return (iter != p.cend());
 	}
 
-	inline void insert(const K &key, const V &value){
+	inline void insert(const K &key, const V &value) noexcept {
 		p.insert(PairType(key, value));
 	}
 
-	inline void remove(const K &key){
+	inline void remove(const K &key) noexcept {
 		p.erase(key);
 	}
 
@@ -72,15 +72,15 @@ public:
 		return iter->second;
 	}
 
-	inline V &operator[](const K &key){
+	inline V &operator[](const K &key) noexcept {
 		return p[key];
 	}
 
-	inline const_iterator cbegin() const{
+	inline const_iterator cbegin() const noexcept{
 		return p.cbegin();
 	}
 
-	inline const_iterator cend() const{
+	inline const_iterator cend() const noexcept {
 		return p.cend();
 	}
 };
@@ -100,19 +100,19 @@ public:
 		return (iter != p.cend());
 	}
 
-	inline void insert(const K &key){
+	inline void insert(const K &key) noexcept {
 		p.insert(key);
 	}
 
-	inline void remove(const K &key){
+	inline void remove(const K &key) noexcept{
 		p.erase(key);
 	}
 
-	inline const_iterator cbegin() const{
+	inline const_iterator cbegin() const noexcept{
 		return p.cbegin();
 	}
 
-	inline const_iterator cend() const{
+	inline const_iterator cend() const noexcept{
 		return p.cend();
 	}
 };
