@@ -263,7 +263,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 
 	// Get documents path
 #ifdef mkxp_android
-	const char* path = ".";
+	const char* path = "/sdcard/Documents";
 #else
 	const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
 	if(path == NULL){
