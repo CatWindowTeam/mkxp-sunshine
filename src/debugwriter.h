@@ -66,10 +66,10 @@ public:
 
 	~Debug() noexcept {
 #ifdef __ANDROID__
-		//TODO: Linking error
-		//__android_log_write(ANDROID_LOG_DEBUG, "sunshine", buf.str().c_str());
 		#ifdef TERMUX
 			std::cout << buf.view() << '\n';
+		#else
+			__android_log_write(ANDROID_LOG_DEBUG, "sunshine", buf.str().c_str());
 		#endif
 #elif __EMSCRIPTEN__
 		emscripten_console_log(result.view().c_str());

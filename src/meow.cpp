@@ -40,7 +40,7 @@
 #include "sunshine.h"
 #ifdef unix_like
 	#include <gtk/gtk.h>
-#elif android
+#elif mkxp_android
 	#include <android/trace.h>
 	#include <android/api-level.h>
 #elif web
@@ -271,7 +271,7 @@ void crash_screen(SDL_Window* win){
 			if(SDL_getenv("XDG_CURRENT_DESKTOP") != nullptr){
 				o << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << SDL_getenv("XDG_CURRENT_DESKTOP") << endl;
 			}
-		#elif android
+		#elif mkxp_android
 			o << "Android API version: " << android_get_device_api_level() << endl;
 			if(!is_privacy_crashdump_enabled){
 				o << "Is ChromeBook? " << SDL_IsChromebook() << endl;
@@ -279,7 +279,6 @@ void crash_screen(SDL_Window* win){
 				o << "Is Tablet? " << SDL_IsTablet() << endl;
 				o << "Is Samsung DeX? " << SDL_IsDeXMode() << endl;
 				o << "Is TV? " << SDL_IsTV() << endl;
-				o << "Is Ubuntu Touch? " << SDL_IsUbuntuTouch() << endl;
 			}
 		#elif web
 			o << "Emscripten start address of the stack: " << emscripten_stack_get_base() << endl;
@@ -367,8 +366,10 @@ void ErrorMsg(const char *fmt, ...) {
     SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
     va_end(args);
 
+    Debug() << "[ERRORMSG]" << buf;
     SDL_snprintf(crash_message, sizeof(crash_message), "%s", buf);
-    show_crash_screen = true;
+    show_crash_sceen = true;
+    SDL_free(buf);
 }
 
 void ErrorMsg(Exception::Type t, const char *fmt, ...) {
@@ -386,9 +387,10 @@ void ErrorMsg(Exception::Type t, const char *fmt, ...) {
     SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
     va_end(args);
 
+    Debug() << "[ERRORMSG]" << buf;
     SDL_snprintf(crash_message, sizeof(crash_message), "%s", buf);
     get_reason_and_solution(t);
-    show_crash_screen = true;
+    show_crash_sceen = true;
     SDL_free(buf);
 }
 

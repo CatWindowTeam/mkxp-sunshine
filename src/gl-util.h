@@ -72,7 +72,7 @@ namespace TEX{
 	}
 
 	static inline void uploadImage(GLsizei width, GLsizei height, const void *data, GLenum format){
-		gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 	}
 
 	static inline void uploadSubImage(GLint x, GLint y, GLsizei width, GLsizei height, const void *data, GLenum format){
@@ -80,7 +80,7 @@ namespace TEX{
 	}
 
 	static inline void allocEmpty(GLsizei width, GLsizei height){
-		gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_HALF_FLOAT, 0);
+		gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	}
 
 	static inline void setRepeat(bool mode){

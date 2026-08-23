@@ -32,7 +32,7 @@
 	#include <dlfcn.h>
 	#include <gtk/gtk.h>
 	#include <gdk/gdk.h>
-#elif android
+#elif mkxp_android
 	#include <SDL3/SDL_system.h>
 #else
 	#error "Operating system not detected or unsupported."
@@ -179,7 +179,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 #elif unix_like
 	//TODO: FIX IT
 	p->os = "linux";
-#elif android
+#elif mkxp_android
 	#ifdef TERMUX
 		p->os = "linux";
 	#else
@@ -250,7 +250,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 		else
 			p->userName = pwd->pw_name;
 	}
-	#elif android
+	#elif mkxp_android
 		p->userName = "Player";
 	#endif
 
@@ -262,15 +262,18 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 #endif
 
 	// Get documents path
+#ifdef mkxp_android
+	const char* path = ".";
+#else
 	const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
 	if(path == NULL){
 		path = SDL_GetUserFolder(SDL_FOLDER_HOME);
 		if(path == NULL){
 			WarnMsg("Failed to get user dir's, using current sirectory as fallback.");
-			//use SDL instead this
-			path == ".";
+			path = ".";
 		}
 	}
+#endif
 	p->docsPath = path;
 	#ifdef windows
 		p->gamePath = std::string(path) + "\\My Games";

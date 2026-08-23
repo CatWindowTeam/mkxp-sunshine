@@ -471,6 +471,8 @@ end:
 			isCached = true;
 		}
 		MacDesktop::ChangeBackground(shState->config().gameFolder + path, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, (color & 0xFF) / 255.0);
+	#elif mkxp_android
+		return Qnil;
 	#else
 		char gameDir[PATH_MAX];
 		if (getcwd(gameDir, sizeof(gameDir)) == NULL) {
@@ -649,6 +651,8 @@ RB_METHOD(wallpaperReset){
 #else
 	#ifdef __APPLE__
 		MacDesktop::ResetBackground();
+	#elif mkxp_android
+		return Qnil;
 	#else
 		desktopEnvironmentInit();
 		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {

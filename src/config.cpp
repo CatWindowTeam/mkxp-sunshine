@@ -145,8 +145,7 @@ void Config::read(int argc, char *argv[]){
 	SE.sourceCount = clamp(SE.sourceCount, 1, 64);
 	#if defined(__ANDROID__) && !defined(TERMUX)
 	commonDataPath = prefPath(SDL_GetAndroidInternalStoragePath(), "/SunshineSaves");
-	gameFolder = "";
-	gameFolder.append(SDL_GetAndroidInternalStoragePath()).append("/Sunshine");
+	gameFolder = "/sdcard/Sunshine";
 	#else
 	commonDataPath = prefPath(".", "Sunshine");
 	if(pancakes){

@@ -8,7 +8,7 @@
 #if defined _WIN32
 #define OS_W32
 #include <shlwapi.h>
-#elif unix_like
+#elif defined(unix_like) || defined(mkxp_android)
 	#define LINUX
 	#ifdef __APPLE__
 		#define OS_OSX
@@ -43,7 +43,7 @@ static volatile char message_buffer[BUFFER_SIZE];
 static volatile bool active = false;
 static volatile int message_len = 0;
 
-#ifdef unix_like
+#if defined(unix_like) || defined(mkxp_android)
 	static std::string NIKO_PIPE_PATH = std::string(getpwuid(getuid())->pw_dir) + "/.oneshot-niko-pipe";
 	static volatile int out_pipe = -1;
 	void niko_cleanup_pipe(){
@@ -98,7 +98,7 @@ RB_METHOD(nikoPrepare){
 	//SDL_VERSION(&syswindow.version);
 	//SDL_GetWindowWMInfo(shState->rtData().window, &syswindow);
 
-#ifdef unix_like
+#if defined(unix_like) || defined(mkxp_android)
 	char path[PATH_MAX];
 	std::string journal;
 
@@ -197,7 +197,7 @@ RB_METHOD(nikoStart){
 
 void nikoBindingInit(){
 	mutex = SDL_CreateMutex();
-#if unix_like
+#if defined(unix_like) || defined(mkxp_android)
 	mkfifo(NIKO_PIPE_PATH.c_str(), 0666);
 	atexit(niko_cleanup_pipe);
 #endif

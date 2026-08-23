@@ -307,6 +307,7 @@ void graphicsBindingInit(){
 	_rb_define_module_function(module, "transition", graphicsTransition);
 	_rb_define_module_function(module, "frame_reset", graphicsFrameReset);
 	_rb_define_module_function(module, "vsync_mode=", graphicsSetVsync);
+	_rb_define_module_function(module, "setVsync", graphicsSetVsync);
 	_rb_define_module_function(module, "__reset__", graphicsReset);
 
 	// Variables

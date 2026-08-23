@@ -197,6 +197,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_compile_options(${LINUXPKGS_CFLAGS_OTHER})
     list(APPEND PLATFORM_LIBRARIES ${LINUXPKGS_LDFLAGS})
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
+    list(APPEND PLATFORM_LIBRARIES log)
     if(TERMUX)
     	find_package(PkgConfig REQUIRED)
     	pkg_check_modules(ANDROIDPKGS REQUIRED gtk+-3.0 libxfconf-0)
@@ -409,14 +410,16 @@ endif()
 
 if(ANDROID)
 	if(TERMUX)
-		add_executable(${PROJECT_NAME}
+		set(APP_TARGET ${PROJECT_NAME})
+		add_executable(${APP_TARGET}
                 	${MAIN_HEADERS}
                 	${MAIN_SOURCE}
                 	${BINDING_HEADERS}
                 	${BINDING_SOURCE}
                 	${EMBEDDED_SOURCE})
 	else()
-		add_library(main SHARED
+		set(APP_TARGET main)
+		add_library(${APP_TARGET} SHARED
                 	${MAIN_HEADERS}
                 	${MAIN_SOURCE}
                 	${BINDING_HEADERS}
@@ -424,7 +427,8 @@ if(ANDROID)
                 	${EMBEDDED_SOURCE})
 	endif()
 else()
-	add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
+	set(APP_TARGET ${PROJECT_NAME})
+	add_executable(${APP_TARGET} MACOSX_BUNDLE WIN32
 		${MAIN_HEADERS}
 		${MAIN_SOURCE}
 		${BINDING_HEADERS}
@@ -435,7 +439,7 @@ endif()
 if(NOT DEBUG)
 	if(ipo_supported)
 	    set_property(
-	        TARGET ${PROJECT_NAME}
+	        TARGET ${APP_TARGET}
 	        PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
 	    )
 	else()
@@ -444,21 +448,35 @@ if(NOT DEBUG)
 endif()
 
 if(DEVBUILD)
-	target_compile_definitions(${PROJECT_NAME} PRIVATE DEVBUILD)
+	target_compile_definitions(${APP_TARGET} PRIVATE DEVBUILD)
 endif()
-target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION_STRING="${VERSION_STRING}")
+target_compile_definitions(${APP_TARGET} PRIVATE VERSION_STRING="${VERSION_STRING}")
 if(TERMUX)
-	target_compile_definitions(${PROJECT_NAME} PRIVATE TERMUX=1)
+	target_compile_definitions(${APP_TARGET} PRIVATE TERMUX=1)
 endif()
 
 find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)
-find_package(SDL3 CONFIG REQUIRED)
-find_package(SDL3_image CONFIG REQUIRED)
-find_package(SDL3_mixer CONFIG REQUIRED REQUIRED)
-find_package(SDL3_ttf CONFIG REQUIRED)
-find_package(SDL3_net REQUIRED)
-find_package(Boost REQUIRED COMPONENTS program_options chrono)
+if(NOT TARGET SDL3::SDL3)
+	find_package(SDL3 CONFIG REQUIRED)
+endif()
+if(NOT TARGET SDL3_image::SDL3_image)
+	find_package(SDL3_image CONFIG REQUIRED)
+endif()
+if(NOT TARGET SDL3_mixer::SDL3_mixer)
+	find_package(SDL3_mixer CONFIG REQUIRED)
+endif()
+if(NOT TARGET SDL3_ttf::SDL3_ttf)
+	find_package(SDL3_ttf CONFIG REQUIRED)
+endif()
+if(NOT TARGET SDL3_net::SDL3_net)
+	find_package(SDL3_net REQUIRED)
+endif()
+if(ANDROID)
+	find_package(Boost REQUIRED COMPONENTS program_options chrono CONFIG)
+else()
+	find_package(Boost REQUIRED COMPONENTS program_options chrono)
+endif()
 find_package(PhysFS)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
@@ -466,17 +484,21 @@ find_package(Ruby 3.0 REQUIRED COMPONENTS Development)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
+target_compile_definitions(${APP_TARGET} PRIVATE ${DEFINES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE src include ${PIXMAN_INCLUDE_DIR} ${SIGC2_INCLUDE_DIRS}
-${Ruby_INCLUDE_DIRS} Boost::boost ${Boost_INCLUDE_DIRS} 
-${ZLIB_INCLUDE_DIRS} SDL3_mixer::SDL3_mixer SDL3_net::SDL3_net)
+target_include_directories(${APP_TARGET} PRIVATE src include ${PIXMAN_INCLUDE_DIR} ${SIGC2_INCLUDE_DIRS}
+${Ruby_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${PHYSFS_INCLUDE_DIR}
+${ZLIB_INCLUDE_DIRS})
+target_link_directories(${APP_TARGET} PRIVATE ${SIGC2_LIBRARY_DIRS})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image 
-SDL3_mixer::SDL3_mixer SDL3_ttf::SDL3_ttf SDL3_net::SDL3_net
-physfs ${PIXMAN_LIBRARY} ${SIGC2_LIBRARIES} ${PLATFORM_LIBRARIES} 
+target_link_libraries(${APP_TARGET} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image
+SDL3_mixer::SDL3_mixer SDL3_ttf::SDL3_ttf
+${PHYSFS_LIBRARY} ${PIXMAN_LIBRARY} ${SIGC2_LIBRARIES} ${PLATFORM_LIBRARIES}
 ${Ruby_LIBRARIES} Boost::boost Boost::chrono ${Boost_LIBRARIES}
 ZLIB::ZLIB ${PLATFORM_LIBS})
+
+target_include_directories(${APP_TARGET} PRIVATE SDL3_net::SDL3_net)
+target_link_libraries(${APP_TARGET} PRIVATE SDL3_net::SDL3_net)
 
 if(STEAM)
 	list(APPEND MAIN_HEADERS
