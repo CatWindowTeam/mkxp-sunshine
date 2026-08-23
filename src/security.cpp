@@ -3,7 +3,6 @@
 #include "meow.h"
 #include "debugwriter.h"
 #include <SDL3/SDL_system.h>
-// this component is needed to protect users from mod attacks.
 
 #ifndef __ANDROID__
 #ifdef __linux__
@@ -25,44 +24,31 @@
 	SCMP_SYS(ptrace),
 	SCMP_SYS(process_vm_writev),
 	SCMP_SYS(process_vm_readv),
-	SCMP_SYS(process_madvise), 
+	SCMP_SYS(process_madvise),
 	SCMP_SYS(pidfd_getfd),
 	SCMP_SYS(kcmp),
 	SCMP_SYS(delete_module),
 	SCMP_SYS(init_module),
-	SCMP_SYS(init_module),
 	SCMP_SYS(chroot),
 	SCMP_SYS(reboot),
-	SCMP_SYS(unshare), 
+	SCMP_SYS(unshare),
 	SCMP_SYS(umount2),
 	SCMP_SYS(umount),
+	SCMP_SYS(mount),
 	SCMP_SYS(setns),
 	SCMP_SYS(sethostname),
 	SCMP_SYS(setdomainname),
-	SCMP_SYS(bpf),
 	SCMP_SYS(quotactl_fd),
-	SCMP_SYS(quotactl), 
+	SCMP_SYS(quotactl),
 	SCMP_SYS(move_mount),
 	SCMP_SYS(mount_setattr),
-	SCMP_SYS(mount),
-	SCMP_SYS(process_vm_readv),
-	SCMP_SYS(process_vm_writev),
-	SCMP_SYS(ptrace),
 	SCMP_SYS(swapon),
 	SCMP_SYS(swapoff),
-	SCMP_SYS(settimeofday),
-	SCMP_SYS(sethostname),
-	SCMP_SYS(umount),
-	SCMP_SYS(umount2),
 	SCMP_SYS(vm86old),
 	SCMP_SYS(vm86),
 	SCMP_SYS(setgroups),
 	SCMP_SYS(setgid),
-	SCMP_SYS(setfsuid), 
-	SCMP_SYS(setfsgid),
-	SCMP_SYS(setdomainname),
 	SCMP_SYS(setns),
-	SCMP_SYS(unshare),
 	#ifdef __ARM_NR
 	SCMP_SYS(breakpoint),
 	#endif

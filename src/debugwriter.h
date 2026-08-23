@@ -72,7 +72,7 @@ public:
 			std::cout << buf.view() << '\n';
 		#endif
 #elif __EMSCRIPTEN__
-		emscripten_console_log(result.view().c_str());
+		emscripten_console_log(buf.view().c_str());
 #else
 		std::cout << buf.view() << '\n';
 #endif

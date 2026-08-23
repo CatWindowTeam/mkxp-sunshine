@@ -301,6 +301,7 @@ int main(int argc, char *argv[]){
 	SDL_GetWindowSize(win, &winW, &winH);
 	rtData.windowSizeMsg.post(Vec2i(winW, winH));
 
+	/* start modloader */
 	ModLoader(conf, win);
 	/* Load and post key bindings */
 	rtData.bindingUpdateMsg.post(loadBindings(conf));
@@ -353,6 +354,5 @@ int main(int argc, char *argv[]){
 #ifdef STEAM
 	STEAMSHIM_deinit();
 #endif
-
 	return 0;
 }
