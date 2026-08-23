@@ -353,8 +353,7 @@ endif()
 if(SANITIZERS)
 	# ASan + Ruby = SEGFAULT
 	set(SANITIZERS "undefined,leak,shift,shift-base,shift-exponent,integer-divide-by-zero,unreachable,vla-bound,null,signed-integer-overflow,bounds,bounds-strict,alignment,object-size,float-divide-by-zero,float-cast-overflow,nonnull-attribute,returns-nonnull-attribute,bool,enum,vptr,pointer-overflow,builtin,pointer-subtract,pointer-compare")
-	check_option(SANITIZERS_OPTIONS -fsanitize=${SANITIZERS})
-	add_compile_options(${SANITIZERS_OPTIONS})
+	add_compile_options(-fsanitize=${SANITIZERS} -static-libhwasan -static-liblsan -static-libtsan -static-libubsan)
 	add_link_options(${SANITIZERS_OPTIONS})
 endif()
 if(DEBUG)
@@ -363,7 +362,8 @@ if(DEBUG)
 		-fno-omit-frame-pointer
 		-Og
 		-fcheck-new
-		-fstrict-flex-arrays=3)
+		-fstrict-flex-arrays=3
+		-fprofile)
 	add_compile_options(${OPTIONS_DEBUG})
 
 	if("${ARCH_DEBUG}" STREQUAL "")
@@ -386,10 +386,20 @@ else()
 	-frename-registers
 	-fuse-linker-plugin
 	-fipa-pta
+	-fipa-icf
 	-fext-dce
 	-fstrict-enums
 	-fimplicit-constexpr
-	-fomit-frame-pointer)
+	-fomit-frame-pointer
+	-fno-ident
+	-fvirtual-function-elimination
+	-fwhole-program-vtables
+	-fweb
+	-fuse-linker-plugin
+	-mrecip
+	-fno-unique-section-names
+	-fira-loop-pressure
+	-fira-hoist-pressure)
 	add_compile_options(${OPTIONS_RELEASE})
 
 	add_link_options(-Wl,-O2
@@ -399,6 +409,13 @@ else()
 	-Wl,--strip-all
 	-Wl,--no-copy-dt-needed-entries)
 
+	#Platform Specific
+	if(LINUX)
+		check_option(OPTIONS_RELEASE_LINUX -fno-plt)
+		add_compile_options(${OPTIONS_RELEASE_LINUX})
+	endif()
+
+	# Loading release options specific for cpu arch from toolchain file
 	if("${ARCH_RELEASE}" STREQUAL "")
 		message(STATUS "ARCH_RELEASE empty")
 	else()

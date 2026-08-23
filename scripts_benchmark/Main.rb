@@ -1,8 +1,10 @@
 c = 0
+Graphics.frame_rate = 1000
 while c < 1000
 	c = c + 1
-	puts c
-	Graphics.frame_reset
+	Font.default_size = c
+	puts CTime.day
+	puts CTime.hour
 	Graphics.update
-  	Font.default_size = c
+	puts c
 end
