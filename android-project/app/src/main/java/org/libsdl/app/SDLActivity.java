@@ -384,10 +384,6 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         Log.v(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT >= 31 /* Android 12 (S) */) {
-            getSplashScreen().setOnExitAnimationListener(splashScreenView -> splashScreenView.remove());
-        }
-
         if (Build.VERSION.SDK_INT >= 30 /* Android 11 (R) */) {
             getWindow().setDecorFitsSystemWindows(false);
         }
