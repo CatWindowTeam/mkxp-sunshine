@@ -162,8 +162,6 @@ int main(int argc, char *argv[]){
 		SDL_SetHint(SDL_HINT_WINDOWS_RAW_KEYBOARD, "1");
 	#elif android
 		SDL_SetHint(SDL_HINT_ANDROID_ALLOW_PERSISTENT_FOLDER_ACCESS, "1");
-	#elif vita
-		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
 	#endif
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){

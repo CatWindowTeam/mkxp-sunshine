@@ -1,6 +1,5 @@
 #include <SDL3_mixer/SDL_mixer.h>
 #include <SDL3/SDL_messagebox.h>
-#include <SDL3/SDL_dialog.h>
 #include <SDL3/SDL_version.h>
 #include <SDL3/SDL_platform.h>
 #include <SDL3/SDL_rect.h>
@@ -23,7 +22,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <ios>
 #include <ruby/version.h>
 #include <ruby/internal/interpreter.h>
 #undef vsnprintf
@@ -40,10 +38,7 @@
 #ifdef unix_like
 	#include <gtk/gtk.h>
 #elif android
-	#include <android/trace.h>
 	#include <android/api-level.h>
-#elif web
-	#include <emscripten/console.h>
 #endif
 #include "crash.png.xxd"
 using namespace std;
@@ -273,21 +268,6 @@ void crash_screen(SDL_Window* win){
 			}
 		#elif android
 			o << "Android API version: " << android_get_device_api_level() << endl;
-			if(!is_privacy_crashdump_enabled){
-				o << "Is ChromeBook? " << SDL_IsChromebook() << endl;
-				o << "Is Phone? " << SDL_IsPhone() << endl;
-				o << "Is Tablet? " << SDL_IsTablet() << endl;
-				o << "Is Samsung DeX? " << SDL_IsDeXMode() << endl;
-				o << "Is TV? " << SDL_IsTV() << endl;
-				o << "Is Ubuntu Touch? " << SDL_IsUbuntuTouch() << endl;
-			}
-		#elif web
-			o << "Emscripten start address of the stack: " << emscripten_stack_get_base() << endl;
-			o << "Emscripten end address of the stack: " << emscripten_stack_get_end() << endl;
-			o << "Emscripten current stack pointer: " << emscripten_stack_get_current() << endl;
-			o << "Emscripten number of free bytes left on stack: " << emscripten_stack_get_free() << endl;
-		#elif psp
-			o << "PSPdev MIPS Stack Trace: " << pspDebugGetStackTrace() << endl;
 		#endif
 
 		o << "\n[Hardware]\n";
@@ -345,8 +325,8 @@ void crash_screen(SDL_Window* win){
 	    	SDL_RenderDebugTextFormat(ren, 10, 55, "Possible solution: %s", crash_possible_solution);
 	    	SDL_RenderDebugTextFormat(ren, 10, 65, "Path: %s%s", SDL_GetCurrentDirectory(), file.c_str());
 	    	SDL_RenderDebugTextFormat(ren, 10, 75, "Crashdump privacy: %s", is_privacy_crashdump_enabled ? "enabled" : "disabled");
-	    	SDL_RenderDebugTextFormat(ren, 10, 85, "If you are sure that the problem is not in your modifications,");
-	    	SDL_RenderDebugTextFormat(ren, 10, 95, "your hands or in your device - please report the bug to the developers");
+	    	SDL_RenderDebugTextFormat(ren, 10, 85, "If you are sure that the problem is not in your modifications, your");
+	    	SDL_RenderDebugTextFormat(ren, 10, 95, "hands or in your device - please report the bug to the developers");
 		if(show_){
 			show_ = false;
 			SDL_RenderDebugTextFormat(ren, 10, 105, "_");

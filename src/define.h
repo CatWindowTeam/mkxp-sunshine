@@ -1,3 +1,4 @@
+#pragma once
 #include <SDL3/SDL_platform_defines.h>
 #if defined(SDL_PLATFORM_AIX) || defined(SDL_PLATFORM_BSDI) || defined(SDL_PLATFORM_FREEBSD) || \
     defined(SDL_PLATFORM_HPUX) || defined(SDL_PLATFORM_HURD) || defined(SDL_PLATFORM_IRIX) || \
@@ -11,14 +12,6 @@
 	#define windows 1
 #endif
 
-#if defined(SDL_PLATFORM_XBOXSERIES) || defined(SDL_PLATFORM_XBOXONE)
-	#define xbox 1
-#endif
-
-#if SDL_PLATFORM_3DS
-	#define 3ds 1
-#endif
-
 #if SDL_PLATFORM_ANDROID
 	#define android 1
 #endif
@@ -30,32 +23,3 @@
 #if SDL_PLATFORM_EMSCRIPTEN
 	#define web 1
 #endif
-
-#if SDL_PLATFORM_HAIKU
-	#define haiku 1
-#endif
-
-#if SDL_PLATFORM_IOS
-	#define ios 1
-#endif
-
-#if defined(SDL_PLATFORM_OS2)
-	#define os2 1
-#endif
-
-#if SDL_PLATFORM_PSP
-	#define psp 1
-#endif
-
-#if SDL_PLATFORM_QNXNTO
-	#define qnx 1
-#endif
-
-#if SDL_PLATFORM_VITA
-	#define vita 1
-#endif
-
-#if SDL_PLATFORM_RISCOS
-	#define riscos 1
-#endif
-
