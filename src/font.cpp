@@ -131,8 +131,7 @@ TTF_Font *SharedFontState::getFont(std::string family, unsigned int size){
 	}else{
 		/* Use 'other' path as alternative in case
 		 * we have no 'regular' styled font asset */
-		const char *path = !req.regular.empty()
-		                 ? req.regular.c_str() : req.other.c_str();
+		const char *path = !req.regular.empty() ? req.regular.c_str() : req.other.c_str();
 
 		shState->fileSystem().openReadRaw(ops, path);
 	}

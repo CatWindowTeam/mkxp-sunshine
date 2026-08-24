@@ -60,11 +60,14 @@ public:
 
 	template<typename T>
 	Debug &operator<<(const VALUE &v){
-		buf << rb_inspect(v);
+		if(!is_ruby_initialized){
+			buf << "[RB_UNINITIALIZED_WARN]\n";
+		}
+		buf << StringValueCStr(rb_inspect(v));
 		return *this;
 	}
 
-	~Debug() noexcept {
+	~Debug() {
 #ifdef __ANDROID__
 		//TODO: Linking error
 		//__android_log_write(ANDROID_LOG_DEBUG, "sunshine", buf.str().c_str());
@@ -72,7 +75,7 @@ public:
 			std::cout << buf.view() << '\n';
 		#endif
 #elif __EMSCRIPTEN__
-		emscripten_console_log(buf.view().c_str());
+		emscripten_console_log(buf.str().c_str());
 #else
 		std::cout << buf.view() << '\n';
 #endif

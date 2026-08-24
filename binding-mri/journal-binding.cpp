@@ -53,7 +53,6 @@ RB_METHOD(journalSetLang){
 	RB_UNUSED_PARAM;
 	const char *lang;
 	rb_get_args(argc, argv, "z", &lang RB_ARG_END);
-	printf(lang);
 	return Qnil;
 }
 
