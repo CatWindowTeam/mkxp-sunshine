@@ -1,3 +1,4 @@
+#include <SDL3_mixer/SDL_mixer.h>
 #include <SDL3/SDL_messagebox.h>
 #include <SDL3/SDL_dialog.h>
 #include <SDL3/SDL_version.h>
@@ -12,10 +13,8 @@
 #include <SDL3/SDL_system.h>
 #include <SDL3/SDL_cpuinfo.h>
 #include "meow.h"
-#include "eventthread.h"
 #include "exception.h"
 #include "config.h"
-#include "gl-debug.h"
 #include "gl-fun.h"
 #include "debugwriter.h"
 #include "define.h"
@@ -196,6 +195,7 @@ void crash(Exception::Type t, const char *fmt, ...) {
 void crash_screen(SDL_Window* win){
 	// Skip Crash screen if failed initialize
 	static bool skip_crash_screen = false;
+	static bool show_ = true;
 	//creating render
 	SDL_Renderer* ren = SDL_CreateRenderer(win, NULL);
 	if (ren == nullptr) {
@@ -332,20 +332,29 @@ void crash_screen(SDL_Window* win){
 	        	if (e.type == SDL_EVENT_QUIT) quit = true;
 	    	}
 
-			SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 	    	SDL_RenderClear(ren);
+		SDL_SetRenderScale(ren, 1.0f, 1.0f);
 	    	SDL_RenderTexture(ren, tex, NULL, &dst);
-			SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-	    	SDL_RenderDebugTextFormat(ren, 10, 10, "World machine crashed, crashdump created in game directory");
-	    	SDL_RenderDebugTextFormat(ren, 10, 20, "%s", crash_message);
-	    	SDL_RenderDebugTextFormat(ren, 10, 30, "Possible reason: %s", crash_reason);
-	    	SDL_RenderDebugTextFormat(ren, 10, 40, "Possible solution: %s", crash_possible_solution);
-	    	SDL_RenderDebugTextFormat(ren, 10, 50, "Path: %s%s", SDL_GetCurrentDirectory(), file.c_str());
-	    	SDL_RenderDebugTextFormat(ren, 10, 60, "Crashdump privacy: %s", is_privacy_crashdump_enabled ? "enabled" : "disabled");
-	    	SDL_RenderDebugTextFormat(ren, 10, 70, "If you are sure that the problem is not in your modifications,");
-	    	SDL_RenderDebugTextFormat(ren, 10, 80, "your hands or in your device - please report the bug to the developers");
+		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+		SDL_SetRenderScale(ren, 2.0f, 2.0f);
+	    	SDL_RenderDebugTextFormat(ren, 5, 5, "World machine crashed!");
+		SDL_SetRenderScale(ren, 1.0f, 1.0f);
+	    	SDL_RenderDebugTextFormat(ren, 10, 35, "%s", crash_message);
+	    	SDL_RenderDebugTextFormat(ren, 10, 45, "Possible reason: %s", crash_reason);
+	    	SDL_RenderDebugTextFormat(ren, 10, 55, "Possible solution: %s", crash_possible_solution);
+	    	SDL_RenderDebugTextFormat(ren, 10, 65, "Path: %s%s", SDL_GetCurrentDirectory(), file.c_str());
+	    	SDL_RenderDebugTextFormat(ren, 10, 75, "Crashdump privacy: %s", is_privacy_crashdump_enabled ? "enabled" : "disabled");
+	    	SDL_RenderDebugTextFormat(ren, 10, 85, "If you are sure that the problem is not in your modifications,");
+	    	SDL_RenderDebugTextFormat(ren, 10, 95, "your hands or in your device - please report the bug to the developers");
+		if(show_){
+			show_ = false;
+			SDL_RenderDebugTextFormat(ren, 10, 105, "_");
+		}else{
+			show_ = true;
+		}
 	    	SDL_RenderPresent(ren);
-	    	SDL_Delay(32);
+	    	SDL_Delay(96);
 		}
 		SDL_DestroyTexture(tex);
 		SDL_DestroyRenderer(ren);

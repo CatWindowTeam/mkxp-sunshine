@@ -63,7 +63,7 @@ public:
 		if(!is_ruby_initialized){
 			buf << "[RB_UNINITIALIZED_WARN]\n";
 		}
-		buf << StringValueCStr(rb_inspect(v));
+		buf << rb_inspect(v);
 		return *this;
 	}
 

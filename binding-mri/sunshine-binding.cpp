@@ -3,11 +3,6 @@
 #include <SDL3/SDL_gamepad.h>
 #include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_hints.h>
-#include <limits.h>
-#include "ruby/backward/cxxanyargs.hpp"
-#include "ruby/internal/arithmetic/double.h"
-#include "ruby/internal/arithmetic/int.h"
-#include "ruby/internal/intern/class.h"
 #include "security.h"
 #include "eventthread.h"
 #include "sunshine.h"
@@ -70,10 +65,10 @@ void SunshineBindingInit(){
 	rb_define_singleton_method(module, "crash_privacy=", RUBY_METHOD_FUNC(sunshineSetCrashPrivacy), 1);
 	rb_define_singleton_method(module, "wallpaper_mode=", RUBY_METHOD_FUNC(sunshineSetWallpaperMode), 1);
 	rb_define_singleton_method(module, "set_sdl_hint", RUBY_METHOD_FUNC(sunshineSetHint), 2);
-    
+
 	if (!rb_respond_to(rb_cObject, rb_intern("class")))
 	    rb_define_method(rb_cObject, "class", rb_obj_class, 0);
-	
+
 	if (!rb_respond_to(rb_cObject, rb_intern("clone")))
 	    rb_define_method(rb_cObject, "clone", RUBY_METHOD_FUNC(obj_clone), 0);
 
