@@ -1,4 +1,3 @@
-#include <SDL3_mixer/SDL_mixer.h>
 #include <SDL3/SDL_messagebox.h>
 #include <SDL3/SDL_version.h>
 #include <SDL3/SDL_platform.h>
@@ -6,7 +5,6 @@
 #include <SDL3/SDL_audio.h>
 #include <SDL3/SDL_video.h>
 #include <SDL3_image/SDL_image.h>
-#include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3/SDL_filesystem.h>
 #include <SDL3/SDL_timer.h>
 #include <SDL3/SDL_system.h>
@@ -26,7 +24,6 @@
 #include <vector>
 #include <cstdlib>
 #include <iostream>
-#include <ruby/version.h>
 #include <ruby/internal/interpreter.h>
 #undef vsnprintf
 #undef snprintf
@@ -34,10 +31,7 @@
 #define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
 #endif
 #include <boost/stacktrace.hpp>
-#include <boost/version.hpp>
-#include <zlib.h>
 #include <physfs.h>
-#include <pixman.h>
 #include "sunshine.h"
 #ifdef android
 	#include <android/api-level.h>
@@ -168,31 +162,25 @@ static void get_reason_and_solution(Exception::Type t) {
     }
 }
 
-void crash(Exception::Type t, const char *fmt, ...) {
+void crash(Exception::Type type, const char *fmt, ...){
     va_list args;
     va_start(args, fmt);
-
-    va_list args_copy;
-    va_copy(args_copy, args);
-    unsigned int len = (unsigned int)SDL_vsnprintf(NULL, 0, fmt, args_copy);
-    va_end(args_copy);
-
-    if (len >= sizeof(crash_message)) len = sizeof(crash_message) - 1;
-
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-    get_reason_and_solution(t);
+
+    get_reason_and_solution(type);
     show_crash_screen = true;
-    //Protect against segfaults
-    if(is_ruby_initialized){
-    	ruby_stop(-1);
+
+    if (is_ruby_initialized) {
+        ruby_stop(-1);
     }
 }
+
 
 // Here we prepare information that we display on crash screen and weite in crashdump later
 static std::vector<std::string> prepare_crash_info(){
 	boost::stacktrace::stacktrace trace;
-	static std::vector<std::string> c = {};
+	std::vector<std::string> c = {};
 	c.emplace_back("If you are sure that the problem is not with");
 	c.emplace_back("your device, not with your modifications, or in your hands, please");
 	c.emplace_back("report the bug to the developers");
@@ -212,9 +200,7 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back(std::string{"Last PhysFS error: "} + PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 	c.emplace_back(std::string{"Last SDL Error on current thread: "} + SDL_GetError());
 	#ifdef android
-		c.emplace_back(std::string{"Android API: "} + android_get_device_api_level());
-	#elif unix_like
-//		c.emplace_back(std::string{"Detected DE: "} + shState->oneshot().desktopEnv);
+		c.emplace_back(std::string{"Android API: "} + std::to_string(android_get_device_api_level()));
 	#endif
 	c.emplace_back("");
 	//maybe we should use C++ stacktrace?
@@ -223,11 +209,6 @@ static std::vector<std::string> prepare_crash_info(){
     		c.push_back(boost::stacktrace::to_string(frame));
 	}
 	c.emplace_back("");
-	//End, FIXIT: последние 3 END не видно
-	c.emplace_back("END");
-	c.emplace_back("END");
-	c.emplace_back("END");
-	c.emplace_back("END");
 	return c;
 }
 

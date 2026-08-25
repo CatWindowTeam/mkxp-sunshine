@@ -346,15 +346,17 @@ endif()
 if("${ARCH_COMMON}" STREQUAL "")
 	message(STATUS "ARCH_COMMON empty")
 else()
-  check_option(ARCH_COMMON_OPTIONS ${ARCH_COMMON})
-  add_compile_options(${ARCH_COMMON_OPTIONS})
+	check_option(ARCH_COMMON_OPTIONS ${ARCH_COMMON})
+	add_compile_options(${ARCH_COMMON_OPTIONS})
 endif()
 
 if(SANITIZERS)
 	# ASan + Ruby = SEGFAULT
-	set(SANITIZERS "undefined,leak,shift,shift-base,shift-exponent,integer-divide-by-zero,unreachable,vla-bound,null,signed-integer-overflow,bounds,bounds-strict,alignment,object-size,float-divide-by-zero,float-cast-overflow,nonnull-attribute,returns-nonnull-attribute,bool,enum,vptr,pointer-overflow,builtin,pointer-subtract,pointer-compare")
-	add_compile_options(-fsanitize=${SANITIZERS} -static-libhwasan -static-liblsan -static-libtsan -static-libubsan)
-	add_link_options(${SANITIZERS_OPTIONS})
+	set(SANITIZERS "undefined,leak,shift,shift-base,shift-exponent,integer-divide-by-zero,unreachable,vla-bound,null,signed-integer-overflow,bounds,alignment,object-size,float-divide-by-zero,float-cast-overflow,nonnull-attribute,returns-nonnull-attribute,bool,enum,vptr,pointer-overflow,builtin")
+	add_compile_options(-fsanitize=${SANITIZERS})
+	add_link_options(-fsanitize=${SANITIZERS})
+        check_option(SANITIZERS_OPTIONS -fsanitize-memory-track-origins=2)
+        add_compile_options(${SANITIZERS_OPTIONS})
 endif()
 if(DEBUG)
 	check_option(OPTIONS_DEBUG
@@ -363,7 +365,15 @@ if(DEBUG)
 		-Og
 		-fcheck-new
 		-fstrict-flex-arrays=3
-		-fprofile)
+		-fprofile
+		-fopt-info-vec-optimized
+		-fopt-info-vec-missed
+		-fno-optimize-sibling-calls
+		-Wall
+		-Wextra
+		-ftemplate-backtrace-limit=0
+		-fdiagnostics-show-template-tree
+		-fopt-info-all)
 	add_compile_options(${OPTIONS_DEBUG})
 
 	if("${ARCH_DEBUG}" STREQUAL "")

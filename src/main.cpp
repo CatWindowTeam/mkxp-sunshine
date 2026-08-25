@@ -72,7 +72,6 @@ int rgssThreadFun(void *userdata){
 	RGSSThreadData *threadData = static_cast<RGSSThreadData*>(userdata);
 	const Config &conf = threadData->config;
 	SDL_Window *win = threadData->window;
-	static char msg[512];
 	SDL_GLContext glCtx;
 
 	/* Setup GL context */
@@ -83,16 +82,14 @@ int rgssThreadFun(void *userdata){
 #endif
 
 	glCtx = SDL_GL_CreateContext(win);
-
 	if (!glCtx){
-		rgssThreadError(threadData, std::string(msg));
+		rgssThreadError(threadData, "Failed to create OpenGL context");
 		return 0;
 	}
 
 	try{
 		initGLFunctions();
-	}
-	catch (const Exception &exc){
+	}catch(const Exception &exc){
 		rgssThreadError(threadData, exc.msg);
 		SDL_GL_DestroyContext(glCtx);
 		return 0;
@@ -135,7 +132,6 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 		iconSrc = SDL_IOFromFile(conf.iconPath.c_str(), "rb");
 
 	SDL_Surface *iconImg = IMG_Load_IO(iconSrc, true);
-
 	if (iconImg){
 		SDL_SetWindowIcon(win, iconImg);
 		SDL_DestroySurface(iconImg);
@@ -159,19 +155,19 @@ int main(int argc, char *argv[]){
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
 		WarnMsg("Error initializing SDL: %s", SDL_GetError());
-		return 0;
+		return 1;
 	}
 
 #ifdef STEAM
 	if (!STEAMSHIM_init()){
 		WarnMsg("Could not initialize Steamworks API");
-		return 0;
+		return 1;
 	}
 #endif
 
 	if (!EventThread::allocUserEvents()){
 		WarnMsg("Error allocating SDL user events");
-		return 0;
+		return 1;
 	}
 
 #ifndef WORKDIR_CURRENT
@@ -231,14 +227,14 @@ int main(int argc, char *argv[]){
 	if (TTF_Init() == false){
 		WarnMsg("Error initializing SDL_ttf: %s", SDL_GetError());
 		SDL_Quit();
-		return 0;
+		return 1;
 	}
 
 	if (MIX_Init() == false){
 		WarnMsg("Error initializing SDL_mixer: %s", SDL_GetError());
 		TTF_Quit();
 		SDL_Quit();
-		return 0;
+		return 1;
 	}
 
 	SDL_Window *win;
@@ -253,7 +249,7 @@ int main(int argc, char *argv[]){
 		MIX_Quit();
 		TTF_Quit();
 		SDL_Quit();
-		return 0;
+		return 	;
 	}
 	/* OSX and Windows have their own native ways of
 	 * dealing with icons; don't interfere with them */
@@ -275,7 +271,7 @@ int main(int argc, char *argv[]){
 		MIX_Quit();
 		TTF_Quit();
 		SDL_Quit();
-		return 0;
+		return 1;
 	}
 
 	SDL_DisplayMode mode;
