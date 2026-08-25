@@ -3,6 +3,7 @@
 #include <SDL3/SDL_gamepad.h>
 #include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_hints.h>
+#include <SDL3/SDL_locale.h>
 #include "security.h"
 #include "eventthread.h"
 #include "sunshine.h"
@@ -74,4 +75,11 @@ void SunshineBindingInit(){
 
 	if (!rb_respond_to(rb_cInteger, rb_intern("times")))
 	    rb_define_method(rb_cInteger, "times", RUBY_METHOD_FUNC(int_times), 0);
+	SDL_Locale** Locale = SDL_GetPreferredLocales(NULL);
+	if(Locale == nullptr){
+		Debug() << "Failed to detect prefered Locale, using english";
+		rb_const_set(module, rb_intern("P_LOCALE"), rb_str_new_cstr("en"));
+	}else{
+		rb_const_set(module, rb_intern("P_LOCALE"), rb_str_new_cstr(Locale[0]->language));
+	}
 }

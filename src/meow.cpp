@@ -193,6 +193,9 @@ void crash(Exception::Type t, const char *fmt, ...) {
 static std::vector<std::string> prepare_crash_info(){
 	boost::stacktrace::stacktrace trace;
 	static std::vector<std::string> c = {};
+	c.emplace_back("If you are sure that the problem is not with");
+	c.emplace_back("your device, not with your modifications, or in your hands, please");
+	c.emplace_back("report the bug to the developers");
 	c.emplace_back(std::string{"VERSION: "} + VERSION_STRING);
 	c.emplace_back(std::string{"Possible reason: "} + crash_reason);
 	c.emplace_back(std::string{"Possible solution: "} + crash_possible_solution);
