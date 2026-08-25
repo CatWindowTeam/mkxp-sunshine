@@ -1,3 +1,3 @@
 #!/bin/sh
 set -euo pipefail
-curl -s https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt > assets/gamecontrollerdb.txt
+curl --parallel --tcp-nodelay --tcp-fastopen --fail -s https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt > assets/gamecontrollerdb.txt

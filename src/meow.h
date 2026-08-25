@@ -3,7 +3,6 @@
 #include <SDL3/SDL_video.h>
 #include <vector>
 #include <string>
-
 inline std::vector<std::string> logs = {};
 inline std::vector<std::string> modloader_logs = {};
 

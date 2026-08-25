@@ -50,7 +50,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 23)
-add_compile_options(-Wno-unused-parameter)
+add_compile_options(-Wno-unused-parameter -Wno-tautological-pointer-compare)
 
 # Make build more static
 if(STATIC)

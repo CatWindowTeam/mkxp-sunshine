@@ -144,7 +144,7 @@ static void mriBindingInit(){
 	wallpaperBindingInit();
 	nikoBindingInit();
 	oneshotBindingInit();
-    SunshineBindingInit();
+        SunshineBindingInit();
 	steamBindingInit();
 	shaderBindingInit();
 	ModLoaderBindingInit();
@@ -362,7 +362,6 @@ struct BacktraceData{
 static void runRMXPScripts(BacktraceData &btData){
 	const Config &conf = shState->rtData().config;
 	const std::string &scriptPack = conf.game.scripts;
-	
 	if (!shState->fileSystem().exists(scriptPack.c_str())){
 		ErrorMsg("Unable to open '%s'", scriptPack.c_str());
 		return;
@@ -383,8 +382,8 @@ static void runRMXPScripts(BacktraceData &btData){
 		ErrorMsg("Failed to read script data");
 		return;
 	}
-	
-	rb_gv_set("$RGSS_SCRIPTS", scriptArray);	
+
+	rb_gv_set("$RGSS_SCRIPTS", scriptArray);
 	long scriptCount = RARRAY_LEN(scriptArray);
 	std::string decodeBuffer;
 	decodeBuffer.resize(0x1000);
@@ -428,7 +427,7 @@ static void runRMXPScripts(BacktraceData &btData){
 	if(modloader_is_enabled){
 		for (std::set<std::string>::iterator i = preloadScripts.begin();
 			i != preloadScripts.end(); ++i){
-			    runCustomScript(*i);	
+			    runCustomScript(*i);
 			}
 	}
 
@@ -523,7 +522,8 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	file.resize(SDL_strlen(file.c_str()));
 	file = btData.scriptNames.value(file, file);
 
-	ErrorMsg("Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
+	SDL_snprintf(crash_message, sizeof(crash_message), "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
+    	show_crash_screen = true;
 }
 
 static void mriBindingExecute(){
@@ -561,7 +561,6 @@ static void mriBindingExecute(){
 		showExc(exc, btData);
 
 	shState->rtData().rqTermAck.set();
-	is_ruby_initialized = false;
 }
 
 static void mriBindingTerminate(){

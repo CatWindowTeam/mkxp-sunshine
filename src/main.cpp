@@ -37,8 +37,8 @@
 #include <fstream>
 #include <cstdlib>
 #include <filesystem>
+#include <exception>
 #include <boost/chrono.hpp>
-
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "gl-debug.h"
@@ -60,10 +60,6 @@
 	#include "steamshim/steamshim_child.h"
 #else
 	#include "gamecontrollerdb.txt.xxd"
-#endif
-
-#ifndef VERSION_STRING
-	#define VERSION_STRING "Unknown"
 #endif
 
 static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
@@ -123,12 +119,9 @@ int rgssThreadFun(void *userdata){
 
 	/* Start script execution */
 	scriptBinding->execute();
-
 	threadData->rqTermAck.set();
 	threadData->ethread->requestTerminate();
-
 	SharedState::finiInstance();
-
 	SDL_GL_DestroyContext(glCtx);
 	return 0;
 }
@@ -150,7 +143,7 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 }
 
 int main(int argc, char *argv[]){
-    startTime = boost::chrono::high_resolution_clock::now();
+        startTime = boost::chrono::high_resolution_clock::now();
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
 	SDL_SetAppMetadata("Oneshot: Sunshine", VERSION_STRING, "meow.catwindowteam.sunshine");

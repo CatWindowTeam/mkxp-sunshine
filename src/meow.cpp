@@ -11,17 +11,21 @@
 #include <SDL3/SDL_timer.h>
 #include <SDL3/SDL_system.h>
 #include <SDL3/SDL_cpuinfo.h>
+#include <SDL3/SDL_scancode.h>
 #include "meow.h"
 #include "exception.h"
 #include "config.h"
 #include "gl-fun.h"
 #include "debugwriter.h"
 #include "define.h"
+#include "sharedstate.h"
 #include <SDL3/SDL_stdinc.h>
 #include <ctime>
 #include <fstream>
 #include <string>
 #include <vector>
+#include <cstdlib>
+#include <iostream>
 #include <ruby/version.h>
 #include <ruby/internal/interpreter.h>
 #undef vsnprintf
@@ -35,9 +39,7 @@
 #include <physfs.h>
 #include <pixman.h>
 #include "sunshine.h"
-#ifdef unix_like
-	#include <gtk/gtk.h>
-#elif android
+#ifdef android
 	#include <android/api-level.h>
 #endif
 #include "crash.png.xxd"
@@ -187,10 +189,49 @@ void crash(Exception::Type t, const char *fmt, ...) {
     }
 }
 
+// Here we prepare information that we display on crash screen and weite in crashdump later
+static std::vector<std::string> prepare_crash_info(){
+	boost::stacktrace::stacktrace trace;
+	static std::vector<std::string> c = {};
+	c.emplace_back(std::string{"VERSION: "} + VERSION_STRING);
+	c.emplace_back(std::string{"Possible reason: "} + crash_reason);
+	c.emplace_back(std::string{"Possible solution: "} + crash_possible_solution);
+	c.emplace_back(std::string{"MSG: "} + crash_message);
+	c.emplace_back(std::string{"COMPILER: "} + COMPILER_NAME + std::string{" "} + COMPILER_VER);
+	c.emplace_back("");
+	c.emplace_back("[LOGS]");
+	c.insert(c.end(), logs.begin(), logs.end());
+	c.emplace_back("[LOGS END]");
+	c.emplace_back("");
+	c.emplace_back(std::string{"Audio driver: "} + SDL_GetCurrentAudioDriver());
+	c.emplace_back(std::string{"Video Driver: "} + SDL_GetCurrentVideoDriver());
+	c.emplace_back(std::string{"Detected Platform: "} + SDL_GetPlatform());
+	c.emplace_back(std::string{"Last PhysFS error: "} + PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+	c.emplace_back(std::string{"Last SDL Error on current thread: "} + SDL_GetError());
+	#ifdef android
+		c.emplace_back(std::string{"Android API: "} + android_get_device_api_level());
+	#elif unix_like
+//		c.emplace_back(std::string{"Detected DE: "} + shState->oneshot().desktopEnv);
+	#endif
+	c.emplace_back("");
+	//maybe we should use C++ stacktrace?
+	c.emplace_back("[STACK TRACE]");
+	for (const auto& frame : trace) {
+    		c.push_back(boost::stacktrace::to_string(frame));
+	}
+	c.emplace_back("");
+	//End, FIXIT: последние 3 END не видно
+	c.emplace_back("END");
+	c.emplace_back("END");
+	c.emplace_back("END");
+	c.emplace_back("END");
+	return c;
+}
+
+
 void crash_screen(SDL_Window* win){
 	// Skip Crash screen if failed initialize
 	static bool skip_crash_screen = false;
-	static bool show_ = true;
 	//creating render
 	SDL_Renderer* ren = SDL_CreateRenderer(win, NULL);
 	if (ren == nullptr) {
@@ -210,94 +251,19 @@ void crash_screen(SDL_Window* win){
 	}else{
 		SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
 	}
-	//creating file and timestamp
-	ofstream o;
-	time_t timestamp;
-	time(&timestamp);
-	string timeeeeee(ctime(&timestamp));
-	if (!timeeeeee.empty() && timeeeeee.back() == '\n') {
-	    timeeeeee.pop_back();
-	}
-	string file = "crash " + timeeeeee + ".txt";
-	std::erase(file, ':');
-	o.open(file);
-	//collecting info and writing to crashdump
-	if (o.is_open()){
-		#ifdef DEVBUILD
-			o << "EXPEREMENTAL BUILD\n";
-		#endif
-		o << "VERSION: " << VERSION_STRING << endl;
-		o << "REASON: " << crash_message << endl;
-		o << "Compiler info: " << COMPILER_NAME << " " << COMPILER_VER << endl << endl;
-		o << "[BOOST stacktrace()]\n\n";
-		o << boost::stacktrace::stacktrace() << endl;
 
-		o << "[LOG BUFFER]\n\n";
-		for (const auto& s : logs) {
-		    o << s << endl;
-		}
 
-		o << "\n[AUDIO]\n";
-		o << "Driver used: " << SDL_GetCurrentAudioDriver() << endl;
-
-		o << "\n[VIDEO]\n";
-		o << "Driver used: " << SDL_GetCurrentVideoDriver() << endl;
-
-		o << "\n[VERSIONS OF LIBS]\n";
-		const static int sdlcompiled = SDL_VERSION;
-		const static int sdllinked = SDL_GetVersion();
-		o << "SDL(compiled) version: " << SDL_VERSIONNUM_MAJOR(sdlcompiled) << "." << SDL_VERSIONNUM_MINOR(sdlcompiled) << "." << SDL_VERSIONNUM_MICRO(sdlcompiled) << endl;
-		o << "SDL_image(compiled) version: " << SDL_IMAGE_MAJOR_VERSION << "." << SDL_IMAGE_MINOR_VERSION << "." << SDL_IMAGE_MICRO_VERSION << endl;
-		o << "SDL_TTF(compiled) version: " << SDL_TTF_MAJOR_VERSION << "." << SDL_TTF_MINOR_VERSION << "." << SDL_TTF_MICRO_VERSION << endl;
-		o << "SDL_mixer version: " << MIX_Version() << endl;
-		o << "Ruby version: " << RUBY_API_VERSION_CODE << endl;
-		o << "ZLib version: " << ZLIB_VERSION << endl;
-		o << "Boost versino: " << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << endl;
-		o << "Pixman version: " << PIXMAN_VERSION_STRING << endl;
-
-		o << "\n[Platform specific]\n";
-		try{
-			o << "Detected OS: " << SDL_GetPlatform() << endl;
-		}catch(const std::exception& e){
-			o << "Detected OS: " << e.what() << endl;
-		}
-		o << "System page size: " << SDL_GetSystemPageSize() << endl;
-		#ifdef unix_like
-			if(SDL_getenv("XDG_CURRENT_DESKTOP") != nullptr){
-				o << "Desktop enviroment(XDG_CURRENT_DESKTOP): " << SDL_getenv("XDG_CURRENT_DESKTOP") << endl;
-			}
-		#elif android
-			o << "Android API version: " << android_get_device_api_level() << endl;
-		#endif
-
-		o << "\n[Hardware]\n";
-		o << "number of logical CPU cores: " << SDL_GetNumLogicalCPUCores() << endl;
-		o << "System RAM size: " << SDL_GetSystemRAM() << " MiB" << endl;
-		if(!is_privacy_crashdump_enabled){
-			o << "L1 cache size: " << SDL_GetCPUCacheLineSize() << endl;
-		}
-		o << "CPU: " << get_processor() << endl;
-
-		o << "\n[OpenGL]\n";
-		try{
-			o << "GL Vendor: " << glGetStringInt(GL_VENDOR) << endl;
-			o << "GL Renderer: " << glGetStringInt(GL_RENDERER) << endl;
-			o << "GL Version: " << glGetStringInt(GL_VERSION) << endl;
-			o << "GLSL Version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << endl;
-			o << "Shading language version: " << glGetStringInt(GL_SHADING_LANGUAGE_VERSION) << endl;
-			o << "GL Extensions: " << glGetStringInt(GL_EXTENSIONS) << endl;
-		}catch(const exception& e){
-			o << "Crashed before OpenGL initialization: " << e.what() << endl;
-		}
-		o.close();
-	}else{
-		WarnMsg("[CRASHLOG] Failed to write crashdump file");
-	}
-
+	static int w = 0;
+	static unsigned int pager_start = 0;
+	unsigned static int count = 20;
+	SDL_GetCurrentRenderOutputSize(ren, NULL, &w);
+	static int items_count = (((w / 10) * 10) / 10);
+	static unsigned int pager_end = items_count;
+	//cd -- crashdump
+	std::vector<std::string> cd = prepare_crash_info();
 	if(!skip_crash_screen){
 		SDL_Event e;
 		bool quit = false;
-
 		int texW = 100, texH = 100;
 		int winW = 0, winH = 0;
 		SDL_GetWindowSize(win, &winW, &winH);
@@ -308,33 +274,40 @@ void crash_screen(SDL_Window* win){
 	    	(float)100};
 
 		while (!quit) {
-	    	while (SDL_PollEvent(&e)) {
-	        	if (e.type == SDL_EVENT_QUIT) quit = true;
-	    	}
+	    		while (SDL_PollEvent(&e)) {
+	        		if (e.type == SDL_EVENT_QUIT) quit = true;
+				if (e.type == SDL_EVENT_KEY_UP){
+					if (e.key.scancode == SDL_SCANCODE_DOWN) {
+						if(pager_end < cd.size()){
+							 pager_start++;
+							 pager_end++;
+						}
+    					} else if (e.key.scancode == SDL_SCANCODE_UP) {
+						if(pager_start != 0){
+                                                         pager_start--;
+							 pager_end--;
+                                                }
+				        }
+				}
+	    		}
 
-		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-	    	SDL_RenderClear(ren);
-		SDL_SetRenderScale(ren, 1.0f, 1.0f);
-	    	SDL_RenderTexture(ren, tex, NULL, &dst);
-		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-		SDL_SetRenderScale(ren, 2.0f, 2.0f);
-	    	SDL_RenderDebugTextFormat(ren, 5, 5, "World machine crashed!");
-		SDL_SetRenderScale(ren, 1.0f, 1.0f);
-	    	SDL_RenderDebugTextFormat(ren, 10, 35, "%s", crash_message);
-	    	SDL_RenderDebugTextFormat(ren, 10, 45, "Possible reason: %s", crash_reason);
-	    	SDL_RenderDebugTextFormat(ren, 10, 55, "Possible solution: %s", crash_possible_solution);
-	    	SDL_RenderDebugTextFormat(ren, 10, 65, "Path: %s%s", SDL_GetCurrentDirectory(), file.c_str());
-	    	SDL_RenderDebugTextFormat(ren, 10, 75, "Crashdump privacy: %s", is_privacy_crashdump_enabled ? "enabled" : "disabled");
-	    	SDL_RenderDebugTextFormat(ren, 10, 85, "If you are sure that the problem is not in your modifications, your");
-	    	SDL_RenderDebugTextFormat(ren, 10, 95, "hands or in your device - please report the bug to the developers");
-		if(show_){
-			show_ = false;
-			SDL_RenderDebugTextFormat(ren, 10, 105, "_");
-		}else{
-			show_ = true;
-		}
-	    	SDL_RenderPresent(ren);
-	    	SDL_Delay(96);
+			count = 20;
+			SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+	    		SDL_RenderClear(ren);
+			SDL_SetRenderScale(ren, 1.0f, 1.0f);
+	    		SDL_RenderTexture(ren, tex, NULL, &dst);
+			SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+			SDL_SetRenderScale(ren, 2.0f, 2.0f);
+	    		SDL_RenderDebugTextFormat(ren, 5, 5, "World machine crashed! :(");
+			SDL_SetRenderScale(ren, 1.0f, 1.0f);
+			for (int i = pager_start; i <= pager_end; ++i){
+				if(i < (cd.size() - 1)){
+					count = count + 10;
+					SDL_RenderDebugTextFormat(ren, 10, count, "%s| %s", std::format("{:03}", i).c_str(), cd[i].c_str());
+				}
+			}
+	    		SDL_RenderPresent(ren);
+	    		SDL_Delay(96);
 		}
 		SDL_DestroyTexture(tex);
 		SDL_DestroyRenderer(ren);
@@ -378,7 +351,6 @@ void ErrorMsg(Exception::Type t, const char *fmt, ...) {
     SDL_snprintf(crash_message, sizeof(crash_message), "%s", buf);
     get_reason_and_solution(t);
     show_crash_screen = true;
-    SDL_free(buf);
 }
 
 void WarnMsg(const char *fmt, ...) {
