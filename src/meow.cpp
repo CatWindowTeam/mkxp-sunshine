@@ -25,6 +25,7 @@
 #include <vector>
 #include <cstdlib>
 #include <iostream>
+#include <format>
 #include <ruby/internal/interpreter.h>
 #undef vsnprintf
 #undef snprintf
@@ -39,6 +40,11 @@
 #endif
 #include "crash.png.xxd"
 using namespace std;
+
+// bcz vs code dropping fake errors
+#ifndef VERSION_STRING
+    #define VERSION_STRING "Unknown"
+#endif
 
 //help functions
 static inline const char* glGetStringInt(GLenum name){
