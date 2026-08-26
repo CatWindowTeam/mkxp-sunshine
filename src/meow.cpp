@@ -10,6 +10,7 @@
 #include <SDL3/SDL_system.h>
 #include <SDL3/SDL_cpuinfo.h>
 #include <SDL3/SDL_scancode.h>
+#include <SDL3/SDL_mouse.h>
 #include "meow.h"
 #include "exception.h"
 #include "config.h"
@@ -214,6 +215,7 @@ static std::vector<std::string> prepare_crash_info(){
 
 
 void crash_screen(SDL_Window* win){
+	SDL_ShowCursor();
 	// Skip Crash screen if failed initialize
 	static bool skip_crash_screen = false;
 	//creating render
