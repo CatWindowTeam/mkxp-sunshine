@@ -20,12 +20,14 @@
 | Kyronix Team | Kyronix Port developers | |
 | theboxyguy | programmer | |
 | Каламус | tester | |
+| GrettyMira | artist | |
 
 # Donators:
-| Donator     |
-| ----------- |
-| The name sold |
-| Kodu        |
+| Donator     | what |
+| ----------- | ---- |
+| The name sold | Servers |
+| Kodu        | money |
+Thank you guys!
 
 ## Special thanks to
 * my mom and dad:3

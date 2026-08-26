@@ -439,8 +439,7 @@ struct InputPrivate {
 		    ),
 		    jsBBindings.end()
 		);
-		
-		
+
 		for (size_t i = 0; i < descs.size(); ++i){
 			const SourceDesc &src = descs[i];
 
