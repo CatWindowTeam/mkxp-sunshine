@@ -13,6 +13,8 @@ begin
   Font.default_size = 20
   #debug shit 
   Input.set_led(255, 150, 30)
+  # Registering parameters
+  Settings.reset!
   # Load persistent data
   Persistent.load
 

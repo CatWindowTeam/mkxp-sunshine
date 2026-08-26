@@ -12,9 +12,11 @@ module Settings
         # ------------ Video ------------
         :fullscreen             => false,
         :resolution             => 0,
+        :graphics_preset        => 4,
         :colorblind             => false,
         :frameskip              => true,
         :twm_shader             => true,
+        :fog                    => true,
         :light                  => true,
       # :light_layer_detect     => true,
         :scaling_mode           => 0,
@@ -39,6 +41,7 @@ module Settings
         :oneshot_mode           => false,
         :twm_shader_footprint   => true,
         :disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already => false,
+        # qmq ^
         :wallpaper_mode         => 0,
 
         # ---------- Advanced -----------
@@ -209,26 +212,18 @@ class Window_Settings
         :type => :presets,
         :name => "Graphics presets",
         :parameter => :graphics_preset,
-        :custom_text => "Graphics",
-        :values => ["High", "Normal", "Low", "Potato"],
+        :custom_text => "Custom",
+        :values => ["Potato", "Low", "Normal", "High"],
         :presets => [
           {
-            :light => true,
-            :twm_shader => true,
-            :fog => true,
-	    :max_firefly_count => 30,
-	    :footprints => true,
-	    :footsplashes => true, 
-          },
-	  {
-            :light => true,
+            :light => false,
             :twm_shader => false,
-            :fog => true,
-            :max_firefly_count => 30,
-            :footprints => true,
-            :footsplashes => true,
+            :fog => false,
+            :max_firefly_count => 0,
+            :footprints => false,
+            :footsplashes => false,
           },
-	  {
+          {
             :light => false,
             :twm_shader => false,
             :fog => true,
@@ -236,13 +231,21 @@ class Window_Settings
             :footprints => true,
             :footsplashes => true,
           },
-	  {
-            :light => false,
+          {
+            :light => true,
             :twm_shader => false,
-            :fog => false,
-            :max_firefly_count => 0,
-            :footprints => false,
-            :footsplashes => false,
+            :fog => true,
+            :max_firefly_count => 30,
+            :footprints => true,
+            :footsplashes => true,
+          },
+          {
+            :light => true,
+            :twm_shader => true,
+            :fog => true,
+            :max_firefly_count => 30,
+            :footprints => true,
+            :footsplashes => true, 
           },
         ]
       },

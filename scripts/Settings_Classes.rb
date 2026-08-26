@@ -129,6 +129,7 @@ class Window_Settings
           end
         end
       end
+      return nil
     end
 
     def disable_setting(screen, position)
@@ -341,6 +342,9 @@ class Window_Settings
       @screen_id = screen_id
       @position = position
       @name = name.to_s || ""
+      if parameter && Settings[parameter] == nil
+        puts "WARNING: Setting was registered for a parameter when the parameter itself does not exist (Parameter :#{parameter})"
+      end
       @value = Settings[parameter] || init_value
       @parameter = parameter
       @opacity = 1.0
