@@ -16,7 +16,7 @@ module Settings
         :frameskip              => true,
         :twm_shader             => true,
         :light                  => true,
-      #  :light_layer_detect     => true,
+      # :light_layer_detect     => true,
         :scaling_mode           => 0,
         :vsync                  => 0,
         :max_firefly_count      => 30,
@@ -61,6 +61,7 @@ module Settings
         :debug_lightmap         => false,
         :shutdown_dbus_on_quit  => false,
         :profiler               => false,
+      # :test_preset            => 1,
       }
       reset_controls!
     end
@@ -646,7 +647,36 @@ class Window_Settings
         :name => "Do Crash",
         :action => Proc.new { raise "Test" },
         :icon => [1, 0],
-      }
+      },
+      #{
+      #  :type => :presets,
+      #  :name => "Test presets",
+      #  :parameter => :test_preset,
+      #  :custom_text => "Custom (здесь может быть любой текст)",
+      #  :values => ["1", "2", "3", "4"],
+      #  :presets => [
+      #    {
+      #      :debug => false,
+      #      :debug_character => false,
+      #      :debug_text_scene_title => true,
+      #    },
+      #    {
+      #      :debug => true,
+      #      :debug_character => false,
+      #      :debug_text_scene_title => true,
+      #    },
+      #    {
+      #      :debug => false,
+      #      :debug_character => true,
+      #      :debug_text_scene_title => true,
+      #    },
+      #    {
+      #      :debug => false,
+      #      :debug_character => false,
+      #      :debug_text_scene_title => false,
+      #    },
+      #  ]
+      #}
     ],
     "Mods" => [
       {

@@ -132,7 +132,6 @@ set(MAIN_HEADERS
 	src/sound/audiogroup.h
 	src/sound/audioplayback.h
 	src/sound/audiosource.h
-	src/sound/audioutil.h
 )
 
 set(MAIN_SOURCE

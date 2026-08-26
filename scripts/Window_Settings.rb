@@ -114,6 +114,11 @@ class Window_Settings
             @content.add_parameter(screen_title, ActionParameter.new(@content, screen_index, parameter_index,
               parameter_info[:name], parameter_info[:icon], parameter_info[:default], parameter_info[:action],
               parameter_info[:arg1], parameter_info[:arg2], parameter_info[:arg3], parameter_info[:arg4]))
+          when :presets
+            parameter = 
+            @content.add_parameter(screen_title, PresetsParameter.new(@content, screen_index, parameter_index,
+              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
+              parameter_info[:values], parameter_info[:custom_text], parameter_info[:presets]))
           when :custom
             parameter = 
             @content.add_parameter(screen_title, CustomParameter.new(@content, screen_index, parameter_index,
