@@ -103,19 +103,10 @@ void SecurityManagerInit(){
 			securitystate = "sandboxed_FLATPAK";
 		if(Sandbox == SDL_SANDBOX_SNAP)
 			securitystate = "sandboxed_SNAP";
-	#elif __APPLE__
-    		if(SDL_GetSandbox() == SDL_SANDBOX_MACOS)
-			securitystate = "sandboxed_MacOS";
 	#else
 		Debug() << "[SECURITY] SecurityManager doesn't support this platform.";
 	#endif
 	#endif
 }
 
-void SecurityManagerDeInit(){
-	#ifndef __ANDROID__
-	#ifdef __linux__
-		seccomp_release(ctx);
-	#endif
-	#endif
-}
+//void SecurityManagerDeInit(){}

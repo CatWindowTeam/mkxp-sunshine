@@ -1,5 +1,5 @@
+#pragma once
 #include <boost/chrono.hpp>
-
 #include "bitmap.h"
 //помойка ебаная
 inline boost::chrono::high_resolution_clock::time_point startTime;

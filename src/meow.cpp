@@ -1,5 +1,4 @@
 #include <SDL3/SDL_messagebox.h>
-#include <SDL3/SDL_version.h>
 #include <SDL3/SDL_platform.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_audio.h>
@@ -25,6 +24,7 @@
 #include <vector>
 #include <cstdlib>
 #include <iostream>
+#include <chrono>
 #include <ruby/internal/interpreter.h>
 #undef vsnprintf
 #undef snprintf
@@ -191,9 +191,13 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back(std::string{"MSG: "} + crash_message);
 	c.emplace_back(std::string{"COMPILER: "} + COMPILER_NAME + std::string{" "} + COMPILER_VER);
 	c.emplace_back("");
+	c.emplace_back("");
+	c.emplace_back("");
 	c.emplace_back("[LOGS]");
 	c.insert(c.end(), logs.begin(), logs.end());
 	c.emplace_back("[LOGS END]");
+	c.emplace_back("");
+	c.emplace_back("");
 	c.emplace_back("");
 	c.emplace_back(std::string{"Audio driver: "} + SDL_GetCurrentAudioDriver());
 	c.emplace_back(std::string{"Video Driver: "} + SDL_GetCurrentVideoDriver());
@@ -204,11 +208,15 @@ static std::vector<std::string> prepare_crash_info(){
 		c.emplace_back(std::string{"Android API: "} + std::to_string(android_get_device_api_level()));
 	#endif
 	c.emplace_back("");
+	c.emplace_back("");
+	c.emplace_back("");
 	//maybe we should use C++ stacktrace?
 	c.emplace_back("[STACK TRACE]");
 	for (const auto& frame : trace) {
     		c.push_back(boost::stacktrace::to_string(frame));
 	}
+	c.emplace_back("");
+	c.emplace_back("");
 	c.emplace_back("");
 	return c;
 }
@@ -245,6 +253,7 @@ void crash_screen(SDL_Window* win){
 	SDL_GetCurrentRenderOutputSize(ren, NULL, &w);
 	static int items_count = (((w / 10) * 10) / 10);
 	static unsigned int pager_end = items_count;
+	const static char* shit = "[S - save crashdump to file]";
 	//cd -- crashdump
 	std::vector<std::string> cd = prepare_crash_info();
 	if(!skip_crash_screen){
@@ -259,32 +268,42 @@ void crash_screen(SDL_Window* win){
 	    	(float)100,
 	    	(float)100};
 
-		while (!quit) {
-	    		while (SDL_PollEvent(&e)) {
-	        		if (e.type == SDL_EVENT_QUIT) quit = true;
-				if (e.type == SDL_EVENT_KEY_UP){
-					if (e.key.scancode == SDL_SCANCODE_DOWN) {
+		while(!quit) {
+	    		while(SDL_PollEvent(&e)) {
+	        		if(e.type == SDL_EVENT_QUIT) quit = true;
+				if(e.type == SDL_EVENT_KEY_UP){
+					if(e.key.scancode == SDL_SCANCODE_DOWN) {
 						if(pager_end < cd.size()){
 							 pager_start++;
 							 pager_end++;
 						}
-    					} else if (e.key.scancode == SDL_SCANCODE_UP) {
+    					}else if(e.key.scancode == SDL_SCANCODE_UP) {
 						if(pager_start != 0){
                                                          pager_start--;
 							 pager_end--;
                                                 }
-				        }
+				        }else if(e.key.scancode == SDL_SCANCODE_S){
+						const auto now = std::chrono::system_clock::now();
+						const std::string filename = std::format("crash_{:%Y-%m-%d_%H-%M-%S}.txt", now);
+						std::ofstream file(filename);
+    						for(const auto& l : cd){
+							file << l << '\n';
+						}
+						shit = "[SAVED!]";
+					}
 				}
 	    		}
 
-			count = 20;
+			count = 40;
 			SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 	    		SDL_RenderClear(ren);
 			SDL_SetRenderScale(ren, 1.0f, 1.0f);
 	    		SDL_RenderTexture(ren, tex, NULL, &dst);
 			SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 			SDL_SetRenderScale(ren, 2.0f, 2.0f);
-	    		SDL_RenderDebugTextFormat(ren, 5, 5, "World machine crashed! :(");
+	    		SDL_RenderDebugText(ren, 5, 5, "World machine crashed! :(");
+			SDL_SetRenderScale(ren, 1.5f, 1.5f);
+			SDL_RenderDebugText(ren, 5, 20, shit);
 			SDL_SetRenderScale(ren, 1.0f, 1.0f);
 			for (int i = pager_start; i <= pager_end; ++i){
 				if(i < (cd.size() - 1)){
