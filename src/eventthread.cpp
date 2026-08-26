@@ -39,6 +39,7 @@
 #include "graphics.h"
 #include "debugwriter.h"
 #include "oneshot.h"
+#include "meow.h"
 
 #include <cstdio>
 #include <map>
@@ -84,11 +85,6 @@ void EventThread::process(RGSSThreadData &rtData){
 	SDL_Window *win = rtData.window;
 	UnidirMessage<Vec2i> &windowSizeMsg = rtData.windowSizeMsg;
 
-	// XXX this function breaks input focus on OSX
-	#ifndef __APPLE__
-		SDL_SetEventFilter(eventFilter, (void*)&rtData);
-	#endif
-
 	fullscreen = rtData.config.fullscreen;
 
 	fps.lastFrame = SDL_GetPerformanceCounter();
@@ -126,9 +122,9 @@ void EventThread::process(RGSSThreadData &rtData){
 
 		Debug() << "Gamepad connected: " << SDL_GetGamepadName(gc);
 
-    	if (i > 0) {
-      		SDL_CloseGamepad(gamepd);
-    	}
+    		if (i > 0) {
+      			SDL_CloseGamepad(gamepd);
+    		}
   	}
 
 	char buffer[128];
@@ -175,19 +171,16 @@ void EventThread::process(RGSSThreadData &rtData){
 		//Window events
 
 		switch (event.window.type){
-			//SDL_WINDOWEVENT_SIZE_CHANGED - handle the SDL_EVENT_WINDOW_RESIZED and SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED events instead
 			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED :
 				winW = event.window.data1;
 				winH = event.window.data2;
-
-				//SDL_GL_GetDrawableSize(win, &winW, &winH);
 
 				windowSizeMsg.post(Vec2i(winW, winH));
 				if (shState != nullptr)
 					shState->windowSignals.resized.Emit(event.window.data1, event.window.data2);
 				resetInputStates();
 				break;
-// random meow
+
 			case SDL_EVENT_WINDOW_MOUSE_ENTER :
 				cursorInWindow = true;
 				mouseState.inWindow = true;
@@ -238,9 +231,11 @@ void EventThread::process(RGSSThreadData &rtData){
 		/* Now process the rest */
 		switch (event.type){
 		case SDL_EVENT_LOW_MEMORY:
-			rb_gc();
+			if(is_ruby_initialized)
+				rb_gc();
 			break;
 		case SDL_EVENT_QUIT:
+		case SDL_EVENT_WINDOW_DESTROYED:
 			if (rtData.allowExit) {
 				terminate = true;
 				Debug() << "EventThread termination requested";
@@ -457,53 +452,6 @@ void EventThread::process(RGSSThreadData &rtData){
 
 	for (gcit = gamepads.begin(); gcit != gamepads.end(); ++gcit)
 		SDL_CloseGamepad(gcit->second);
-}
-
-bool EventThread::eventFilter(void *data, SDL_Event *event){
-	RGSSThreadData &rtData = *static_cast<RGSSThreadData*>(data);
-
-	switch (event->type){
-	case SDL_EVENT_WILL_ENTER_BACKGROUND :
-		Debug() << "SDL_EVENT_WILL_ENTER_BACKGROUND";
-
-		rtData.syncPoint.haltThreads();
-
-		return 0;
-
-	case SDL_EVENT_DID_ENTER_BACKGROUND :
-		Debug() << "SDL_EVENT_DID_ENTER_BACKGROUND";
-		return 0;
-
-	case SDL_EVENT_WILL_ENTER_FOREGROUND :
-		Debug() << "SDL_EVENT_WILL_ENTER_FOREGROUND";
-		return 0;
-
-	case SDL_EVENT_DID_ENTER_FOREGROUND :
-		Debug() << "SDL_EVENT_DID_ENTER_FOREGROUND";
-
-		rtData.syncPoint.resumeThreads();
-
-		return 0;
-
-	case SDL_EVENT_TERMINATING :
-		Debug() << "SDL_EVENT_TERMINATING";
-		return 0;
-
-	/* Workaround for Windows pausing on drag */
-	default:
-		if (event->window.type == SDL_EVENT_WINDOW_MOVED){
-			if (shState != NULL){
-				rtData.ethread->winX = event->window.data1;
-				rtData.ethread->winY = event->window.data2;
-				shState->windowSignals.moved.Emit(event->window.data1, event->window.data2);
-				//shState->graphics().update(false);
-			}
-			return 0;
-		}
-		return 1;
-	}
-
-	return 1;
 }
 
 void EventThread::cleanup(){

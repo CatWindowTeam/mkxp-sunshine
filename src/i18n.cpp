@@ -189,7 +189,6 @@ void loadLocale(const char* locale) {
 		while (fgets(line, 1024, locfile)) {
 			if (SDL_strncmp("msgstr \"", line, 8) == 0) {
 				char* lineWithoutMsgid = line + 8;
-				
 				char* endQuoteAddress = SDL_strrchr(lineWithoutMsgid, '"');
 
 				// end string at last quotation mark
@@ -258,4 +257,3 @@ void decodeEscapeChars(char* s) {
 	// cap the end of the string
 	dest[0] = 0;
 }
-
