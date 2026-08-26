@@ -72,8 +72,6 @@ void Config::read(int argc, char *argv[]){
 	PO_DESC(fullscreen, bool, false) \
 	PO_DESC(fixedAspectRatio, bool, true) \
 	PO_DESC(smoothScaling, bool, false) \
-	PO_DESC(defScreenW, int, 0) \
-	PO_DESC(defScreenH, int, 0) \
 	PO_DESC(windowTitle, std::string, "") \
 	PO_DESC(commonDataPath, std::string, "") \
 	PO_DESC(Modloader.ModsDirPath, std::string,"mods") \
@@ -111,10 +109,10 @@ void Config::read(int argc, char *argv[]){
 
 	/* Parse command line options */
 	try{
-		po::parsed_options cmdPo = po::command_line_parser(argc, argv).options(podesc).run();
+		po::parsed_options cmdPo = po::command_line_parser(argc, argv).options(podesc).run()
 		po::store(cmdPo, vm);
 	}catch (po::error &error){
-		Debug() << "[config] Command line:" << error.what();
+		Debug() << "[config] " << error.what();
 	}
 
 	/* Parse configuration file */

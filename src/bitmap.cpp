@@ -135,7 +135,6 @@ struct BitmapPrivate{
 		pixman_region_init_rect(&m_reg, rect.x, rect.y, rect.w, rect.h);
 
 		pixman_region_subtract(&tainted, &m_reg, &tainted);
-
 		pixman_region_fini(&m_reg);
 	}
 
@@ -228,7 +227,6 @@ Bitmap::Bitmap(const char *filename){
 		ErrorMsg(Exception::SDLError, "Error loading image '%s': %s", filename, SDL_GetError());
 
 	p->ensureFormat(imgSurf, SDL_PIXELFORMAT_ABGR8888);
-
 	if (imgSurf->w > glState.caps.maxTexSize || imgSurf->h > glState.caps.maxTexSize){
 		/* Mega surface */
 		p = new BitmapPrivate(this);
@@ -255,7 +253,6 @@ Bitmap::Bitmap(const char *filename){
 
 		SDL_DestroySurface(imgSurf);
 	}
-
 	p->addTaintedArea(rect());
 }
 
@@ -389,8 +386,7 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 
 		int bpp;
 		Uint32 rMask, gMask, bMask, aMask;
-		SDL_GetMasksForPixelFormat(SDL_PIXELFORMAT_ABGR8888,
-		                           &bpp, &rMask, &gMask, &bMask, &aMask);
+		SDL_GetMasksForPixelFormat(SDL_PIXELFORMAT_ABGR8888, &bpp, &rMask, &gMask, &bMask, &aMask);
 		SDL_Surface *blitTemp = SDL_CreateSurface(destRect.w, destRect.h, SDL_GetPixelFormatForMasks(bpp, rMask, gMask, bMask, aMask));
 
 		SDL_BlitSurfaceScaled(srcSurf, &srcRect, blitTemp, NULL, SDL_ScaleMode::SDL_SCALEMODE_NEAREST);
@@ -503,8 +499,7 @@ void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec
 		quad.vert[1].color = color1;
 		quad.vert[2].color = color2;
 		quad.vert[3].color = color2;
-	}
-	else{
+	}else{
 		quad.vert[0].color = color1;
 		quad.vert[3].color = color1;
 		quad.vert[1].color = color2;
@@ -1069,8 +1064,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 
 				if (!subImage){
 					TEX::uploadSubImage(posRect.x, posRect.y, posRect.w, posRect.h, txtSurf->pixels, GL_RGBA);
-				}
-				else{
+				}else{
 					GLMeta::subRectImageUpload(txtSurf->w, subSrcX, subSrcY, posRect.x, posRect.y, posRect.w, posRect.h, txtSurf, GL_RGBA);
 					GLMeta::subRectImageEnd();
 				}
@@ -1112,6 +1106,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 		shState->bindTex();
 		TEX::uploadSubImage(0, 0, txtSurf->w, txtSurf->h, txtSurf->pixels, GL_RGBA);
 		//TODO: настройка в зависимости от oneshot.conf
+		//?А нвдо ли?
 		TEX::setSmooth(true);
 
 		Quad &quad = shState->gpQuad();

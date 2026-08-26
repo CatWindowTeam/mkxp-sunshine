@@ -301,38 +301,16 @@ void crash_screen(SDL_Window* win){
 void ErrorMsg(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
-
-    va_list args_copy;
-    va_copy(args_copy, args);
-    unsigned int len = (unsigned int)SDL_vsnprintf(NULL, 0, fmt, args_copy);
-    va_end(args_copy);
-
-    char *buf = (char*)SDL_malloc((size_t)len + 1);
-    if (!buf) { va_end(args); return; }
-
-    SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
+    SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-
-    SDL_snprintf(crash_message, sizeof(crash_message), "%s", buf);
     show_crash_screen = true;
 }
 
 void ErrorMsg(Exception::Type t, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
-
-    va_list args_copy;
-    va_copy(args_copy, args);
-    unsigned int len = (unsigned int)SDL_vsnprintf(NULL, 0, fmt, args_copy);
-    va_end(args_copy);
-
-    char *buf = (char*)SDL_malloc((size_t)len + 1);
-    if (!buf) { va_end(args); return; }
-
-    SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
+    SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-
-    SDL_snprintf(crash_message, sizeof(crash_message), "%s", buf);
     get_reason_and_solution(t);
     show_crash_screen = true;
 }
