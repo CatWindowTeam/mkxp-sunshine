@@ -38,7 +38,7 @@ module Settings
         :true_memory_mode       => false,
         :oneshot_mode           => false,
         :twm_shader_footprint   => true,
-        :disable_api_puzzles    => false, #disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already
+        :disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already => false,
         :wallpaper_mode         => 0,
 
         # ---------- Advanced -----------
@@ -206,6 +206,47 @@ class Window_Settings
         :values => Graphics::RESOLUTION_OVERRIDDEN ? ["Resolution is redefined via config"] : Graphics.resolutions_names_list
       },
       {
+        :type => :presets,
+        :name => "Graphics presets",
+        :parameter => :graphics_preset,
+        :custom_text => "Graphics",
+        :values => ["High", "Normal", "Low", "Potato"],
+        :presets => [
+          {
+            :light => true,
+            :twm_shader => true,
+            :fog => true,
+	    :max_firefly_count => 30,
+	    :footprints => true,
+	    :footsplashes => true, 
+          },
+	  {
+            :light => true,
+            :twm_shader => false,
+            :fog => true,
+            :max_firefly_count => 30,
+            :footprints => true,
+            :footsplashes => true,
+          },
+	  {
+            :light => false,
+            :twm_shader => false,
+            :fog => true,
+            :max_firefly_count => 15,
+            :footprints => true,
+            :footsplashes => true,
+          },
+	  {
+            :light => false,
+            :twm_shader => false,
+            :fog => false,
+            :max_firefly_count => 0,
+            :footprints => false,
+            :footsplashes => false,
+          },
+        ]
+      },
+      {
         :type => :bool,
         :name => "Fullscreen",
         :parameter => :fullscreen
@@ -233,11 +274,6 @@ class Window_Settings
         :name => "Dynamic Light",
         :parameter => :light,
       },
-      #{
-      #  :type => :bool,
-      #  :name => "Light Layer Detecting",
-      #  :parameter => :light_layer_detect,
-      #},
       {
         :type => :bool,
         :name => "World machine shader",
@@ -352,7 +388,7 @@ class Window_Settings
       {
         :type => :bool,
         :name => "Disable System API Dependent Puzzles(For wayland users)",
-        :parameter => :disable_api_puzzles
+        :parameter => :disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already
       },
       {
         :type => :enum,
