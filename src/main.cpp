@@ -76,6 +76,13 @@ int rgssThreadFun(void *userdata){
 
 	/* Setup GL context */
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	//https://wiki.libsdl.org/SDL3/README-android
+	#ifdef android
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+
+	#endif
 
 #ifndef NDEBUG
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
@@ -249,7 +256,7 @@ int main(int argc, char *argv[]){
 		MIX_Quit();
 		TTF_Quit();
 		SDL_Quit();
-		return 	;
+		return 1;
 	}
 	/* OSX and Windows have their own native ways of
 	 * dealing with icons; don't interfere with them */

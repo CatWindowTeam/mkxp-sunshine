@@ -169,7 +169,6 @@ void EventThread::process(RGSSThreadData &rtData){
 		}
 
 		//Window events
-
 		switch (event.window.type){
 			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED :
 				winW = event.window.data1;
