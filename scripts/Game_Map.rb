@@ -60,23 +60,26 @@ class Game_Map
     'codebg'
   ]
   CLAMPED_X = [
-    ]
+  ]
   CLAMPED_Y = [
     'red_obsdesk',
-    ]
+  ]
   ANIMATED = [
     'blue_water',
-    ]
-  FADE_ANIMATION_PANORAMA = []
+  ]
+  FADE_ANIMATION_PANORAMA = [
+    'green_water',
+    'dark_water',
+  ]
   ONETOONE = [
     'blue_water',
     'green_water',
     'dark_water',
-    ]
+  ]
   NOZOOM = [
     'dark_water',
     'green_water',
-    ]
+  ]
 
   ALWAYS_MOVING = [
     'codebg'

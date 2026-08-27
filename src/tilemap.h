@@ -57,14 +57,15 @@ public:
 	Autotiles &getAutotiles();
 	Viewport *getViewport() const;
 
-	DECL_ATTR( Tileset,    Bitmap*   )
-	DECL_ATTR( MapData,    Table*    )
-	DECL_ATTR( FlashData,  Table*    )
-	DECL_ATTR( Priorities, Table*    )
-	DECL_ATTR( Visible,    bool      )
-	DECL_ATTR( Wrapping,   bool      )
-	DECL_ATTR( OX,         int       )
-	DECL_ATTR( OY,         int       )
+	DECL_ATTR( Tileset,     Bitmap* )
+	DECL_ATTR( MapData,     Table*  )
+	DECL_ATTR( FlashData,   Table*  )
+	DECL_ATTR( Priorities,  Table*  )
+	DECL_ATTR( Visible,     bool    )
+	DECL_ATTR( BetterWater, bool    )
+	DECL_ATTR( Wrapping,    bool    )
+	DECL_ATTR( OX,          int     )
+	DECL_ATTR( OY,          int     )
 
 private:
 	TilemapPrivate *p;

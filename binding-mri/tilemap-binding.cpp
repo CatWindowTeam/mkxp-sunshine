@@ -130,6 +130,7 @@ DEF_PROP_OBJ_REF(Tilemap, Table,    FlashData,  "flash_data")
 DEF_PROP_OBJ_REF(Tilemap, Table,    Priorities, "priorities")
 
 DEF_PROP_B(Tilemap, Visible)
+DEF_PROP_B(Tilemap, BetterWater)
 DEF_PROP_B(Tilemap, Wrapping)
 
 DEF_PROP_I(Tilemap, OX)
@@ -153,12 +154,13 @@ void tilemapBindingInit(){
 
 	_rb_define_method(klass, "viewport", tilemapGetViewport);
 
-	INIT_PROP_BIND( Tilemap, Tileset,    "tileset"    );
-	INIT_PROP_BIND( Tilemap, MapData,    "map_data"   );
-	INIT_PROP_BIND( Tilemap, FlashData,  "flash_data" );
-	INIT_PROP_BIND( Tilemap, Priorities, "priorities" );
-	INIT_PROP_BIND( Tilemap, Visible,    "visible"    );
-	INIT_PROP_BIND( Tilemap, Wrapping,   "wrapping"   );
-	INIT_PROP_BIND( Tilemap, OX,         "ox"         );
-	INIT_PROP_BIND( Tilemap, OY,         "oy"         );
+	INIT_PROP_BIND( Tilemap, Tileset,     "tileset"      );
+	INIT_PROP_BIND( Tilemap, MapData,     "map_data"     );
+	INIT_PROP_BIND( Tilemap, FlashData,   "flash_data"   );
+	INIT_PROP_BIND( Tilemap, Priorities,  "priorities"   );
+	INIT_PROP_BIND( Tilemap, Visible,     "visible"      );
+	INIT_PROP_BIND( Tilemap, BetterWater, "better_water" );
+	INIT_PROP_BIND( Tilemap, Wrapping,    "wrapping"     );
+	INIT_PROP_BIND( Tilemap, OX,          "ox"           );
+	INIT_PROP_BIND( Tilemap, OY,          "oy"           );
 }
