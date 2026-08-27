@@ -224,10 +224,6 @@ int main(int argc, char *argv[]){
 	    out << path;
 	}
 
-	extern int screenMain(Config &conf);
-	if (conf.screenMode)
-		return screenMain(conf);
-
 	if (conf.windowTitle.empty())
 		conf.windowTitle = conf.game.title;
 

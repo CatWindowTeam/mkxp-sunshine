@@ -166,7 +166,6 @@ set(MAIN_SOURCE
 	src/vertex.cpp
 	src/rgssad.cpp
 	src/oneshot.cpp
-	src/screen.cpp
 	src/i18n.cpp
 	src/meow.cpp
 	src/modloader.cpp

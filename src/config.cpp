@@ -68,7 +68,6 @@ Config::Config() {}
 void Config::read(int argc, char *argv[]){
 #define PO_DESC_ALL \
 	PO_DESC(debugMode, bool, false) \
-	PO_DESC(screenMode, bool, false) \
 	PO_DESC(fullscreen, bool, false) \
 	PO_DESC(fixedAspectRatio, bool, true) \
 	PO_DESC(smoothScaling, bool, false) \

@@ -92,11 +92,7 @@ void EventThread::process(RGSSThreadData &rtData){
 	fps.acc = 0;
 	fps.accDiv = 0;
 
-	if (rtData.config.printFPS)
-		fps.sendUpdates.set();
-
 	bool displayingFPS = false;
-
 	bool cursorInWindow = false;
 	/* Will be updated eventually */
 	SDL_Rect gameScreen = { 0, 0, 0, 0 };
@@ -256,9 +252,6 @@ void EventThread::process(RGSSThreadData &rtData){
 					displayingFPS = true;
 				}else{
 					displayingFPS = false;
-
-					if (!rtData.config.printFPS)
-						fps.sendUpdates.clear();
 
 					if (fullscreen){
 						/* Prevent fullscreen flicker */
