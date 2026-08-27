@@ -79,6 +79,32 @@ bool EventThread::allocUserEvents(){
 
 EventThread::EventThread(): fullscreen(false), showCursor(true){}
 
+#ifdef mkxp_android
+static SDL_Scancode androidFingerScan[MAX_FINGERS];
+
+static SDL_Scancode androidTouchZoneScan(float nx, float ny){
+	if (nx < 0.5f){
+		float dx = nx - 0.25f;
+		float dy = ny - 0.5f;
+		if (SDL_fabsf(dx) > SDL_fabsf(dy))
+			return dx < 0 ? SDL_SCANCODE_LEFT : SDL_SCANCODE_RIGHT;
+		return dy < 0 ? SDL_SCANCODE_UP : SDL_SCANCODE_DOWN;
+	}
+	return ny < 0.5f ? SDL_SCANCODE_X : SDL_SCANCODE_Z;
+}
+
+static void androidPushSynthKey(SDL_Scancode scan, bool down){
+	if (scan == SDL_SCANCODE_UNKNOWN)
+		return;
+	SDL_Event ev{};
+	ev.type = down ? SDL_EVENT_KEY_DOWN : SDL_EVENT_KEY_UP;
+	ev.key.scancode = scan;
+	ev.key.key = SDL_GetKeyFromScancode(scan, SDL_KMOD_NONE, false);
+	ev.key.down = down;
+	SDL_PushEvent(&ev);
+}
+#endif
+
 void EventThread::process(RGSSThreadData &rtData){
 	SDL_Event event;
 	SDL_Window *win = rtData.window;
@@ -369,6 +395,10 @@ void EventThread::process(RGSSThreadData &rtData){
 		case SDL_EVENT_FINGER_DOWN :
 			i = event.tfinger.fingerID;
 			touchState.fingers[i].down = true;
+#ifdef mkxp_android
+			androidFingerScan[i] = androidTouchZoneScan(event.tfinger.x, event.tfinger.y);
+			androidPushSynthKey(androidFingerScan[i], true);
+#endif
 			/* falls through */
 
 		case SDL_EVENT_FINGER_MOTION :
@@ -380,6 +410,10 @@ void EventThread::process(RGSSThreadData &rtData){
 		case SDL_EVENT_FINGER_UP :
 			i = event.tfinger.fingerID;
 			SDL_memset(&touchState.fingers[i], 0, sizeof(touchState.fingers[0]));
+#ifdef mkxp_android
+			androidPushSynthKey(androidFingerScan[i], false);
+			androidFingerScan[i] = SDL_SCANCODE_UNKNOWN;
+#endif
 			break;
 
 		default :
