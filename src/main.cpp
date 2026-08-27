@@ -81,7 +81,6 @@ int rgssThreadFun(void *userdata){
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
-
 	#endif
 
 #ifndef NDEBUG
@@ -146,6 +145,7 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 }
 
 int main(int argc, char *argv[]){
+	std::set_terminate(&terminate_stacktrace);
         startTime = boost::chrono::high_resolution_clock::now();
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");

@@ -1,3 +1,5 @@
+// Error handling and reporting
+
 #include <SDL3/SDL_messagebox.h>
 #include <SDL3/SDL_platform.h>
 #include <SDL3/SDL_rect.h>
@@ -360,3 +362,15 @@ void WarnMsg(const char *fmt, ...) {
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", buf, NULL);
     SDL_free(buf);
 }
+
+// Lets handle std::terminate errors too
+//https://www.boost.org/doc/libs/latest/doc/html/stacktrace/getting_started.html#stacktrace.getting_started.handle_terminates
+void terminate_stacktrace() {
+    try {
+	std::cerr << "World machine crashed!\n";
+        std::cerr << boost::stacktrace::stacktrace();
+    } catch (...) {}
+    std::abort();
+}
+
+

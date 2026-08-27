@@ -841,7 +841,7 @@ float Input::wheelX() { return p->mouseWheelState.wheelX; }
 float Input::wheelY() { return p->mouseWheelState.wheelY; }
 bool Input::wheelFlipped() { return p->mouseWheelState.wheelFlipped; }
 
-bool Input::hasQuit(){
+bool Input::hasQuit() {
 	return p->triedExit;
 }
 

@@ -17,3 +17,4 @@ void ErrorMsg(const char *fmt, ...);
 void ErrorMsg(Exception::Type t, const char *fmt, ...);
 void WarnMsg(const char *fmt, ...);
 void crash_screen(SDL_Window* win);
+void terminate_stacktrace();
