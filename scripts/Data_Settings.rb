@@ -48,6 +48,7 @@ module Settings
         :crashlog_privacy       => false,
         :streamer_privacy       => false,
         :invalid_param_checks   => false,
+	:replace_all_niko       => false,
 		
         # ---------- Сontrols -----------
         :gamepad_type           => -1,
@@ -615,6 +616,12 @@ class Window_Settings
         :name => "SDL_HINT_INVALID_PARAM_CHECKS",
         :icon => [1, 0],
         :parameter => :invalid_param_checks
+      },
+      {
+        :type => :bool,
+        :name => "Oneshot community mode",
+        :icon => [1, 0],
+        :parameter => :replace_all_niko
       },
     ],
     "Debug" => [
