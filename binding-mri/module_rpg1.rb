@@ -38,6 +38,9 @@ module RPG
       self.load_bitmap("Graphics/Animations/", filename, hue)
     end
     def self.autotile(filename)
+      if !Settings[:water] && PhysFS.exist?("Graphics/Autotiles/" + filename + "_simple.png")
+        filename += "_simple"
+      end
       self.load_bitmap("Graphics/Autotiles/", filename)
     end
     def self.battleback(filename)

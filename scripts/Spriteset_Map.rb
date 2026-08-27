@@ -45,7 +45,9 @@ class Spriteset_Map
     @viewport_flash.z = 5000
 
     # Make tilemap
+    @old_setting = Settings[:water]
     @tilemap = Tilemap.new(@viewport)
+    @tilemap.better_water = Settings[:water]
     if $game_map.tileset_name == "blank"
       @tilemap.tileset = nil
     else
@@ -173,6 +175,7 @@ class Spriteset_Map
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
+
     # Update tilemap
     @tilemap.wrapping = $game_map.wrapping
     # If panorama is different from current one
@@ -200,27 +203,28 @@ class Spriteset_Map
           @panorama.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
           @panorama2.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
         else
-          if @panorama_name == "dark_water"
-            @panorama.shader = Shader::Water
-            @panorama.color.set(0, 0, 255, 0)
-            @panorama.tone.set(0, 0, 255, 63)
-            @panorama.blend_type = 1
-          elsif @panorama_name == "green_water"
-            @panorama.shader = Shader::Water
-            @panorama.color.set(0, 21, 43, 100)
-            @panorama.tone.set(13, 236, 255, 200)
-            @panorama.blend_type = 1
-          else
-            @panorama.shader = Shader::Plane
-            @panorama.color.set(0, 0, 0, 0)
-            @panorama.tone.set(0, 0, 0, 0)
-            @panorama.blend_type = 0
-          end
           @panorama.bitmap = RPG::Cache.panorama(@panorama_name, @panorama_hue)
+        end
+        if Settings[:water] && @panorama_name == "dark_water"
+          @panorama.shader = Shader::Water
+          @panorama.color.set(0, 0, 255, 0)
+          @panorama.tone.set(0, 0, 255, 63)
+          @panorama.blend_type = 1
+        elsif Settings[:water] && @panorama_name == "green_water"
+          @panorama.shader = Shader::Water
+          @panorama.color.set(0, 21, 43, 100)
+          @panorama.tone.set(13, 236, 255, 200)
+          @panorama.blend_type = 1
+        else
+          @panorama.shader = Shader::Plane
+          @panorama.color.set(0, 0, 0, 0)
+          @panorama.tone.set(0, 0, 0, 0)
+          @panorama.blend_type = 0
         end
       end
       Graphics.frame_reset
     end
+
     # If fog is different than current fog
     if @fog_name != $game_map.fog_name or @fog_hue != $game_map.fog_hue
       @fog_name = $game_map.fog_name
@@ -296,6 +300,7 @@ class Spriteset_Map
       @panorama.oy = $game_map.pan_offset_y + $game_map.display_y / ($game_map.pan_onetoone ? 4 : 8)
     end
     @panorama.zoom_x = @panorama.zoom_y = $game_map.pan_zoom
+    @panorama.zoom_x = @panorama.zoom_y = $game_map.pan_zoom * 2 if @panorama_name == "green_water" && !Settings[:water]
     # Animate panorama
     if $game_map.pan_animate
       @pan_animate_timer = (@pan_animate_timer + 1) % 16
@@ -308,11 +313,12 @@ class Spriteset_Map
     @panorama.ox += $game_map.pan_move_offset
     @panorama.oy += $game_map.pan_move_offset
 
-    if $game_map.pan_fade_animate && @panorama2 != nil
+    if $game_map.pan_fade_animate && @panorama2 != nil && !((@panorama_name == "green_water" || @panorama_name == "dark_water") && Settings[:water])
       @panorama2.opacity += 3
       @panorama2.ox = @panorama.ox
       @panorama2.oy = @panorama.oy
       @panorama2.zoom_x = @panorama2.zoom_y = $game_map.pan_zoom
+      @panorama2.zoom_x = @panorama2.zoom_y = $game_map.pan_zoom * 2 if @panorama_name == "green_water" && !Settings[:water]
       if @panorama2.opacity >= 255
         @panorama2.opacity = 255
         @panorama.dispose
@@ -324,6 +330,34 @@ class Spriteset_Map
         @pan_frame_index = (@pan_frame_index + 1) % 3
         @panorama2.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
       end
+    end
+
+    if @old_setting != Settings[:water]
+      @old_setting = Settings[:water]
+      @tilemap.better_water = Settings[:water]
+      (0..6).each do |i|
+        autotile_name = $game_map.autotile_names[i]
+        @tilemap.autotiles[i] = RPG::Cache.autotile(autotile_name)
+      end
+
+      if Settings[:water] && @panorama_name == "dark_water"
+        @panorama.shader = Shader::Water
+        @panorama.color.set(0, 0, 255, 0)
+        @panorama.tone.set(0, 0, 255, 63)
+        @panorama.blend_type = 1
+      elsif Settings[:water] && @panorama_name == "green_water"
+        @panorama.shader = Shader::Water
+        @panorama.color.set(0, 42, 86, 100)
+        @panorama.tone.set(13, 236, 255, 200)
+        @panorama.blend_type = 1
+      else
+        @panorama.shader = Shader::Plane
+        @panorama.color.set(0, 0, 0, 0)
+        @panorama.tone.set(0, 0, 0, 0)
+        @panorama.blend_type = 0
+      end
+      @panorama&.opacity = 100
+      @panorama2&.opacity = 0
     end
     # Update fog plane
     @fog.zoom_x = $game_map.fog_zoom / 100.0
@@ -386,16 +420,16 @@ class Spriteset_Map
   # * Misc operations
   #--------------------------------------------------------------------------
   def new_footprint(direction, x, y, character_name)
-  	if Settings[:footprints]
-    	@footprint_sprites << Sprite_Footprint.new(@viewport, direction, x, y, character_name)
+    if Settings[:footprints]
+      @footprint_sprites << Sprite_Footprint.new(@viewport, direction, x, y, character_name)
     end
   end
   def new_maptext(text, x, y)
     @footprint_sprites << Sprite_MapText.new(@viewport, text, x, y)
   end
   def new_footsplash(direction, x, y)
-  	if Settings[:footsplashes]
-    	@footprint_sprites << Sprite_Footsplash.new(@viewport, direction, x, y)
+    if Settings[:footsplashes]
+      @footprint_sprites << Sprite_Footsplash.new(@viewport, direction, x, y)
     end
   end
   def fix_footsplashes(x, y)

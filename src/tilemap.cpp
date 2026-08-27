@@ -228,6 +228,7 @@ struct TilemapPrivate {
 	Table *mapData;
 	Table *priorities;
 	bool visible;
+	bool betterWater;
 	bool wrapping;
 	Vec2i origin;
 
@@ -323,6 +324,7 @@ struct TilemapPrivate {
 	      mapData(0),
 	      priorities(0),
 	      visible(true),
+		  betterWater(true),
 	      wrapping(false),
 	      flashAlphaIdx(0),
 	      atlasSizeDirty(false),
@@ -755,7 +757,7 @@ struct TilemapPrivate {
 	}
 
 	void bindShader(ShaderBase *&shaderVar){
-		if (tiles.animated){ // it is advisable to check for water in some way ッ
+		if (tiles.animated && betterWater){ // it is advisable to check for water in some way ッ
 			TilemapWaterShader &tilemapShader = shState->shaders().tilemapWater;
 			tilemapShader.bind();
 
@@ -772,14 +774,14 @@ struct TilemapPrivate {
 				tilemapShader.setNoiseTexture(shState->sunshine().noiseBitmap->getGLTypes().tex);
 			
 			shaderVar = &tilemapShader;
-		}/*
+		}
 		else if(tiles.animated){
 			TilemapShader &tilemapShader = shState->shaders().tilemap;
 			tilemapShader.bind();
 			tilemapShader.setAniIndex(tiles.frameIdx);
 
 			shaderVar = &tilemapShader;
-		}*/
+		}
 		else{
 			shaderVar = &shState->shaders().simple;
 			shaderVar->bind();
@@ -1111,6 +1113,7 @@ DEF_ATTR_RD_SIMPLE(Tilemap, MapData, Table*, p->mapData)
 DEF_ATTR_RD_SIMPLE(Tilemap, FlashData, Table*, p->flashMap.getData())
 DEF_ATTR_RD_SIMPLE(Tilemap, Priorities, Table*, p->priorities)
 DEF_ATTR_RD_SIMPLE(Tilemap, Visible, bool, p->visible)
+DEF_ATTR_SIMPLE(Tilemap, BetterWater, bool, p->betterWater)
 DEF_ATTR_SIMPLE(Tilemap, Wrapping, bool, p->wrapping)
 DEF_ATTR_RD_SIMPLE(Tilemap, OX, int, p->origin.x)
 DEF_ATTR_RD_SIMPLE(Tilemap, OY, int, p->origin.y)

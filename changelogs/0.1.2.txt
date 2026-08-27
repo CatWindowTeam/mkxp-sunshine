@@ -73,3 +73,4 @@ Added Termux support
 More optimization!
 Big maps chanhes
 Niko dreams updated
+Toggable water shader

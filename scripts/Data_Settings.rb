@@ -18,6 +18,7 @@ module Settings
         :twm_shader             => true,
         :fog                    => true,
         :light                  => true,
+        :water                  => true,
       # :light_layer_detect     => true,
         :scaling_mode           => 0,
         :vsync                  => 0,
@@ -48,8 +49,8 @@ module Settings
         :crashlog_privacy       => false,
         :streamer_privacy       => false,
         :invalid_param_checks   => false,
-	:replace_all_niko       => false,
-		
+        :replace_all_niko       => false,
+
         # ---------- Сontrols -----------
         :gamepad_type           => -1,
         :gamepad_face_style     => 0,
@@ -218,6 +219,7 @@ class Window_Settings
         :presets => [
           {
             :light => false,
+            :water => false,
             :twm_shader => false,
             :fog => false,
             :max_firefly_count => 0,
@@ -226,6 +228,7 @@ class Window_Settings
           },
           {
             :light => false,
+            :water => false,
             :twm_shader => false,
             :fog => true,
             :max_firefly_count => 15,
@@ -234,6 +237,7 @@ class Window_Settings
           },
           {
             :light => true,
+            :water => false,
             :twm_shader => false,
             :fog => true,
             :max_firefly_count => 30,
@@ -242,6 +246,7 @@ class Window_Settings
           },
           {
             :light => true,
+            :water => true,
             :twm_shader => true,
             :fog => true,
             :max_firefly_count => 30,
@@ -277,6 +282,11 @@ class Window_Settings
         :type => :bool,
         :name => "Dynamic Light",
         :parameter => :light,
+      },
+      {
+        :type => :bool,
+        :name => "Dynamic Water",
+        :parameter => :water,
       },
       {
         :type => :bool,
