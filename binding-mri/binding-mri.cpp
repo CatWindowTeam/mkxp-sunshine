@@ -123,7 +123,7 @@ static void mriBindingInit(){
 	rb_define_method(rb_cSymbol, "to_s", RUBY_METHOD_FUNC(rb_symbol_to_s), 0);
 	rb_define_method(rb_cSymbol, "name", RUBY_METHOD_FUNC(rb_symbol_to_s), 0);
 	rb_define_method(rb_cSymbol, "id2name", RUBY_METHOD_FUNC(rb_symbol_to_s), 0);
-	
+
 	tableBindingInit();
 	etcBindingInit();
 	fontBindingInit();

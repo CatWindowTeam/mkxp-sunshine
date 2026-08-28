@@ -1,5 +1,4 @@
 // Error handling and reporting
-
 #include <SDL3/SDL_messagebox.h>
 #include <SDL3/SDL_platform.h>
 #include <SDL3/SDL_rect.h>
@@ -298,6 +297,10 @@ void crash_screen(SDL_Window* win){
 							file << l << '\n';
 						}
 						shit = "[SAVED!]";
+					}else if(e.key.scancode == SDL_SCANCODE_Q){
+						quit = true;
+					}else if(e.key.scancode == SDL_SCANCODE_E){
+						quit = true;
 					}
 				}
 	    		}
