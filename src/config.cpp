@@ -37,7 +37,7 @@
 #include <SDL3/SDL_system.h>
 namespace std{
 	std::ostream& operator<<(std::ostream &os, const std::vector<std::string> &vec){
-		for (auto item : vec){
+		for (const auto item : vec){
 			os << item << " ";
 		}
 		return os;

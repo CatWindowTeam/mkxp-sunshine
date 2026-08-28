@@ -343,7 +343,6 @@ void Font::initDefaultDynAttribs(){
 
 void Font::initDefaults(const SharedFontState &sfs){
 	std::vector<std::string> &names = FontPrivate::initialDefaultNames;
-	
 	// FIXME: Japanese version has "MS PGothic" instead
 	names.push_back("Arial");
 
@@ -355,7 +354,7 @@ void Font::initDefaults(const SharedFontState &sfs){
 
 TTF_Font *Font::getSdlFont(){
 	if (!p->sdlFont)
-		p->sdlFont = shState->fontState().getFont(p->name.c_str(), p->size);
+		p->sdlFont = shState->fontState().getFont(p->name, p->size);
 
 	int style = TTF_STYLE_NORMAL;
 
