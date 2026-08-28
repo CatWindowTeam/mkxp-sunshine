@@ -77,3 +77,4 @@ Toggable water shader
 Removed "Screen mode"
 Removed FPS monitor option in oneshot.conf(now just press F2 to see FPS)
 Engine now handle std::terminate errors with stack trace
+HiDPI and big monitors support updated
