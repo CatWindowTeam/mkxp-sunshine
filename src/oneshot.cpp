@@ -266,7 +266,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	if(path == NULL){
 		path = SDL_GetUserFolder(SDL_FOLDER_HOME);
 		if(path == NULL){
-			WarnMsg("Failed to get user dir's, using current sirectory as fallback.");
+			WarnMsg("Failed to get user dirs, using current directory as a fallback");
 			//use SDL instead this
 			path == ".";
 		}

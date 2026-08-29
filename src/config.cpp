@@ -63,7 +63,7 @@ namespace po = boost::program_options;
 
 #define CONF_FILE "oneshot.conf"
 
-Config::Config() {}
+Config::Config(): defScreenW(640), defScreenH(480) {}
 
 void Config::read(int argc, char *argv[]){
 #define PO_DESC_ALL \

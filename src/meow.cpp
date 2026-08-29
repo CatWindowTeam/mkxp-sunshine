@@ -123,47 +123,47 @@ static void get_reason_and_solution(Exception::Type t) {
     switch (t) {
         case Exception::ModLoaderError:
             crash_reason = "Broken mod";
-            crash_possible_solution = "Fix mode manualy or ask developer to fix it or delete mod";
+            crash_possible_solution = "Fix the mod manually or ask the mod's developers to fix it";
             break;
         case Exception::NoFileError:
             crash_reason = "Broken installation";
-            crash_possible_solution = "Try reinstall game or mods if you load some mods.";
+            crash_possible_solution = "Try reinstalling the game or mods if you're using them";
             break;
         case Exception::ShaderError:
             crash_reason = "Broken Shader";
-            crash_possible_solution = "Try reinstall game";
+            crash_possible_solution = "Try reinstalling the game";
             break;
         case Exception::RGSSError:
             crash_reason = "Internal Error";
-            crash_possible_solution = "Try reinstall game or disable some mods";
+            crash_possible_solution = "Try reinstalling the game or mods if you're using them";
             break;
         case Exception::RUBYError:
             crash_reason = "Internal Error";
-            crash_possible_solution = "Try reinstall game or disable some mods";
+            crash_possible_solution = "Try reinstalling the game or disabling any mods if you're using them";
             break;
         case Exception::IOError:
             crash_reason = "Broken installation";
-            crash_possible_solution = "Try reinstall game";
+            crash_possible_solution = "Try reinstalling the game";
             break;
         case Exception::TypeError:
             crash_reason = "Internal Error";
-            crash_possible_solution = "Try reinstall game or disable some mods";
+            crash_possible_solution = "Try reinstalling the game or mods";
             break;
         case Exception::ArgumentError:
             crash_reason = "Internal error";
-            crash_possible_solution = "Try reinstall game or disable some mods";
+            crash_possible_solution = "Try reinstalling the game or mods";
             break;
         case Exception::PHYSFSError:
             crash_reason = "Internal error";
-            crash_possible_solution = "Maybe you tryed load corrupted mod via modloader, try delete it";
+            crash_possible_solution = "You've probably loaded a corrupted mod via modloader; try deleting it";
             break;
         case Exception::SDLError:
             crash_reason = "Internal error";
-            crash_possible_solution = "Internal Engine Error, maybe something wrong with your device or operating system";
+            crash_possible_solution = "Internal engine error, most likely there's something wrong with your device or operating system";
             break;
         case Exception::MKXPError:
             crash_reason = "Internal error";
-            crash_possible_solution = "Try reinstall game or disable some mods";
+            crash_possible_solution = "Try reinstalling the game or disabling any mods";
             break;
         default:
             break;
@@ -185,12 +185,12 @@ void crash(Exception::Type type, const char *fmt, ...){
 }
 
 
-// Here we prepare information that we display on crash screen and weite in crashdump later
+// Here we prepare information that we display on crash screen and write in crashdump later
 static std::vector<std::string> prepare_crash_info(){
 	boost::stacktrace::stacktrace trace;
 	std::vector<std::string> c = {};
-	c.emplace_back("If you are sure that the problem is not with");
-	c.emplace_back("your device, not with your modifications, or in your hands, please");
+	c.emplace_back("If you're sure that the problem is not with");
+	c.emplace_back("your device, nor with your modifications, nor your ham-fisted setup, please");
 	c.emplace_back("report the bug to the developers");
 	c.emplace_back(std::string{"VERSION: "} + VERSION_STRING);
 	c.emplace_back(std::string{"Possible reason: "} + crash_reason);
@@ -210,7 +210,7 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back(std::string{"Video Driver: "} + SDL_GetCurrentVideoDriver());
 	c.emplace_back(std::string{"Detected Platform: "} + SDL_GetPlatform());
 	c.emplace_back(std::string{"Last PhysFS error: "} + PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-	c.emplace_back(std::string{"Last SDL Error on current thread: "} + SDL_GetError());
+	c.emplace_back(std::string{"Last SDL Error on the current thread: "} + SDL_GetError());
 	#ifdef android
 		c.emplace_back(std::string{"Android API: "} + std::to_string(android_get_device_api_level()));
 	#endif
@@ -236,18 +236,18 @@ void crash_screen(SDL_Window* win){
 	//creating render
 	SDL_Renderer* ren = SDL_CreateRenderer(win, NULL);
 	if (ren == nullptr) {
-		WarnMsg("Failed to create renderer, please check if your device is too strong to run game or report bug.Error Message: ", SDL_GetError());
+		WarnMsg("Failed to create a renderer, please make sure that your device is powerful enough to run the game; otherwise, report the bug. Error Message: ", SDL_GetError());
 		skip_crash_screen = true;
 	}
 	SDL_Surface* crash_img = IMG_Load_IO(SDL_IOFromConstMem(assets_crash_png, assets_crash_png_len), true);
 	if (crash_img == nullptr) {
-		WarnMsg("Failed to create surface, please check if your device is too strong to run game or report bug.Error Message: ", SDL_GetError());
+		WarnMsg("Failed to create a surface, please make sure that your device is powerful enough to run the game; otherwise, report the bug. Error Message: ", SDL_GetError());
 		skip_crash_screen = true;
 	}
 	SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, crash_img);
 	SDL_DestroySurface(crash_img);
 	if (tex == nullptr) {
-		WarnMsg("Failed to create texture, please check if your device is too strong to run game or report bug.Error Message: ", SDL_GetError());
+		WarnMsg("Failed to create a texture, please make sure that your device is powerful enough to run the game; otherwise, report the bug. Error Message: ", SDL_GetError());
 		skip_crash_screen = true;
 	}else{
 		SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
@@ -370,7 +370,7 @@ void WarnMsg(const char *fmt, ...) {
 //https://www.boost.org/doc/libs/latest/doc/html/stacktrace/getting_started.html#stacktrace.getting_started.handle_terminates
 void terminate_stacktrace() {
     try {
-	std::cerr << "World machine crashed!\n";
+	std::cerr << "World machine has crashed!\n";
         std::cerr << boost::stacktrace::stacktrace();
     } catch (...) {}
     std::abort();

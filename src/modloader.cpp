@@ -69,10 +69,10 @@ static int renderer_thread(void* data){
 
 void ModLoader(Config conf, SDL_Window* win){
     if (!fs::exists(conf.Modloader.ModsDirPath) || !fs::is_directory(conf.Modloader.ModsDirPath)) {
-        Debug() << "[MODLOADER] Mods directory not found, skip.";
+        Debug() << "[MODLOADER] Mods directory not found, skipping...";
         return;
     }else if (fs::is_empty(conf.Modloader.ModsDirPath)) {
-        Debug() << "[MODLOADER] Mods directory empty, skip.";
+        Debug() << "[MODLOADER] Mods directory is empty, skipping...";
         return;
     }
     if(conf.SecurityEngine){
@@ -111,6 +111,6 @@ void ModLoader(Config conf, SDL_Window* win){
 	}
         modloader_is_enabled = true;
     } catch (const std::exception& e) {
-        crash(Exception::ModLoaderError, "Something is wrong, Exception: %s ", e.what());
+        crash(Exception::ModLoaderError, "Something went wrong, Exception: %s ", e.what());
     }
 }
