@@ -217,7 +217,8 @@ int main(int argc, char *argv[]){
 	    path = std::filesystem::current_path().string();
 	}
 
-	std::ofstream out(std::filesystem::temp_directory_path() / "sunshine");
+	std::string shit = SDL_GetUserFolder(SDL_FOLDER_HOME);
+	std::ofstream out(std::filesystem::path(shit) / "sunshine");
 	if (!out) {
 	    WarnMsg("Failed to write game directory path to temp file, problems with journal app expected!");
 	} else {
