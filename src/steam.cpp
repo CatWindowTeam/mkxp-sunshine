@@ -1,3 +1,4 @@
+#ifdef STEAM
 #include "steam.h"
 #include "debugwriter.h"
 
@@ -149,3 +150,4 @@ void Steam::lock(const char *name){
 bool Steam::isUnlocked(const char *name){
 	return p->isAchievementSet(name);
 }
+#endif

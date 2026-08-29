@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 project(oneshot)
 include(FindPackageHandleStandardArgs)
 include(CheckCXXCompilerFlag)
@@ -12,27 +12,34 @@ check_ipo_supported(
 )
 
 # Helper for checking if options supported by compiller
-function(check_option var a)
-  set(all ${a})
-  set(var "")
-  list(APPEND all ${ARGN})
-  foreach(x IN LISTS all)
-    check_cxx_compiler_flag(${x} HAVE_OPTION)
-    if(HAVE_OPTION)
-		message("${x} SUPPORTED")
-		list(APPEND var ${x})
-	else()
-		check_c_compiler_flag(${x} HAVE_OPTION_C)
-		if(HAVE_OPTION_C)
-			message("${x} SUPPORTED")
-			list(APPEND var ${x})
-		else()
-			message("${x} UNSUPPORTED")
-		endif()
-    endif()
-  endforeach()
-  set(${var} "${var}" PARENT_SCOPE)
+function(check_option output_var)
+    set(CMAKE_REQUIRED_QUIET TRUE)
+    set(result)
+
+    foreach(option IN LISTS ARGN)
+        string(MAKE_C_IDENTIFIER "${option}" option_id)
+        set(check_var "HAVE_OPTION_${option_id}")
+
+        check_cxx_compiler_flag("${option}" "${check_var}")
+        if(${check_var})
+            message(STATUS "${option} supported")
+            list(APPEND result "${option}")
+        else()
+		set(check_var_c "HAVE_OPTION_C_${option_id}")
+        	check_c_compiler_flag("${option}" "${check_var_c}")
+        	if(${check_var_c})
+        	    message(STATUS "${option} supported")
+        	    list(APPEND result "${option}")
+        	else()
+        	    message(STATUS "${option} unsupported")
+        	endif()
+        endif()
+    endforeach()
+
+    set("${output_var}" "${result}" PARENT_SCOPE)
+    set(CMAKE_REQUIRED_QUIET FALSE)
 endfunction()
+
 
 # Options
 option(STEAM "Build with Steam Support" OFF)
@@ -50,6 +57,9 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # shut the fuck up
 add_compile_options(-Wno-unused-parameter -Wno-tautological-pointer-compare)
@@ -115,9 +125,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(FREEBSDPKGS REQUIRED gtk+-3.0 libxfconf-0)
-    include_directories(${FREEBSD_INCLUDE_DIRS})
-    add_compile_options(${FREEBSD_CFLAGS_OTHER})
-    list(APPEND PLATFORM_LIBRARIES ${FREEBSD_LDFLAGS})
+    include_directories(${FREEBSDPKGS_INCLUDE_DIRS})
+    add_compile_options(${FREEBSDPKGS_CFLAGS_OTHER})
+    list(APPEND PLATFORM_LIBRARIES ${FREEBSDPKGS_LDFLAGS})
     set(STEAM OFF)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     set(STEAM OFF)
@@ -164,7 +174,7 @@ set(EMBEDDED_INPUT
 ## Process Embeddeds ##
 find_program(XXD_EXE
   NAMES xxd xxd.exe
-  DOC "Location of the xxd executable"
+  REQUIRED
   HINTS
     ENV PATH
     /usr/bin /usr/local/bin .
@@ -191,6 +201,22 @@ endforeach()
 # recursive search insead of hardcored list
 file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/binding-mri/*.h*")
 file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/binding-mri/*.c*")
+
+if(STEAM)
+        list(APPEND MAIN_HEADERS
+                steamshim/steamshim_child.h
+        )
+        list(APPEND MAIN_SOURCE
+                steamshim/steamshim_child.c
+        )
+        add_definitions(-DSTEAM)
+        add_subdirectory(steamshim_parent)
+        # steam_appid.txt
+        configure_file(
+                "${CMAKE_SOURCE_DIR}/steam_appid.txt"
+                "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/steam_appid.txt"
+                COPYONLY)
+endif()
 
 if(NATIVE)
 	check_option(OPTIONS_NATIVE -march=native -mtune=native)
@@ -298,7 +324,7 @@ if(ANDROID)
                 	${BINDING_SOURCE}
                 	${EMBEDDED_SOURCE})
 	else()
-		add_library(main SHARED
+		add_library(${PROJECT_NAME} SHARED
                 	${MAIN_HEADERS}
                 	${MAIN_SOURCE}
                 	${BINDING_HEADERS}
@@ -332,11 +358,11 @@ find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(SDL3_image CONFIG REQUIRED)
-find_package(SDL3_mixer CONFIG REQUIRED REQUIRED)
+find_package(SDL3_mixer CONFIG REQUIRED)
 find_package(SDL3_ttf CONFIG REQUIRED)
 find_package(SDL3_net REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options chrono)
-find_package(PhysFS)
+find_package(PhysFS REQUIRED)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
 find_package(Ruby 3.0 REQUIRED COMPONENTS Development)
@@ -351,8 +377,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 	${PIXMAN_INCLUDE_DIR}
 	${SIGC2_INCLUDE_DIRS}
 	${Ruby_INCLUDE_DIRS}
-	Boost::boost
-	${Boost_INCLUDE_DIRS}
+	Boost::headers
 	${ZLIB_INCLUDE_DIRS}
 	SDL3_mixer::SDL3_mixer
 	SDL3_net::SDL3_net)
@@ -374,21 +399,4 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	ZLIB::ZLIB
 	${PLATFORM_LIBS})
 
-if(STEAM)
-	list(APPEND MAIN_HEADERS
-		src/steam.h
-		steamshim/steamshim_child.h
-	)
-	list(APPEND MAIN_SOURCE
-		src/steam.cpp
-		steamshim/steamshim_child.c
-	)
-	add_definitions(-DSTEAM)
-	add_subdirectory(steamshim_parent)
-	# steam_appid.txt
-	configure_file(
-		"${CMAKE_SOURCE_DIR}/steam_appid.txt"
-		"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/steam_appid.txt"
-		COPYONLY)
-endif()
 add_subdirectory(scripts)

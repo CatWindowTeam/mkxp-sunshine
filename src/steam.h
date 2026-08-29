@@ -1,6 +1,6 @@
-#ifndef STEAM_H
-#define STEAM_H
+#pragma once
 
+#ifdef STEAM
 #include <string>
 
 struct SteamPrivate;
@@ -23,4 +23,4 @@ private:
 	SteamPrivate *p;
 };
 
-#endif // STEAM_H
+#endif
