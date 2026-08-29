@@ -753,7 +753,7 @@ RB_METHOD(wallpaperReset){
 				Debug() << cmd;
 				int status = std::system(cmd.c_str());
 				if (status != 0) {
-					Debug() << "bliat ono slomalos";
+					Debug() << "Failed to exec pcmanfm";
 				}
 			}
 		} else if(desktop == "lxqt"){
@@ -762,19 +762,19 @@ RB_METHOD(wallpaperReset){
 				Debug() << cmd;
 				int status = std::system(cmd.c_str());
 				if (status != 0) {
-					Debug() << "bliat ono slomalos";
+					Debug() << "Failed to exec pcmanfm-qt";
 				}
 			}
 		} else if (wpTool == "feh") {
 			std::string cmd = originalFehbgExists ? originalFehbgCmd : "xsetroot -solid black";
 			int status = std::system(cmd.c_str());
 			if (status != 0) {
-				Debug() << "bliat ono slomalos";
+				Debug() << "Failed to exec xsetroot";
 			}
 		} else if (wpTool == "nitrogen") {
 			int status = std::system("nitrogen --restore");
 			if (status != 0) {
-				Debug() << "bliat ono slomalos";
+				Debug() << "Failed to exec nitrogen";
 			}
 		} else {
 			if (remove(fallbackPath.c_str()) != 0) {
