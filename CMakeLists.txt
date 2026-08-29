@@ -285,12 +285,8 @@ else()
 	-fno-ident
 	-fvirtual-function-elimination
 	-fwhole-program-vtables
-	-fweb
-	-fuse-linker-plugin
-	-mrecip
-	-fno-unique-section-names
-	-fira-loop-pressure
-	-fira-hoist-pressure)
+	-fweb)
+
 	add_compile_options(${OPTIONS_RELEASE})
 
 	add_link_options(-Wl,-O2
