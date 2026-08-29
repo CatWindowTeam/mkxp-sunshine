@@ -1,34 +1,15 @@
 #!/bin/sh
-set -ueo pipefail
 cd `dirname $0`
 
 # User-configurable variables
 mac_version="1.1.1"
 ONESHOT_PATH=$HOME/Library/Application\ Support/Steam/steamapps/common/OneShot
-use_qmake=True
 
-echo "Compiling Sunshine engine for macOS...\n"
-
-if [[ $use_qmake == True ]]
-	then
-	echo "-> Generate makefile..."
-	qmake MRIVERSION=3.3
-	echo "-> Compile engine..."
-	make -j"${nproc}"
-	echo "-> Compile steamshim..."
-	# cd steamshim_parent
-	# mkdir build && cd build
-	# cmake ..
-	# STEAMWORKS=./steamworks make -j${make_threads}
-	# cd ../..
-else
-	echo "WARNING: Conan/CMake method not ready yet."
-fi
-echo "-> Compile journal..."
-pyinstaller journal/unix/journal.spec --onefile --windowed
+cmake . -B build/
+cd build
+make -j"$(nproc)"
 
 # Create app bundles
-echo "-> Create app bundles..."
 OSX_App="OneShot.app"
 ContentsDir="$OSX_App/Contents"
 LibrariesDir="$OSX_App/Contents/Libraries"

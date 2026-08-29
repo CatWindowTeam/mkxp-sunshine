@@ -40,7 +40,6 @@ foreach(item ${EMBEDDED_INPUT})
 	ProcessWithXXD(EMBEDDED_SOURCE ${item} ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
 
-source_group("Embedded Source" FILES ${EMBEDDED_INPUT} ${EMBEDDED_SOURCE})
 add_executable(${PROJECT_NAME} ${EMBEDDED_SOURCE} main.c)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(SDL3_image CONFIG REQUIRED)

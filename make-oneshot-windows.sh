@@ -1,4 +1,5 @@
 #!/bin/bash
+# For MSYS2
 set -euo pipefail
 # User-configurable variables.
 oneshot_id="$(cat steam_appid.txt)"

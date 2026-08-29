@@ -2,8 +2,10 @@
 require 'zlib'
 
 def usage
-  STDERR.puts "Tool for building and extracting Oneshot scripts file(xScripts.rxdata)"
-  STDERR.puts "usage: rpgscript.rb scripts_dir game_dir [x]"
+  STDERR.puts "Tool for building and extracting xScripts.rxdata"
+  STDERR.puts "\nUsage examples:"
+  STDERR.puts "Create xScripts: rpgscript.rb scripts_dir game_dir"
+  STDERR.puts "Extract xScripts: rpgscript.rb output_dir game_dir x"
   exit 1
 end
 

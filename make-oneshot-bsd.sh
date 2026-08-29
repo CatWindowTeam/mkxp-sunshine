@@ -1,6 +1,5 @@
 #!/bin/sh
-set -euo pipefail
-cmake . -B build/
+cmake . -B build/ -DDEBUG=OFF
 cd build
 make -j$(nproc)
 cd ..
@@ -8,10 +7,8 @@ cd ..
 mkdir -p build/bandle
 mkdir -p build/bandle
 mkdir -p build/bandle/Data
-pyinstaller journal/unix/journal.spec #--windowed
 ruby rpgscript.rb scripts/ build/bandle/
 
-cp -r dist/_______/* build/bandle/
 cp build/oneshot build/bandle/
 
 # Copy libraries.
@@ -29,8 +26,5 @@ zip -r OneshotSunshine_BSD.zip bandle/*
 cd ..
 
 # Cleanup.
-rm -rf journal/unix/__pycache__
-#rm -rf build/*
-rm -rf dist
-#rm -rf steamshim_parent/build
+rm -rf build
 rm -rf libs

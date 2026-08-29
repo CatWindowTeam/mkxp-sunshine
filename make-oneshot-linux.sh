@@ -14,7 +14,6 @@ mkdir -p build/bandle
 mkdir -p build/bandle/Data
 
 # Compile steamshim.
-#echo -e "-> ${cyan}Compile steamshim...${color_reset}"
 #cd steamshim_parent
 #mkdir build
 #cd build
@@ -23,22 +22,8 @@ mkdir -p build/bandle/Data
 #make -j${make_threads} > steamshim.make.out
 #cd ../..
 
-if [ ! -d "venv" ]; then
-    echo "Creating venv folder and installing pip packages"
-    python3 -m venv venv
-    source venv/bin/activate
-    # the packages themselves
-    pip install --upgrade pip
-    pip install pyqt5 pyinstaller
-else
-    echo "The 'venv' folder already exists."
-    source venv/bin/activate
-fi
-pyinstaller journal/unix/journal.spec #--windowed
-deactivate
 ruby rpgscript.rb scripts/ build/bandle/
 
-cp -r dist/_______/* build/bandle/
 cp build/oneshot build/bandle/
 
 #yes | cp steamshim_parent/build/steamshim "$ONESHOT_PATH"
@@ -56,8 +41,7 @@ cp oneshot.conf build/bandle
 zip -9 -r build/OneshotSunshine_Linux.zip build/bandle/*
 
 # Cleanup.
-rm -rf journal/unix/__pycache__
-#rm -rf build/*
-rm -rf dist
-#rm -rf steamshim_parent/build
+rm -rf build
+rm -rf steamshim_parent/build
+rm -rf journal/SDL/build
 rm -rf libs

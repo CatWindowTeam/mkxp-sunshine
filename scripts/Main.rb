@@ -7,7 +7,6 @@ class Float
 end
 
 begin
-  Journal.set "save"
   RPG::Mod.exec_hooks("hooks/Main/start", binding)
   $console = Graphics.fullscreen
   Graphics.frame_rate = 60
