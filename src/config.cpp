@@ -67,34 +67,34 @@ Config::Config() {}
 
 void Config::read(int argc, char *argv[]){
 #define PO_DESC_ALL \
-	PO_DESC(debugMode, bool, false) \
-	PO_DESC(fullscreen, bool, false) \
-	PO_DESC(fixedAspectRatio, bool, true) \
-	PO_DESC(smoothScaling, bool, false) \
-	PO_DESC(defScreenW, int, 0) \
-	PO_DESC(defScreenH, int, 0) \
-	PO_DESC(windowTitle, std::string, "") \
-	PO_DESC(commonDataPath, std::string, "") \
-	PO_DESC(Modloader.ModsDirPath, std::string,"mods") \
-	PO_DESC(Modloader.skip_modloader_screen, bool, false) \
-	PO_DESC(fixedFramerate, int, 0) \
-	PO_DESC(frameSkip, bool, true) \
-	PO_DESC(syncToRefreshrate, bool, false) \
-	PO_DESC(solidFonts, bool, false) \
-	PO_DESC(subImageFix, bool, false) \
-	PO_DESC(enableBlitting, bool, true) \
-	PO_DESC(maxTextureSize, int, 0) \
-	PO_DESC(gameFolder, std::string, ".") \
-	PO_DESC(allowSymlinks, bool, false) \
-	PO_DESC(iconPath, std::string, "") \
-	PO_DESC(wallpaperMode, std::string, "normal") \
-	PO_DESC(SE.sourceCount, int, 6) \
-	PO_DESC(pathCache, bool, true) \
-	PO_DESC(Windows_AllocConsole, bool, false) \
-	PO_DESC(pancakes, bool, false) \
-	PO_DESC(SecurityEngine, bool, true) \
-	PO_DESC(journal_address, std::string, "127.0.0.1") \
-	PO_DESC(journal_port, int, 23821)
+	PO_DESC(debugMode,                       bool,        false       ) \
+	PO_DESC(fullscreen,                      bool,        false       ) \
+	PO_DESC(fixedAspectRatio,                bool,        true        ) \
+	PO_DESC(smoothScaling,                   bool,        false       ) \
+	PO_DESC(defScreenW,                      int,         0           ) \
+	PO_DESC(defScreenH,                      int,         0           ) \
+	PO_DESC(windowTitle,                     std::string, ""          ) \
+	PO_DESC(commonDataPath,                  std::string, ""          ) \
+	PO_DESC(Modloader.ModsDirPath,           std::string, "mods"      ) \
+	PO_DESC(Modloader.skip_modloader_screen, bool,        false       ) \
+	PO_DESC(fixedFramerate,                  int,         0           ) \
+	PO_DESC(frameSkip,                       bool,        true        ) \
+	PO_DESC(syncToRefreshrate,               bool,        false       ) \
+	PO_DESC(solidFonts,                      bool,        false       ) \
+	PO_DESC(subImageFix,                     bool,        false       ) \
+	PO_DESC(enableBlitting,                  bool,        true        ) \
+	PO_DESC(maxTextureSize,                  int,         0           ) \
+	PO_DESC(gameFolder,                      std::string, "."         ) \
+	PO_DESC(allowSymlinks,                   bool,        false       ) \
+	PO_DESC(iconPath,                        std::string, ""          ) \
+	PO_DESC(wallpaperMode,                   std::string, "normal"    ) \
+	PO_DESC(SE.sourceCount,                  int,         6           ) \
+	PO_DESC(pathCache,                       bool,        true        ) \
+	PO_DESC(Windows_AllocConsole,            bool,        false       ) \
+	PO_DESC(pancakes,                        bool,        false       ) \
+	PO_DESC(SecurityEngine,                  bool,        true        ) \
+	PO_DESC(journal_address,                 std::string, "127.0.0.1" ) \
+	PO_DESC(journal_port,                    int,         23821       )
 
 // Not gonna take your shit boost
 #define GUARD_ALL( SDL_exp ) try { SDL_exp } catch(...) {}
