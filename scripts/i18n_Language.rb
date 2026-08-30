@@ -1,3 +1,6 @@
+#PRIORITY 100
+# ^ use this for loading order
+
 # Classes for translating text similar to GNU gettext
 # Translator class: translate text to another language
 

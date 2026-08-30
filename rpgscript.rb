@@ -40,9 +40,6 @@ unless target_path
   target_path = File.join(game_data_dir, 'xScripts.rxdata')
 end
 
-# Generate path of script list
-list_path = File.join(scripts_dir, '_scripts.txt')
-
 if extract
   # Make sure the script directory exists
   Dir.mkdir(scripts_dir) unless Dir.exist? scripts_dir
@@ -52,56 +49,66 @@ if extract
 
   # Read scripts
   File.open(target_path, 'rb') do |fin|
-    File.open(list_path, 'w') do |flist|
-      Marshal.load(fin).each_with_index do |script, index|
-        name = script[1].strip
-        data = Zlib::Inflate.inflate(script[2]).rstrip
-          .gsub(/[ \t]*(?:$|\r\n?)/, "\n")
+    Marshal.load(fin).each_with_index do |script, index|
+      name = script[1].strip
+      data = Zlib::Inflate.inflate(script[2]).rstrip
+        .gsub(/[ \t]*(?:$|\r\n?)/, "\n")
 
-        # Make sure this file doesn't already exist
-        if name.empty?
-          if data.empty? || data == "\n"
-            flist.puts
-            next
-          else
-            name = 'UNTITLED'
-          end
-        end
-
-        names[name] += 1
-        if names[name] > 1
-          name << " (#{names[name]})"
-        end
-
+      # Make sure this file doesn't already exist
+      if name.empty?
         if data.empty? || data == "\n"
-          # Treat this like a comment
-          flist.puts('# ' + name)
+          next
         else
-          # Write to file order list
-          flist.puts(name)
-
-          # Write script file
-          File.open(File.join(scripts_dir, name + '.rb'), 'wb') do |fout|
-            fout.write(data)
-          end
+          name = 'UNTITLED'
         end
+      end
+
+      names[name] += 1
+      if names[name] > 1
+        name << " (#{names[name]})"
+      end
+
+      file_path = File.join(scripts_dir, name + ".rb")
+
+      # Make subdirs if its doesn't exists
+      dir_path = File.dirname(file_path)
+      FileUtils.mkdir_p(dir_path)
+
+      # Write script file
+      File.open(file_path, 'wb') do |fout|
+        fout.write(data)
       end
     end
   end
   puts "#{target_path} extracted."
 else
   # Write scripts
+  script_files = Dir.glob("#{scripts_dir}/**/*.rb", base: "scripts").select { |f| File.file?(f) }
+
+  priorities = script_files.map do |file_path|
+    priority = 0
+    first_line = File.open(file_path, &:gets)
+    if first_line && first_line.rstrip.gsub(/[ \t]*(?:$|\r\n?)/, "\n") =~ /#\s*PRIORITY\s+(-?\d+)$/
+      priority = $1.to_i
+    end
+
+    [priority, file_path]
+  end
+  sorted = priorities.sort_by { |priority, path| [-priority, path] }
+  final = sorted.map { |priority, path| path }
+
+  #puts final
+
   scripts = []
+  final.each do |path|
+    path.strip!
+    next if path.empty?
 
-  IO.foreach(list_path) do |name|
-    name.strip!
-    next if name.empty? || name.start_with?('#')
-
-    data = File.read(File.join(scripts_dir, name + '.rb')).rstrip.gsub("\n", "\r\n")
+    data = File.read(path).rstrip.gsub("\n", "\r\n")
 
     script = Array.new(3)
     script[0] = 0
-    script[1] = name
+    script[1] = path.delete_suffix(".rb")
     script[2] = Zlib.deflate(data)
     scripts << script
   end

@@ -1,3 +1,5 @@
+#PRIORITY 100
+
 module Settings
   FILE_PATH = [Oneshot::SAVE_PATH, 'settings.sunshine.dat'].join '/'
 

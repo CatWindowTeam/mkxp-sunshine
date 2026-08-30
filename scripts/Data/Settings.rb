@@ -284,7 +284,8 @@ class Window_Settings
       {
         :type => :bool,
         :name => "Frameskip",
-        :parameter => :frameskip
+        :parameter => :frameskip,
+        :icon => [5, 3],
       },
       { :type => :sep, :name => "Effects"},
       {
@@ -308,7 +309,8 @@ class Window_Settings
       {
         :type => :bool,
         :name => "World machine shader",
-        :parameter => :twm_shader
+        :parameter => :twm_shader,
+        :icon => [6, 0],
       },
       { :type => :sep, :name => "Particles"},
       {

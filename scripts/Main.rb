@@ -1,3 +1,5 @@
+#PRIORITY -1
+
 # After defining each class, actual processing begins here.
 
 class Float
