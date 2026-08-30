@@ -172,32 +172,36 @@ class Window_Settings
         :name => "Master Volume",
         :parameter => :master_volume,
         :min => 0,
-        :max => 100
+        :max => 100,
+        :icon => [2, 1],
       },
       {
         :type => :slider,
         :name => "BGM Volume",
         :parameter => :bgm_volume,
         :min => 0,
-        :max => 100
+        :max => 100,
+        :icon => [2, 1],
       },
       {
         :type => :slider,
         :name => "SFX Volume",
         :parameter => :sfx_volume,
         :min => 0,
-        :max => 100
+        :max => 100,
+        :icon => [2, 1],
       },
       { :type => :sep, :name => "Game tracks"},
       {
         :type => :bool,
         :name => "ITS TIME FOR FIGHT CRIME",
-        :parameter => :fight_crime_track
+        :parameter => :fight_crime_track,
+        :icon => [3, 1],
       },
       {
         :type => :bool,
         :name => "Use Old Self Contained Universe(Reprise) version",
-        :icon => [1, 1],
+        :icon => [3, 1],
         :parameter => :old_reprise_song
       },
     ],
@@ -208,7 +212,21 @@ class Window_Settings
         :name => "Resolution",
         :default => 0,
         :parameter => Graphics::RESOLUTION_OVERRIDDEN ? nil : :resolution,
-        :values => Graphics::RESOLUTION_OVERRIDDEN ? ["Resolution is redefined via config"] : Graphics.resolutions_names_list
+        :values => Graphics::RESOLUTION_OVERRIDDEN ? ["Resolution is redefined via config"] : Graphics.resolutions_names_list,
+        :icon => [0, 2],
+      },
+      {
+        :type => :bool,
+        :name => "Fullscreen",
+        :parameter => :fullscreen,
+        :icon => [1, 2],
+      },
+      {
+        :type => :enum,
+        :name => "Scaling mode",
+        :parameter => :scaling_mode,
+        :values => ["Nearest Neighbor", "Smooth(old)"],
+        :icon => [2, 2],
       },
       {
         :type => :presets,
@@ -216,6 +234,7 @@ class Window_Settings
         :parameter => :graphics_preset,
         :custom_text => "Custom",
         :values => ["Potato", "Low", "Normal", "High"],
+        :icon => [3, 2],
         :presets => [
           {
             :light => false,
@@ -256,55 +275,47 @@ class Window_Settings
         ]
       },
       {
-        :type => :bool,
-        :name => "Fullscreen",
-        :parameter => :fullscreen
+        :type => :enum,
+        :name => "Vsync mode",
+        :parameter => :vsync,
+        :values => ["Normal", "Adaptive", "Disabled"],
+        :icon => [2, 3],
       },
       {
         :type => :bool,
         :name => "Frameskip",
         :parameter => :frameskip
       },
-      {
-        :type => :enum,
-        :name => "Scaling mode",
-        :parameter => :scaling_mode,
-        :values => ["Nearest Neighbor", "Smooth(old)"]
-      },
-      {
-        :type => :enum,
-        :name => "Vsync mode",
-        :parameter => :vsync,
-        :values => ["Normal", "Adaptive", "Disabled"]
-      },
       { :type => :sep, :name => "Effects"},
       {
         :type => :bool,
         :name => "Dynamic Light",
         :parameter => :light,
+        :icon => [3, 3],
       },
       {
         :type => :bool,
         :name => "Dynamic Water",
         :parameter => :water,
+        :icon => [1, 3],
+      },
+      {
+        :type => :bool,
+        :name => "Fog",
+        :icon => [4, 0],
+        :parameter => :fog
       },
       {
         :type => :bool,
         :name => "World machine shader",
         :parameter => :twm_shader
       },
-      {
-        :type => :bool,
-        :name => "Fog",
-        :icon => [1, 1],
-        :parameter => :fog
-      },
       { :type => :sep, :name => "Particles"},
       {
         :type => :slider,
         :name => "Density of glen fireflies",
         :parameter => :max_firefly_count,
-        :icon => [1, 1],
+        :icon => [4, 1],
         :min => 0,
         :max => 30
       },
@@ -312,19 +323,21 @@ class Window_Settings
         :type => :slider,
         :name => "Density of shrims (!EXPEREMENTAL!)",
         :parameter => :max_shrimp_count,
-        :icon => [1, 1],
+        :icon => [4, 2],
         :min => 0,
         :max => 80
       },
       {
         :type => :bool,
         :name => "Footprints",
-        :parameter => :footprints
+        :parameter => :footprints,
+        :icon => [4, 3],
       },
       {
         :type => :bool,
         :name => "Footsplashes",
-        :parameter => :footsplashes
+        :parameter => :footsplashes,
+        :icon => [5, 0],
       },
     ],
     "UI" => [

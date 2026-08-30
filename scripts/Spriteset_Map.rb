@@ -226,7 +226,7 @@ class Spriteset_Map
     end
 
     # If fog is different than current fog
-    if @fog_name != $game_map.fog_name or @fog_hue != $game_map.fog_hue
+    if Settings[:fog] && (@fog_name != $game_map.fog_name or @fog_hue != $game_map.fog_hue)
       @fog_name = $game_map.fog_name
       @fog_hue = $game_map.fog_hue
       if @fog.bitmap != nil
@@ -360,13 +360,16 @@ class Spriteset_Map
       @panorama2&.opacity = 0
     end
     # Update fog plane
-    @fog.zoom_x = $game_map.fog_zoom / 100.0
-    @fog.zoom_y = $game_map.fog_zoom / 100.0
-    @fog.opacity = $game_map.fog_opacity
-    @fog.blend_type = $game_map.fog_blend_type
-    @fog.ox = $game_map.display_x / 4 + $game_map.fog_ox
-    @fog.oy = $game_map.display_y / 4 + $game_map.fog_oy
-    @fog.tone = $game_map.fog_tone
+    @fog.visible = Settings[:fog]
+    if Settings[:fog]
+      @fog.zoom_x = $game_map.fog_zoom / 100.0
+      @fog.zoom_y = $game_map.fog_zoom / 100.0
+      @fog.opacity = $game_map.fog_opacity
+      @fog.blend_type = $game_map.fog_blend_type
+      @fog.ox = $game_map.display_x / 4 + $game_map.fog_ox
+      @fog.oy = $game_map.display_y / 4 + $game_map.fog_oy
+      @fog.tone = $game_map.fog_tone
+    end
     # Update character sprites
     @character_sprites.each do |sprite|
       if !sprite.character.is_a?(Game_Event)
