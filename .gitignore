@@ -49,3 +49,4 @@ build/
 /.cache
 *.lock.json
 .idea/
+.rubocop_todo.yml
