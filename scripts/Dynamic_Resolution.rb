@@ -44,7 +44,7 @@ module Graphics
     end
     file_tag = RESOLUTIONS[Settings[:resolution] || 999]&.[](:file_tag) || ""
     if PhysFS.exist?(path + file_tag + extention)
-    return path + file_tag
+      return path + file_tag
     else
       if File.exist?(path + file_tag + extention)
         return path + file_tag
