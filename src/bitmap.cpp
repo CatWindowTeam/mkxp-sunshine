@@ -342,7 +342,8 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 	SDL_Surface *srcSurf = source.megaSurface();
 
 	if (srcSurf && shState->config().subImageFix){
-		/* Blit from software surface, for broken GL drivers */
+	
+		// Blit from software surface, for broken GL drivers
 		Vec2i gpTexSize;
 		shState->ensureTexSize(sourceRect.w, sourceRect.h, gpTexSize);
 		shState->bindTex();
@@ -371,8 +372,8 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 		return;
 	}
 	else if (srcSurf){
-		/* Blit from software surface */
-		/* Don't do transparent blits for now */
+		// Blit from software surface
+		// Don't do transparent blits for now
 		if (opacity < 255)
 			source.ensureNonMega();
 
@@ -394,13 +395,13 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 		TEX::bind(p->gl.tex);
 
 		if (bltRect.w == dstRect.w && bltRect.h == dstRect.h){
-			/* Dest rectangle lies within bounding box */
+			// Dest rectangle lies within bounding box
 			TEX::uploadSubImage(destRect.x, destRect.y,
 			                    destRect.w, destRect.h,
 			                    blitTemp->pixels, GL_RGBA);
 		}
 		else{
-			/* Clipped blit */
+			// Clipped blit
 			GLMeta::subRectImageUpload(blitTemp->w, bltRect.x - dstRect.x, bltRect.y - dstRect.y,
 			                           bltRect.x, bltRect.y, bltRect.w, bltRect.h, blitTemp, GL_RGBA);
 			GLMeta::subRectImageEnd();
@@ -413,7 +414,7 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 	}
 
 	if (opacity == 255 && !p->touchesTaintedArea(destRect)){
-		/* Fast blit */
+		// Fast blit
 		GLMeta::blitBegin(p->gl);
 		GLMeta::blitSource(source.p->gl);
 		GLMeta::blitRectangle(sourceRect, destRect);
