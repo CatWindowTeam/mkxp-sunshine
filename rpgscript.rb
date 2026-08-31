@@ -83,7 +83,7 @@ if extract
   puts "#{target_path} extracted."
 else
   # Write scripts
-  script_files = Dir.glob("#{scripts_dir}/**/*.rb", base: scripts_dir).select { |f| File.file?(f) }
+  script_files = Dir.glob(File.join(scripts_dir, "/**/*.rb")).select { |f| File.file?(f) }
 
   priorities = script_files.map do |file_path|
     priority = 0
@@ -108,7 +108,7 @@ else
 
     script = Array.new(3)
     script[0] = 0
-    script[1] = path.delete_suffix(".rb")
+    script[1] = path.delete_suffix(".rb").sub(/^#{Regexp.escape(scripts_dir)}\/?/, '')
     script[2] = Zlib.deflate(data)
     scripts << script
   end
