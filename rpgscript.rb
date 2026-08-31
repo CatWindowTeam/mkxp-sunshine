@@ -83,7 +83,7 @@ if extract
   puts "#{target_path} extracted."
 else
   # Write scripts
-  script_files = Dir.glob("#{scripts_dir}/**/*.rb", base: "scripts").select { |f| File.file?(f) }
+  script_files = Dir.glob("#{scripts_dir}/**/*.rb", base: scripts_dir).select { |f| File.file?(f) }
 
   priorities = script_files.map do |file_path|
     priority = 0
