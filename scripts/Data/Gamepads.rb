@@ -617,7 +617,7 @@ module GamepadIcons
           debug_string << "gamepad " << current_gamepad << "\n"
           iterations += 1
           if iterations > 10
-            puts debug_string
+            Logger.Debug debug_string
             result = [8, 16]
           end
           next
@@ -641,7 +641,7 @@ module GamepadIcons
           debug_string << "gamepad " << current_gamepad << "\n"
           iterations += 1
           if iterations > 10
-            puts debug_string
+            Logger.Error debug_string
             result = false
           end
           next
@@ -665,7 +665,7 @@ module GamepadIcons
           debug_string << current_gamepad << "\n"
           iterations += 1
           if iterations > 10
-            puts debug_string
+            Logger.Error debug_string
             result = [8, 16]
           end
           next
@@ -697,7 +697,7 @@ module GamepadIcons
           debug_string << "gamepad " << current_gamepad << "\n"
           iterations += 1
           if iterations > 10
-            puts debug_string
+            Logger.Error debug_string
             result = [8, 16]
           end
           next

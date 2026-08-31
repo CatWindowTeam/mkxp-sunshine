@@ -6,6 +6,13 @@
 inline std::vector<std::string> logs = {};
 inline std::vector<std::string> modloader_logs = {};
 
+// 4 - debug
+// 3 - info
+// 2 - warn
+// 1 - error
+// 0 - fatal error 
+inline int loglevel = 3;
+
 inline bool show_crash_screen = false;
 inline bool is_privacy_crashdump_enabled = false;
 inline bool is_ruby_initialized = false;

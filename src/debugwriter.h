@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEBUGWRITER_H
-#define DEBUGWRITER_H
-
+#pragma once
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -45,8 +43,7 @@ public:
 	template<typename T>
 	Debug &operator<<(const T &t){
 		buf << t;
-		buf << " ";
-
+		buf << "";
 		return *this;
 	}
 
@@ -58,13 +55,10 @@ public:
 		return *this;
 	}
 
-	template<typename T>
-	Debug &operator<<(const VALUE &v){
-		if(!is_ruby_initialized){
-			buf << "[RB_UNINITIALIZED_WARN]\n";
-		}
-		buf << rb_inspect(v);
-		return *this;
+	Debug& operator<<(VALUE v){
+	    VALUE inspected = rb_inspect(v);
+	    buf << StringValueCStr(inspected);
+	    return *this;
 	}
 
 	~Debug() {
@@ -85,5 +79,3 @@ public:
 private:
 	std::ostringstream buf;
 };
-
-#endif // DEBUGWRITER_H

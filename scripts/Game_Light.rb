@@ -89,11 +89,11 @@ class Game_Light
   end
 
   def done
-    puts "variable \"done\" of $light is deprecated, please dont use it"
+    Logger.Warn "variable \"done\" of $light is deprecated, please dont use it"
     @done
   end
   def done=(val)
-    puts "variable \"done\" of $light is deprecated, please dont use it"
+    Logger.Warn "variable \"done\" of $light is deprecated, please dont use it"
     @done = val
   end
   

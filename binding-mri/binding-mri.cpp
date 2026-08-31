@@ -96,6 +96,7 @@ void keybindingsBindingInit();
 void lightmapBindingInit();
 void ProfilerInit();
 void PhysFS_binding_init();
+void LoggerInit();
 
 RB_METHOD(mriPrint);
 RB_METHOD(mriP);
@@ -144,7 +145,7 @@ static void mriBindingInit(){
 	wallpaperBindingInit();
 	nikoBindingInit();
 	oneshotBindingInit();
-        SunshineBindingInit();
+    SunshineBindingInit();
 	steamBindingInit();
 	shaderBindingInit();
 	ModLoaderBindingInit();
@@ -152,6 +153,7 @@ static void mriBindingInit(){
 	lightmapBindingInit();
 	ProfilerInit();
 	PhysFS_binding_init();
+	LoggerInit();
 
 	_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
 	_rb_define_module_function(rb_mKernel, "rgss_stop", mriRgssStop);
@@ -174,7 +176,6 @@ static void mriBindingInit(){
 	_rb_define_module_function(mod, "puts", mkxpPuts);
 	_rb_define_module_function(mod, "raw_key_states", mkxpRawKeyStates);
 	_rb_define_module_function(mod, "mouse_in_window", mkxpMouseInWindow);
-
 }
 
 static void printP(int argc, VALUE *argv, const char *convMethod, const char *sep){

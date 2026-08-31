@@ -168,7 +168,7 @@ def load_perma_flags
 	begin
       read_perma_flags(PERMA_FLAGS_NAME)
 	rescue TypeError, ArgumentError => e
-	  puts "oops: #{e.message}"
+	  Logger.Error "oops: #{e.message}"
 	  EdText.err("p-settings.dat corrupt. Attempting to load backup.")
 	  for i in 1..6
 	    if !File.exist?(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i).to_s + ".bk")
@@ -182,7 +182,7 @@ def load_perma_flags
 	      read_perma_flags(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i).to_s + ".bk")
 		  break
 	    rescue TypeError, ArgumentError => e2
-	      puts "oops: #{e2.message}"
+	      Logger.Error "oops: #{e2.message}"
 	      EdText.err("p-settings" + (i).to_s + ".bk corrupt. Attempting to load backup.")
 		end
 	  end
@@ -215,7 +215,7 @@ def real_load
   begin
     load(SAVE_FILE_NAME)
   rescue TypeError, ArgumentError => e
-    puts "oops: #{e.message}"
+    Logger.Error "oops: #{e.message}"
     EdText.err("save.dat corrupt. Attempting to load backup.")
     for i in 1..6
       if !File.exist?(Oneshot::SAVE_PATH + "/save_backups/save" + (i).to_s + ".bk")
@@ -229,7 +229,7 @@ def real_load
         load(Oneshot::SAVE_PATH + "/save_backups/save" + (i).to_s + ".bk")
         break
       rescue TypeError, ArgumentError => e2
-        puts "oops: #{e2.message}"
+        Logger.Error "oops: #{e2.message}"
         EdText.err("save" + (i).to_s + ".bk corrupt. Attempting to load backup.")
       end
     end

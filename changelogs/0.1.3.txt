@@ -1,0 +1,2 @@
+Added Logger Ruby class
+Reworked VALUE support in debugwriter.h

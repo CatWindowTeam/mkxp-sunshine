@@ -283,7 +283,7 @@ class Interpreter
         result << "#{line}\n"
       end
       result << "------------------------------------------\n"
-      STDERR.puts result
+      puts result
     end
     return true
   end
