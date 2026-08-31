@@ -229,6 +229,19 @@ class Window_Settings
         :icons => [[2, 2]],
       },
       {
+        :type => :bool,
+        :name => "Frameskip",
+        :parameter => :frameskip,
+        :icons => [[5, 3]],
+      },
+      {
+        :type => :enum,
+        :name => "Vsync mode",
+        :parameter => :vsync,
+        :values => ["Normal", "Adaptive", "Disabled"],
+        :icons => [[2, 3]],
+      },
+      {
         :type => :presets,
         :name => "Graphics preset",
         :parameter => :graphics_preset,
@@ -273,19 +286,6 @@ class Window_Settings
             :footsplashes => true, 
           },
         ]
-      },
-      {
-        :type => :enum,
-        :name => "Vsync mode",
-        :parameter => :vsync,
-        :values => ["Normal", "Adaptive", "Disabled"],
-        :icons => [[2, 3]],
-      },
-      {
-        :type => :bool,
-        :name => "Frameskip",
-        :parameter => :frameskip,
-        :icons => [[5, 3]],
       },
       { :type => :sep, :name => "Effects"},
       {
