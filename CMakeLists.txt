@@ -48,7 +48,7 @@ option(SANITIZERS "Enable sanitizers" OFF)
 option(NATIVE "Use native instructions(for local use only)" OFF)
 option(STATIC "Build more static build" OFF)
 option(USE_OPENGL_ES2 "GLES2_HEADER define" OFF)
-set(VERSION_STRING "0.1.2" CACHE STRING "Version string")
+set(VERSION_STRING "0.1.3" CACHE STRING "Version string")
 option(DEVBUILD "Developoment build" OFF)
 option(TERMUX "Build for TERMUX" OFF)
 
