@@ -2,8 +2,8 @@ class Window_Settings
   class SliderParameter < IntParameter
     TYPE = :slider
 
-    def initialize(settings_content, screen_id, position, name, icon, parameter, int_value, min_value, max_value)
-      super(settings_content, screen_id, position, name, icon, parameter, int_value, min_value, max_value)
+    def initialize(settings_content, screen_id, position, name: "", additional_icons: [], icons: [], parameter: nil, init_value: 0, min: 0, max: 100)
+      super(settings_content, screen_id, position, name: name, additional_icons: additional_icons, icons: icons, parameter: parameter, init_value: init_value, min: min, max: max)
     end
 
     def get_display_value()
@@ -12,12 +12,11 @@ class Window_Settings
     end
 
     def redraw()
-      offset = !!@icon_position ? ICON_SIZE * 2 + 8 : 0
       @sprite.bitmap.clear
-      redraw_icon
+      redraw_icons
       @sprite.bitmap.font.color = Color.new(255, 255, 255)
 
-      @sprite.bitmap.draw_text(offset, 0, @sprite.bitmap.width - @value_width - offset, @sprite.bitmap.height, tr(@name))
+      redraw_title
 
       percent = (self.value.to_f - @min_value.to_f) / @max_value.to_f
       width = (@value_width * percent).to_i
@@ -33,13 +32,7 @@ class Window_Settings
         @sprite.bitmap.draw_text(@sprite.bitmap.width - @value_width + width, 4, @value_width - width, @sprite.bitmap.height - 8, get_display_value, 1)
       end
 
-      if (@settings_content.need_draw_line(@screen_id, @position))
-        @sprite.bitmap.fill_rect(Rect.new(0, PARAMETER_HEIGHT - 1, PARAMETER_WIDTH, 2), Color.new(255, 255, 255, 24))
-      end
-
-      #if @icon_position
-      #  @sprite.bitmap.blt(0, (PARAMETER_HEIGHT - ICON_SIZE * 2) / 2, RPG::Cache.menu("icons"), Rect.new(@icon_position[0] * ICON_SIZE, @icon_position[1] * ICON_SIZE, ICON_SIZE, ICON_SIZE))
-      #end
+      redraw_separator
     end
   end
 end

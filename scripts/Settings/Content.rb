@@ -6,8 +6,8 @@ class Window_Settings
   PARAMETER_VALUE_WIDTH = PARAMETER_WIDTH / 2
   PARAMETER_KEY_WIDTH = PARAMETER_WIDTH / 5
   ICON_SIZE = 16
-  # typed sizes
-  BOOL_VALUE_WIDTH = 120
+  ICON_SCALE = 2
+  ICON_SCALED = ICON_SIZE * ICON_SCALE
 
   PARAMETER_CHANGE_AUDIO = "Audio/SE/text_robot.wav"
 
@@ -17,6 +17,7 @@ class Window_Settings
     attr_reader :index
     attr_reader :viewport
     attr_reader :offset
+    attr_accessor :icons_atlas
 
     def initialize(viewport, offset_y, screen = 0, index = 0)
       Window_Settings.send(:remove_const, :PARAMETER_WIDTH)
@@ -36,8 +37,10 @@ class Window_Settings
       @y = offset_y
 
       @selection_sprite = Sprite.new(@viewport)
-      @selection_sprite.bitmap = Bitmap.new(PARAMETER_WIDTH + 16, PARAMETER_HEIGHT)
-      @selection_sprite.bitmap.fill_rect(Rect.new(0, 0, PARAMETER_WIDTH + 16, PARAMETER_HEIGHT), Color.new(255, 255, 255, 64))
+      @selection_sprite.bitmap = Bitmap.new(1, 1)
+      @selection_sprite.bitmap.fill_rect(Rect.new(0, 0, 1, 1), Color.new(255, 255, 255, 64))
+      @selection_sprite.zoom_x = PARAMETER_WIDTH + 16
+      @selection_sprite.zoom_y = PARAMETER_HEIGHT
       @selection_sprite.x = @x - 8
       @selection_sprite.y = @index * PARAMETER_HEIGHT + @y
       @selection_sprite.blend_type = 1
@@ -68,6 +71,8 @@ class Window_Settings
 
       Language.register_text_sprite("settings_switch_panels_hint_left", @switch_panels_hint_left)
       Language.register_text_sprite("settings_switch_panels_hint_right", @switch_panels_hint_right)
+
+      @icons_atlas = RPG::Cache.menu("icons")
 
       redraw_panels_hints
 
@@ -155,12 +160,16 @@ class Window_Settings
       @visible_x = screen_result_pos * 0.3 + @visible_x * 0.7
       @visible_y = @y * 0.5 + @visible_y * 0.5
 
+      # selection sprite
       selection_sprite_result_pos = @index * PARAMETER_HEIGHT + @y
       if (@selection_sprite.y - selection_sprite_result_pos).abs <= 1
         @selection_sprite.y = selection_sprite_result_pos
       end
       @selection_sprite.y = selection_sprite_result_pos * 0.5 + @selection_sprite.y * 0.5
+      @selection_sprite.x = get_current_parameter.x * 0.5 + @selection_sprite.x * 0.5 - 4
+      @selection_sprite.zoom_x = get_current_parameter.width * 0.5 + @selection_sprite.zoom_x * 0.5 + 8
 
+      # update parameters
       @parameters.each do |screen_name, screen_parameters|
         screen_parameters.each do |parameter|
           parameter.update
@@ -278,7 +287,7 @@ class Window_Settings
       @parameters.values[@screen]&.[](@index)&.deselect
       @index = (@index + offset) % @parameters.values[@screen].length
       if @parameters.values&.[](@screen)&.[](@index)&.class&.const_get(:TYPE) == :sep
-        @index = (@index + offset <=> 0) % @parameters.values[@screen].length
+        @index = (@index + (offset <=> 0)) % @parameters.values[@screen].length
       end
       @parameters.values[@screen]&.[](@index)&.select(previous)
       update_pos

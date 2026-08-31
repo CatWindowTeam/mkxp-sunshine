@@ -7,11 +7,11 @@ class Window_Settings
     attr_reader :max_value
     attr_reader :min_value
 
-    def initialize(settings_content, screen_id, position, name, icon, parameter, int_value, min_value, max_value)
-      @min_value = min_value
-      @max_value = max_value
+    def initialize(settings_content, screen_id, position, name: "", additional_icons: [], icons: [], parameter: nil, init_value: 0, min: 0, max: 10)
+      @min_value = min
+      @max_value = max
 
-      super(settings_content, screen_id, position, name, icon, parameter, int_value)
+      super(settings_content, screen_id, position, name: name, additional_icons: additional_icons, icons: icons, parameter: parameter, init_value: init_value)
     end
 
     def value=(value)

@@ -67,70 +67,17 @@ class Window_Settings
       @content.add_screen(screen_title)
       parameters_info.each_with_index do |parameter_info, parameter_index|
         parameter = nil
-        if parameters_info == :sep
-          parameter = @content.add_parameter(screen_title, Separator.new(@content, screen_index, parameter_index, ""))
+        if parameter_info == :sep
+          parameter = @content.add_parameter(screen_title, Separator.new(@content, screen_index, parameter_index, name: ""))
         else
-          case parameter_info[:type]
-          when :bool
-            parameter = 
-            @content.add_parameter(screen_title, BoolParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default]))
-          when :switch
-            parameter = 
-            @content.add_parameter(screen_title, SwitchPatameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
-              parameter_info[:switch], parameter_info[:invert]))
-          when :int
-            parameter = 
-            @content.add_parameter(screen_title, IntParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
-              parameter_info[:min], parameter_info[:max]))
-          when :slider
-            parameter = 
-            @content.add_parameter(screen_title, SliderParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
-              parameter_info[:min], parameter_info[:max]))
-          when :float
-            parameter = 
-            @content.add_parameter(screen_title, FloatParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
-              parameter_info[:step], parameter_info[:min], parameter_info[:max]))
-          when :enum
-            parameter = 
-            @content.add_parameter(screen_title, EnumParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
-              parameter_info[:values]))
-          when :sep
-            parameter = 
-            @content.add_parameter(screen_title, Separator.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:icon]))
-          when :key
-            parameter = 
-            @content.add_parameter(screen_title, KeyParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:key_binds],
-              parameter_info[:bind]))
-          when :action
-            parameter = 
-            @content.add_parameter(screen_title, ActionParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:icon], parameter_info[:default], parameter_info[:action],
-              parameter_info[:arg1], parameter_info[:arg2], parameter_info[:arg3], parameter_info[:arg4]))
-          when :presets
-            parameter = 
-            @content.add_parameter(screen_title, PresetsParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
-              parameter_info[:values], parameter_info[:custom_text], parameter_info[:presets]))
-          when :custom
-            parameter = 
-            @content.add_parameter(screen_title, CustomParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default],
-              parameter_info[:callbacks]))
-          else
-            parameter = 
-            @content.add_parameter(screen_title, BaseParameter.new(@content, screen_index, parameter_index,
-              parameter_info[:name], parameter_info[:icon], parameter_info[:parameter], parameter_info[:default]))
-          end
+          data = parameter_info.dup
+          type = data[:type]
+          data.delete(:type)
+          data.delete(:disabled)
+          
+          parameter = @content.add_parameter(screen_title, BaseParameter.for(type, @content, screen_index, parameter_index, **data))
+          parameter.disabled = true if parameter_info[:disabled] && parameter 
         end
-        parameter.disabled = true if parameter_info[:disabled] && parameter 
       end
     end
     @content.redraw_all

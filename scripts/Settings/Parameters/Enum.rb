@@ -2,10 +2,10 @@ class Window_Settings
   class EnumParameter < IntParameter
     TYPE = :enum
 
-    def initialize(settings_content, screen_id, position, name, icon, parameter, int_value, enum_texts)
-      @texts = enum_texts
+    def initialize(settings_content, screen_id, position, name: "", additional_icons: [], icons: [], parameter: nil, init_value: 0, values: nil)
+      @texts = values
 
-      super(settings_content, screen_id, position, name, icon, parameter, int_value, 0, enum_texts.length - 1)
+      super(settings_content, screen_id, position, name: name, additional_icons: additional_icons, icons:icons, parameter: parameter, init_value: init_value, min: 0, max: values.length - 1)
     end
 
     def get_display_value
