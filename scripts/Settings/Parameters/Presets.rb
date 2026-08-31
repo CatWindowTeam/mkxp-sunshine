@@ -2,10 +2,10 @@ class Window_Settings
   class PresetsParameter < EnumParameter
     TYPE = :presets
 
-    def initialize(settings_content, screen_id, position, name, icon, parameter, int_value, enum_texts, custom_text, presets)
+    def initialize(settings_content, screen_id, position, name: "", additional_icons: [], icons: [], parameter: nil, init_value: 0, values: [], custom_text: "Custom", presets: [])
       @presets = presets
 
-      super(settings_content, screen_id, position, name, icon, parameter, int_value, [custom_text || "Custom"] + enum_texts)
+      super(settings_content, screen_id, position, name: name, additional_icons: additional_icons, icons: icons, parameter: parameter, init_value: init_value, values: [custom_text || "Custom"] + values)
     end
     
     def value=(value)

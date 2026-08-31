@@ -2,18 +2,18 @@ class Window_Settings
   class ActionParameter < BaseParameter
     TYPE = :action
 
-    def initialize(settings_content, screen_id, position, name, icon, value_text, func, arg1, arg2, arg3, arg4)
-      @func = func
+    def initialize(settings_content, screen_id, position, name: "", additional_icons: [], icons: [], value_text: "", action: nil, arg1: nil, arg2: nil, arg3: nil, arg4: nil)
+      @func = action
       @arg1 = arg1
       @arg2 = arg2
       @arg3 = arg3
       @arg4 = arg4
 
-      super(settings_content, screen_id, position, name, icon, nil, value_text)
+      super(settings_content, screen_id, position, name: name, additional_icons: additional_icons, icons: icons, parameter: nil, init_value: value_text)
     end
     
     def action()
-      return if @disabled
+      return if @disabled && @func == nil
       if @arg1 == nil && @arg2 == nil && @arg3 == nil && @arg4 == nil
         @func.call
       elsif @arg2 == nil && @arg3 == nil && @arg4 == nil

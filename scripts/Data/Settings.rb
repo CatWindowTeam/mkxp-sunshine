@@ -32,6 +32,7 @@ module Settings
         :language               => 0,
         :fasttravel_ui          => 0,
         :mainmenu_background    => 0,
+        :icons_style            => false,
 
         # ---------- Gameplay -----------
         :movement               => 0,
@@ -147,23 +148,23 @@ class Window_Settings
     "Help" => [
       {
         :type => :base, 
-        :name => "- It's Dangerous!",
-        :icon => [1, 0]
+        :name => " - It's Dangerous!",
+        :icons => [[1, 0]]
       },
       {
         :type => :base,
-        :name => "- Work In Progress",
-        :icon => [0, 1]
+        :name => " - Work In Progress",
+        :icons => [[0, 1]]
       },
       {
         :type => :base,
-        :name => "- Game Restart Required",
-        :icon => [3, 0]
+        :name => " - Game Restart Required",
+        :icons => [[3, 0]]
       },
       {
         :type => :base,
-        :name => "- Location Reload Required",
-        :icon => [1, 1]
+        :name => " - Location Reload Required",
+        :icons => [[1, 1]]
       },
     ],
     "Audio" => [
@@ -173,7 +174,7 @@ class Window_Settings
         :parameter => :master_volume,
         :min => 0,
         :max => 100,
-        :icon => [2, 1],
+        :icons => [[2, 1]],
       },
       {
         :type => :slider,
@@ -181,7 +182,7 @@ class Window_Settings
         :parameter => :bgm_volume,
         :min => 0,
         :max => 100,
-        :icon => [2, 1],
+        :icons => [[2, 1]],
       },
       {
         :type => :slider,
@@ -189,19 +190,19 @@ class Window_Settings
         :parameter => :sfx_volume,
         :min => 0,
         :max => 100,
-        :icon => [2, 1],
+        :icons => [[2, 1]],
       },
       { :type => :sep, :name => "Game tracks"},
       {
         :type => :bool,
         :name => "ITS TIME FOR FIGHT CRIME",
         :parameter => :fight_crime_track,
-        :icon => [3, 1],
+        :icons => [[3, 1]],
       },
       {
         :type => :bool,
         :name => "Use Old Self Contained Universe(Reprise) version",
-        :icon => [3, 1],
+        :icons => [[3, 1]],
         :parameter => :old_reprise_song
       },
     ],
@@ -210,31 +211,30 @@ class Window_Settings
       {
         :type => :enum,
         :name => "Resolution",
-        :default => 0,
         :parameter => Graphics::RESOLUTION_OVERRIDDEN ? nil : :resolution,
         :values => Graphics::RESOLUTION_OVERRIDDEN ? ["Resolution is redefined via config"] : Graphics.resolutions_names_list,
-        :icon => [0, 2],
+        :icons => [[0, 2]],
       },
       {
         :type => :bool,
         :name => "Fullscreen",
         :parameter => :fullscreen,
-        :icon => [1, 2],
+        :icons => [[1, 2]],
       },
       {
         :type => :enum,
         :name => "Scaling mode",
         :parameter => :scaling_mode,
         :values => ["Nearest Neighbor", "Smooth(old)"],
-        :icon => [2, 2],
+        :icons => [[2, 2]],
       },
       {
         :type => :presets,
-        :name => "Graphics presets",
+        :name => "Graphics preset",
         :parameter => :graphics_preset,
         :custom_text => "Custom",
         :values => ["Potato", "Low", "Normal", "High"],
-        :icon => [3, 2],
+        :icons => [[3, 2]],
         :presets => [
           {
             :light => false,
@@ -279,45 +279,47 @@ class Window_Settings
         :name => "Vsync mode",
         :parameter => :vsync,
         :values => ["Normal", "Adaptive", "Disabled"],
-        :icon => [2, 3],
+        :icons => [[2, 3]],
       },
       {
         :type => :bool,
         :name => "Frameskip",
         :parameter => :frameskip,
-        :icon => [5, 3],
+        :icons => [[5, 3]],
       },
       { :type => :sep, :name => "Effects"},
       {
         :type => :bool,
         :name => "Dynamic Light",
         :parameter => :light,
-        :icon => [3, 3],
+        :icons => [[3, 3]],
       },
       {
         :type => :bool,
         :name => "Dynamic Water",
         :parameter => :water,
-        :icon => [1, 3],
+        :icons => [[1, 3]],
       },
       {
         :type => :bool,
         :name => "Fog",
-        :icon => [4, 0],
+        :icons => [[4, 0]],
         :parameter => :fog
       },
       {
         :type => :bool,
-        :name => "World machine shader",
+        :name => "World Machine shader",
         :parameter => :twm_shader,
-        :icon => [6, 0],
+        :additional_icons => [[0, 1]],
+        :icons => [[6, 0]],
       },
       { :type => :sep, :name => "Particles"},
       {
         :type => :slider,
         :name => "Density of glen fireflies",
         :parameter => :max_firefly_count,
-        :icon => [4, 1],
+        :additional_icons => [[1, 1]],
+        :icons => [[4, 1]],
         :min => 0,
         :max => 30
       },
@@ -325,7 +327,8 @@ class Window_Settings
         :type => :slider,
         :name => "Density of shrims (!EXPEREMENTAL!)",
         :parameter => :max_shrimp_count,
-        :icon => [4, 2],
+        :additional_icons => [[0, 1], [1, 1]],
+        :icons => [[4, 2]],
         :min => 0,
         :max => 80
       },
@@ -333,106 +336,155 @@ class Window_Settings
         :type => :bool,
         :name => "Footprints",
         :parameter => :footprints,
-        :icon => [4, 3],
+        :icons => [[4, 3]],
       },
       {
         :type => :bool,
         :name => "Footsplashes",
         :parameter => :footsplashes,
-        :icon => [5, 0],
+        :icons => [[5, 0]],
       },
     ],
     "UI" => [
       {
         :type => :bool,
         :name => "In-Game Timer",
+        :icons => [[5, 1]],
         :parameter => :in_game_timer
       },
       {
         :type => :enum,
         :name => "Language",
         :parameter => :language,
+        :icons => [[5, 2]],
         :values => Language::LANGUAGES
       },
       {
         :type => :enum,
         :name => "FastTravel UI",
         :parameter => :fasttravel_ui,
-        :icon => [0, 1],
+        :icons => [[6, 3]],
+        :additional_icons => [[0, 1]],
         :values => ["Original", "WME (WIP)"]
       },
       {
         :type => :enum,
-        :name => "Main menu background",
+        :name => "Main Menu background",
         :parameter => :mainmenu_background,
+        :icons => [[6, 1]],
         :values => ["Original", "Badend", "Title Black"]
       },
+      {
+        :type => :custom,
+        :name => "Icons Style",
+        :parameter => :icons_style,
+        :icons => [[5, 4]],
+        :callbacks => {
+          :value_set => proc { |super_proc, value|
+            if (value != self.value)
+              Audio.se_play(PARAMETER_CHANGE_AUDIO, 70, value ? 125 : 75)
+            end
+            super_proc.call(value)
+          },
+          :get_display_value => proc { |super_proc|
+            self.value ? "Mono" : "Colored"
+          },
+          :value_left => proc { |super_proc|
+            return if @disabled
+            self.value = !self.value
+            @settings_content.icons_atlas = self.value ? RPG::Cache.menu("icons_mono") : RPG::Cache.menu("icons")
+            @settings_content.redraw_all
+          },
+          :value_right => proc { |super_proc|
+            return if @disabled
+            self.value = !self.value
+            @settings_content.icons_atlas = self.value ? RPG::Cache.menu("icons_mono") : RPG::Cache.menu("icons")
+            @settings_content.redraw_all
+          },
+          :action => proc { |super_proc|
+            return if @disabled
+            self.value = !self.value
+            @settings_content.icons_atlas = self.value ? RPG::Cache.menu("icons_mono") : RPG::Cache.menu("icons")
+            @settings_content.redraw_all
+          }
+        }
+      }
     ],
     "Gameplay" => [
       { :type => :sep, :name => "Vanilla" },
       {
         :type => :bool,
         :name => "Colorblind mode",
+        :icons => [[6, 2]],
         :parameter => :colorblind
       },
       {
         :type => :enum,
         :name => "Default movement",
         :parameter => :movement,
+        :icons => [[6, 3]],
         :values => ["Walk", "Run"]
       },
       {
         :type => :bool,
         :name => "Skip Text (R)",
+        :icons => [[2, 4]],
         :parameter => :skip_text
       },
       { :type => :sep, :name => "Sunshine" },
       {
       	:type => :bool,
-        :name => "Purple message box for Entity",
+        :name => "Purple Message Box for Entity",
+        :icons => [[6, 0]],
         :parameter => :en_purple_messagebox
       },
       {
         :type => :bool,
-        :name => "Enforce april fools",
-        :parameter => :enforce_april_fools
-      },
-      {
-        :type => :bool,
-        :name => "True Memory Mode",
-        :parameter => :true_memory_mode
-      },
-      {
-        :type => :bool,
-        :name => "Freeware Mode",
-        :icon => [1, 0],
-        :parameter => :oneshot_mode
-      },
-      {
-        :type => :bool,
-        :name => "World machine shader on Entity footprints",
-        :icon => [0, 1],
+        :name => "World Machine shader on Entity footprints",
+        :icons => [[6, 0]],
+        :additional_icons => [[0, 1]],
         :parameter => :twm_shader_footprint
       },
       {
         :type => :bool,
-        :name => "Disable System API Dependent Puzzles(For wayland users)",
-        :parameter => :disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already
+        :name => "True Memory Mode",
+        :icons => [[6, 0]],
+        :parameter => :true_memory_mode
       },
       {
         :type => :enum,
-        :name => "Wallpaper mode",
+        :name => "Wallpaper Mode",
+        :icons => [[7, 2]],
         :parameter => :wallpaper_mode,
         :values => ["Normal", "Fallback", "Disabled"]
+      },
+      {
+        :type => :bool,
+        :name => "Freeware Mode",
+        :icons => [[3, 4]],
+        :additional_icons => [[1, 0]],
+        :parameter => :oneshot_mode
+      },
+      {
+        :type => :bool,
+        :name => "Enforce April Fools",
+        :icons => [[7, 0]],
+        :parameter => :enforce_april_fools
+      },
+      {
+        :type => :bool,
+        :name => "Disable System API Dependent Puzzles (For wayland users)",
+        :icons => [[7, 1]],
+        :parameter => :disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already
       },
     ],
     "Controls" => [
       { :type => :sep, :name => "Gamepad" },
       {
         :type => :custom,
-        :name => "Your gamepad type",
+        :name => "Your Gamepad type",
         :parameter => :gamepad_type,
-        :default => 0,
+        :icons => [[1, 4]],
         :callbacks => {
           :init => proc { |super_proc|
             @max_value = GamepadIcons::GAMEPADS.length
@@ -460,7 +512,10 @@ class Window_Settings
             ""
           },
           :redraw => proc { |super_proc|
-            super_proc.call
+            @sprite.bitmap.clear
+            redraw_icons
+            redraw_separator
+            redraw_title
 
             x, y = GamepadIcons.icon()
 
@@ -487,9 +542,9 @@ class Window_Settings
       },
       {
         :type => :custom,
-        :name => "Face buttons style",
+        :name => "Face Buttons style",
+        :icons => [[1, 4]],
         :parameter => :gamepad_face_style,
-        :default => 0,
         :callbacks => {
           :init => proc { |super_proc|
             @max_value = 5
@@ -502,7 +557,10 @@ class Window_Settings
           :redraw => proc { |super_proc|
             @disabled = !GamepadIcons.face_skinnable
 
-            super_proc.call
+            @sprite.bitmap.clear
+            redraw_icons
+            redraw_separator
+            redraw_title
 
             sx, sy = GamepadIcons.button(Input::GamepadButton::SOUTH, false)
             wx, wy = GamepadIcons.button(Input::GamepadButton::WEST, false)
@@ -541,6 +599,7 @@ class Window_Settings
       {
         :type => :bool,
         :name => "Control LED lighting",
+        :icons => [[6, 2]],
         :parameter => :gamepad_led
       },
       { :type => :sep, :name => "Walk" },
@@ -620,6 +679,7 @@ class Window_Settings
       {
         :type => :action,
         :name => "Reset Controls",
+        :icons => [[1, 0]],
         :action => Settings.method(:reset_controls!)
       },
     ],
@@ -628,24 +688,28 @@ class Window_Settings
       {
         :type => :bool,
         :name => "Crashlog privacy",
+        :icons => [[7, 3]],
         :parameter => :crashlog_privacy
       },
       {
         :type => :bool,
         :name => "Streamer privacy",
+        :icons => [[7, 3]],
         :parameter => :streamer_privacy
       },
       { :type => :sep, :name => "Other" },
       {
         :type => :bool,
         :name => "SDL_HINT_INVALID_PARAM_CHECKS",
-        :icon => [1, 0],
+        :icons => [[1, 4]],
+        :additional_icons => [[1, 0]],
         :parameter => :invalid_param_checks
       },
       {
         :type => :bool,
-        :name => "Oneshot community mode",
-        :icon => [1, 0],
+        :name => "Oneshot Community Mode",
+        :icons => [[7, 0]],
+        :additional_icons => [[1, 0]],
         :parameter => :replace_all_niko
       },
     ],
@@ -653,71 +717,71 @@ class Window_Settings
       {
         :type => :bool,
         :name => "Debug mode",
-        :icon => [1, 0],
+        :icons => [[1, 0]],
         :parameter => :debug
       },
       {
         :type => :bool,
         :name => "Show debug character",
         :parameter => :debug_character,
-        :icon => [1, 0],
+        :icons => [[1, 0]],
       },
       {
         :type => :bool,
         :name => "Draw debug text in main menu",
         :parameter => :debug_text_scene_title,
-        :icon => [1, 0],
+        :icons => [[1, 0]],
       },
       {
         :type => :bool,
         :name => "Show debug text",
         :parameter => :debug_text,
-        :icon => [1, 0],
+        :icons => [[1, 0]],
       },
       {
         :type => :bool,
         :name => "Show picture names",
         :parameter => :debug_picture_names,
-        :icon => [1, 0],
+        :icons => [[1, 0]],
       },
       {
         :type => :bool,
         :name => "Debug lightmap",
         :parameter => :debug_lightmap,
-        :icon => [1, 0],
+        :icons => [[1, 0]],
       },
       {
         :type => :bool,
         :name => "SDL_HINT_SHUTDOWN_DBUS_ON_QUIT",
         :parameter => :shutdown_dbus_on_quit,
-        :icon => [1, 0],
+        :icons => [[1, 0]],
       },
       {
         :type => :bool,
         :name => "Profiler",
         :parameter => :profiler,
-        :icon => [1, 0],
+        :icons => [[1, 0]],
       },
-      { :type => :sep },
+      :sep,
       {
         :type => :key,
         :name => "Debug",
         :parameter => :controls_debug,
         :bind => Input::DEBUGACTION,
-        :icon => [1, 0],
+        :icons => [[1, 0]],
       },
-      { :type => :sep },
+      :sep,
       {
         :type => :action,
         :name => "Clear image cache",
         :action => Proc.new { RPG::Cache.clear },
-        :icon => [1, 0],
+        :icons => [[1, 0]],
       },
       {
         :type => :action,
         :name => "Do Crash",
         :action => Proc.new { raise "Test" },
-        :icon => [1, 0],
+        :icons => [[1, 0]],
       },
       #{
       #  :type => :presets,
@@ -753,7 +817,8 @@ class Window_Settings
       {
         :type => :base,
         :name => "Modloader enabled?",
-        :default => ModLoader::IS_ENABLED ? "ON" : "OFF",
+        :init_value => ModLoader::IS_ENABLED ? "ON" : "OFF",
+        :icons => [[1, 4]],
         :disabled => true
       },
     ],

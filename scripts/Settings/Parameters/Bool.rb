@@ -2,8 +2,10 @@ class Window_Settings
   class BoolParameter < BaseParameter
     TYPE = :bool
 
-    def initialize(settings_content, screen_id, position, name, icon, parameter, bool_value)
-      super(settings_content, screen_id, position, name, icon, parameter, bool_value || false)
+    BOOL_VALUE_WIDTH = 48
+
+    def initialize(settings_content, screen_id, position, name: "", additional_icons: [], icons: [], parameter: nil, init_value: false)
+      super(settings_content, screen_id, position, name: name, additional_icons: additional_icons, icons: icons, parameter: parameter, init_value: init_value || false)
       @value_width = BOOL_VALUE_WIDTH
     end
 

@@ -1,11 +1,11 @@
 class Window_Settings
   class CustomParameter < BaseParameter
     TYPE = :custom
-    def initialize(settings_content, screen_id, position, name, icon, parameter, init_value, callbacks)
+    def initialize(settings_content, screen_id, position, name: "", additional_icons: [], icons: [], parameter: nil, init_value: nil, callbacks: [])
       @callbacks = callbacks
 
-      callback(:init, settings_content, screen_id, position, name, icon, parameter, init_value, callbacks) do
-        super(settings_content, screen_id, position, name, icon, parameter, init_value)
+      callback(:init, settings_content, screen_id, position, name, additional_icons, icons, parameter, init_value, callbacks) do
+        super(settings_content, screen_id, position, name: name, additional_icons: additional_icons, icons: icons, parameter: parameter, init_value: init_value)
       end
     end
     def callback(name, *args)
@@ -45,6 +45,22 @@ class Window_Settings
 
     def redraw_icon
       callback(:redraw_icon) do super end
+    end
+
+    def offset
+      callback(:offset) do super end
+    end
+
+    def redraw_title
+      callback(:redraw_title) do super end
+    end
+
+    def redraw_value
+      callback(:redraw_value) do super end
+    end
+
+    def redraw_separator
+      callback(:redraw_separator) do super end
     end
 
     def redraw

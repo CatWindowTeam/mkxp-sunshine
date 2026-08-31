@@ -6,15 +6,15 @@ class Window_Settings
 
     attr_reader :selection
 
-    def initialize(settings_content, screen_id, position, name, icon, parameter, key_binds, input_bind)
+    def initialize(settings_content, screen_id, position, name: "", additional_icons: [], icons: [], parameter: nil, key_binds: nil, bind: nil)
       @selected = false
       @selection = 0
       @key_binds = parameter ? Settings[parameter] : key_binds
-      @bind = input_bind
+      @bind = bind
       @waiting_for_key = false
       @accept_action = false
 
-      super(settings_content, screen_id, position, name, icon, parameter, nil)
+      super(settings_content, screen_id, position, name: name, additional_icons: additional_icons, icons: icons, parameter: parameter, init_value: nil)
 
       apply
     end
@@ -64,14 +64,14 @@ class Window_Settings
     end
     
     def redraw()
-      redraw_icon
-      offset = !!@icon_position ? ICON_SIZE * 2 + 8 : 0
+      @sprite.bitmap.clear
+
       if @parameter && @key_binds != Settings[@parameter]
         @key_binds = Settings[@parameter]
         apply
       end
-
-      @sprite.bitmap.clear
+      
+      redraw_icons
       
       if @selected
         @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - @selection), 0, PARAMETER_KEY_WIDTH, @sprite.bitmap.height), Color.new(255, 255, 255, 48))
@@ -79,7 +79,8 @@ class Window_Settings
         @sprite.bitmap.draw_text(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (3 - @selection) - SELECTED_KEYS_MARGIN, 0, SELECTED_KEYS_MARGIN, @sprite.bitmap.height, "←", 1)
       end
       
-      @sprite.bitmap.draw_text(offset, 0, @sprite.bitmap.width - PARAMETER_KEY_WIDTH * 4 - offset, @sprite.bitmap.height, tr(@name))
+      redraw_title
+
       (0..3).each do |i|
         offset = (@selected && i == @selection ? SELECTED_KEYS_MARGIN : 4)
         parameter_x = @sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i)
@@ -99,13 +100,7 @@ class Window_Settings
         @sprite.bitmap.fill_rect(Rect.new(@sprite.bitmap.width - PARAMETER_KEY_WIDTH * (4 - i) - 1, 1, 2, @sprite.bitmap.height - 2), Color.new(255, 255, 255, 32))
       end
 
-      if (@settings_content.need_draw_line(@screen_id, @position))
-        @sprite.bitmap.fill_rect(Rect.new(0, PARAMETER_HEIGHT - 1, PARAMETER_WIDTH, 2), Color.new(255, 255, 255, 24))
-      end
-
-      #if @icon_position
-      #  @sprite.bitmap.blt(0, (PARAMETER_HEIGHT - ICON_SIZE * 2) / 2, RPG::Cache.menu("icons"), Rect.new(@icon_position[0] * ICON_SIZE, @icon_position[1] * ICON_SIZE, ICON_SIZE, ICON_SIZE))
-      #end
+      redraw_separator
     end
 
     def value_left()
