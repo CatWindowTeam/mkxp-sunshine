@@ -270,7 +270,6 @@ else()
 	-fno-math-errno
 	-fno-trapping-math
 	-ffunction-sections
-	-fsection-anchors
 	-fdata-sections
 	-fvirtual-function-elimination
 	-fstdarg-opt

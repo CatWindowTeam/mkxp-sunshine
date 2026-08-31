@@ -82,7 +82,8 @@ class Game_Map
   ]
 
   ALWAYS_MOVING = [
-    'codebg'
+    'codebg',
+    'red_distort',
   ]
   #--------------------------------------------------------------------------
   # * Object Initialization
