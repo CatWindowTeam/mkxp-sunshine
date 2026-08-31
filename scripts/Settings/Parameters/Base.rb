@@ -123,6 +123,7 @@ class Window_Settings
 
     def redraw_separator
       if (@settings_content.need_draw_line(@screen_id, @position))
+        offset = @additional_icons.length * ICON_SCALED
         @sprite.bitmap.fill_rect(Rect.new(offset, PARAMETER_HEIGHT - 1, PARAMETER_WIDTH, 2), Color.new(255, 255, 255, 24))
       end
     end
