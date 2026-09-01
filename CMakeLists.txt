@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 project(oneshot)
+
+set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+    message(FATAL_ERROR "In-source builds are disabled. Use: cmake -S . -B build")
+endif()
+
 include(FindPackageHandleStandardArgs)
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
@@ -53,7 +59,6 @@ option(DEVBUILD "Developoment build" OFF)
 option(TERMUX "Build for TERMUX" OFF)
 
 # Configuration
-set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 23)
@@ -64,11 +69,20 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # shut the fuck up
 add_compile_options(-Wno-unused-parameter -Wno-tautological-pointer-compare)
 
+# suppress Boost warning
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 OLD)
+endif()
+
 # Make build more static
 if(STATIC)
-	check_option(OPTIONS_STATIC -static-libgcc -static-libstdc++)
-	add_compile_options(${OPTIONS_STATIC})
 	set(ZLIB_USE_STATIC_LIBS ON)
+endif()
+
+# For local builds
+if(NATIVE)
+	check_option(OPTIONS_NATIVE -march=native -mtune=native)
+	add_compile_options(${OPTIONS_NATIVE})
 endif()
 
 # Use OpenGL ES2
@@ -86,54 +100,11 @@ if(TERMUX)
 	add_definitions(-DTERMUX)
 endif()
 
-# suppress Boost warning
-if(POLICY CMP0167)
-    cmake_policy(SET CMP0167 OLD)
-endif()
-
 # recursive search instead of hardcored list
 file(GLOB_RECURSE MAIN_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.h*")
 file(GLOB_RECURSE MAIN_SOURCE CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.c*")
-
-# Platform specific bullshit
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    list(APPEND MAIN_SOURCE assets/resources.rc)
-    list(APPEND DEFINES UNICODE)
-    list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi winmm z)
-    include_directories(${CMAKE_CURRENT_BINARY_DIR}/windows)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    list(APPEND MAIN_HEADERS src/mac-desktop.h)
-    list(APPEND MAIN_SOURCE src/mac-desktop.mm)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake"
-        VERBATIM
-    )
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(LINUXPKGS REQUIRED gtk+-3.0 libxfconf-0 libseccomp)
-    include_directories(${LINUXPKGS_INCLUDE_DIRS})
-    add_compile_options(${LINUXPKGS_CFLAGS_OTHER})
-    list(APPEND PLATFORM_LIBRARIES ${LINUXPKGS_LDFLAGS})
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
-    if(TERMUX)
-    	find_package(PkgConfig REQUIRED)
-    	pkg_check_modules(TERMUXPKGS REQUIRED gtk+-3.0 libxfconf-0)
-    	include_directories(${TERMUXPKGS_INCLUDE_DIRS})
-    	add_compile_options(${TERMUXPKGS_CFLAGS_OTHER})
-    	list(APPEND PLATFORM_LIBRARIES ${TERMUXPKGS_LDFLAGS})
-    endif()
-elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(FREEBSDPKGS REQUIRED gtk+-3.0 libxfconf-0)
-    include_directories(${FREEBSDPKGS_INCLUDE_DIRS})
-    add_compile_options(${FREEBSDPKGS_CFLAGS_OTHER})
-    list(APPEND PLATFORM_LIBRARIES ${FREEBSDPKGS_LDFLAGS})
-    set(STEAM OFF)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-    set(STEAM OFF)
-    set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
-endif()
-
+file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/binding-mri/*.h*")
+file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/binding-mri/*.c*")
 set(EMBEDDED_INPUT
 	shader/common.h
 	shader/transSimple.frag
@@ -198,9 +169,69 @@ foreach(item ${EMBEDDED_INPUT})
 	ProcessWithXXD(EMBEDDED_SOURCE ${item} ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
 
-# recursive search insead of hardcored list
-file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/binding-mri/*.h*")
-file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/binding-mri/*.c*")
+if(ANDROID)
+	if(TERMUX)
+		add_executable(${PROJECT_NAME}
+                	${MAIN_HEADERS}
+                	${MAIN_SOURCE}
+                	${BINDING_HEADERS}
+                	${BINDING_SOURCE}
+                	${EMBEDDED_SOURCE})
+	else()
+		add_library(${PROJECT_NAME} SHARED
+                	${MAIN_HEADERS}
+                	${MAIN_SOURCE}
+                	${BINDING_HEADERS}
+                	${BINDING_SOURCE}
+                	${EMBEDDED_SOURCE})
+	endif()
+else()
+	add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
+		${MAIN_HEADERS}
+		${MAIN_SOURCE}
+		${BINDING_HEADERS}
+		${BINDING_SOURCE}
+		${EMBEDDED_SOURCE})
+endif()
+
+# Platform specific bullshit
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    list(APPEND MAIN_SOURCE assets/resources.rc)
+    list(APPEND DEFINES UNICODE)
+    list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi winmm z)
+    include_directories(${CMAKE_CURRENT_BINARY_DIR}/windows)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    list(APPEND MAIN_HEADERS src/mac-desktop.h)
+    list(APPEND MAIN_SOURCE src/mac-desktop.mm)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake"
+        VERBATIM
+    )
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(LINUXPKGS REQUIRED gtk+-3.0 libxfconf-0 libseccomp)
+    include_directories(${LINUXPKGS_INCLUDE_DIRS})
+    add_compile_options(${LINUXPKGS_CFLAGS_OTHER})
+    list(APPEND PLATFORM_LIBRARIES ${LINUXPKGS_LDFLAGS})
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
+    if(TERMUX)
+    	find_package(PkgConfig REQUIRED)
+    	pkg_check_modules(TERMUXPKGS REQUIRED gtk+-3.0 libxfconf-0)
+    	include_directories(${TERMUXPKGS_INCLUDE_DIRS})
+    	add_compile_options(${TERMUXPKGS_CFLAGS_OTHER})
+    	list(APPEND PLATFORM_LIBRARIES ${TERMUXPKGS_LDFLAGS})
+    endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(FREEBSDPKGS REQUIRED gtk+-3.0 libxfconf-0)
+    include_directories(${FREEBSDPKGS_INCLUDE_DIRS})
+    add_compile_options(${FREEBSDPKGS_CFLAGS_OTHER})
+    list(APPEND PLATFORM_LIBRARIES ${FREEBSDPKGS_LDFLAGS})
+    set(STEAM OFF)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    set(STEAM OFF)
+    set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
+endif()
 
 if(STEAM)
         list(APPEND MAIN_HEADERS
@@ -216,11 +247,6 @@ if(STEAM)
                 "${CMAKE_SOURCE_DIR}/steam_appid.txt"
                 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/steam_appid.txt"
                 COPYONLY)
-endif()
-
-if(NATIVE)
-	check_option(OPTIONS_NATIVE -march=native -mtune=native)
-	add_compile_options(${OPTIONS_NATIVE})
 endif()
 
 # Common arguments on specific CPU arch
@@ -310,31 +336,6 @@ else()
 	endif()
 endif()
 
-if(ANDROID)
-	if(TERMUX)
-		add_executable(${PROJECT_NAME}
-                	${MAIN_HEADERS}
-                	${MAIN_SOURCE}
-                	${BINDING_HEADERS}
-                	${BINDING_SOURCE}
-                	${EMBEDDED_SOURCE})
-	else()
-		add_library(${PROJECT_NAME} SHARED
-                	${MAIN_HEADERS}
-                	${MAIN_SOURCE}
-                	${BINDING_HEADERS}
-                	${BINDING_SOURCE}
-                	${EMBEDDED_SOURCE})
-	endif()
-else()
-	add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
-		${MAIN_HEADERS}
-		${MAIN_SOURCE}
-		${BINDING_HEADERS}
-		${BINDING_SOURCE}
-		${EMBEDDED_SOURCE})
-endif()
-
 if(NOT DEBUG)
 	if(ipo_supported)
 	    set_property(
@@ -369,11 +370,13 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 target_include_directories(${PROJECT_NAME} PRIVATE
 	src
 	include
+	${SDL_INCLUDE_DIRS}
 	${PIXMAN_INCLUDE_DIR}
 	${SIGC2_INCLUDE_DIRS}
 	${Ruby_INCLUDE_DIRS}
-	Boost::headers
 	${ZLIB_INCLUDE_DIRS}
+	SDL3::Headers
+	Boost::headers
 	SDL3_mixer::SDL3_mixer
 	SDL3_net::SDL3_net)
 
@@ -391,7 +394,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	Boost::boost
 	Boost::chrono
 	${Boost_LIBRARIES}
-	ZLIB::ZLIB
-	${PLATFORM_LIBS})
+	ZLIB::ZLIB)
 
 add_subdirectory(scripts)
