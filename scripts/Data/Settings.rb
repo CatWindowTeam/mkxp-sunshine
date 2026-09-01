@@ -59,6 +59,7 @@ module Settings
         :gamepad_deadzone       => 5,
 
         # ------------ Debug ------------
+        :log_level	            => 3,
         :debug                  => false,
         :debug_character        => false,
         :debug_text_scene_title => true,
@@ -715,6 +716,13 @@ class Window_Settings
     ],
     "Debug" => [
       {
+        :type => :enum,
+        :name => "Log Level",
+        :parameter => :log_level,
+        :values => ["Fatal Error", "Error", "Warning", "Info", "Debug"],
+        :icons => [[1, 0]],
+      },
+      {
         :type => :bool,
         :name => "Debug mode",
         :icons => [[1, 0]],
@@ -783,35 +791,6 @@ class Window_Settings
         :action => Proc.new { raise "Test" },
         :icons => [[1, 0]],
       },
-      #{
-      #  :type => :presets,
-      #  :name => "Test presets",
-      #  :parameter => :test_preset,
-      #  :custom_text => "Custom (здесь может быть любой текст)",
-      #  :values => ["1", "2", "3", "4"],
-      #  :presets => [
-      #    {
-      #      :debug => false,
-      #      :debug_character => false,
-      #      :debug_text_scene_title => true,
-      #    },
-      #    {
-      #      :debug => true,
-      #      :debug_character => false,
-      #      :debug_text_scene_title => true,
-      #    },
-      #    {
-      #      :debug => false,
-      #      :debug_character => true,
-      #      :debug_text_scene_title => true,
-      #    },
-      #    {
-      #      :debug => false,
-      #      :debug_character => false,
-      #      :debug_text_scene_title => false,
-      #    },
-      #  ]
-      #}
     ],
     "Mods" => [
       {

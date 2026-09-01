@@ -100,6 +100,10 @@ module Settings
         Profiler.set(value)
       end
 
+	  def log_level(value)
+		Logger.log_level=value
+	  end
+	
       # --------------------------------------------- End :3 ---------------------------------------------
     end
   end
