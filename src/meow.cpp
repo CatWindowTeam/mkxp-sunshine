@@ -361,7 +361,7 @@ void WarnMsg(const char *fmt, ...) {
 
     SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
     va_end(args);
-    Debug() << "[WARNMSG]" << buf;
+    Debug() << "[WARN] " << buf;
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", buf, NULL);
     SDL_free(buf);
 }

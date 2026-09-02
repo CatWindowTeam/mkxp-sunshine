@@ -36,16 +36,8 @@ static VALUE Error(VALUE, VALUE v) {
   return v;
 }
 
-static VALUE FatalError(VALUE, VALUE v) {
-  if(loglevel >= 0){
-  	Debug() << "[FATAL_ERROR " << rb_sourcefile() << ":" << rb_sourceline() << "] " << v;
-  }
-  return v;
-}
-
 void LoggerInit(){
     VALUE module = rb_define_module("Logger");
-	rb_define_singleton_method(module, "FatalError", RUBY_METHOD_FUNC(FatalError), 1);
 	rb_define_singleton_method(module, "Error", RUBY_METHOD_FUNC(Error), 1);
 	rb_define_singleton_method(module, "Warn", RUBY_METHOD_FUNC(Warn), 1);
 	rb_define_singleton_method(module, "Info", RUBY_METHOD_FUNC(Info), 1);

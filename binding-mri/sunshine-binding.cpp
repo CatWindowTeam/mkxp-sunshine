@@ -66,7 +66,6 @@ void SunshineBindingInit(){
 	rb_define_singleton_method(module, "crash_privacy=", RUBY_METHOD_FUNC(sunshineSetCrashPrivacy), 1);
 	rb_define_singleton_method(module, "wallpaper_mode=", RUBY_METHOD_FUNC(sunshineSetWallpaperMode), 1);
 	rb_define_singleton_method(module, "set_sdl_hint", RUBY_METHOD_FUNC(sunshineSetHint), 2);
-
 	if (!rb_respond_to(rb_cObject, rb_intern("class")))
 	    rb_define_method(rb_cObject, "class", rb_obj_class, 0);
 
