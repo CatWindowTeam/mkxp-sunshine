@@ -48,12 +48,12 @@ endfunction()
 
 
 # Options
-option(STEAM "Build with Steam Support" OFF)
-option(DEBUG "Debug mode" ON)
-option(SANITIZERS "Enable sanitizers" OFF)
-option(NATIVE "Use native instructions(for local use only)" OFF)
-option(STATIC "Build more static build" OFF)
-option(USE_OPENGL_ES2 "GLES2_HEADER define" OFF)
+option(STEAM "Build with Steam Support" CACHE OFF)
+option(DEBUG "Debug mode" CACHE ON)
+option(SANITIZERS "Enable sanitizers" CACHE OFF)
+option(NATIVE "Use native instructions(for local use only)" CACHE OFF)
+option(STATIC "Build more static build" CACHE OFF)
+option(USE_OPENGL_ES2 "GLES2_HEADER define" CACHE OFF)
 set(VERSION_STRING "0.1.3" CACHE STRING "Version string")
 option(DEVBUILD "Developoment build" OFF)
 option(TERMUX "Build for TERMUX" OFF)
@@ -205,6 +205,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     list(APPEND MAIN_SOURCE src/mac-desktop.mm)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake"
+	COMMENT "Executing /patches/mac/CompleteBundle.cmake"
         VERBATIM
     )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -234,12 +235,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
 endif()
 
 if(STEAM)
-        list(APPEND MAIN_HEADERS
-                steamshim/steamshim_child.h
-        )
-        list(APPEND MAIN_SOURCE
-                steamshim/steamshim_child.c
-        )
+        list(APPEND MAIN_HEADERS steamshim/steamshim_child.h)
+        list(APPEND MAIN_SOURCE steamshim/steamshim_child.c)
         add_definitions(-DSTEAM)
         add_subdirectory(steamshim_parent)
         # steam_appid.txt
@@ -291,35 +288,35 @@ if(DEBUG)
 	endif()
 else()
 	check_option(OPTIONS_RELEASE -O3
-	-ffast-math
-	-fvisibility=hidden
-	-fno-math-errno
-	-fno-trapping-math
-	-ffunction-sections
-	-fdata-sections
-	-fvirtual-function-elimination
-	-fstdarg-opt
-	-frename-registers
-	-fuse-linker-plugin
-	-fipa-pta
-	-fipa-icf
-	-fext-dce
-	-fstrict-enums
-	-fimplicit-constexpr
-	-fomit-frame-pointer
-	-fno-ident
-	-fvirtual-function-elimination
-	-fwhole-program-vtables
-	-fweb)
+		-ffast-math
+		-fvisibility=hidden
+		-fno-math-errno
+		-fno-trapping-math
+		-ffunction-sections
+		-fdata-sections
+		-fvirtual-function-elimination
+		-fstdarg-opt
+		-frename-registers
+		-fuse-linker-plugin
+		-fipa-pta
+		-fipa-icf
+		-fext-dce
+		-fstrict-enums
+		-fimplicit-constexpr
+		-fomit-frame-pointer
+		-fno-ident
+		-fvirtual-function-elimination
+		-fwhole-program-vtables
+		-fweb)
 
 	add_compile_options(${OPTIONS_RELEASE})
 
 	add_link_options(-Wl,-O2
-	-Wl,--gc-sections
-	-Wl,--as-needed
-	-Wl,--no-undefined
-	-Wl,--strip-all
-	-Wl,--no-copy-dt-needed-entries)
+		-Wl,--gc-sections
+		-Wl,--as-needed
+		-Wl,--no-undefined
+		-Wl,--strip-all
+		-Wl,--no-copy-dt-needed-entries)
 
 	#Platform Specific
 	if(LINUX)
