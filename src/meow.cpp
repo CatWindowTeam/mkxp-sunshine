@@ -376,4 +376,10 @@ void terminate_stacktrace() {
     std::abort();
 }
 
-
+void SelfTest(){
+	#ifdef unix_like
+		if(SDL_GetCurrentVideoDriver() == "wayland"){
+			warns.append("0001; ");
+		}
+	#endif
+}

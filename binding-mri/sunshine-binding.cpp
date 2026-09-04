@@ -58,6 +58,7 @@ void SunshineBindingInit(){
     rb_const_set(module, rb_intern("SDLVersion_micro"), INT2NUM(SDL_MICRO_VERSION));
 	rb_const_set(module, rb_intern("SECURITYSTATE"), rb_str_new_cstr(securitystate));
 	rb_const_set(module, rb_intern("VERSION"), rb_str_new_cstr(VERSION_STRING));
+	rb_const_set(module, rb_intern("WARNS"), rb_str_new_cstr(warns.c_str()));
 	#ifdef DEVBUILD
 		rb_const_set(module, rb_intern("DEVBUILD"), Qtrue);
 	#else

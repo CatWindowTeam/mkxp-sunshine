@@ -291,7 +291,8 @@ int main(int argc, char *argv[]){
 	int winW, winH;
 	SDL_GetWindowSize(win, &winW, &winH);
 	rtData.windowSizeMsg.post(Vec2i(winW, winH));
-
+	// self-test 
+	
 	/* start modloader */
 	ModLoader(conf, win);
 	/* Load and post key bindings */
