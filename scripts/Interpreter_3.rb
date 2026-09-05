@@ -17,7 +17,7 @@ class Interpreter
       $game_temp.message_desktop_text != nil ||
       $game_temp.message_credits_text != nil
       # End
-      return false
+      false
     end
 
     # Create full text string
@@ -122,7 +122,7 @@ class Interpreter
         $game_temp.message_text = text
       end
     end
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Show Choices
@@ -139,7 +139,7 @@ class Interpreter
     # Choices setup
     setup_choices(@parameters)
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * When [**]
@@ -153,7 +153,7 @@ class Interpreter
       return true
     end
     # If it doesn't meet the condition: command skip
-    return command_skip
+    command_skip
   end
   #--------------------------------------------------------------------------
   # * When Cancel
@@ -167,7 +167,7 @@ class Interpreter
       return true
     end
     # If it doen't meet the condition: command skip
-    return command_skip
+    command_skip
   end
   #--------------------------------------------------------------------------
   # * Input Number
@@ -185,7 +185,7 @@ class Interpreter
     $game_temp.num_input_variable_id = @parameters[0]
     $game_temp.num_input_digits_max = @parameters[1]
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Change Text Options
@@ -200,7 +200,7 @@ class Interpreter
     $game_system.message_position = @parameters[0]
     $game_system.message_frame = @parameters[1]
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Button Input Processing
@@ -211,7 +211,7 @@ class Interpreter
     # Advance index
     @index += 1
     # End
-    return false
+    false
   end
   #--------------------------------------------------------------------------
   # * Wait
@@ -220,7 +220,7 @@ class Interpreter
     # Set wait count
     @wait_count = @parameters[0] * 2
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Conditional Branch
@@ -333,7 +333,7 @@ class Interpreter
       return true
     end
     # If it doesn't meet the conditions: command skip
-    return command_skip
+    command_skip
   end
   #--------------------------------------------------------------------------
   # * Else
@@ -347,14 +347,13 @@ class Interpreter
       return true
     end
     # If it doesn't meet the conditions: command skip
-    return command_skip
+    command_skip
   end
   #--------------------------------------------------------------------------
   # * Loop
   #--------------------------------------------------------------------------
   def command_112
-    # Continue
-    return true
+	true
   end
   #--------------------------------------------------------------------------
   # * Repeat Above
@@ -369,7 +368,7 @@ class Interpreter
       # If this event command is the same level as indent
       if @list[@index].indent == indent
         # Continue
-        return true
+        true
       end
     end
   end
@@ -395,7 +394,7 @@ class Interpreter
         # Update index
         @index = temp_index
         # Continue
-        return true
+        true
       end
     end
   end
@@ -406,7 +405,7 @@ class Interpreter
     # End event
     command_end
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Erase Event
@@ -420,7 +419,7 @@ class Interpreter
     # Advance index
     @index += 1
     # End
-    return false
+    false
   end
   #--------------------------------------------------------------------------
   # * Call Common Event
@@ -435,14 +434,13 @@ class Interpreter
       @child_interpreter.setup(common_event.list, @event_id, common_event.name)
     end
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Label
   #--------------------------------------------------------------------------
   def command_118
-    # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Jump to Label

@@ -44,13 +44,13 @@ class Game_Actor < Game_Battler
   # * Get Actor ID
   #--------------------------------------------------------------------------
   def id
-    return @actor_id
+    @actor_id
   end
   #--------------------------------------------------------------------------
   # * Get Index
   #--------------------------------------------------------------------------
   def index
-    return $game_party.actors.index(self)
+    $game_party.actors.index(self)
   end
   #--------------------------------------------------------------------------
   # * Determine Fixed Equipment
@@ -69,7 +69,7 @@ class Game_Actor < Game_Battler
     when 4  # Accessory
       return $data_actors[@actor_id].armor4_fix
     end
-    return false
+    false
   end
   #--------------------------------------------------------------------------
   # * Change Equipment
@@ -133,7 +133,7 @@ class Game_Actor < Game_Battler
         return true
       end
     end
-    return false
+    false
   end
   #--------------------------------------------------------------------------
   # * Change Name

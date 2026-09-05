@@ -186,8 +186,8 @@ static void printP(int argc, VALUE *argv, const char *convMethod, const char *se
 		VALUE str = rb_funcall2(argv[i], conv, 0, NULL);
 		rb_str_buf_append(dispString, str);
 
-		if (i < argc)
-			rb_str_buf_cat2(dispString, sep);
+		if (i + 1 < argc)
+		    rb_str_buf_cat2(dispString, sep);
 	}
 
 	shState->eThread().showMessageBox(RSTRING_PTR(dispString));
@@ -283,7 +283,7 @@ RB_METHOD(mriRgssMain){
 
 RB_METHOD(mriRgssStop){
 	RB_UNUSED_PARAM;
-	while (true)
+	while(true)
 		shState->graphics().update();
 
 	return Qnil;
@@ -481,8 +481,9 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	VALUE name = rb_class_path(rb_obj_class(exc));
 	VALUE ds = rb_sprintf("%" PRIsVALUE ": %" PRIsVALUE " (%" PRIsVALUE ")", bt0, exc, name);
 	/* omit "useless" last entry (from ruby:1:in `eval') */
-	for (long i = 1, btlen = RARRAY_LEN(bt) - 1; i < btlen; ++i)
+	for (long i = 1, btlen = RARRAY_LEN(bt) - 1; i < btlen; ++i){
 		rb_str_catf(ds, "\n\tfrom %" PRIsVALUE, rb_ary_entry(bt, i));
+	}
 	Debug() << StringValueCStr(ds);
 
 	char *s = RSTRING_PTR(bt0);
@@ -523,8 +524,23 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	file.resize(SDL_strlen(file.c_str()));
 	file = btData.scriptNames.value(file, file);
 
-	SDL_snprintf(crash_message, sizeof(crash_message), "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
-    	show_crash_screen = true;
+	SDL_snprintf(crash_message, sizeof(crash_message), "Script %s line %s: %s occured.%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
+    show_crash_screen = true;
+}
+
+static void confCRuby(){
+    char arg0[] = "oneshot";
+    char arg1[] = "--jit";
+    char arg2[] = "-e";
+    char arg3[] = "";
+
+    char* argv[] = {
+        arg0,
+        arg1,
+        arg2,
+        arg3
+    };
+    ruby_options(4, argv);
 }
 
 static void mriBindingExecute(){
@@ -537,6 +553,7 @@ static void mriBindingExecute(){
 	RUBY_INIT_STACK;
 	ruby_init();
 	ruby_init_loadpath();
+	confCRuby();
 	is_ruby_initialized = true;
 	rb_enc_set_default_external(rb_enc_from_encoding(rb_utf8_encoding()));
 	Config &conf = shState->rtData().config;

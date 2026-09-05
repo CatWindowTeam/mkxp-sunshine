@@ -23,7 +23,6 @@ class Window_Base < Window
     self.width = width
     self.height = height
     self.z = 100
-    RPG::Mod.exec_hooks("hooks/Window_Base/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose
@@ -42,60 +41,60 @@ class Window_Base < Window
   def self.text_color(n)
     case n
     when 0
-      return Color.new(255, 255, 255, 255)
+      Color.new(255, 255, 255, 255)
     when 1
-      return Color.new(255, 64, 64, 255)
+      Color.new(255, 64, 64, 255)
     when 2
-      return Color.new(0, 224, 0, 255)
+      Color.new(0, 224, 0, 255)
     when 3
-      return Color.new(255, 255, 0, 255)
+      Color.new(255, 255, 0, 255)
     when 4
-      return Color.new(64, 64, 255, 255)
+      Color.new(64, 64, 255, 255)
     when 5
-      return Color.new(255, 64, 255, 255)
+      Color.new(255, 64, 255, 255)
     when 6
-      return Color.new(64, 255, 255, 255)
+      Color.new(64, 255, 255, 255)
     when 7
-      return Color.new(128, 128, 128, 255)
+      Color.new(128, 128, 128, 255)
     else
-      normal_color
+      Color.new(255, 255, 255, 255)
     end
   end
   #--------------------------------------------------------------------------
   # * Get Normal Text Color
   #--------------------------------------------------------------------------
   def normal_color
-    return Color.new(255, 255, 255, 255)
+    Color.new(255, 255, 255, 255)
   end
   #--------------------------------------------------------------------------
   # * Get Active Item Text Color
   #--------------------------------------------------------------------------
   def active_item_color
-    return Color.new(222, 134, 0, 255)
+    Color.new(222, 134, 0, 255)
   end
   #--------------------------------------------------------------------------
   # * Get Disabled Text Color
   #--------------------------------------------------------------------------
   def disabled_color
-    return Color.new(255, 255, 255, 128)
+    Color.new(255, 255, 255, 128)
   end
   #--------------------------------------------------------------------------
   # * Get System Text Color
   #--------------------------------------------------------------------------
   def system_color
-    return Color.new(192, 224, 255, 255)
+    Color.new(192, 224, 255, 255)
   end
   #--------------------------------------------------------------------------
   # * Get Crisis Text Color
   #--------------------------------------------------------------------------
   def crisis_color
-    return Color.new(255, 255, 64, 255)
+    Color.new(255, 255, 64, 255)
   end
   #--------------------------------------------------------------------------
   # * Get Knockout Text Color
   #--------------------------------------------------------------------------
   def knockout_color
-    return Color.new(255, 64, 0)
+    Color.new(255, 64, 0)
   end
   #--------------------------------------------------------------------------
   # * Frame Update
@@ -188,7 +187,7 @@ class Window_Base < Window
       text = "[" + text + "]"
     end
     # Return completed text string
-    return text
+    text
   end
   #--------------------------------------------------------------------------
   # * Draw State

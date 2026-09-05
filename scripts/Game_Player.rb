@@ -101,7 +101,7 @@ class Game_Player < Game_Character
       return result
     end
     # All event loops
-    for event in $game_map.events.values
+    $game_map.events.values.each do |event|
       # If event coordinates and triggers are consistent
       if event.x == @x and event.y == @y and triggers.include?(event.trigger)
         # If starting determinant is same position event (other than jumping)
@@ -111,7 +111,7 @@ class Game_Player < Game_Character
         end
       end
     end
-    return result
+    result
   end
   #--------------------------------------------------------------------------
   # * Front Envent Starting Determinant
@@ -120,7 +120,7 @@ class Game_Player < Game_Character
     result = false
     # If event is running
     if $game_system.map_interpreter.running?
-      return result
+      result
     end
     # Calculate front event coordinates
     new_x = @x + (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
@@ -136,7 +136,7 @@ class Game_Player < Game_Character
         end
       end
     end
-    return result
+    result
   end
   #--------------------------------------------------------------------------
   # * Touch Event Starting Determinant
@@ -158,7 +158,7 @@ class Game_Player < Game_Character
         end
       end
     end
-    return result
+    result
   end
   #--------------------------------------------------------------------------
   # * Frame Update

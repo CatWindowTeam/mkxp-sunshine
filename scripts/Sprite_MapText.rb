@@ -41,7 +41,6 @@ class Sprite_MapText < Sprite
     self.oy = 24
     self.ox = width/2
 
-	RPG::Mod.exec_hooks("hooks/Sprite_MapText/init", binding)
     update
   end
 

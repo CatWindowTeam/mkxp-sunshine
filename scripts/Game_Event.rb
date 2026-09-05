@@ -52,13 +52,13 @@ class Game_Event < Game_Character
     @collision.each do |ox, oy|
       return true if @x + ox == x && @y + oy == y
     end
-    return false
+    false
   end
   #--------------------------------------------------------------------------
   # * Return name
   #--------------------------------------------------------------------------
   def name
-    return @event.name
+    @event.name
   end
   #--------------------------------------------------------------------------
   # * Clear Starting Flag
@@ -82,7 +82,7 @@ class Game_Event < Game_Character
       return false
     end
     # Starting determinant is same position
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Start Event

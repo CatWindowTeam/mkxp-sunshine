@@ -4,6 +4,7 @@
 #include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_hints.h>
 #include <SDL3/SDL_locale.h>
+#include <SDL3/SDL_video.h>
 #include "security.h"
 #include "eventthread.h"
 #include "sunshine.h"
@@ -58,12 +59,19 @@ void SunshineBindingInit(){
     rb_const_set(module, rb_intern("SDLVersion_micro"), INT2NUM(SDL_MICRO_VERSION));
 	rb_const_set(module, rb_intern("SECURITYSTATE"), rb_str_new_cstr(securitystate));
 	rb_const_set(module, rb_intern("VERSION"), rb_str_new_cstr(VERSION_STRING));
-	rb_const_set(module, rb_intern("WARNS"), rb_str_new_cstr(warns.c_str()));
+
 	#ifdef DEVBUILD
 		rb_const_set(module, rb_intern("DEVBUILD"), Qtrue);
 	#else
 		rb_const_set(module, rb_intern("DEVBUILD"), Qfalse);
 	#endif
+
+	if(SDL_GetCurrentVideoDriver() == "wayland"){
+		rb_const_set(module, rb_intern("IS_WAYLAND"), Qtrue);
+	}else{
+		rb_const_set(module, rb_intern("IS_WAYLAND"), Qfalse);
+	}
+	
 	rb_define_singleton_method(module, "crash_privacy=", RUBY_METHOD_FUNC(sunshineSetCrashPrivacy), 1);
 	rb_define_singleton_method(module, "wallpaper_mode=", RUBY_METHOD_FUNC(sunshineSetWallpaperMode), 1);
 	rb_define_singleton_method(module, "set_sdl_hint", RUBY_METHOD_FUNC(sunshineSetHint), 2);

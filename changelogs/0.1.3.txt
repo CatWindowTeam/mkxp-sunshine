@@ -1,3 +1,6 @@
 Added Logger Ruby class
 Reworked VALUE support in debugwriter.h
 Apple Cmake fix
+Added Sunshine::IS_WAYLAND
+Added Simple Wayland Warning
+Added debug action in Settings "call Ruby GC"

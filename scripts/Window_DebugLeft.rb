@@ -11,7 +11,6 @@ class Window_DebugLeft < Window_Selectable
   def initialize
     super(0, 0, 192, Graphics.height)
     self.index = 0
-    RPG::Mod.exec_hooks("hooks/Window_DebugLeft/init", binding)
     refresh
   end
   #--------------------------------------------------------------------------
@@ -39,20 +38,16 @@ class Window_DebugLeft < Window_Selectable
   # * Get Mode
   #--------------------------------------------------------------------------
   def mode
-    if self.index < @switch_max
-      return 0
-    else
-      return 1
-    end
+    self.index < @switch_max ? 0 : 1
   end
   #--------------------------------------------------------------------------
   # * Get ID Shown on Top
   #--------------------------------------------------------------------------
   def top_id
     if self.index < @switch_max
-      return self.index * 10 + 1
+      self.index * 10 + 1
     else
-      return (self.index - @switch_max) * 10 + 1
+      (self.index - @switch_max) * 10 + 1
     end
   end
 end

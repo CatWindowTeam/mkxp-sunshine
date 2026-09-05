@@ -4,7 +4,7 @@
 
 class Float
   def to_f
-    return self
+    self
   end
 end
 
@@ -36,7 +36,7 @@ begin
   Graphics.transition(20)
 
   if Journal.active?
-    Journal.set ''
+    Journal.set 'default'
   end
   
   Oneshot.allow_exit true

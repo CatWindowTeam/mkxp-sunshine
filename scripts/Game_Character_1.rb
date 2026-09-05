@@ -83,14 +83,14 @@ class Game_Character
   def moving?
     # If logical coordinates differ from real coordinates,
     # movement is occurring.
-    return (@real_x != @x * 128 or @real_y != @y * 128)
+    (@real_x != @x * 128 or @real_y != @y * 128)
   end
   #--------------------------------------------------------------------------
   # * Determine if Jumping
   #--------------------------------------------------------------------------
   def jumping?
     # A jump is occurring if jump count is larger than 0
-    return @jump_count > 0
+    @jump_count > 0
   end
   #--------------------------------------------------------------------------
   # * Straighten Position
@@ -160,7 +160,7 @@ class Game_Character
       return false
     end
     # Loop all events
-    for event in $game_map.events.values
+    $game_map.events.values.each do |event|
       next if event.through || event.character_name.empty?
       return false if event.intersects?(new_x, new_y)
     end
@@ -176,7 +176,7 @@ class Game_Character
       end
     end
     # passable
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Lock
@@ -198,7 +198,7 @@ class Game_Character
   # * Determine if Locked
   #--------------------------------------------------------------------------
   def lock?
-    return @locked
+    @locked
   end
   #--------------------------------------------------------------------------
   # * Unlock
@@ -237,7 +237,7 @@ class Game_Character
   #--------------------------------------------------------------------------
   def screen_x
     # Get screen coordinates from real coordinates and map display position
-    return (@real_x - $game_map.display_x + 3) / 4 + 16
+    (@real_x - $game_map.display_x + 3) / 4 + 16
   end
   #--------------------------------------------------------------------------
   # * Get Screen Y-Coordinates
@@ -251,7 +251,7 @@ class Game_Character
     else
       n = @jump_peak - @jump_count
     end
-    return y - (@jump_peak * @jump_peak - n * n) / 2
+    y - (@jump_peak * @jump_peak - n * n) / 2
   end
   #--------------------------------------------------------------------------
   # * Get Screen Z-Coordinates
@@ -271,11 +271,11 @@ class Game_Character
     # If tile
     if @tile_id > 0
       # Add tile priority * 32
-      return z + $game_map.priorities[@tile_id] * 32
+      z + $game_map.priorities[@tile_id] * 32
     # If character
     else
       # If height exceeds 32, then add 31
-      return z + (((height || 0) > 32) ? 31 : 0)
+      z + (((height || 0) > 32) ? 31 : 0)
     end
   end
   #--------------------------------------------------------------------------
@@ -297,6 +297,6 @@ class Game_Character
   # * Get Terrain Tag
   #--------------------------------------------------------------------------
   def terrain_tag
-    return $game_map.terrain_tag(@x, @y)
+    $game_map.terrain_tag(@x, @y)
   end
 end

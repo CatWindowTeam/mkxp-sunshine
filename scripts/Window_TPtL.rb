@@ -1,4 +1,3 @@
-# The main menu window
 class Window_TPtL < Window_Selectable
   def initialize
     super(16, 16, Graphics.width - 32, Graphics.height - 32)
@@ -29,15 +28,11 @@ class Window_TPtL < Window_Selectable
   end
 
   def sort
-    orphans = []
-
     @mapinfos.each do |map_id, map_info|
       if map_info.parent_id == 0
         @tree << [map_id, []]
       elsif @mapinfos.has_key?(map_info.parent_id)
         add_item(map_id)
-      else
-        orphans << map_id
       end
     end
 
@@ -199,7 +194,6 @@ class Window_TPtL < Window_Selectable
       $game_temp.player_new_x = 0
       $game_temp.player_new_y = 0
       $game_temp.player_new_direction = 0
-      Graphics.freeze
       $game_temp.transition_processing = true
       $game_temp.transition_name = ""
       @fade_out = true

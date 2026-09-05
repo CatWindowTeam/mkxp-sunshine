@@ -35,7 +35,6 @@ class Window_NameEdit < Window_Base
     @index = name_array.size
     refresh
     update_cursor_rect
-    RPG::Mod.exec_hooks("hooks/Window_NameEdit/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Return to Default Name
@@ -62,17 +61,13 @@ class Window_NameEdit < Window_Base
   # * Delete Character
   #--------------------------------------------------------------------------
   def back
-    if @index > 0
-      # Delete 1 text character
-      name_array = @name.split(//)
-      @name = ""
-      (0...name_array.size-1).each do |i|
-        @name += name_array[i]
-      end
-      @index -= 1
-      refresh
-      update_cursor_rect
-    end
+    return unless @index > 0
+  
+    @name.slice!(@index - 1)
+    @index -= 1
+  
+    refresh
+    update_cursor_rect
   end
   #--------------------------------------------------------------------------
   # * Refresh

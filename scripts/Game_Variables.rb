@@ -11,7 +11,6 @@ class Game_Variables
   #--------------------------------------------------------------------------
   def initialize
     @data = []
-    RPG::Mod.exec_hooks("hooks/Game_Variables/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Get Variable
@@ -19,9 +18,9 @@ class Game_Variables
   #--------------------------------------------------------------------------
   def [](variable_id)
     if variable_id <= 5000 and @data[variable_id] != nil
-      return @data[variable_id]
+      @data[variable_id]
     else
-      return 0
+      0
     end
   end
   #--------------------------------------------------------------------------

@@ -7,11 +7,11 @@ class Window_MainMenu < Window_Selectable
       self.x = w / 2 - 304
     end
 
-    # Set up menu options
-    @commands = Array.new
-    @commands << 'Fast Travel'
-    @commands << 'Notes'
-    @commands << 'Settings'
+    @commands = [
+  		'Fast Travel',
+  		'Notes',
+  		'Settings'
+	]
 	
     if Settings[:debug] == true
       @commands << 'TPtL'
@@ -34,7 +34,6 @@ class Window_MainMenu < Window_Selectable
       draw_item(i, normal_color)
     end
     self.z = 9998
-    RPG::Mod.exec_hooks("hooks/Window_MainMenu/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Dispose

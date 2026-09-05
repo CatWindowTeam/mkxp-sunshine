@@ -37,7 +37,7 @@ module Script
     if list_of_swears.any? { |swear| test_string.include? swear.downcase }
       return true
     end
-    return false
+    false
   end
 
   def self.is_name_niko
@@ -46,7 +46,7 @@ module Script
     if list_of_niko_names.any? { |niko_name| test_string == niko_name.downcase }
       return true
     end
-    return false
+    false
   end
 
   def self.is_name_like_niko
@@ -55,7 +55,7 @@ module Script
     if list_of_niko_like_names.any? { |niko_like_name| test_string == niko_like_name.downcase }
       return true
     end
-    return false
+    false
   end
 
   def self.is_name_like_mom_dad
@@ -64,7 +64,7 @@ module Script
     if list_of_names_like_mom_dad.any? { |momdad_name| test_string == momdad_name.downcase }
       return true
     end
-    return false
+    false
   end
 
   def self.is_name_gross
@@ -73,7 +73,7 @@ module Script
     if list_of_gross_names.any? { |gross_name| test_string == gross_name.downcase }
       return true
     end
-    return false
+    false
   end
 
   def self.start_bruteforce
@@ -86,9 +86,9 @@ module Script
     end
     time_passed = Graphics.frame_count - $game_oneshot.bruteforce_start
     if(time_passed > (2 * 60 * 63014))
-      return true
+      true
     else
-      return false
+      false
     end
   end
 
@@ -97,12 +97,10 @@ module Script
   end
 
   def self.lose_all_items
-    (1..99).each do |i|
-		#skip debug testing items
-		if i == 54 or i == 81 or i == 82
-			next
-		end
-		$game_party.lose_item(i, 99)
+    (1..99).each do |item_id|
+      next if item_id == 54 || item_id == 81 || item_id == 82
+  
+      $game_party.lose_item(item_id, 99)
     end
   end
 
@@ -149,7 +147,7 @@ module Script
         return logpos(event.x, event.real_x, event.direction == 6)
       end
     end
-    return 0
+    0
   end
 
   def self.eve_y(name)
@@ -158,11 +156,11 @@ module Script
         return logpos(event.y, event.real_y, event.direction == 2)
       end
     end
-    return 0
+    0
   end
 
   def self.countdown_over
-    return true
+    true
   end
 
   def self.countdown_extend_over
@@ -227,19 +225,19 @@ module Script
 	  $game_variables[110] = dys4
 	  change = true
 	end
-	return change
+	change
   end
 
   def self.countdown_update
-    return cdown_update(0)
+    cdown_update(0)
   end
 
   def self.countdown_extend_update
-    return cdown_update(0)
+    cdown_update(0)
   end
 
   def self.countdown_update_rue
-    return cdown_update(0)
+  	cdown_update(0)
   end
 
   def self.reflection_update(npc_id, offset_x = 0, offset_y = 0, reverse_x = false, reverse_y = false)
@@ -372,7 +370,7 @@ module Script
     elsif realpos > bigpos
       return pos + 1 if positive
     end
-    return pos
+    pos
   end
 
   def self.set_cam(x, y)
@@ -564,7 +562,7 @@ module Script
 	when 3
 	  return File.exist?(portal_path + "/keyR.txt")
 	end
-    return false
+    false
   end
 
   def self.is_key_in_bigbox(numb)
@@ -578,8 +576,7 @@ module Script
 	  return (File.exist?(portal_path + "/keyR.txt") or File.exist?(portal_path + "/Portal3/keyR.txt"))
 	end
 	
-	
-    return false
+	false
   end
 
 end
@@ -592,7 +589,7 @@ def button_pressed?
   (1..18).each do |i|
     return true if Input.trigger?(i)
   end
-  return false
+  false
 end
 
 def enter_name

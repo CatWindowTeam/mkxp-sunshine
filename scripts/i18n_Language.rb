@@ -65,7 +65,7 @@ class Language
         unescaped.push(c)
       end
 
-      return unescaped.join('')
+      unescaped.join('')
     end
 
     def load_pot(path)

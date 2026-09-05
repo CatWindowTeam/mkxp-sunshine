@@ -787,6 +787,11 @@ class Window_Settings
       },
       {
         :type => :action,
+        :name => "Call Ruby GC",
+        :action => Proc.new { GC.start },
+      },
+      {
+        :type => :action,
         :name => "Do Crash",
         :action => Proc.new { raise "Test" },
         :icons => [[1, 0]],

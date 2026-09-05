@@ -50,7 +50,7 @@ class Interpreter
       $game_temp.transition_name = ""
     end
     # End
-    return false
+    false
   end
   #--------------------------------------------------------------------------
   # * Set Event Location
@@ -99,7 +99,7 @@ class Interpreter
       character.turn_left
     end
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Scroll Map
@@ -118,7 +118,7 @@ class Interpreter
     # Start scroll
     $game_map.start_scroll(@parameters[0], @parameters[1], @parameters[2])
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Change Map Settings
@@ -141,7 +141,7 @@ class Interpreter
       $game_temp.battleback_name = @parameters[1]
     end
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Change Fog Color Tone
@@ -150,7 +150,7 @@ class Interpreter
     # Start color tone change
     $game_map.start_fog_tone_change(@parameters[0], @parameters[1] * 2)
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Change Fog Opacity
@@ -159,7 +159,7 @@ class Interpreter
     # Start opacity level change
     $game_map.start_fog_opacity_change(@parameters[0], @parameters[1] * 2)
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Show Animation
@@ -175,7 +175,7 @@ class Interpreter
     # Set animation ID
     character.animation_id = @parameters[1]
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Change Transparent Flag
@@ -184,7 +184,7 @@ class Interpreter
     # Change player transparent flag
     $game_player.transparent = (@parameters[0] == 0)
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Set Move Route
@@ -200,7 +200,7 @@ class Interpreter
     # Force move route
     character.force_move_route(@parameters[1])
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Wait for Move's Completion
@@ -212,7 +212,7 @@ class Interpreter
       @move_route_waiting = true
     end
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Prepare for Transition
@@ -226,7 +226,7 @@ class Interpreter
     # Prepare for transition
     Graphics.freeze
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Execute Transition
@@ -243,7 +243,7 @@ class Interpreter
     # Advance index
     @index += 1
     # End
-    return false
+    false
   end
   #--------------------------------------------------------------------------
   # * Change Screen Color Tone
@@ -252,7 +252,7 @@ class Interpreter
     # Start changing color tone
     $game_screen.start_tone_change(@parameters[0], @parameters[1] * 2)
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Screen Flash
@@ -261,7 +261,7 @@ class Interpreter
     # Start flash
     $game_screen.start_flash(@parameters[0], @parameters[1] * 2)
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Screen Shake
@@ -271,7 +271,7 @@ class Interpreter
     $game_screen.start_shake(@parameters[0], @parameters[1],
       @parameters[2] * 2)
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Show Picture
@@ -292,7 +292,7 @@ class Interpreter
     $game_screen.pictures[number].show(@parameters[1], @parameters[2],
       x, y, @parameters[6], @parameters[7], @parameters[8], @parameters[9])
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Move Picture
@@ -313,7 +313,7 @@ class Interpreter
     $game_screen.pictures[number].move(@parameters[1] * 2, @parameters[2],
       x, y, @parameters[6], @parameters[7], @parameters[8], @parameters[9])
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Rotate Picture
@@ -324,7 +324,7 @@ class Interpreter
     # Set rotation speed
     $game_screen.pictures[number].rotate(@parameters[1])
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Change Picture Color Tone
@@ -336,7 +336,7 @@ class Interpreter
     $game_screen.pictures[number].start_tone_change(@parameters[1],
       @parameters[2] * 2)
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Erase Picture
@@ -347,7 +347,7 @@ class Interpreter
     # Erase picture
     $game_screen.pictures[number].erase
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Set Weather Effects
@@ -356,7 +356,7 @@ class Interpreter
     # Set Weather Effects
     $game_screen.weather(@parameters[0], @parameters[1], @parameters[2])
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Play BGM
@@ -367,7 +367,7 @@ class Interpreter
     $game_temp.bgm_fadein_speed = 99
     $game_system.bgm_play(@parameters[0])
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Fade Out BGM
@@ -378,7 +378,7 @@ class Interpreter
     $game_temp.bgm_fadein_speed = 99
     $game_system.bgm_fade(@parameters[0])
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Play BGS
@@ -387,7 +387,7 @@ class Interpreter
     # Play BGS
     $game_system.bgs_play(@parameters[0])
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Fade Out BGS
@@ -396,7 +396,7 @@ class Interpreter
     # Fade out BGS
     $game_system.bgs_fade(@parameters[0])
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Memorize BGM/BGS
@@ -406,7 +406,7 @@ class Interpreter
     $game_system.bgm_memorize
     $game_system.bgs_memorize
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Restore BGM/BGS
@@ -416,7 +416,7 @@ class Interpreter
     $game_system.bgm_restore
     $game_system.bgs_restore
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Play ME
@@ -425,7 +425,7 @@ class Interpreter
     # Play ME
     $game_system.me_play(@parameters[0])
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Play SE
@@ -434,7 +434,7 @@ class Interpreter
     # Play SE
     $game_system.se_play(@parameters[0])
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Stop SE
@@ -443,6 +443,6 @@ class Interpreter
     # Stop SE
     Audio.se_stop
     # Continue
-    return true
+    true
   end
 end

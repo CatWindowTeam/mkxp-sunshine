@@ -212,7 +212,7 @@ class Interpreter
     when 355  # Script
       return command_355
     else      # Other
-      return true
+      true
     end
   end
   #--------------------------------------------------------------------------
@@ -279,6 +279,6 @@ class Interpreter
       value = -value
     end
     # Return value
-    return value
+    value
   end
 end

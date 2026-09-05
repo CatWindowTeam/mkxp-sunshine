@@ -162,6 +162,7 @@ class Spriteset_Map
     @character_sprites.push(Sprite_Character.new(@viewport, @viewport_lights, follower))
     @character_sprites.push(Sprite_Character.new(@viewport, @viewport_lights, $game_player))
   end
+  
   def remove_follower(follower)
     @character_sprites.reverse_each do |spr|
       if spr.character == follower
@@ -175,7 +176,7 @@ class Spriteset_Map
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
-
+	graphics_changed = false
     # Update tilemap
     @tilemap.wrapping = $game_map.wrapping
     # If panorama is different from current one
@@ -222,7 +223,7 @@ class Spriteset_Map
           @panorama.blend_type = 0
         end
       end
-      Graphics.frame_reset
+      graphics_changed = true
     end
 
     # If fog is different than current fog
@@ -236,7 +237,7 @@ class Spriteset_Map
       if @fog_name != ""
         @fog.bitmap = RPG::Cache.fog(@fog_name, @fog_hue)
       end
-      Graphics.frame_reset
+      graphics_changed = true
     end
     # If BG is different than current BG
     if @bg_name != $game_map.bg_name
@@ -251,8 +252,12 @@ class Spriteset_Map
       else
         @bg.bitmap = RPG::Cache.panorama(@bg_name, 0)
       end
-      Graphics.frame_reset
+      graphics_changed = true
     end
+
+	# so instead of multiple resets in one frame, call it once
+	Graphics.frame_reset if graphics_changed
+    
     # If particles different than current particles
     if @particles_type != $game_map.particles_type
       @particles.dispose if @particles
