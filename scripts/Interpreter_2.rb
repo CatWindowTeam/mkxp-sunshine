@@ -22,195 +22,195 @@ class Interpreter
     # Branch by command code
     case @list[@index].code
     when 101  # Show Text
-      return command_101
+      command_101
     when 102  # Show Choices
-      return command_102
+      command_102
     when 402  # When [**]
-      return command_402
+      command_402
     when 403  # When Cancel
-      return command_403
+      command_403
     when 103  # Input Number
-      return command_103
+      command_103
     when 104  # Change Text Options
-      return command_104
+      command_104
     when 105  # Button Input Processing
-      return command_105
+      command_105
     when 106  # Wait
-      return command_106
+      command_106
     when 111  # Conditional Branch
-      return command_111
+      command_111
     when 411  # Else
-      return command_411
+      command_411
     when 112  # Loop
-      return command_112
+      command_112
     when 413  # Repeat Above
-      return command_413
+      command_413
     when 113  # Break Loop
-      return command_113
+      command_113
     when 115  # Exit Event Processing
-      return command_115
+      command_115
     when 116  # Erase Event
-      return command_116
+      command_116
     when 117  # Call Common Event
-      return command_117
+      command_117
     when 118  # Label
-      return command_118
+      command_118
     when 119  # Jump to Label
-      return command_119
+      command_119
     when 121  # Control Switches
-      return command_121
+      command_121
     when 122  # Control Variables
-      return command_122
+      command_122
     when 123  # Control Self Switch
-      return command_123
+      command_123
     when 124  # Control Timer
-      return command_124
+      command_124
     when 125  # Change Gold
-      return command_125
+      command_125
     when 126  # Change Items
-      return command_126
+      command_126
     when 127  # Change Weapons
-      return command_127
+      command_127
     when 128  # Change Armor
-      return command_128
+      command_128
     when 129  # Change Party Member
-      return command_129
+      command_129
     when 131  # Change Windowskin
-      return command_131
+      command_131
     when 132  # Change Battle BGM
-      return command_132
+      command_132
     when 133  # Change Battle End ME
-      return command_133
+      command_133
     when 134  # Change Save Access
-      return command_134
+      command_134
     when 135  # Change Menu Access
-      return command_135
+      command_135
     when 136  # Change Encounter
-      return command_136
+      command_136
     when 201  # Transfer Player
-      return command_201
+      command_201
     when 202  # Set Event Location
-      return command_202
+      command_202
     when 203  # Scroll Map
-      return command_203
+      command_203
     when 204  # Change Map Settings
-      return command_204
+      command_204
     when 205  # Change Fog Color Tone
-      return command_205
+      command_205
     when 206  # Change Fog Opacity
-      return command_206
+      command_206
     when 207  # Show Animation
-      return command_207
+      command_207
     when 208  # Change Transparent Flag
-      return command_208
+      command_208
     when 209  # Set Move Route
-      return command_209
+      command_209
     when 210  # Wait for Move's Completion
-      return command_210
+      command_210
     when 221  # Prepare for Transition
-      return command_221
+      command_221
     when 222  # Execute Transition
-      return command_222
+      command_222
     when 223  # Change Screen Color Tone
-      return command_223
+      command_223
     when 224  # Screen Flash
-      return command_224
+      command_224
     when 225  # Screen Shake
-      return command_225
+      command_225
     when 231  # Show Picture
-      return command_231
+      command_231
     when 232  # Move Picture
-      return command_232
+      command_232
     when 233  # Rotate Picture
-      return command_233
+      command_233
     when 234  # Change Picture Color Tone
-      return command_234
+      command_234
     when 235  # Erase Picture
-      return command_235
+      command_235
     when 236  # Set Weather Effects
-      return command_236
+      command_236
     when 241  # Play BGM
-      return command_241
+      command_241
     when 242  # Fade Out BGM
-      return command_242
+      command_242
     when 245  # Play BGS
-      return command_245
+      command_245
     when 246  # Fade Out BGS
-      return command_246
+      command_246
     when 247  # Memorize BGM/BGS
-      return command_247
+      command_247
     when 248  # Restore BGM/BGS
-      return command_248
+      command_248
     when 249  # Play ME
-      return command_249
+      command_249
     when 250  # Play SE
-      return command_250
+      command_250
     when 251  # Stop SE
-      return command_251
+      command_251
     when 301  # Battle Processing
-      return command_301
+      command_301
     when 601  # If Win
-      return command_601
+      command_601
     when 602  # If Escape
-      return command_602
+      command_602
     when 603  # If Lose
-      return command_603
+      command_603
     when 303  # Name Input Processing
-      return command_303
+      command_303
     when 311  # Change HP
-      return command_311
+      command_311
     when 312  # Change SP
-      return command_312
+      command_312
     when 313  # Change State
-      return command_313
+      command_313
     when 314  # Recover All
-      return command_314
+      command_314
     when 315  # Change EXP
-      return command_315
+      command_315
     when 316  # Change Level
-      return command_316
+      command_316
     when 317  # Change Parameters
-      return command_317
+      command_317
     when 318  # Change Skills
-      return command_318
+      command_318
     when 319  # Change Equipment
-      return command_319
+      command_319
     when 320  # Change Actor Name
-      return command_320
+      command_320
     when 321  # Change Actor Class
-      return command_321
+      command_321
     when 322  # Change Actor Graphic
-      return command_322
+      command_322
     when 331  # Change Enemy HP
-      return command_331
+      command_331
     when 332  # Change Enemy SP
-      return command_332
+      command_332
     when 333  # Change Enemy State
-      return command_333
+      command_333
     when 334  # Enemy Recover All
-      return command_334
+      command_334
     when 335  # Enemy Appearance
-      return command_335
+      command_335
     when 336  # Enemy Transform
-      return command_336
+      command_336
     when 337  # Show Battle Animation
-      return command_337
+      command_337
     when 338  # Deal Damage
-      return command_338
+      command_338
     when 339  # Force Action
-      return command_339
+      command_339
     when 340  # Abort Battle
-      return command_340
+      command_340
     when 351  # Call Menu Screen
-      return command_351
+      command_351
     when 352  # Call Save Screen
-      return command_352
+      command_352
     when 353  # Game Over
-      return command_353
+      command_353
     when 354  # Return to Title Screen
-      return command_354
+      command_354
     when 355  # Script
-      return command_355
+      command_355
     else      # Other
       true
     end
