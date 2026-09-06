@@ -137,7 +137,7 @@ class Interpreter
       end
     end
     # Loop for group control
-    (@parameters[0]..@parameters[1]).each do |i|
+    @parameters[0]..@parameters[1].each do |i|
       # Branch with control
       case @parameters[2]
       when 0  # substitute
