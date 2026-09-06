@@ -194,9 +194,13 @@ class Sprite_Character
     @light_sprite.dispose
     @sprite = nil
     @light_sprite = nil
+    if @text_sprite && !@text_sprite.disposed?
+		@text_sprite.dispose
+		@text_sprite = nil
+    end
   end
   def disposed?
-    @sprite == nil
+    @sprite.nil?
   end
   def flash(color, duration)
     @sprite.flash(color, duration)

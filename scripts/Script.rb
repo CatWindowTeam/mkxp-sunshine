@@ -162,11 +162,11 @@ module Script
   end
 
   def self.countdown_over
-    return true
+    true
   end
 
   def self.countdown_extend_over
-	return true
+	true
   end
 
   def self.cdown_update(equinox)
@@ -231,15 +231,15 @@ module Script
   end
 
   def self.countdown_update
-    return cdown_update(0)
+    cdown_update(0)
   end
 
   def self.countdown_extend_update
-    return cdown_update(0)
+    cdown_update(0)
   end
 
   def self.countdown_update_rue
-    return cdown_update(0)
+    cdown_update(0)
   end
 
   def self.reflection_update(npc_id, offset_x = 0, offset_y = 0, reverse_x = false, reverse_y = false)
@@ -454,7 +454,7 @@ module Script
   end
 
   def self.clear_boxes
-    for i in 1..3
+    (1..3).each do |i|
       portal_path = Oneshot::GAME_PATH + "/Oneshot/Portal" + i.to_s
       case i
       when 1

@@ -31,7 +31,7 @@ class Game_Party
   #--------------------------------------------------------------------------
   def setup_starting_members
     @actors = []
-    for i in $data_system.party_members
+    $data_system.party_members.each do |i|
       #@actors.push($game_actors[i])
       add_actor(i)
     end
@@ -41,7 +41,7 @@ class Game_Party
   #--------------------------------------------------------------------------
   def setup_battle_test_members
     @actors = []
-    for battler in $data_system.test_battlers
+    $data_system.test_battlers.each do |battler|
       actor = $game_actors[battler.actor_id]
       actor.level = battler.level
       gain_weapon(battler.weapon_id, 1)
@@ -58,7 +58,7 @@ class Game_Party
       @actors.push(actor)
     end
     @items = {}
-    for i in 1...$data_items.size
+    (1...$data_items.size).each do |i|
       if $data_items[i].name != ""
         occasion = $data_items[i].occasion
         if occasion == 0 or occasion == 1
@@ -74,7 +74,7 @@ class Game_Party
     # Actor objects split from $game_actors right after loading game data
     # Avoid this problem by resetting the actors each time data is loaded.
     new_actors = []
-    for i in 0...@actors.size
+    (0...@actors.size).each do |i|
       if $data_actors[@actors[i].id] != nil
         new_actors.push($game_actors[@actors[i].id])
       end
@@ -92,9 +92,9 @@ class Game_Party
     # Initialize local variable: level
     level = 0
     # Get maximum level of party members
-    for actor in @actors
-      if level < actor.level
-        level = actor.level
+    @actors.each do |a|
+      if level < a.level
+        level = a.level
       end
     end
     return level
@@ -131,7 +131,7 @@ class Game_Party
     actor = $game_actors[actor_id]
     # Delete follower
     unless $game_followers.empty?
-      for i in 0...$game_followers.size
+      (0...$game_followers.size).each do |i|
         follower = $game_followers[i]
         if follower.actor.id == actor.id
           if $game_followers.size > i + 1
@@ -175,7 +175,7 @@ class Game_Party
   #--------------------------------------------------------------------------
   def item_number(item_id)
     # If quantity data is in the hash, use it. If not, return 0
-    return @items.include?(item_id) ? @items[item_id] : 0
+    @items.include?(item_id) ? @items[item_id] : 0
   end
   #--------------------------------------------------------------------------
   # * Get Number of Weapons Possessed
@@ -183,7 +183,7 @@ class Game_Party
   #--------------------------------------------------------------------------
   def weapon_number(weapon_id)
     # If quantity data is in the hash, use it. If not, return 0
-    return @weapons.include?(weapon_id) ? @weapons[weapon_id] : 0
+    @weapons.include?(weapon_id) ? @weapons[weapon_id] : 0
   end
   #--------------------------------------------------------------------------
   # * Get Amount of Armor Possessed
@@ -191,7 +191,7 @@ class Game_Party
   #--------------------------------------------------------------------------
   def armor_number(armor_id)
     # If quantity data is in the hash, use it. If not, return 0
-    return @armors.include?(armor_id) ? @armors[armor_id] : 0
+    @armors.include?(armor_id) ? @armors[armor_id] : 0
   end
   #--------------------------------------------------------------------------
   # * Gain Items (or lose)
@@ -278,8 +278,8 @@ class Game_Party
   #--------------------------------------------------------------------------
   def clear_actions
     # Clear All Member Actions
-    for actor in @actors
-      actor.current_action.clear
+    @actors.each do |a|
+      a.current_action.clear
     end
   end
   #--------------------------------------------------------------------------
@@ -287,7 +287,7 @@ class Game_Party
   #--------------------------------------------------------------------------
   def inputable?
     # Return true if input is possible for one person as well
-    for actor in @actors
+    @actors.each do |actor|
       if actor.inputable?
         return true
       end
@@ -303,7 +303,7 @@ class Game_Party
       return false
     end
     # If an actor is in the party with 0 or more HP
-    for actor in @actors
+    @actors.each do |actor|
       if actor.hp > 0
         return false
       end
@@ -315,7 +315,7 @@ class Game_Party
   # * Slip Damage Check (for map)
   #--------------------------------------------------------------------------
   def check_map_slip_damage
-    for actor in @actors
+    @actors.each do |actor|
       if actor.hp > 0 and actor.slip_damage?
         actor.hp -= [actor.maxhp / 100, 1].max
         if actor.hp == 0
@@ -334,7 +334,7 @@ class Game_Party
     # Initialize roulette
     roulette = []
     # Loop
-    for actor in @actors
+    @actors.each do |actor|
       # If it fits the conditions
       if (not hp0 and actor.exist?) or (hp0 and actor.hp0?)
         # Get actor class [position]
@@ -358,7 +358,7 @@ class Game_Party
   # * Random Selection of Target Actor (HP 0)
   #--------------------------------------------------------------------------
   def random_target_actor_hp0
-    return random_target_actor(true)
+    random_target_actor(true)
   end
   #--------------------------------------------------------------------------
   # * Smooth Selection of Target Actor
@@ -372,10 +372,10 @@ class Game_Party
       return actor
     end
     # Loop
-    for actor in @actors
+    @actors.each do |a|
       # If an actor exists
-      if actor.exist?
-        return actor
+      if a.exist?
+        return a
       end
     end
   end

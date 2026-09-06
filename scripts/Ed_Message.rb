@@ -95,7 +95,7 @@ class Ed_Message
     x = y = 0
     maxwidth = @contents.width - 4
     spacewidth = @contents.text_size(' ').width
-    for i in text_raw.split(/ /)
+    text_raw.split(/ /).each do |i|
       # Split each word around newlines
       newline = false
       for j in i.split("\n")

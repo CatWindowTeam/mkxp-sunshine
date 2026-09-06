@@ -8,7 +8,7 @@ class SpecialEventData
   end
 
   def self.get(name)
-    return SPECIAL_EVENTS[name]
+    SPECIAL_EVENTS[name]
   end
 
   SPECIAL_EVENTS = {

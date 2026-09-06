@@ -84,7 +84,7 @@ class Desktop_Message
     x = y = 0
     maxwidth = @contents.width - HORIZ_MARGIN * 2
     spacesize = @contents.text_size(' ')
-    for i in text_raw.split(/ /)
+    text_raw.split(/ /).each do |i|
       # Split each word around newlines
       newline = false
       for j in i.split("\n")

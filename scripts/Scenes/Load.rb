@@ -14,7 +14,7 @@ class Scene_Load < Scene_File
     # Timestamp selects new file
     $game_temp.last_file_index = 0
     latest_time = CTime.at(0)
-    for i in 0..99
+    (0..99).each do |i|
       filename = make_filename(i)
       if FileTest.exist?(filename)
         file = File.open(filename, "r")
@@ -96,7 +96,7 @@ class Scene_Load < Scene_File
     $game_party.refresh
 
 	f_prev = $game_player
-    for f in $game_followers
+    $game_followers.each do |f|
       f.leader = f_prev
       f.moveto($game_player.x, $game_player.y)
 	  f_prev = f

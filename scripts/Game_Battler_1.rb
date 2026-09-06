@@ -57,7 +57,7 @@ class Game_Battler
   #--------------------------------------------------------------------------
   def maxhp
     n = [[base_maxhp + @maxhp_plus, 1].max, 999999].min
-    for i in @states
+    @states.each do |i|
       n *= $data_states[i].maxhp_rate / 100.0
     end
     n = [[Integer(n), 1].max, 999999].min
@@ -68,7 +68,7 @@ class Game_Battler
   #--------------------------------------------------------------------------
   def maxsp
     n = [[base_maxsp + @maxsp_plus, 0].max, 9999].min
-    for i in @states
+    @states.each do |i|
       n *= $data_states[i].maxsp_rate / 100.0
     end
     n = [[Integer(n), 0].max, 9999].min
@@ -79,7 +79,7 @@ class Game_Battler
   #--------------------------------------------------------------------------
   def str
     n = [[base_str + @str_plus, 1].max, 999].min
-    for i in @states
+    @states.each do |i|
       n *= $data_states[i].str_rate / 100.0
     end
     n = [[Integer(n), 1].max, 999].min
@@ -90,7 +90,7 @@ class Game_Battler
   #--------------------------------------------------------------------------
   def dex
     n = [[base_dex + @dex_plus, 1].max, 999].min
-    for i in @states
+    @states.each do |i|
       n *= $data_states[i].dex_rate / 100.0
     end
     n = [[Integer(n), 1].max, 999].min
@@ -101,7 +101,7 @@ class Game_Battler
   #--------------------------------------------------------------------------
   def agi
     n = [[base_agi + @agi_plus, 1].max, 999].min
-    for i in @states
+    @states.each do |i|
       n *= $data_states[i].agi_rate / 100.0
     end
     n = [[Integer(n), 1].max, 999].min
@@ -112,7 +112,7 @@ class Game_Battler
   #--------------------------------------------------------------------------
   def int
     n = [[base_int + @int_plus, 1].max, 999].min
-    for i in @states
+    @states.each do |i|
       n *= $data_states[i].int_rate / 100.0
     end
     n = [[Integer(n), 1].max, 999].min
@@ -173,7 +173,7 @@ class Game_Battler
   #--------------------------------------------------------------------------
   def hit
     n = 100
-    for i in @states
+    @states.each do |i|
       n *= $data_states[i].hit_rate / 100.0
     end
     return Integer(n)
@@ -183,7 +183,7 @@ class Game_Battler
   #--------------------------------------------------------------------------
   def atk
     n = base_atk
-    for i in @states
+    @states.each do |i|
       n *= $data_states[i].atk_rate / 100.0
     end
     return Integer(n)
@@ -193,7 +193,7 @@ class Game_Battler
   #--------------------------------------------------------------------------
   def pdef
     n = base_pdef
-    for i in @states
+    @states.each do |i|
       n *= $data_states[i].pdef_rate / 100.0
     end
     return Integer(n)
@@ -203,7 +203,7 @@ class Game_Battler
   #--------------------------------------------------------------------------
   def mdef
     n = base_mdef
-    for i in @states
+    @states.each do |i|
       n *= $data_states[i].mdef_rate / 100.0
     end
     return Integer(n)
@@ -213,7 +213,7 @@ class Game_Battler
   #--------------------------------------------------------------------------
   def eva
     n = base_eva
-    for i in @states
+    @states.each do |i|
       n += $data_states[i].eva
     end
     return n
@@ -225,7 +225,7 @@ class Game_Battler
   def hp=(hp)
     @hp = [[hp, maxhp].min, 0].max
     # add or exclude incapacitation
-    for i in 1...$data_states.size
+    (1...$data_states.size).each do |i|
       if $data_states[i].zero_hp
         if self.dead?
           add_state(i)
@@ -248,7 +248,7 @@ class Game_Battler
   def recover_all
     @hp = maxhp
     @sp = maxsp
-    for i in @states.clone
+    @states.clone.each do |i|
       remove_state(i)
     end
   end
@@ -256,7 +256,7 @@ class Game_Battler
   # * Get Current Action
   #--------------------------------------------------------------------------
   def current_action
-    return @current_action
+    @current_action
   end
   #--------------------------------------------------------------------------
   # * Determine Action Speed
@@ -268,42 +268,42 @@ class Game_Battler
   # * Decide Incapacitation
   #--------------------------------------------------------------------------
   def dead?
-    return (@hp == 0 and not @immortal)
+    (@hp == 0 and not @immortal)
   end
   #--------------------------------------------------------------------------
   # * Decide Existance
   #--------------------------------------------------------------------------
   def exist?
-    return (not @hidden and (@hp > 0 or @immortal))
+    (not @hidden and (@hp > 0 or @immortal))
   end
   #--------------------------------------------------------------------------
   # * Decide HP 0
   #--------------------------------------------------------------------------
   def hp0?
-    return (not @hidden and @hp == 0)
+    (not @hidden and @hp == 0)
   end
   #--------------------------------------------------------------------------
   # * Decide if Command is Inputable
   #--------------------------------------------------------------------------
   def inputable?
-    return (not @hidden and restriction <= 1)
+    (not @hidden and restriction <= 1)
   end
   #--------------------------------------------------------------------------
   # * Decide if Action is Possible
   #--------------------------------------------------------------------------
   def movable?
-    return (not @hidden and restriction < 4)
+    (not @hidden and restriction < 4)
   end
   #--------------------------------------------------------------------------
   # * Decide if Guarding
   #--------------------------------------------------------------------------
   def guarding?
-    return (@current_action.kind == 0 and @current_action.basic == 1)
+    (@current_action.kind == 0 and @current_action.basic == 1)
   end
   #--------------------------------------------------------------------------
   # * Decide if Resting
   #--------------------------------------------------------------------------
   def resting?
-    return (@current_action.kind == 0 and @current_action.basic == 3)
+    (@current_action.kind == 0 and @current_action.basic == 3)
   end
 end

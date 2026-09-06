@@ -5,7 +5,7 @@ module Input
 
     def c_axis_pressure(axis)
       normalized = c_axis_pressure_int(axis).to_f / 32767.0 
-      return normalized < Settings[:gamepad_deadzone] / 10.0 ? 0.0 : normalized
+      normalized < Settings[:gamepad_deadzone] / 10.0 ? 0.0 : normalized
     end
   end
 end

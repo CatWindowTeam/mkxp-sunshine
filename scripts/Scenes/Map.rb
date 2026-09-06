@@ -110,7 +110,7 @@ class Scene_Map
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
-    if $game_temp.igt_timer_visible && (Graphics.frame_count != nil)
+    if $game_temp.igt_timer_visible && Graphics.frame_count
       total_sec = Graphics.frame_count.to_f / Graphics.frame_rate
       time_string = sprintf("%02d:%02d:%02d.%03d",
                             total_sec / 3600,
@@ -131,9 +131,7 @@ class Scene_Map
         return
       else
         if Settings[:oneshot_mode] == true
-          if($game_switches[179] == false)
-			File.new("badend.lock", "w")
-          end
+          File.write("badend.lock", "") unless $game_switches[179]
           $game_temp.common_event_id = 35
         else
           $game_temp.common_event_id = 35

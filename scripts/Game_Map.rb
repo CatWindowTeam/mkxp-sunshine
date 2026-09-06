@@ -145,12 +145,12 @@ class Game_Map
     @need_refresh = false
     # Set map event data
     @events = {}
-    for i in @map.events.keys
+    @map.events.keys.each do |i|
       @events[i] = Game_Event.new(@map_id, @map.events[i])
     end
     # Set common event data
     @common_events = {}
-    for i in 1...$data_common_events.size
+    (1...$data_common_events.size).each do |i|
       @common_events[i] = Game_CommonEvent.new(i)
     end
     # Initialize all fog information
@@ -211,43 +211,43 @@ class Game_Map
   # * Get Map ID
   #--------------------------------------------------------------------------
   def map_id
-    return @map_id
+    @map_id
   end
   #--------------------------------------------------------------------------
   # * Get Map Name
   #--------------------------------------------------------------------------
   def map_name
-    return @map_name
+    @map_name
   end
   #--------------------------------------------------------------------------
   # * Get Width
   #--------------------------------------------------------------------------
   def width
-    return @map.width
+    @map.width
   end
   #--------------------------------------------------------------------------
   # * Get Height
   #--------------------------------------------------------------------------
   def height
-    return @map.height
+    @map.height
   end
   #--------------------------------------------------------------------------
   # * Get Encounter List
   #--------------------------------------------------------------------------
   def encounter_list
-    return @map.encounter_list
+    @map.encounter_list
   end
   #--------------------------------------------------------------------------
   # * Get Encounter Steps
   #--------------------------------------------------------------------------
   def encounter_step
-    return @map.encounter_step
+    @map.encounter_step
   end
   #--------------------------------------------------------------------------
   # * Get Map Data
   #--------------------------------------------------------------------------
   def data
-    return @map.data
+    @map.data
   end
   #--------------------------------------------------------------------------
   # * Automatically Change Background Music and Backround Sound
@@ -267,12 +267,12 @@ class Game_Map
     # If map ID is effective
     if @map_id > 0
       # Refresh all map events
-      for event in @events.values
-        event.refresh
+      @events.values.each do |e|
+        e.refresh
       end
       # Refresh all common events
-      for common_event in @common_events.values
-        common_event.refresh
+      @common_events.values.each do |c|
+        c.refresh
       end
     end
     # Clear refresh request flag
@@ -326,7 +326,7 @@ class Game_Map
   #--------------------------------------------------------------------------
   def valid?(x, y)
     return true if @wrapping
-    return (x >= 0 and x < width and y >= 0 and y < height)
+    (x >= 0 and x < width and y >= 0 and y < height)
   end
   #--------------------------------------------------------------------------
   # * Determine if Passable
@@ -347,7 +347,7 @@ class Game_Map
     # Change direction (0,2,4,6,8,10) to obstacle bit (0,1,2,4,8,0)
     bit = (1 << (d / 2 - 1)) & 0x0f
     # Loop in all events
-    for event in events.values
+    events.values.each do |event|
       # If tiles other than self are consistent with coordinates
       if event.tile_id >= 0 and event != self_event and
          event.x == x and event.y == y and not event.through
@@ -407,7 +407,7 @@ class Game_Map
   #--------------------------------------------------------------------------
   def bush?(x, y)
     if @map_id != 0
-      for i in [2, 1, 0]
+      [2, 1, 0].each do |i|
         tile_id = data[x, y, i]
         if tile_id == nil
           return false
@@ -425,7 +425,7 @@ class Game_Map
   #--------------------------------------------------------------------------
   def counter?(x, y)
     if @map_id != 0
-      for i in [2, 1, 0]
+      [2, 1, 0].each do |i|
         tile_id = data[x, y, i]
         if tile_id == nil
           return false
@@ -443,7 +443,7 @@ class Game_Map
   #--------------------------------------------------------------------------
   def terrain_tag(x, y)
     if @map_id != 0
-      for i in [2, 1, 0]
+      [2, 1, 0].each do |i|
         tile_id = data[x, y, i]
         if tile_id == nil
           next #return 0
@@ -460,9 +460,9 @@ class Game_Map
   #     y          : y-coordinate
   #--------------------------------------------------------------------------
   def check_event(x, y)
-    for event in $game_map.events.values
-      if event.x == x and event.y == y
-        return event.id
+    $game_map.events.values.each do |e|
+      if e.x == x and e.y == y
+        return e.id
       end
     end
   end
@@ -481,7 +481,7 @@ class Game_Map
   # * Determine if Scrolling
   #--------------------------------------------------------------------------
   def scrolling?
-    return @scroll_rest > 0
+    @scroll_rest > 0
   end
   #--------------------------------------------------------------------------
   # * Start Changing Fog Color Tone
@@ -517,9 +517,8 @@ class Game_Map
     @display_clip_bottom = @display_clip_bottom || 999999
 
     # Refresh map if necessary
-    if $game_map.need_refresh
-      refresh
-    end
+    refresh if $game_map.need_refresh
+    
     # If scrolling
     if @scroll_rest > 0
       # Change from scroll speed to distance in map coordinates
@@ -539,12 +538,12 @@ class Game_Map
       @scroll_rest -= distance
     end
     # Update map event
-    for event in @events.values
-      event.update
+    @events.values.each do |e|
+      e.update
     end
     # Update common event
-    for common_event in @common_events.values
-      common_event.update
+    @common_events.values.each do |c|
+      c.update
     end
     # Manage fog scrolling
     @fog_ox -= @fog_sx / 8.0

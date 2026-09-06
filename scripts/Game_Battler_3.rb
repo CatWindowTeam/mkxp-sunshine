@@ -346,7 +346,7 @@ class Game_Battler
     # * "element_rate" method is defined by Game_Actor and Game_Enemy classes,
     #    which inherit from this class.
     weakest = -100
-    for i in element_set
+    element_set.each do |i|
       weakest = [weakest, self.element_rate(i)].max
     end
     return weakest

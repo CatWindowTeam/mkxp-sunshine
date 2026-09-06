@@ -25,8 +25,21 @@ static VALUE sunshineSetHint(VALUE, VALUE h, VALUE v) {
   return SDL_SetHint(StringValueCStr(h), StringValueCStr(v));
 }
 
+static VALUE SetCrashScreenData(VALUE, VALUE v) {
+  SDL_snprintf(crash_message, sizeof(crash_message), "%s", StringValueCStr(v));
+  crash_reason = "Internal Ruby Error";
+  crash_possible_solution = "Report bug to developers";
+  show_crash_screen = true;
+  return Qnil;
+}
+
 static VALUE obj_clone(VALUE self){
     return rb_obj_clone(self);
+}
+
+static VALUE gccccc(VALUE self){
+	rb_gc();
+    return Qnil;
 }
 
 static VALUE a_last(VALUE self){
@@ -65,8 +78,12 @@ void SunshineBindingInit(){
 		rb_const_set(module, rb_intern("DEVBUILD"), Qfalse);
 	#endif
 	rb_define_singleton_method(module, "crash_privacy=", RUBY_METHOD_FUNC(sunshineSetCrashPrivacy), 1);
+	rb_define_singleton_method(module, "SetCrashScreenData", RUBY_METHOD_FUNC(SetCrashScreenData), 1);
 	rb_define_singleton_method(module, "wallpaper_mode=", RUBY_METHOD_FUNC(sunshineSetWallpaperMode), 1);
 	rb_define_singleton_method(module, "set_sdl_hint", RUBY_METHOD_FUNC(sunshineSetHint), 2);
+	if (!rb_respond_to(rb_mGC, rb_intern("start")))
+	    rb_define_method(rb_mGC, "start", RUBY_METHOD_FUNC(gccccc), 0);
+
 	if (!rb_respond_to(rb_cObject, rb_intern("class")))
 	    rb_define_method(rb_cObject, "class", rb_obj_class, 0);
 

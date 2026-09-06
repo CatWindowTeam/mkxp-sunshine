@@ -29,15 +29,11 @@ class Window_TPtL < Window_Selectable
   end
 
   def sort
-    orphans = []
-
     @mapinfos.each do |map_id, map_info|
       if map_info.parent_id == 0
         @tree << [map_id, []]
       elsif @mapinfos.has_key?(map_info.parent_id)
         add_item(map_id)
-      else
-        orphans << map_id
       end
     end
 

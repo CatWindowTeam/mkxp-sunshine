@@ -40,7 +40,7 @@ class Interpreter
       return true
     end
     # If it doesn't meet conditions: command skip
-    return command_skip
+    command_skip
   end
   #--------------------------------------------------------------------------
   # * If Escape
@@ -54,7 +54,7 @@ class Interpreter
       return true
     end
     # If it doesn't meet conditions: command skip
-    return command_skip
+    command_skip
   end
   #--------------------------------------------------------------------------
   # * If Lose

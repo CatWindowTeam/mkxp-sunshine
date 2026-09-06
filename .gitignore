@@ -50,3 +50,4 @@ build/
 *.lock.json
 .idea/
 .rubocop_todo.yml
+test.py

@@ -64,7 +64,7 @@ class Interpreter
   # * Determine if Running
   #--------------------------------------------------------------------------
   def running?
-    return @list != nil
+    @list != nil
   end
   #--------------------------------------------------------------------------
   # * Starting Event Setup
@@ -84,7 +84,7 @@ class Interpreter
       return
     end
     # Loop (map events)
-    for event in $game_map.events.values
+    $game_map.events.values.each do |event|
       # If running event is found
       if event.starting
         # If not auto run
@@ -100,7 +100,7 @@ class Interpreter
       end
     end
     # Loop (common events)
-    for common_event in $data_common_events.compact
+    $data_common_events.compact.each do |common_event|
       # If trigger is auto run, and condition switch is ON
       if common_event.trigger == 1 and
          $game_switches[common_event.switch_id] == true
@@ -161,9 +161,9 @@ class Interpreter
           return
         end
         # Loop (map events)
-        for event in $game_map.events.values
+        $game_map.events.values.each do |e|
           # If this event is forcing move route
-          if event.move_route_forcing
+          if e.move_route_forcing
             return
           end
         end
@@ -246,9 +246,9 @@ class Interpreter
     # If entire party
     if parameter == 0
       # Loop for entire party
-      for actor in $game_party.actors
+      $game_party.actors.each do |a|
         # Evaluate block
-        yield actor
+        yield a
       end
     # If single actor
     else
@@ -295,9 +295,9 @@ class Interpreter
       # If entire party
       if parameter2 == -1
         # Loop for entire party
-        for actor in $game_party.actors
+        $game_party.actors.each do |a|
           # Evaluate block
-          yield actor
+          yield a
         end
       # If single actor (N exposed)
       else

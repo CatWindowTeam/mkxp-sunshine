@@ -56,7 +56,7 @@ class Scene_Save < Scene_File
   def write_save_data(file)
     # Make character data for drawing save file
     characters = []
-    for i in 0...$game_party.actors.size
+    (0...$game_party.actors.size).each do |i|
       actor = $game_party.actors[i]
       characters.push([actor.character_name, actor.character_hue])
     end

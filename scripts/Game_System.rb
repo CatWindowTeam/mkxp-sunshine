@@ -139,13 +139,13 @@ class Game_System
   # * Get Playing Background Music
   #--------------------------------------------------------------------------
   def playing_bgm
-    return @playing_bgm
+    @playing_bgm
   end
   #--------------------------------------------------------------------------
   # * Get Playing Background Sound
   #--------------------------------------------------------------------------
   def playing_bgs
-    return @playing_bgs
+    @playing_bgs
   end
   #--------------------------------------------------------------------------
   # * Get Windowskin File Name

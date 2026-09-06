@@ -35,7 +35,6 @@ class Window_NameEdit < Window_Base
     @index = name_array.size
     refresh
     update_cursor_rect
-    RPG::Mod.exec_hooks("hooks/Window_NameEdit/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Return to Default Name

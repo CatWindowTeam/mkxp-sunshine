@@ -45,6 +45,6 @@ module Item
 
   def self.combine(item_a, item_b)
     items = [item_a, item_b].minmax
-    return COMBINATIONS[items]
+    COMBINATIONS[items]
   end
 end

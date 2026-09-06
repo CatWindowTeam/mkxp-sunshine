@@ -175,7 +175,7 @@ class Spriteset_Map
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
-
+  	frame_reset = false
     # Update tilemap
     @tilemap.wrapping = $game_map.wrapping
     # If panorama is different from current one
@@ -222,7 +222,7 @@ class Spriteset_Map
           @panorama.blend_type = 0
         end
       end
-      Graphics.frame_reset
+      frame_reset = true
     end
 
     # If fog is different than current fog
@@ -236,7 +236,7 @@ class Spriteset_Map
       if @fog_name != ""
         @fog.bitmap = RPG::Cache.fog(@fog_name, @fog_hue)
       end
-      Graphics.frame_reset
+      frame_reset = true
     end
     # If BG is different than current BG
     if @bg_name != $game_map.bg_name
@@ -251,7 +251,7 @@ class Spriteset_Map
       else
         @bg.bitmap = RPG::Cache.panorama(@bg_name, 0)
       end
-      Graphics.frame_reset
+      frame_reset = true
     end
     # If particles different than current particles
     if @particles_type != $game_map.particles_type
@@ -270,7 +270,7 @@ class Spriteset_Map
           count = Settings[:max_shrimp_count]
           layer = :back
         else
-          raise 'invalid particle type'
+          Logger.Warn 'invalid particle type used'
         end
         @particles = ParticleLayer.new(@viewport_particles, klass, count)
         @viewport_particles.z = (layer == :front) ? 499 : -400
@@ -359,6 +359,9 @@ class Spriteset_Map
       @panorama&.opacity = 100
       @panorama2&.opacity = 0
     end
+
+	Graphics.frame_reset if frame_reset
+	
     # Update fog plane
     @fog.visible = Settings[:fog]
     if Settings[:fog]

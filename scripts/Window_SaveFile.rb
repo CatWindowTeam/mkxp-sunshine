@@ -49,7 +49,6 @@ class Window_SaveFile < Window_Base
     # If save file exists
     if @file_exist
       # Draw character
-      #for i in 0...@characters.size
       (0...@characters.size).each do |i|
         bitmap = RPG::Cache.character(@characters[i][0], @characters[i][1])
         cw = bitmap.rect.width / 4

@@ -11,7 +11,7 @@ class Interpreter
   #--------------------------------------------------------------------------
   def command_121
     # Loop for group control
-    for i in @parameters[0] .. @parameters[1]
+    (@parameters[0]..@parameters[1]).each do |i|
       # Change switch
       $game_switches[i] = (@parameters[2] == 0)
     end
@@ -137,7 +137,7 @@ class Interpreter
       end
     end
     # Loop for group control
-    for i in @parameters[0] .. @parameters[1]
+    (@parameters[0]..@parameters[1]).each do |i|
       # Branch with control
       case @parameters[2]
       when 0  # substitute

@@ -101,7 +101,7 @@ class Game_Player < Game_Character
       return result
     end
     # All event loops
-    for event in $game_map.events.values
+    $game_map.events.values.each do |event|
       # If event coordinates and triggers are consistent
       if event.x == @x and event.y == @y and triggers.include?(event.trigger)
         # If starting determinant is same position event (other than jumping)
@@ -126,7 +126,7 @@ class Game_Player < Game_Character
     new_x = @x + (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
     new_y = @y + (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
     # All event loops
-    for event in $game_map.events.values
+    $game_map.events.values.each do |event|
       # If event coordinates and triggers are consistent
       if event.intersects?(new_x, new_y) && triggers.include?(event.trigger)
         # If starting determinant is front event (other than jumping)
@@ -148,7 +148,7 @@ class Game_Player < Game_Character
       return result
     end
     # All event loops
-    for event in $game_map.events.values
+    $game_map.events.values.each do |event|
       # If event coordinates and triggers are consistent
       if event.x == x and event.y == y and [1,2].include?(event.trigger)
         # If starting determinant is front event (other than jumping)

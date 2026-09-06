@@ -224,8 +224,7 @@ class Interpreter
   def command_353
     # Set game over flag
     $game_temp.gameover = true
-    # End
-    return false
+	false
   end
   #--------------------------------------------------------------------------
   # * Return to Title Screen
@@ -233,8 +232,7 @@ class Interpreter
   def command_354
     # Set return to title screen flag
     $game_temp.to_title = true
-    # End
-    return false
+	false
   end
   #--------------------------------------------------------------------------
   # * Script

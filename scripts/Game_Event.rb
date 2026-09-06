@@ -58,7 +58,7 @@ class Game_Event < Game_Character
   # * Return name
   #--------------------------------------------------------------------------
   def name
-    return @event.name
+    @event.name
   end
   #--------------------------------------------------------------------------
   # * Clear Starting Flag

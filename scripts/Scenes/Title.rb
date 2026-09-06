@@ -347,7 +347,7 @@ class Scene_Title
     # Play decision SE
     Audio.se_play('Audio/SE/title_decision.wav')
     # Update map (run parallel process event)
-	  Oneshot.allow_exit false
+	Oneshot.allow_exit false
     $game_map.update
     # Switch to map screen
     $scene = Scene_Map.new

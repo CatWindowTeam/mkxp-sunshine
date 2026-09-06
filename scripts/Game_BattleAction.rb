@@ -38,7 +38,7 @@ class Game_BattleAction
   # * Determine Validity
   #--------------------------------------------------------------------------
   def valid?
-    return (not (@kind == 0 and @basic == 3))
+    (not (@kind == 0 and @basic == 3))
   end
   #--------------------------------------------------------------------------
   # * Determine if for One Ally

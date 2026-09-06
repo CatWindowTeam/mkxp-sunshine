@@ -21,7 +21,7 @@ class Game_Follower < Game_Character
     super
   end
   def passable?(x, y, d)
-    return true
+    true
   end
   def check_event_trigger_here(triggers)
     false

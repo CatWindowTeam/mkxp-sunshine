@@ -19,25 +19,25 @@ class Game_CommonEvent
   # * Get Name
   #--------------------------------------------------------------------------
   def name
-    return $data_common_events[@common_event_id].name
+    $data_common_events[@common_event_id].name
   end
   #--------------------------------------------------------------------------
   # * Get Trigger
   #--------------------------------------------------------------------------
   def trigger
-    return $data_common_events[@common_event_id].trigger
+    $data_common_events[@common_event_id].trigger
   end
   #--------------------------------------------------------------------------
   # * Get Condition Switch ID
   #--------------------------------------------------------------------------
   def switch_id
-    return $data_common_events[@common_event_id].switch_id
+    $data_common_events[@common_event_id].switch_id
   end
   #--------------------------------------------------------------------------
   # * Get List of Event Commands
   #--------------------------------------------------------------------------
   def list
-    return $data_common_events[@common_event_id].list
+    $data_common_events[@common_event_id].list
   end
   #--------------------------------------------------------------------------
   # * Refresh

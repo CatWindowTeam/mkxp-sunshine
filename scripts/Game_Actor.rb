@@ -44,13 +44,13 @@ class Game_Actor < Game_Battler
   # * Get Actor ID
   #--------------------------------------------------------------------------
   def id
-    return @actor_id
+    @actor_id
   end
   #--------------------------------------------------------------------------
   # * Get Index
   #--------------------------------------------------------------------------
   def index
-    return $game_party.actors.index(self)
+    $game_party.actors.index(self)
   end
   #--------------------------------------------------------------------------
   # * Determine Fixed Equipment

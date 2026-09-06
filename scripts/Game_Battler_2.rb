@@ -12,7 +12,7 @@ class Game_Battler
   #--------------------------------------------------------------------------
   def state?(state_id)
     # Return true if the applicable state is added.
-    return @states.include?(state_id)
+    @states.include?(state_id)
   end
   #--------------------------------------------------------------------------
   # * Determine if a state is full or not.
@@ -45,7 +45,7 @@ class Game_Battler
     # If not forcefully added
     unless force
       # A state loop already in existance
-      for i in @states
+      @states.each do |i|
         # If a new state is included in the state change (-) of an existing
         # state, and that state is not included in the state change (-) of
         # a new state (example: an attempt to add poison during dead)
@@ -66,7 +66,7 @@ class Game_Battler
         @hp = 0
       end
       # All state loops
-      for i in 1...$data_states.size
+      (1...$data_states.size).each do |i|
         # Dealing with a state change (+)
         if $data_states[state_id].plus_state_set.include?(i)
           add_state(i)
@@ -130,7 +130,7 @@ class Game_Battler
       if @hp == 0 and $data_states[state_id].zero_hp
         # Determine if there's another state [regarded as HP 0] or not
         zero_hp = false
-        for i in @states
+        @states.each do |i|
           if i != state_id and $data_states[i].zero_hp
             zero_hp = true
           end
@@ -165,7 +165,7 @@ class Game_Battler
   def restriction
     restriction_max = 0
     # Get maximum restriction from currently added states
-    for i in @states
+    @states.each do |i|
       if $data_states[i].restriction >= restriction_max
         restriction_max = $data_states[i].restriction
       end
@@ -176,7 +176,7 @@ class Game_Battler
   # * Determine [Can't Get EXP] States
   #--------------------------------------------------------------------------
   def cant_get_exp?
-    for i in @states
+    @states.each do |i|
       if $data_states[i].cant_get_exp
         return true
       end
@@ -187,7 +187,7 @@ class Game_Battler
   # * Determine [Can't Evade] States
   #--------------------------------------------------------------------------
   def cant_evade?
-    for i in @states
+    @states.each do |i|
       if $data_states[i].cant_evade
         return true
       end
@@ -198,7 +198,7 @@ class Game_Battler
   # * Determine [Slip Damage] States
   #--------------------------------------------------------------------------
   def slip_damage?
-    for i in @states
+    @states.each do |i|
       if $data_states[i].slip_damage
         return true
       end
@@ -209,7 +209,7 @@ class Game_Battler
   # * Remove Battle States (called up during end of battle)
   #--------------------------------------------------------------------------
   def remove_states_battle
-    for i in @states.clone
+    @states.clone.each do |i|
       if $data_states[i].battle_only
         remove_state(i)
       end
@@ -219,7 +219,7 @@ class Game_Battler
   # * Natural Removal of States (called up each turn)
   #--------------------------------------------------------------------------
   def remove_states_auto
-    for i in @states_turn.keys.clone
+    @states_turn.keys.clone.each do |i|
       if @states_turn[i] > 0
         @states_turn[i] -= 1
       elsif rand(100) < $data_states[i].auto_release_prob
@@ -231,7 +231,7 @@ class Game_Battler
   # * State Removed by Shock (called up each time physical damage occurs)
   #--------------------------------------------------------------------------
   def remove_states_shock
-    for i in @states.clone
+    @states.clone.each do |i|
       if rand(100) < $data_states[i].shock_release_prob
         remove_state(i)
       end
@@ -245,7 +245,7 @@ class Game_Battler
     # Clear effective flag
     effective = false
     # Loop (added state)
-    for i in plus_state_set
+    plus_state_set.each do |i|
       # If this state is not guarded
       unless self.state_guard?(i)
         # Set effective flag if this state is not full
@@ -280,7 +280,7 @@ class Game_Battler
     # Clear effective flag
     effective = false
     # Loop (state to be removed)
-    for i in minus_state_set
+    minus_state_set.each do |i|
       # Set effective flag if this state is added
       effective |= self.state?(i)
       # Set a state change flag

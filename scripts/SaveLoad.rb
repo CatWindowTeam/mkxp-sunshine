@@ -2,7 +2,6 @@ SAVE_FILE_NAME = Oneshot::SAVE_PATH + '/save.dat'
 PERMA_FLAGS_NAME = Oneshot::SAVE_PATH + '/p-settings.dat'
 FAKE_SAVE_NAME = Oneshot::GAME_PATH + '/Oneshot/save_progress.oneshot'
 
-
 def erase_game
   File.delete(SAVE_FILE_NAME) unless !File.exist?(SAVE_FILE_NAME)
 end
@@ -104,11 +103,11 @@ end
 
 def write_perma_flags(filename)
   perma_flags = Array.new(25, false)
-  for i in 151..175
+  (151..175).each do |i|
     perma_flags[i-151] = $game_switches[i]
   end
   perma_vars = Array.new(25, 0)
-  for i in 76..100
+  (76..100).each do |i|
     perma_vars[i-76] = $game_variables[i]
   end
   p_name = $game_oneshot.player_name
@@ -154,7 +153,7 @@ def load(filename)
     $game_party.refresh
 
 	f_prev = $game_player
-    for f in $game_followers
+    $game_followers.each do |f|
       f.leader = f_prev
       f.moveto($game_player.x, $game_player.y)
 	  f_prev = f
@@ -164,13 +163,12 @@ def load(filename)
 end
 
 def load_perma_flags
-  
 	begin
       read_perma_flags(PERMA_FLAGS_NAME)
 	rescue TypeError, ArgumentError => e
 	  Logger.Error "oops: #{e.message}"
 	  EdText.err("p-settings.dat corrupt. Attempting to load backup.")
-	  for i in 1..6
+	  (1..6).each do |i|
 	    if !File.exist?(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i).to_s + ".bk")
 	      EdText.err("All p-settings backups corrupt!  Deleting corrupt p-settings file and shutting down.")
 		  File.delete(PERMA_FLAGS_NAME)
@@ -200,10 +198,10 @@ def read_perma_flags(filename)
     perma_vars       = Marshal.load(file)
     p_name           = Marshal.load(file)
   end
-  for i in 151..175
+  (151..175).each do |i|
     $game_switches[i] = perma_flags[i-151]
   end
-  for i in 76..100
+  (76..100).each do |i|
     $game_variables[i] = perma_vars[i-76]
   end
   $game_oneshot.player_name = p_name
@@ -217,7 +215,7 @@ def real_load
   rescue TypeError, ArgumentError => e
     Logger.Error "oops: #{e.message}"
     EdText.err("save.dat corrupt. Attempting to load backup.")
-    for i in 1..6
+    (1..6).each do |i|
       if !File.exist?(Oneshot::SAVE_PATH + "/save_backups/save" + (i).to_s + ".bk")
         EdText.err("All save backups corrupt!  Deleting corrupt save and shutting down.")
         File.delete(SAVE_FILE_NAME)
@@ -259,11 +257,11 @@ def real_load
 end
 
 def save_exists
-  return FileTest.exist?(SAVE_FILE_NAME)
+  FileTest.exist?(SAVE_FILE_NAME)
 end
 
 def fake_save_exists
-  return FileTest.exist?(FAKE_SAVE_NAME)
+  FileTest.exist?(FAKE_SAVE_NAME)
 end
 
 def quit_game_bed

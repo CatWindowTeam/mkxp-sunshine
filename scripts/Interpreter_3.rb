@@ -354,7 +354,7 @@ class Interpreter
   #--------------------------------------------------------------------------
   def command_112
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Repeat Above
@@ -406,7 +406,7 @@ class Interpreter
     # End event
     command_end
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Erase Event
@@ -442,7 +442,7 @@ class Interpreter
   #--------------------------------------------------------------------------
   def command_118
     # Continue
-    return true
+    true
   end
   #--------------------------------------------------------------------------
   # * Jump to Label

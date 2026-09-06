@@ -8,11 +8,7 @@ class Window_MainMenu < Window_Selectable
     end
 
     # Set up menu options
-    @commands = Array.new
-    @commands << 'Fast Travel'
-    @commands << 'Notes'
-    @commands << 'Settings'
-	
+    @commands = ['Fast Travel', 'Notes', 'Settings']
     if Settings[:debug] == true
       @commands << 'TPtL'
     end
@@ -34,14 +30,6 @@ class Window_MainMenu < Window_Selectable
       draw_item(i, normal_color)
     end
     self.z = 9998
-    RPG::Mod.exec_hooks("hooks/Window_MainMenu/init", binding)
-  end
-  #--------------------------------------------------------------------------
-  # * Dispose
-  #--------------------------------------------------------------------------
-  def dispose
-    # Dispose of windows
-    super
   end
   #--------------------------------------------------------------------------
   # * Draw Item
@@ -97,7 +85,7 @@ class Window_MainMenu < Window_Selectable
       else
         self.opacity += 48
         self.contents_opacity += 48
-        if self.contents_opacity == 255
+        if self.contents_opacity >= 255
           @fade_in = false
         end
         return
@@ -108,7 +96,7 @@ class Window_MainMenu < Window_Selectable
     if @fade_out
       self.opacity -= 48
       self.contents_opacity -= 48
-      if self.contents_opacity == 0
+      if self.contents_opacity <= 0
         @fade_out = false
         self.visible = false
         self.active = false
@@ -120,7 +108,6 @@ class Window_MainMenu < Window_Selectable
     if !self.active || $game_system.map_interpreter.running?
       return
     end
-
 
     # Cancel menu
     if Input.trigger?(Input::CANCEL) ||
@@ -162,9 +149,9 @@ class Window_MainMenu < Window_Selectable
       return
     end
   end
-
+  
   def dispose
     super
-    @update_connection.disconnect
+    @update_connection.disconnect if @update_connection
   end
 end

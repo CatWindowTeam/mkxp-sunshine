@@ -51,7 +51,6 @@ class Game_Picture
 
     @width = 0
     @height = 0
-    RPG::Mod.exec_hooks("hooks/Game_Picture/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Show Picture

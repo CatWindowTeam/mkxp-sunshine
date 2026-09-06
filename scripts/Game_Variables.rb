@@ -11,7 +11,6 @@ class Game_Variables
   #--------------------------------------------------------------------------
   def initialize
     @data = []
-    RPG::Mod.exec_hooks("hooks/Game_Variables/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Get Variable

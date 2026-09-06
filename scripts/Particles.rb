@@ -19,6 +19,7 @@ class Particle
   def light_scale
     @light.zoom_x
   end
+
   def light_scale=(val)
     @light.zoom_x = @light.zoom_y = val
   end
@@ -68,6 +69,8 @@ class Particle
   def dispose
     @sprite.dispose
     @sprite = nil
+    @light.dispose
+    @light = nil
   end
 end
 
