@@ -68,7 +68,7 @@ static VALUE rb_playbackLengthNormalized(VALUE self) {
 
 static VALUE rb_playbackAddTag(int argc, VALUE *argv, VALUE self) {
     char* c_str;
-    rb_get_args(argc, argv, "z", &c_str RB_ARG_END);
+    rb_get_args(argc, argv, c_str RB_ARG_END);
     PLAYBACK
     pb->addTag(c_str);
 

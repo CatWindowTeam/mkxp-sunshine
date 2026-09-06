@@ -167,6 +167,13 @@ void Audio::load(const std::string& path, AudioSource* audio) {
 	p->cache.emplace(path, audio);
 }
 
+// TODO: Fix potential memory leak, need to destroy AudioSource,
+// and kill all AudioPlaybacks with that source
+
+// SOLUTION: Add disposed state to AudioPlayback
+// and for all AudioPlaybacks in p->playbacks with
+// that AudioSource call dispose(), which destroys MIX_AudioTrack
+// but im lazy to fix it
 void Audio::unload(const std::string& path){
 	p->cache.erase(path);
 }
