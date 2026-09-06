@@ -45,7 +45,7 @@ class Window_Selectable < Window_Base
   #--------------------------------------------------------------------------
   def row_max
     # Compute rows from number of items and columns
-    (@item_max + @column_max - 1) / @column_max
+    return (@item_max + @column_max - 1) / @column_max
   end
   #--------------------------------------------------------------------------
   # * Get Top Row
@@ -53,7 +53,7 @@ class Window_Selectable < Window_Base
   def top_row
     # Divide y-coordinate of window contents transfer origin by 1 row
     # height of 32
-    @content_pos / 32
+    return @content_pos / 32
   end
   #--------------------------------------------------------------------------
   # * Set Top Row
@@ -78,14 +78,14 @@ class Window_Selectable < Window_Base
   def page_row_max
     # Subtract a frame height of 32 from the window height, and divide it by
     # 1 row height of 32
-    (self.height - 32) / 32
+    return (self.height - 32) / 32
   end
   #--------------------------------------------------------------------------
   # * Get Number of Items Displayable on 1 Page
   #--------------------------------------------------------------------------
   def page_item_max
     # Multiply row count (page_row_max) times column count (@column_max)
-    page_row_max * @column_max
+    return page_row_max * @column_max
   end
   #--------------------------------------------------------------------------
   # * Set Help Window

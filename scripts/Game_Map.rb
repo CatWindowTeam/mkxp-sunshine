@@ -145,12 +145,12 @@ class Game_Map
     @need_refresh = false
     # Set map event data
     @events = {}
-    @map.events.each do |event_id, event|
-      @events[event_id] = Game_Event.new(@map_id, event)
+    for i in @map.events.keys
+      @events[i] = Game_Event.new(@map_id, @map.events[i])
     end
     # Set common event data
     @common_events = {}
-    (1...$data_common_events.size).each do |i|
+    for i in 1...$data_common_events.size
       @common_events[i] = Game_CommonEvent.new(i)
     end
     # Initialize all fog information
@@ -211,43 +211,43 @@ class Game_Map
   # * Get Map ID
   #--------------------------------------------------------------------------
   def map_id
-    @map_id
+    return @map_id
   end
   #--------------------------------------------------------------------------
   # * Get Map Name
   #--------------------------------------------------------------------------
   def map_name
-    @map_name
+    return @map_name
   end
   #--------------------------------------------------------------------------
   # * Get Width
   #--------------------------------------------------------------------------
   def width
-    @map.width
+    return @map.width
   end
   #--------------------------------------------------------------------------
   # * Get Height
   #--------------------------------------------------------------------------
   def height
-    @map.height
+    return @map.height
   end
   #--------------------------------------------------------------------------
   # * Get Encounter List
   #--------------------------------------------------------------------------
   def encounter_list
-    @map.encounter_list
+    return @map.encounter_list
   end
   #--------------------------------------------------------------------------
   # * Get Encounter Steps
   #--------------------------------------------------------------------------
   def encounter_step
-    @map.encounter_step
+    return @map.encounter_step
   end
   #--------------------------------------------------------------------------
   # * Get Map Data
   #--------------------------------------------------------------------------
   def data
-    @map.data
+    return @map.data
   end
   #--------------------------------------------------------------------------
   # * Automatically Change Background Music and Backround Sound
@@ -326,7 +326,7 @@ class Game_Map
   #--------------------------------------------------------------------------
   def valid?(x, y)
     return true if @wrapping
-    (x >= 0 and x < width and y >= 0 and y < height)
+    return (x >= 0 and x < width and y >= 0 and y < height)
   end
   #--------------------------------------------------------------------------
   # * Determine if Passable
@@ -398,7 +398,7 @@ class Game_Map
       end
     end
     # passable
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Determine Thicket
@@ -416,7 +416,7 @@ class Game_Map
         end
       end
     end
-    false
+    return false
   end
   #--------------------------------------------------------------------------
   # * Determine Counter
@@ -428,9 +428,9 @@ class Game_Map
       for i in [2, 1, 0]
         tile_id = data[x, y, i]
         if tile_id == nil
-          false
+          return false
         elsif @passages[tile_id] & 0x80 == 0x80
-          true
+          return true
         end
       end
     end
@@ -460,9 +460,9 @@ class Game_Map
   #     y          : y-coordinate
   #--------------------------------------------------------------------------
   def check_event(x, y)
-    $game_map.events.values.each do |event|
+    for event in $game_map.events.values
       if event.x == x and event.y == y
-        event.id
+        return event.id
       end
     end
   end
@@ -481,7 +481,7 @@ class Game_Map
   # * Determine if Scrolling
   #--------------------------------------------------------------------------
   def scrolling?
-    @scroll_rest > 0
+    return @scroll_rest > 0
   end
   #--------------------------------------------------------------------------
   # * Start Changing Fog Color Tone
@@ -543,7 +543,7 @@ class Game_Map
       event.update
     end
     # Update common event
-    @common_events.values.each do |common_event|
+    for common_event in @common_events.values
       common_event.update
     end
     # Manage fog scrolling

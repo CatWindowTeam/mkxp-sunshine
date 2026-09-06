@@ -64,7 +64,7 @@ class Interpreter
   # * Determine if Running
   #--------------------------------------------------------------------------
   def running?
-    @list != nil
+    return @list != nil
   end
   #--------------------------------------------------------------------------
   # * Starting Event Setup

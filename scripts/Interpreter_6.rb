@@ -26,7 +26,7 @@ class Interpreter
     # Advance index
     @index += 1
     # End
-    false
+    return false
   end
   #--------------------------------------------------------------------------
   # * If Win
@@ -40,7 +40,7 @@ class Interpreter
       return true
     end
     # If it doesn't meet conditions: command skip
-    command_skip
+    return command_skip
   end
   #--------------------------------------------------------------------------
   # * If Escape
@@ -54,7 +54,7 @@ class Interpreter
       return true
     end
     # If it doesn't meet conditions: command skip
-    command_skip
+    return command_skip
   end
   #--------------------------------------------------------------------------
   # * If Lose
@@ -68,7 +68,7 @@ class Interpreter
       return true
     end
     # If it doesn't meet conditions: command skip
-    command_skip
+    return command_skip
   end
   #--------------------------------------------------------------------------
   # * Name Input Processing
@@ -84,7 +84,7 @@ class Interpreter
     # Advance index
     @index += 1
     # End
-    false
+    return false
   end
   #--------------------------------------------------------------------------
   # * Change HP
@@ -107,7 +107,7 @@ class Interpreter
     # Determine game over
     $game_temp.gameover = $game_party.all_dead?
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change SP
@@ -121,7 +121,7 @@ class Interpreter
       actor.sp += value
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change State
@@ -137,7 +137,7 @@ class Interpreter
       end
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Recover All
@@ -149,7 +149,7 @@ class Interpreter
       actor.recover_all
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change EXP
@@ -163,7 +163,7 @@ class Interpreter
       actor.exp += value
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Level
@@ -177,7 +177,7 @@ class Interpreter
       actor.level += value
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Parameters
@@ -205,7 +205,7 @@ class Interpreter
       end
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Skills
@@ -222,7 +222,7 @@ class Interpreter
       end
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Equipment
@@ -235,7 +235,7 @@ class Interpreter
       actor.equip(@parameters[1], @parameters[2])
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Actor Name
@@ -248,7 +248,7 @@ class Interpreter
       actor.name = @parameters[1]
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Actor Class
@@ -261,7 +261,7 @@ class Interpreter
       actor.class_id = @parameters[1]
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Actor Graphic
@@ -277,6 +277,6 @@ class Interpreter
     # Refresh player
     $game_player.refresh
     # Continue
-    true
+    return true
   end
 end

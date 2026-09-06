@@ -33,7 +33,11 @@ module Graphics
   ]
 
   def self.resolutions_names_list
-    RESOLUTIONS.map { |resolution| resolution[:display_name] }
+    list = []
+    RESOLUTIONS.each do |res_data|
+      list << res_data[:display_name]
+    end
+    list
   end
 
   def self.adapted_file(path, extention = ".png")

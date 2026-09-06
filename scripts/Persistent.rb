@@ -110,9 +110,9 @@ class Persistent
   
   def langcode
     begin
-      self.lang.full.to_s
+      return self.lang.full.to_s
     rescue
-      'en'
+      return 'en'
     end
   end
 

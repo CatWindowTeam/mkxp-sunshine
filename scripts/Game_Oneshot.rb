@@ -20,9 +20,9 @@ class Game_Oneshot
     user_name = (Oneshot::USER_NAME).split(/\s+/)
     #user_name = (Steam.enabled? ? Steam::USER_NAME : Oneshot::USER_NAME).split(/\s+/)
     if user_name[0].casecmp('the') == 0 || user_name[0].casecmp('a') == 0
-      user_name.join(' ')
+      return user_name.join(' ')
     else
-      user_name[0]
+      return user_name[0]
     end
   end
 end

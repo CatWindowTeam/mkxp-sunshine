@@ -15,6 +15,7 @@ class NameInputMode
     @size = names.map { |n| bitmap.text_size(n).width }.max
     @index = 0
     @count = 0
+    RPG::Mod.exec_hooks("hooks/NameInputMode/init", binding)
   end
 
   def cycle
@@ -62,6 +63,8 @@ class Window_NameInput < Window_Base
         @modes[i].count = new_max + 1 if @modes[i].count < new_max + 1
       end
     end
+
+	RPG::Mod.exec_hooks("hooks/Window_NameInput/init2", binding)
 	
     refresh
     update_cursor_rect
@@ -77,7 +80,7 @@ class Window_NameInput < Window_Base
   # * Text Character Acquisition
   #--------------------------------------------------------------------------
   def character
-    current_table[@index]
+    return current_table[@index]
   end
   #--------------------------------------------------------------------------
   # * Mode Button Cursor Positioning

@@ -23,6 +23,6 @@ class Game_Actors
     if @data[actor_id] == nil
       @data[actor_id] = Game_Actor.new(actor_id)
     end
-    @data[actor_id]
+    return @data[actor_id]
   end
 end

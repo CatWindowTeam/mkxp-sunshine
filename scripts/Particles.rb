@@ -97,8 +97,9 @@ end
 # A layer of moving particle objects, useful for fireflies and shrimp
 class ParticleLayer
   def initialize(viewport, klass, count)
-    @particles = Array.new(count) do
-      klass.new(viewport)
+    @particles = Array.new(count)
+    count.times do |i|
+      @particles[i] = klass.new(viewport)
     end
     @last_map_x = $game_map.display_x / 4
     @last_map_y = $game_map.display_y / 4

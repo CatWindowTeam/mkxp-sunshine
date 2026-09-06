@@ -1,13 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
 project(oneshot)
-if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
-endif()
-
-set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
-    Debug
-    Release
-)
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
@@ -17,7 +9,6 @@ endif()
 include(FindPackageHandleStandardArgs)
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
-include(CheckLinkerFlag)
 include(CheckIPOSupported)
 
 check_ipo_supported(
@@ -30,19 +21,17 @@ check_ipo_supported(
 function(check_option output_var)
     set(CMAKE_REQUIRED_QUIET TRUE)
     set(result)
-    
+
     foreach(option IN LISTS ARGN)
         string(MAKE_C_IDENTIFIER "${option}" option_id)
         set(check_var "HAVE_OPTION_${option_id}")
-        unset(${check_var} CACHE)
 
         check_cxx_compiler_flag("${option}" "${check_var}")
         if(${check_var})
             message(STATUS "${option} supported")
             list(APPEND result "${option}")
         else()
-			set(check_var_c "HAVE_OPTION_C_${option_id}")
-			unset(${check_var_c} CACHE)
+		set(check_var_c "HAVE_OPTION_C_${option_id}")
         	check_c_compiler_flag("${option}" "${check_var_c}")
         	if(${check_var_c})
         	    message(STATUS "${option} supported")
@@ -57,30 +46,10 @@ function(check_option output_var)
     set(CMAKE_REQUIRED_QUIET FALSE)
 endfunction()
 
-function(check_linker_option output_var)
-    set(CMAKE_REQUIRED_QUIET TRUE)
-    set(result)
-
-    foreach(option IN LISTS ARGN)
-        string(MAKE_C_IDENTIFIER "${option}" option_id)
-        set(check_var "HAVE_OPTION_${option_id}")
-
-        check_linker_flag(CXX "${option}" "${check_var}")
-        if(${check_var})
-            message(STATUS "${option} supported")
-            list(APPEND result "${option}")
-        else()
-			message(STATUS "${option} unsupported")
-        endif()
-    endforeach()
-
-    set("${output_var}" "${result}" PARENT_SCOPE)
-    set(CMAKE_REQUIRED_QUIET FALSE)
-endfunction()
-
 
 # Options
 option(STEAM "Build with Steam Support" OFF)
+option(DEBUG "Debug mode" ON)
 option(SANITIZERS "Enable sanitizers" OFF)
 option(NATIVE "Use native instructions,for local use only" OFF)
 option(STATIC "Build more static build" OFF)
@@ -96,6 +65,9 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# shut the fuck up
+add_compile_options(-Wno-unused-parameter -Wno-tautological-pointer-compare)
 
 # suppress Boost warning
 if(POLICY CMP0167)
@@ -197,6 +169,31 @@ foreach(item ${EMBEDDED_INPUT})
 	ProcessWithXXD(EMBEDDED_SOURCE ${item} ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
 
+if(ANDROID)
+	if(TERMUX)
+		add_executable(${PROJECT_NAME}
+                	${MAIN_HEADERS}
+                	${MAIN_SOURCE}
+                	${BINDING_HEADERS}
+                	${BINDING_SOURCE}
+                	${EMBEDDED_SOURCE})
+	else()
+		add_library(${PROJECT_NAME} SHARED
+                	${MAIN_HEADERS}
+                	${MAIN_SOURCE}
+                	${BINDING_HEADERS}
+                	${BINDING_SOURCE}
+                	${EMBEDDED_SOURCE})
+	endif()
+else()
+	add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
+		${MAIN_HEADERS}
+		${MAIN_SOURCE}
+		${BINDING_HEADERS}
+		${BINDING_SOURCE}
+		${EMBEDDED_SOURCE})
+endif()
+
 # Platform specific bullshit
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     list(APPEND MAIN_SOURCE assets/resources.rc)
@@ -237,31 +234,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
 endif()
 
-if(ANDROID)
-	if(TERMUX)
-		add_executable(${PROJECT_NAME}
-                	${MAIN_HEADERS}
-                	${MAIN_SOURCE}
-                	${BINDING_HEADERS}
-                	${BINDING_SOURCE}
-                	${EMBEDDED_SOURCE})
-	else()
-		add_library(${PROJECT_NAME} SHARED
-                	${MAIN_HEADERS}
-                	${MAIN_SOURCE}
-                	${BINDING_HEADERS}
-                	${BINDING_SOURCE}
-                	${EMBEDDED_SOURCE})
-	endif()
-else()
-	add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
-		${MAIN_HEADERS}
-		${MAIN_SOURCE}
-		${BINDING_HEADERS}
-		${BINDING_SOURCE}
-		${EMBEDDED_SOURCE})
-endif()
-
 if(STEAM)
         list(APPEND MAIN_HEADERS steamshim/steamshim_child.h)
         list(APPEND MAIN_SOURCE steamshim/steamshim_child.c)
@@ -282,96 +254,86 @@ else()
 	add_compile_options(${ARCH_COMMON_OPTIONS})
 endif()
 
-# TODO: fix
 if(SANITIZERS)
 	# ASan + Ruby = SEGFAULT
 	set(SANITIZERS "undefined,leak,shift,shift-base,shift-exponent,integer-divide-by-zero,unreachable,vla-bound,null,signed-integer-overflow,bounds,alignment,object-size,float-divide-by-zero,float-cast-overflow,nonnull-attribute,returns-nonnull-attribute,bool,enum,vptr,pointer-overflow,builtin")
 	add_compile_options(-fsanitize=${SANITIZERS})
 	add_link_options(-fsanitize=${SANITIZERS})
-	check_option(SANITIZERS_OPTIONS -fsanitize-memory-track-origins=2)
-	add_compile_options(${SANITIZERS_OPTIONS})
+        check_option(SANITIZERS_OPTIONS -fsanitize-memory-track-origins=2)
+        add_compile_options(${SANITIZERS_OPTIONS})
 endif()
 
+if(DEBUG)
+	check_option(OPTIONS_DEBUG
+		-g3
+		-fno-omit-frame-pointer
+		-Og
+		-fcheck-new
+		-fstrict-flex-arrays=3
+		-fprofile
+		-fno-optimize-sibling-calls
+		-Wall
+		-Wextra
+		-ftemplate-backtrace-limit=0
+		-fdiagnostics-show-template-tree
+		-fopt-info-all)
+	add_compile_options(${OPTIONS_DEBUG})
 
-
-
-check_option(OPTIONS_DEBUG
-	-g3
-	-fno-omit-frame-pointer
-	-Og
-	-fcheck-new
-	-fstrict-flex-arrays=3
-	-fno-optimize-sibling-calls
-	-Wall
-	-Wextra
-	-ftemplate-backtrace-limit=0
-	-fdiagnostics-show-template-tree
-	-fopt-info-all)
-
-# Load platfrom specific debug options for compiler from toolchain file
-if("${ARCH_DEBUG}" STREQUAL "")
-	message(STATUS "ARCH_DEBUG empty")
+	# Load platfrom specific debug options for compiler from toolchain file
+	if("${ARCH_DEBUG}" STREQUAL "")
+		message(STATUS "ARCH_DEBUG empty")
+	else()
+	  	check_option(ARCH_DEBUG_OPTIONS ${ARCH_DEBUG})
+	  	add_compile_options(${ARCH_DEBUG_OPTIONS})
+	endif()
 else()
-	check_option(ARCH_DEBUG_OPTIONS ${ARCH_DEBUG})
+	check_option(OPTIONS_RELEASE -O3
+		-ffast-math
+		-fvisibility=hidden
+		-fno-math-errno
+		-fno-trapping-math
+		-ffunction-sections
+		-fdata-sections
+		-fvirtual-function-elimination
+		-fstdarg-opt
+		-frename-registers
+		-fuse-linker-plugin
+		-fipa-pta
+		-fipa-icf
+		-fext-dce
+		-fstrict-enums
+		-fimplicit-constexpr
+		-fomit-frame-pointer
+		-fno-ident
+		-fvirtual-function-elimination
+		-fwhole-program-vtables
+		-fweb)
+
+	add_compile_options(${OPTIONS_RELEASE})
+
+	add_link_options(-Wl,-O2
+		-Wl,--gc-sections
+		-Wl,--as-needed
+		-Wl,--no-undefined
+		-Wl,--strip-all
+		-Wl,--no-copy-dt-needed-entries)
+
+	#Platform Specific
+	if(LINUX)
+		check_option(OPTIONS_RELEASE_LINUX -fno-plt)
+		add_compile_options(${OPTIONS_RELEASE_LINUX})
+	endif()
+
+	# Loading release options specific for cpu arch from toolchain file
+	if("${ARCH_RELEASE}" STREQUAL "")
+		message(STATUS "ARCH_RELEASE empty")
+	else()
+	  	check_option(ARCH_RELEASE_OPTIONS ${ARCH_RELEASE})
+	  	add_compile_options(${ARCH_RELEASE_OPTIONS})
+	endif()
 endif()
 
-#Platform Specific
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    check_option(OPTIONS_RELEASE_LINUX -fno-plt)
-endif()
-	
-check_option(OPTIONS_RELEASE -O3
-	-ffast-math
-	-fvisibility=hidden
-	-fno-math-errno
-	-fno-trapping-math
-	-ffunction-sections
-	-fdata-sections
-	-fvirtual-function-elimination
-	-fstdarg-opt
-	-frename-registers
-	-fipa-pta
-	-fipa-icf
-	-fext-dce
-	-fimplicit-constexpr
-	-fomit-frame-pointer
-	-fno-ident
-	-fwhole-program-vtables
-	-fweb)
-
-# Loading release options specific for cpu arch from toolchain file
-if("${ARCH_RELEASE}" STREQUAL "")
-	message(STATUS "ARCH_RELEASE empty")
-else()
-	check_option(ARCH_RELEASE_OPTIONS ${ARCH_RELEASE})
-endif()
-
-check_linker_option(OPTIONS_LINKER_RELEASE
-	-Wl,-O3
-	-Wl,--gc-sections
-	-Wl,--strip-all
-	-Wl,--no-copy-dt-needed-entries
-	-Wl,--icf=safe
-	-Wl,--strip-discarded
-	-Wl,--relax
-	-Wl,-z,pack-relative-relocs
-	-Wl,-z,start-stop-gc)
-
-target_compile_options(${PROJECT_NAME} PRIVATE
-    -Wno-unused-parameter
-    -Wno-tautological-pointer-compare
-    "$<$<CONFIG:Debug>:${OPTIONS_DEBUG}>"
-    "$<$<CONFIG:Debug>:${ARCH_DEBUG_OPTIONS}>"
-    "$<$<CONFIG:Release>:${OPTIONS_RELEASE}>"
-    "$<$<CONFIG:Release>:${OPTIONS_RELEASE_LINUX}>"
-    "$<$<CONFIG:Release>:${ARCH_RELEASE_OPTIONS}>"
-)
-add_link_options("$<$<CONFIG:Release>:${OPTIONS_LINKER_RELEASE}>")
-
-
-
-
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
+if(NOT DEBUG)
 	if(ipo_supported)
 	    set_property(
 	        TARGET ${PROJECT_NAME}

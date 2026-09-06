@@ -21,7 +21,7 @@ class Scene_File
     @help_window.set_text(@help_text)
     # Make save file window
     @savefile_windows = []
-    (0..99).each do |i|
+    for i in 0..99
       @savefile_windows.push(Window_SaveFile.new(i, make_filename(i)))
     end
     # Select last file to be operated
@@ -49,7 +49,7 @@ class Scene_File
     Graphics.freeze
     # Dispose of windows
     @help_window.dispose
-    @savefile_windows.each do |i|
+    for i in @savefile_windows
       i.dispose
     end
   end
@@ -59,7 +59,7 @@ class Scene_File
   def update
     # Update windows
     @help_window.update
-    @savefile_windows.each do |i|
+    for i in @savefile_windows
       i.update
     end
     # If C button was pressed
@@ -117,16 +117,16 @@ class Scene_File
   #     file_index : save file index (0-3)
   #--------------------------------------------------------------------------
   def make_filename(file_index)
-    "Save#{file_index + 1}.rxdata"
+    return "Save#{file_index + 1}.rxdata"
   end
   
   def updateVisibleSavefileWindows
-		(0..99).each do |i|
+		for i in 0..99
 			@savefile_windows[i].visible = false
 		end
 		
 		screen_start_index = @file_index - (@file_index % 4)
-		(screen_start_index..(screen_start_index + 3)).each do |i|
+		for i in screen_start_index..(screen_start_index + 3)
 			@savefile_windows[i].visible = true
 		end
   end

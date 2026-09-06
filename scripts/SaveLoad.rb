@@ -103,12 +103,12 @@ def write_save(filename)
 end
 
 def write_perma_flags(filename)
-  perma_flags = Array.new(25, false) 
-  (151..175).each do |i|
+  perma_flags = Array.new(25, false)
+  for i in 151..175
     perma_flags[i-151] = $game_switches[i]
   end
   perma_vars = Array.new(25, 0)
-  (76..100).each do |i|
+  for i in 76..100
     perma_vars[i-76] = $game_variables[i]
   end
   p_name = $game_oneshot.player_name
@@ -154,7 +154,7 @@ def load(filename)
     $game_party.refresh
 
 	f_prev = $game_player
-    $game_followers.each do |f|
+    for f in $game_followers
       f.leader = f_prev
       f.moveto($game_player.x, $game_player.y)
 	  f_prev = f
@@ -200,11 +200,10 @@ def read_perma_flags(filename)
     perma_vars       = Marshal.load(file)
     p_name           = Marshal.load(file)
   end
- 
-  (151..175).each do |i|
+  for i in 151..175
     $game_switches[i] = perma_flags[i-151]
   end
-  (76..100).each do |i|
+  for i in 76..100
     $game_variables[i] = perma_vars[i-76]
   end
   $game_oneshot.player_name = p_name
@@ -260,11 +259,11 @@ def real_load
 end
 
 def save_exists
-  FileTest.exist?(SAVE_FILE_NAME)
+  return FileTest.exist?(SAVE_FILE_NAME)
 end
 
 def fake_save_exists
-  FileTest.exist?(FAKE_SAVE_NAME)
+  return FileTest.exist?(FAKE_SAVE_NAME)
 end
 
 def quit_game_bed

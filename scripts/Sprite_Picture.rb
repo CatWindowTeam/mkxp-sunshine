@@ -14,6 +14,7 @@ class Sprite_Picture < Sprite
   def initialize(viewport, picture)
     super(viewport)
     @picture = picture
+    RPG::Mod.exec_hooks("hooks/Sprite_Picture/init", binding)
     update
   end
   #--------------------------------------------------------------------------

@@ -139,22 +139,22 @@ class Game_System
   # * Get Playing Background Music
   #--------------------------------------------------------------------------
   def playing_bgm
-    @playing_bgm
+    return @playing_bgm
   end
   #--------------------------------------------------------------------------
   # * Get Playing Background Sound
   #--------------------------------------------------------------------------
   def playing_bgs
-    @playing_bgs
+    return @playing_bgs
   end
   #--------------------------------------------------------------------------
   # * Get Windowskin File Name
   #--------------------------------------------------------------------------
   def windowskin_name
     if @windowskin_name == nil
-      $data_system.windowskin_name
+      return $data_system.windowskin_name
     else
-      @windowskin_name
+      return @windowskin_name
     end
   end
   #--------------------------------------------------------------------------
@@ -169,9 +169,9 @@ class Game_System
   #--------------------------------------------------------------------------
   def battle_bgm
     if @battle_bgm == nil
-      $data_system.battle_bgm
+      return $data_system.battle_bgm
     else
-      @battle_bgm
+      return @battle_bgm
     end
   end
   #--------------------------------------------------------------------------
@@ -186,9 +186,9 @@ class Game_System
   #--------------------------------------------------------------------------
   def battle_end_me
     if @battle_end_me == nil
-      $data_system.battle_end_me
+      return $data_system.battle_end_me
     else
-      @battle_end_me
+      return @battle_end_me
     end
   end
   #--------------------------------------------------------------------------

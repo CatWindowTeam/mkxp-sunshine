@@ -38,7 +38,7 @@ class Game_BattleAction
   # * Determine Validity
   #--------------------------------------------------------------------------
   def valid?
-    (not (@kind == 0 and @basic == 3))
+    return (not (@kind == 0 and @basic == 3))
   end
   #--------------------------------------------------------------------------
   # * Determine if for One Ally
@@ -52,7 +52,7 @@ class Game_BattleAction
     if @kind == 2 and [3, 5].include?($data_items[@item_id].scope)
       return true
     end
-    false
+    return false
   end
   #--------------------------------------------------------------------------
   # * Determine if for One Ally (HP 0)
@@ -66,7 +66,7 @@ class Game_BattleAction
     if @kind == 2 and [5].include?($data_items[@item_id].scope)
       return true
     end
-    false
+    return false
   end
   #--------------------------------------------------------------------------
   # * Random Target (for Actor)

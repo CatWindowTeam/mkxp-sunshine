@@ -20,6 +20,8 @@ class Window_Help < Window_Base
       self.x = Graphics.width / 2 - 304
       self.y = Graphics.height > 600 ? Graphics.height / 2 - 160 : 16
     end
+
+    RPG::Mod.exec_hooks("hooks/Window_Help/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Set Text

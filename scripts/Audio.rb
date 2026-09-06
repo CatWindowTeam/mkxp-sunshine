@@ -48,6 +48,9 @@ module Audio
 
         def bgs_play(path, volume = 100, pitch = 100)
             bgs_stop
+            if (@bgs_playback)
+                @bgs_playback.fade_out(0.02)
+            end
             @bgs_playback = self.create_sound(path, false, @sounds_group)
             @bgs_playback.play(-1, volume / 100.0, pitch / 100.0)
         end

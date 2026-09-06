@@ -30,7 +30,7 @@ class Game_Screen
     @shake_direction = 1
     @shake = 0
     @pictures = [nil]
-    (1..100).each do |i|
+    for i in 1..100
       @pictures.push(Game_Picture.new(i))
     end
     @weather_type = 0
@@ -38,6 +38,7 @@ class Game_Screen
     @weather_type_target = 0
     @weather_max_target = 0.0
     @weather_duration = 0
+    RPG::Mod.exec_hooks("hooks/Game_Screen/init", binding)
   end
   #--------------------------------------------------------------------------
   # * Start Changing Color Tone
@@ -136,11 +137,11 @@ class Game_Screen
       end
     end
     if $game_temp.in_battle
-      (51..100).each do |i|
+      for i in 51..100
         @pictures[i].update
       end
     else
-      (1..50).each do |i|
+      for i in 1..50
         @pictures[i].update
       end
     end

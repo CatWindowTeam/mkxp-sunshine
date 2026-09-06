@@ -311,7 +311,7 @@ class Window_Settings
     end
 
     def height
-      @parameters.values[@screen].length * PARAMETER_HEIGHT
+      return @parameters.values[@screen].length * PARAMETER_HEIGHT
     end
 
     def visible_x()

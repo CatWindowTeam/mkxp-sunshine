@@ -21,6 +21,7 @@ class Window_DebugRight < Window_Selectable
     @item_max = 10
     @mode = 0
     @top_id = 1
+    RPG::Mod.exec_hooks("hooks/Window_DebugRight/init", binding)
     refresh
   end
   #--------------------------------------------------------------------------
@@ -31,7 +32,7 @@ class Window_DebugRight < Window_Selectable
     (0..9).each do |i|
       if @mode == 0
         name = $data_system.switches[@top_id+i]
-        status = $game_switches[@top_id+i] ? "ON" : "OFF"
+        status = $game_switches[@top_id+i] ? "[ON]" : "[OFF]"
       else
         name = $data_system.variables[@top_id+i]
         status = $game_variables[@top_id+i].to_s

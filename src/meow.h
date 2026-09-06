@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 inline std::vector<std::string> logs = {};
+inline std::string warns = "";
 inline std::vector<std::string> modloader_logs = {};
 
 // 4 - debug

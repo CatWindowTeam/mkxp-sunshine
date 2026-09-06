@@ -19,9 +19,9 @@ class Game_Switches
   def [](switch_id)
     return true if switch_id == 25
     if switch_id <= 5000 and @data[switch_id] != nil
-      @data[switch_id]
+      return @data[switch_id]
     else
-      false
+      return false
     end
   end
   #--------------------------------------------------------------------------

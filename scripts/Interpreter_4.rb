@@ -11,14 +11,14 @@ class Interpreter
   #--------------------------------------------------------------------------
   def command_121
     # Loop for group control
-    (@parameters[0]..@parameters[1]).each do |i|
+    for i in @parameters[0] .. @parameters[1]
       # Change switch
       $game_switches[i] = (@parameters[2] == 0)
     end
     # Refresh map
     $game_map.need_refresh = true
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Control Variables
@@ -137,7 +137,7 @@ class Interpreter
       end
     end
     # Loop for group control
-    @parameters[0]..@parameters[1].each do |i|
+    for i in @parameters[0] .. @parameters[1]
       # Branch with control
       case @parameters[2]
       when 0  # substitute
@@ -169,7 +169,7 @@ class Interpreter
     # Refresh map
     $game_map.need_refresh = true
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Control Self Switch
@@ -185,7 +185,7 @@ class Interpreter
     # Refresh map
     $game_map.need_refresh = true
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Control Timer
@@ -201,7 +201,7 @@ class Interpreter
       $game_system.timer_working = false
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Gold
@@ -212,7 +212,7 @@ class Interpreter
     # Increase / decrease amount of gold
     $game_party.gain_gold(value)
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Items
@@ -223,7 +223,7 @@ class Interpreter
     # Increase / decrease items
     $game_party.gain_item(@parameters[0], value)
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Weapons
@@ -234,7 +234,7 @@ class Interpreter
     # Increase / decrease weapons
     $game_party.gain_weapon(@parameters[0], value)
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Armor
@@ -245,7 +245,7 @@ class Interpreter
     # Increase / decrease armor
     $game_party.gain_armor(@parameters[0], value)
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Party Member
@@ -266,7 +266,7 @@ class Interpreter
       end
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Windowskin
@@ -275,7 +275,7 @@ class Interpreter
     # Change windowskin file name
     $game_system.windowskin_name = @parameters[0]
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Battle BGM
@@ -284,7 +284,7 @@ class Interpreter
     # Change battle BGM
     $game_system.battle_bgm = @parameters[0]
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Battle End ME
@@ -293,7 +293,7 @@ class Interpreter
     # Change battle end ME
     $game_system.battle_end_me = @parameters[0]
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Save Access
@@ -302,7 +302,7 @@ class Interpreter
     # Change save access flag
     $game_system.save_disabled = (@parameters[0] == 0)
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Menu Access
@@ -311,7 +311,7 @@ class Interpreter
     # Change menu access flag
     $game_system.menu_disabled = (@parameters[0] == 0)
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Encounter
@@ -322,6 +322,6 @@ class Interpreter
     # Make encounter count
     $game_player.make_encounter_count
     # Continue
-    true
+    return true
   end
 end

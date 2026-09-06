@@ -17,7 +17,7 @@ class Window_Settings
     end
 
     def get_display_value
-      self.value ? "ON" : "OFF"
+      return self.value ? "ON" : "OFF"
     end
     
     def value_left()

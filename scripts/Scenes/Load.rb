@@ -14,7 +14,7 @@ class Scene_Load < Scene_File
     # Timestamp selects new file
     $game_temp.last_file_index = 0
     latest_time = CTime.at(0)
-    (0..99).each do |i|
+    for i in 0..99
       filename = make_filename(i)
       if FileTest.exist?(filename)
         file = File.open(filename, "r")

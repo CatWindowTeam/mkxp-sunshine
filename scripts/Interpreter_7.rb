@@ -25,7 +25,7 @@ class Interpreter
       end
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Enemy SP
@@ -39,7 +39,7 @@ class Interpreter
       enemy.sp += value
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Change Enemy State
@@ -60,7 +60,7 @@ class Interpreter
       end
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Enemy Recover All
@@ -72,7 +72,7 @@ class Interpreter
       enemy.recover_all
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Enemy Appearance
@@ -85,7 +85,7 @@ class Interpreter
       enemy.hidden = false
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Enemy Transform
@@ -98,7 +98,7 @@ class Interpreter
       enemy.transform(@parameters[1])
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Show Battle Animation
@@ -113,7 +113,7 @@ class Interpreter
       end
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Deal Damage
@@ -136,7 +136,7 @@ class Interpreter
       end
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Force Action
@@ -179,7 +179,7 @@ class Interpreter
       end
     end
     # Continue
-    true
+    return true
   end
   #--------------------------------------------------------------------------
   # * Abort Battle
@@ -190,7 +190,7 @@ class Interpreter
     # Advance index
     @index += 1
     # End
-    false
+    return false
   end
   #--------------------------------------------------------------------------
   # * Call Menu Screen
@@ -203,7 +203,7 @@ class Interpreter
     # Advance index
     @index += 1
     # End
-    false
+    return false
   end
   #--------------------------------------------------------------------------
   # * Call Save Screen
@@ -216,7 +216,7 @@ class Interpreter
     # Advance index
     @index += 1
     # End
-    false
+    return false
   end
   #--------------------------------------------------------------------------
   # * Game Over
@@ -225,7 +225,7 @@ class Interpreter
     # Set game over flag
     $game_temp.gameover = true
     # End
-    false
+    return false
   end
   #--------------------------------------------------------------------------
   # * Return to Title Screen
@@ -234,7 +234,7 @@ class Interpreter
     # Set return to title screen flag
     $game_temp.to_title = true
     # End
-    false
+    return false
   end
   #--------------------------------------------------------------------------
   # * Script
@@ -285,6 +285,6 @@ class Interpreter
       result << "------------------------------------------\n"
       puts result
     end
-    true
+    return true
   end
 end
