@@ -106,14 +106,14 @@ class Window_Settings
     def value_left()
       if !@waiting_for_key
         @selection = (@selection - 1) % 4
-        $game_system.se_play($data_system.cursor_se)
+        @settings_content.play_nav
         redraw
       end
     end
     def value_right()
       if !@waiting_for_key
         @selection = (@selection + 1) % 4
-        $game_system.se_play($data_system.cursor_se)
+        @settings_content.play_nav
         redraw
       end
     end

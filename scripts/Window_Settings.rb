@@ -174,17 +174,17 @@ class Window_Settings
         end
       else
         @content.parameter_select_offset(-Input.wheel_y.round)
-        $game_system.se_play($data_system.cursor_se)
+        @content.play_nav
       end
     end
 
     if (Input.trigger?(Input::L))
       @content.screen_left
-      $game_system.se_play($data_system.cursor_se)
+      @content.play_nav
     end
     if (Input.trigger?(Input::R))
       @content.screen_right
-      $game_system.se_play($data_system.cursor_se)
+      @content.play_nav
     end
 
     # hold timers
@@ -216,11 +216,11 @@ class Window_Settings
     if Input.trigger?(Input::UP) || (Input.press?(Input::UP) && (@up_hold_timer >= 15))
       @up_hold_timer -= 2
       @content.parameter_up
-      $game_system.se_play($data_system.cursor_se)
+      @content.play_nav
     elsif Input.trigger?(Input::DOWN) || (Input.press?(Input::DOWN) && (@down_hold_timer >= 15))
       @down_hold_timer -= 2
       @content.parameter_down
-      $game_system.se_play($data_system.cursor_se)
+      @content.play_nav
     end
 
     # parameter setting

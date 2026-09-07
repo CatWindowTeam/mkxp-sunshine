@@ -11,7 +11,7 @@ class Window_Settings
 
     def value=(value)
       if (value != self.value)
-        Audio.se_play(PARAMETER_CHANGE_AUDIO, 70, value ? 125 : 75)
+        @settings_content.play_param(value ? 1.25 : 0.75)
       end
       super(value)
     end

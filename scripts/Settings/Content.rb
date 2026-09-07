@@ -9,7 +9,8 @@ class Window_Settings
   ICON_SCALE = 2
   ICON_SCALED = ICON_SIZE * ICON_SCALE
 
-  PARAMETER_CHANGE_AUDIO = "Audio/SE/text_robot.wav"
+  NAVIGATION_AUDIO = "Audio/SE/menu_cursor"
+  PARAMETER_CHANGE_AUDIO = "Audio/SE/text_robot"
 
   class SettingsContent
     attr_reader :x
@@ -35,6 +36,10 @@ class Window_Settings
       @visible_y = offset_y
       @x = (Graphics.width - PARAMETER_WIDTH) / 2
       @y = offset_y
+
+      @navigation_sound = Audio.create_sound(NAVIGATION_AUDIO, true, Audio.sounds_group)
+      @navigation_sound2 = Audio.create_sound(NAVIGATION_AUDIO, true, Audio.sounds_group)
+      @parameter_sound = Audio.create_sound(PARAMETER_CHANGE_AUDIO, true, Audio.sounds_group)
 
       @selection_sprite = Sprite.new(@viewport)
       @selection_sprite.bitmap = Bitmap.new(1, 1)
@@ -301,7 +306,27 @@ class Window_Settings
       @parameters.values[@screen][@index].value_right
     end
 
-    # other
+    # Sounds
+
+    def play_nav
+      if @navigation_sound.playing
+        @navigation_sound.fade_out(0.01)
+        @navigation_sound2.play(0, 0.7)
+      elsif @navigation_sound2.playing
+        @navigation_sound2.fade_out(0.01)
+        @navigation_sound.play(0, 0.7)
+      else
+        @navigation_sound.play(0, 0.7)
+      end
+    end
+    def play_param(pitch = 1.0)
+      if @parameter_sound.playing
+        @parameter_sound.fade_out(0.01)
+      end
+      @parameter_sound.play(0, 0.7, pitch)
+    end
+
+    # Other
     def need_draw_line(screen_id, index)
       klass = @parameters.values&.[](screen_id)&.[](index + 1)&.class
       if klass&.const_get(:TYPE) == :sep || klass == nil
