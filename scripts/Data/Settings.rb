@@ -773,6 +773,12 @@ class Window_Settings
       :sep,
       {
         :type => :action,
+        :name => "Call Ruby GC",
+        :action => Proc.new { GC.compact },
+        :icons => [[1, 0]],
+      },
+      {
+        :type => :action,
         :name => "Clear image cache",
         :action => Proc.new { RPG::Cache.clear },
         :icons => [[1, 0]],
