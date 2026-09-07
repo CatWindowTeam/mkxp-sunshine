@@ -365,6 +365,7 @@ check_linker_option(OPTIONS_LINKER_RELEASE
 	-Wl,-z,start-stop-gc
 	-Wl,-z,noexecstack)
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:DEBUG>)
 target_compile_options(${PROJECT_NAME} PRIVATE
     -Wno-unused-parameter
     -Wno-tautological-pointer-compare
