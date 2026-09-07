@@ -86,10 +86,6 @@ module Settings
       def crashlog_privacy(value)
         Sunshine.crash_privacy = value
       end
-
-      def invalid_param_checks(value)
-        Sunshine.set_sdl_hint("SDL_HINT_INVALID_PARAM_CHECKS", value ? "1" : "2")
-      end
       
       # --------------------------------------------- Debug ----------------------------------------------
       def shutdown_dbus_on_quit(value)

@@ -49,7 +49,6 @@ module Settings
         # ---------- Advanced -----------
         :crashlog_privacy       => false,
         :streamer_privacy       => false,
-        :invalid_param_checks   => false,
         :replace_all_niko       => false,
 
         # ---------- Сontrols -----------
@@ -699,13 +698,6 @@ class Window_Settings
         :parameter => :streamer_privacy
       },
       { :type => :sep, :name => "Other" },
-      {
-        :type => :bool,
-        :name => "SDL_HINT_INVALID_PARAM_CHECKS",
-        :icons => [[1, 4]],
-        :additional_icons => [[1, 0]],
-        :parameter => :invalid_param_checks
-      },
       {
         :type => :bool,
         :name => "Oneshot Community Mode",
