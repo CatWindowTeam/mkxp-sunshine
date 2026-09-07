@@ -11,6 +11,55 @@ module Kernel
   module_function :puts
 end
 
+module Graphics
+# 0 - 3:2      - 720x480
+# 1 - 4:3      - 640x480 (default)
+# 2 - 16:9     - 960x540
+# 3 - 16:10    - 960x600
+  RESOLUTIONS = [
+    {
+      :display_name => "4:3 - 640x480",
+      :file_tag => "_4_3",
+      :width => 640,
+      :height => 480,
+    },
+    {
+      :display_name => "3:2 - 720x480",
+      :file_tag => "_3_2",
+      :width => 720,
+      :height => 480,
+    },
+    {
+      :display_name => "16:9 - 960x540",
+      :file_tag => "_16_9",
+      :width => 960,
+      :height => 540,
+    },
+    {
+      :display_name => "16:10 - 960x600",
+      :file_tag => "_16_10",
+      :width => 960,
+      :height => 600,
+    },
+  ]
+
+  def self.resolutions_names_list
+    RESOLUTIONS.map { |res_data| res_data[:display_name] }
+  end
+
+  def self.adapted_file(path, extention = ".png")
+    file_tag = ""
+    if PhysFS.exist?(path + file_tag + extention)
+      return path + file_tag
+    else
+      if File.exist?(path + file_tag + extention)
+        return path + file_tag
+      end
+    end
+    path
+  end
+end
+
 module RPG
   module Cache
     @cache = {}
@@ -38,9 +87,6 @@ module RPG
       self.load_bitmap("Graphics/Animations/", filename, hue)
     end
     def self.autotile(filename)
-      if !Settings[:water] && PhysFS.exist?("Graphics/Autotiles/" + filename + "_simple.png")
-        filename += "_simple"
-      end
       self.load_bitmap("Graphics/Autotiles/", filename)
     end
     def self.battleback(filename)
@@ -51,19 +97,10 @@ module RPG
     end
     def self.character(filename, hue)
 	  filename = filename.downcase
-	  if ($game_switches[160] || Settings[:true_memory_mode]) && filename.start_with?("niko")
-	    filename.gsub!(/niko/, "en")
-	  end
       self.load_bitmap("Graphics/Characters/", filename, hue)
     end
     def self.face(filename)
       filename = filename.downcase
-      if ($game_temp.message_face != nil && ((CTime.month == 4 && CTime.day == 1) or Settings[:enforce_april_fools]) && filename.start_with?("niko"))
-        filename = "af"
-      end	  
-      if $game_switches[160] && filename.start_with?("niko")
-        filename.gsub!(/niko/, "en")
-      end
       self.load_bitmap("Graphics/Faces/", filename)
     end
     def self.menu(filename)
@@ -283,7 +320,7 @@ module RPG
             sprite.bitmap.dispose
           end
         end
-        for sprite in @_animation_sprites
+        @_animation_sprites.each do |sprite|
           sprite.dispose
         end
         @_animation_sprites = nil
@@ -299,7 +336,7 @@ module RPG
             sprite.bitmap.dispose
           end
         end
-        for sprite in @_loop_animation_sprites
+        @_loop_animation_sprites.each do |sprite|
           sprite.dispose
         end
         @_loop_animation_sprites = nil
@@ -390,7 +427,7 @@ module RPG
         cell_data = @_animation.frames[frame_index].cell_data
         position = @_animation.position
         animation_set_sprites(@_animation_sprites, cell_data, position)
-        for timing in @_animation.timings
+        @_animation.timings.each do |timing|
           if timing.frame == frame_index
             animation_process_timing(timing, @_animation_hit)
           end
@@ -404,14 +441,14 @@ module RPG
       cell_data = @_loop_animation.frames[frame_index].cell_data
       position = @_loop_animation.position
       animation_set_sprites(@_loop_animation_sprites, cell_data, position)
-      for timing in @_loop_animation.timings
+      @_loop_animation.timings.each do |timing|
         if timing.frame == frame_index
           animation_process_timing(timing, true)
         end
       end
     end
     def animation_set_sprites(sprites, cell_data, position)
-      for i in 0..15
+      (0..15).each do |i|
         sprite = sprites[i]
         pattern = cell_data[i, 0]
         if sprite == nil or pattern == nil or pattern == -1
@@ -471,12 +508,12 @@ module RPG
       sx = x - self.x
       if sx != 0
         if @_animation_sprites != nil
-          for i in 0..15
+          (0..15).each do |i|
             @_animation_sprites[i].x += sx
           end
         end
         if @_loop_animation_sprites != nil
-          for i in 0..15
+          (0..15).each do |i|
             @_loop_animation_sprites[i].x += sx
           end
         end
@@ -487,12 +524,12 @@ module RPG
       sy = y - self.y
       if sy != 0
         if @_animation_sprites != nil
-          for i in 0..15
+          (0..15).each do |i|
             @_animation_sprites[i].y += sy
           end
         end
         if @_loop_animation_sprites != nil
-          for i in 0..15
+          (0..15).each do |i|
             @_loop_animation_sprites[i].y += sy
           end
         end
@@ -510,11 +547,11 @@ module RPG
       color1 = Color.new(255, 255, 255, 255)
       color2 = Color.new(255, 255, 255, 128)
       @rain_bitmap = Bitmap.new(7, 56)
-      for i in 0..6
+      (0..6).each do |i|
         @rain_bitmap.fill_rect(6-i, i*8, 1, 8, color1)
       end
       @storm_bitmap = Bitmap.new(34, 64)
-      for i in 0..31
+      (0..31).each do |i|
         @storm_bitmap.fill_rect(33-i, i*2, 1, 2, color2)
         @storm_bitmap.fill_rect(32-i, i*2, 1, 2, color1)
         @storm_bitmap.fill_rect(31-i, i*2, 1, 2, color2)
@@ -525,7 +562,7 @@ module RPG
       @snow_bitmap.fill_rect(1, 2, 4, 2, color1)
       @snow_bitmap.fill_rect(2, 1, 2, 4, color1)
       @sprites = []
-      for i in 1..40
+      (1..40).each do |i|
         sprite = Sprite.new(viewport)
         sprite.z = 1000
         sprite.visible = false
@@ -534,8 +571,8 @@ module RPG
       end
     end
     def dispose
-      for sprite in @sprites
-        sprite.dispose
+      @sprites.each do |s|
+        s.dispose
       end
       @rain_bitmap.dispose
       @storm_bitmap.dispose
@@ -554,7 +591,7 @@ module RPG
       else
         bitmap = nil
       end
-      for i in 1..40
+      (1..40).each do |i|
         sprite = @sprites[i]
         if sprite != nil
           sprite.visible = (i <= @max)
@@ -565,21 +602,21 @@ module RPG
     def ox=(ox)
       return if @ox == ox;
       @ox = ox
-      for sprite in @sprites
-        sprite.ox = @ox
+      @sprites.each do |s|
+        s.ox = @ox
       end
     end
     def oy=(oy)
       return if @oy == oy;
       @oy = oy
-      for sprite in @sprites
-        sprite.oy = @oy
+      @sprites.each do |s|
+        s.oy = @oy
       end
     end
     def max=(max)
       return if @max == max;
       @max = [[max, 0].max, 40].min
-      for i in 1..40
+      (1..40).each do |i|
         sprite = @sprites[i]
         if sprite != nil
           sprite.visible = (i <= @max)
@@ -588,7 +625,7 @@ module RPG
     end
     def update
       return if @type == 0
-      for i in 1..@max
+      (1..@max).each do |i|
         sprite = @sprites[i]
         if sprite == nil
           break
@@ -800,7 +837,7 @@ module RPG
       @battler_name = ""
       @battler_hue = 0
       @parameters = Table.new(6,100)
-      for i in 1..99
+      (1..99).each do |i|
         @parameters[0,i] = 500+i*50
         @parameters[1,i] = 500+i*50
         @parameters[2,i] = 50+i*5

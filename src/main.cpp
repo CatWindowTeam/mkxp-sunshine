@@ -351,6 +351,3 @@ int main(int argc, char *argv[]){
 #endif
 	return 0;
 }
-target_compile_definitions(MyApp PRIVATE
-    $<$<CONFIG:Debug>:MYAPP_DEBUG>
-)
