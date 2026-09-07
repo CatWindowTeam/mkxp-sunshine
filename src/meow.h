@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 inline std::vector<std::string> logs = {};
-inline std::string warns = "";
 inline std::vector<std::string> modloader_logs = {};
 
 // 4 - debug
@@ -18,8 +17,6 @@ inline bool show_crash_screen = false;
 inline bool is_privacy_crashdump_enabled = false;
 inline bool is_ruby_initialized = false;
 inline char crash_message[1024] = "";
-inline char* crash_reason = "Unknown";
-inline char* crash_possible_solution = "Unknown";
 void crash(Exception::Type t, const char *fmt, ...);
 void ErrorMsg(const char *fmt, ...);
 void ErrorMsg(Exception::Type t, const char *fmt, ...);

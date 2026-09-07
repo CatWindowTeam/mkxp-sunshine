@@ -321,23 +321,30 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 endif()
 	
 check_option(OPTIONS_RELEASE -O3
-	-ffast-math
 	-fvisibility=hidden
+	-ffast-math
 	-fno-math-errno
 	-fno-trapping-math
+	-fno-signed-zeros
+	-fno-rounding-math
+	-fno-signaling-nans
 	-ffunction-sections
 	-fdata-sections
 	-fvirtual-function-elimination
 	-fstdarg-opt
-	-frename-registers
-	-fipa-pta
-	-fipa-icf
-	-fext-dce
 	-fimplicit-constexpr
 	-fomit-frame-pointer
 	-fno-ident
 	-fwhole-program-vtables
-	-fweb)
+	-fpeel-loops
+	-fipa-pta
+	-fext-dce
+	-fipa-ra
+	-fipa-icf
+	-fipa-bit-cp
+	-fipa-vrp
+	-fipa-reference
+	-fipa-reference-addressable)
 
 # Loading release options specific for cpu arch from toolchain file
 if("${ARCH_RELEASE}" STREQUAL "")
@@ -355,7 +362,8 @@ check_linker_option(OPTIONS_LINKER_RELEASE
 	-Wl,--strip-discarded
 	-Wl,--relax
 	-Wl,-z,pack-relative-relocs
-	-Wl,-z,start-stop-gc)
+	-Wl,-z,start-stop-gc
+	-Wl,-z,noexecstack)
 
 target_compile_options(${PROJECT_NAME} PRIVATE
     -Wno-unused-parameter

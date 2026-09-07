@@ -524,7 +524,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	file = btData.scriptNames.value(file, file);
 
 	SDL_snprintf(crash_message, sizeof(crash_message), "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
-    	show_crash_screen = true;
+    show_crash_screen = true;
 }
 
 static void mriBindingExecute(){

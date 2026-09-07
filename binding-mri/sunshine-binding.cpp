@@ -27,8 +27,6 @@ static VALUE sunshineSetHint(VALUE, VALUE h, VALUE v) {
 
 static VALUE SetCrashScreenData(VALUE, VALUE v) {
   SDL_snprintf(crash_message, sizeof(crash_message), "%s", StringValueCStr(v));
-  crash_reason = "Internal Ruby Error";
-  crash_possible_solution = "Report bug to developers";
   show_crash_screen = true;
   return Qnil;
 }
@@ -71,7 +69,6 @@ void SunshineBindingInit(){
     rb_const_set(module, rb_intern("SDLVersion_micro"), INT2NUM(SDL_MICRO_VERSION));
 	rb_const_set(module, rb_intern("SECURITYSTATE"), rb_str_new_cstr(securitystate));
 	rb_const_set(module, rb_intern("VERSION"), rb_str_new_cstr(VERSION_STRING));
-	rb_const_set(module, rb_intern("WARNS"), rb_str_new_cstr(warns.c_str()));
 	#ifdef DEVBUILD
 		rb_const_set(module, rb_intern("DEVBUILD"), Qtrue);
 	#else

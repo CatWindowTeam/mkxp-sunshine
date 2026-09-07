@@ -4,6 +4,4 @@ while c < 1000
 	c = c + 1
 	Font.default_size = c
 	Graphics.update
-	Logger.Info c
-	Logger.Info "test"
 end

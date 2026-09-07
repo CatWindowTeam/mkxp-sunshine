@@ -119,66 +119,12 @@ const static char* get_processor(){
         #endif
 }
 
-static void get_reason_and_solution(Exception::Type t) {
-    switch (t) {
-        case Exception::ModLoaderError:
-            crash_reason = "Broken mod";
-            crash_possible_solution = "Fix the mod manually or ask the mod's developers to fix it";
-            break;
-        case Exception::NoFileError:
-            crash_reason = "Broken installation";
-            crash_possible_solution = "Try reinstalling the game or mods if you're using them";
-            break;
-        case Exception::ShaderError:
-            crash_reason = "Broken Shader";
-            crash_possible_solution = "Try reinstalling the game";
-            break;
-        case Exception::RGSSError:
-            crash_reason = "Internal Error";
-            crash_possible_solution = "Try reinstalling the game or mods if you're using them";
-            break;
-        case Exception::RUBYError:
-            crash_reason = "Internal Error";
-            crash_possible_solution = "Try reinstalling the game or disabling any mods if you're using them";
-            break;
-        case Exception::IOError:
-            crash_reason = "Broken installation";
-            crash_possible_solution = "Try reinstalling the game";
-            break;
-        case Exception::TypeError:
-            crash_reason = "Internal Error";
-            crash_possible_solution = "Try reinstalling the game or mods";
-            break;
-        case Exception::ArgumentError:
-            crash_reason = "Internal error";
-            crash_possible_solution = "Try reinstalling the game or mods";
-            break;
-        case Exception::PHYSFSError:
-            crash_reason = "Internal error";
-            crash_possible_solution = "You've probably loaded a corrupted mod via modloader; try deleting it";
-            break;
-        case Exception::SDLError:
-            crash_reason = "Internal error";
-            crash_possible_solution = "Internal engine error, most likely there's something wrong with your device or operating system";
-            break;
-        case Exception::MKXPError:
-            crash_reason = "Internal error";
-            crash_possible_solution = "Try reinstalling the game or disabling any mods";
-            break;
-        default:
-            break;
-    }
-}
-
 void crash(Exception::Type type, const char *fmt, ...){
     va_list args;
     va_start(args, fmt);
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-
-    get_reason_and_solution(type);
     show_crash_screen = true;
-
     if (is_ruby_initialized) {
         ruby_stop(-1);
     }
@@ -193,8 +139,6 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back("your device, nor with your modifications, nor your ham-fisted setup, please");
 	c.emplace_back("report the bug to the developers");
 	c.emplace_back(std::string{"VERSION: "} + VERSION_STRING);
-	c.emplace_back(std::string{"Possible reason: "} + crash_reason);
-	c.emplace_back(std::string{"Possible solution: "} + crash_possible_solution);
 	c.emplace_back(std::string{"MSG: "} + crash_message);
 	c.emplace_back(std::string{"COMPILER: "} + COMPILER_NAME + std::string{" "} + COMPILER_VER);
 	c.emplace_back("");
@@ -343,7 +287,6 @@ void ErrorMsg(Exception::Type t, const char *fmt, ...) {
     va_start(args, fmt);
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-    get_reason_and_solution(t);
     show_crash_screen = true;
 }
 
@@ -374,12 +317,4 @@ void terminate_stacktrace() {
         std::cerr << boost::stacktrace::stacktrace();
     } catch (...) {}
     std::abort();
-}
-
-void SelfTest(){
-	#ifdef unix_like
-		if(SDL_GetCurrentVideoDriver() == "wayland"){
-			warns.append("0001; ");
-		}
-	#endif
 }
