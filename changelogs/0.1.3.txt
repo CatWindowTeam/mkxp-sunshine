@@ -5,4 +5,6 @@ Ruby Error Handling Fix
 Added Sunshine.SetCrashScreenData
 Added GC.start fallback
 Optimized Ruby Scripts
-Particle's memory lerak fixed
+Particle's memory leak fixed
+Optimized playback of frequently repeated sounds in settings
+Fixed clicking sounds when changing parameters in settings
