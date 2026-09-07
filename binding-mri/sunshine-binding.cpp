@@ -80,6 +80,7 @@ void SunshineBindingInit(){
 	rb_define_singleton_method(module, "set_sdl_hint", RUBY_METHOD_FUNC(sunshineSetHint), 2);
 	if (!rb_respond_to(rb_mGC, rb_intern("start")))
 	    rb_define_method(rb_mGC, "start", RUBY_METHOD_FUNC(gccccc), 0);
+	rb_define_method(module, "start", RUBY_METHOD_FUNC(gccccc), 0);
 
 	if (!rb_respond_to(rb_cObject, rb_intern("class")))
 	    rb_define_method(rb_cObject, "class", rb_obj_class, 0);
