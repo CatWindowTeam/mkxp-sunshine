@@ -35,11 +35,6 @@ static VALUE obj_clone(VALUE self){
     return rb_obj_clone(self);
 }
 
-static VALUE gccccc(VALUE self){
-	rb_gc();
-    return Qnil;
-}
-
 static VALUE a_last(VALUE self){
     return rb_ary_entry(self, -1);
 }
@@ -79,8 +74,7 @@ void SunshineBindingInit(){
 	rb_define_singleton_method(module, "wallpaper_mode=", RUBY_METHOD_FUNC(sunshineSetWallpaperMode), 1);
 	rb_define_singleton_method(module, "set_sdl_hint", RUBY_METHOD_FUNC(sunshineSetHint), 2);
 	if (!rb_respond_to(rb_mGC, rb_intern("start")))
-	    rb_define_method(rb_mGC, "start", RUBY_METHOD_FUNC(gccccc), 0);
-	rb_define_method(module, "start", RUBY_METHOD_FUNC(gccccc), 0);
+	    rb_define_singleton_method(rb_mGC, "start", RUBY_METHOD_FUNC(rb_gc_start), 0);
 
 	if (!rb_respond_to(rb_cObject, rb_intern("class")))
 	    rb_define_method(rb_cObject, "class", rb_obj_class, 0);

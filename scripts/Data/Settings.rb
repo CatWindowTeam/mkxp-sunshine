@@ -774,7 +774,7 @@ class Window_Settings
       {
         :type => :action,
         :name => "Call Ruby GC",
-        :action => Proc.new { GC.compact },
+        :action => Proc.new { GC.start },
         :icons => [[1, 0]],
       },
       {

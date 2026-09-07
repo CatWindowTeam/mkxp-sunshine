@@ -31,10 +31,10 @@ class Audio{
 public:
 	// Audio created from path will be cached
 	AudioSource* createAudioSource(const std::string& path, bool predecode = false);
-	AudioSource* createAudioSource(MIX_Audio* audio);
+	//AudioSource* createAudioSource(MIX_Audio* audio);
 	AudioPlayback* createAudioPlayback(const std::string& path, int group = 0, bool predecode = false);
 	AudioPlayback* createAudioPlayback(AudioSource* source, int group = 0);
-	AudioPlayback* createAudioPlayback(MIX_Audio* audio, int group = 0);
+	//AudioPlayback* createAudioPlayback(MIX_Audio* audio, int group = 0);
 	AudioPlayback* getPlayback(MIX_Track* track);
 
 	// returns id of group, returns -1 if group not created
@@ -49,8 +49,6 @@ public:
 	void setGroupVolume(int group, float volume);
 	void stopSoundsInGroup(int group, float fadeoutTime = 0.0f);
 
-	// MIX_GetTagGain does not exist :/
-	//float getTagVolume(const std::string& tag) const;
 	void setTagVolume(const std::string& tag, float volume);
 	void playSoundsInTag(const std::string& tag);
 	void stopSoundsInTag(const std::string& tag, float fadeoutTime = 0.0f);

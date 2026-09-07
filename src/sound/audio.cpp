@@ -60,9 +60,9 @@ AudioSource* Audio::createAudioSource(const std::string& path, bool predecode) {
 	return source;
 }
 
-AudioSource* Audio::createAudioSource(MIX_Audio* audio) {
-	return new AudioSource(mixer, audio);
-}
+//AudioSource* Audio::createAudioSource(MIX_Audio* audio) {
+//	return new AudioSource(mixer, audio);
+//}
 
 AudioPlayback* Audio::createAudioPlayback(const std::string& path, int group, bool predecode) {
 	AudioSource* source = createAudioSource(path, predecode);
@@ -75,10 +75,11 @@ AudioPlayback* Audio::createAudioPlayback(AudioSource* source, int group) {
 	return new AudioPlayback(mixer, source, getGroup(group));
 }
 
-AudioPlayback* Audio::createAudioPlayback(MIX_Audio* audio, int group) {
-	return new AudioPlayback(mixer, new AudioSource(mixer, audio), getGroup(group));
-}
+//AudioPlayback* Audio::createAudioPlayback(MIX_Audio* audio, int group) {
+//	return new AudioPlayback(mixer, new AudioSource(mixer, audio), getGroup(group));
+//}
 
+// used in audio groups to update all sound with this group by getting all MIX_Track of group
 AudioPlayback* Audio::getPlayback(MIX_Track* track){
 	return p->playbacks[track];
 }
@@ -151,8 +152,6 @@ void Audio::stopSoundsInGroup(int group, float fadeoutTime) {
 		MIX_StopTag(mixer, a_group->tag().c_str(), fadeoutTime * 1000.0f);
 }
 
-// MIX_GetTagGain does not exist :/
-//float Audio::getTagVolume(const std::string& tag) const {}
 void Audio::setTagVolume(const std::string& tag, float volume) {
 	MIX_SetTagGain(mixer, tag.c_str(), volume);
 }
@@ -188,8 +187,10 @@ void Audio::reset() {
 
 void Audio::registerPlayback(AudioPlayback* pb){
 	p->playbacks.emplace(pb->getTrack(), pb);
+	Debug() << "register "  << p->cache.size();
 }
 
 void Audio::unregisterPlayback(AudioPlayback* pb){
 	p->playbacks.erase(pb->getTrack());
+	Debug() << "unregister " << p->playbacks.size();
 }

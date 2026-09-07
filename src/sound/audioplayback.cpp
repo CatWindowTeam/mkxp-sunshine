@@ -10,9 +10,9 @@ AudioPlayback::AudioPlayback(MIX_Mixer* mixer, AudioSource* source, AudioGroup* 
     initialize(mixer, source, group);
 }
 
-AudioPlayback::AudioPlayback(MIX_Mixer* mixer, MIX_Audio* audio, AudioGroup* group) {
-    initialize(mixer, audio, group);
-}
+//AudioPlayback::AudioPlayback(MIX_Mixer* mixer, MIX_Audio* audio, AudioGroup* group) {
+//    initialize(mixer, audio, group);
+//}
 
 AudioPlayback::~AudioPlayback() {
     deinitilize();
@@ -46,9 +46,9 @@ bool AudioPlayback::initialize(MIX_Mixer* mixer, AudioSource* source, AudioGroup
     return true;
 }
 
-bool AudioPlayback::initialize(MIX_Mixer* mixer, MIX_Audio* audio, AudioGroup* group) {
-    return initialize(mixer, new AudioSource(mixer, audio), group);
-}
+//bool AudioPlayback::initialize(MIX_Mixer* mixer, MIX_Audio* audio, AudioGroup* group) {
+//    return initialize(mixer, new AudioSource(mixer, audio), group);
+//}
 
 void AudioPlayback::deinitilize() {
     if (p_track)

@@ -54,12 +54,13 @@ public:
 
 		return *this;
 	}
-
+	// it puts absolutely all the numbers here
+	/*
 	Debug& operator<<(VALUE v){
 	    VALUE inspected = rb_inspect(v);
 	    buf << StringValueCStr(inspected);
 	    return *this;
-	}
+	}*/
 
 	~Debug() {
 #ifdef __ANDROID__

@@ -12,7 +12,7 @@ class AudioPlayback
 public:
     AudioPlayback(MIX_Mixer* mixer);
     AudioPlayback(MIX_Mixer* mixer, AudioSource* source, AudioGroup* group);
-    AudioPlayback(MIX_Mixer* mixer, MIX_Audio* audio, AudioGroup* group);
+    //AudioPlayback(MIX_Mixer* mixer, MIX_Audio* audio, AudioGroup* group);
     ~AudioPlayback();
 
     long startSample = 0;
@@ -22,7 +22,7 @@ public:
     double getLengthNormalized() const;
 
     bool initialize(MIX_Mixer* mixer, AudioSource* source, AudioGroup* group);
-    bool initialize(MIX_Mixer* mixer, MIX_Audio* audio, AudioGroup* group);
+    //bool initialize(MIX_Mixer* mixer, MIX_Audio* audio, AudioGroup* group);
     void deinitilize();
 
     bool play(int loops, float volume, float pitch = 1.0f, float pan = 0.0f);
