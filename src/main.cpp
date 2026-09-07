@@ -146,7 +146,8 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 
 int main(int argc, char *argv[]){
 	std::set_terminate(&terminate_stacktrace);
-        startTime = boost::chrono::high_resolution_clock::now();
+    startTime = boost::chrono::high_resolution_clock::now();
+    SDL_SetHint(SDL_HINT_INVALID_PARAM_CHECKS, "1");
 	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
 	SDL_SetAppMetadata("Oneshot: Sunshine", VERSION_STRING, "meow.catwindowteam.sunshine");
