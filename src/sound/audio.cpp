@@ -187,10 +187,8 @@ void Audio::reset() {
 
 void Audio::registerPlayback(AudioPlayback* pb){
 	p->playbacks.emplace(pb->getTrack(), pb);
-	Debug() << "register "  << p->cache.size();
 }
 
 void Audio::unregisterPlayback(AudioPlayback* pb){
 	p->playbacks.erase(pb->getTrack());
-	Debug() << "unregister " << p->playbacks.size();
 }
