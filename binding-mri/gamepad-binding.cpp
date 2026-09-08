@@ -1,16 +1,17 @@
 #include <ruby.h>
 #include <SDL3/SDL_gamepad.h>
 
-VALUE rb_GetGamepadType(VALUE klass){
+// TODO: implement that in the engine itself, not bindings.
+VALUE rb_GetGamepadType(VALUE){
     SDL_Gamepad *gamepad = SDL_GetGamepadFromPlayerIndex(0);
 
     if (gamepad == NULL)
-        return SDL_GAMEPAD_TYPE_UNKNOWN;
+        return INT2NUM(SDL_GAMEPAD_TYPE_UNKNOWN);
     
     return INT2NUM(SDL_GetGamepadType(gamepad));
 }
 
-VALUE rb_GetGamepadID(VALUE klass){
+VALUE rb_GetGamepadID(VALUE){
     SDL_Gamepad *gamepad = SDL_GetGamepadFromPlayerIndex(0);
 
     if (gamepad == NULL)
@@ -19,7 +20,7 @@ VALUE rb_GetGamepadID(VALUE klass){
     return UINT2NUM(SDL_GetGamepadID(gamepad));
 }
 
-VALUE rb_GetGamepadGUID(VALUE klass){
+VALUE rb_GetGamepadGUID(VALUE){
     SDL_Gamepad *gamepad = SDL_GetGamepadFromPlayerIndex(0);
 
     if (gamepad == NULL)
