@@ -4,5 +4,9 @@ set(ARCH_RELEASE
 	-mrelax-cmpxchg-loop
 	-momit-leaf-frame-pointer
 	-mavoid-false-dependencies
-	-fno-cf-protection)
+	-fno-cf-protection
+	-mindirect-branch=keep
+	-mfunction-return=keep
+	-mharden-sls=none
+	-mno-shstk)
 set(ARCH_DEBUG "")

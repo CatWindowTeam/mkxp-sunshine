@@ -319,32 +319,20 @@ endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     check_option(OPTIONS_RELEASE_LINUX -fno-plt)
 endif()
-	
-check_option(OPTIONS_RELEASE -O3
-	-fvisibility=hidden
-	-ffast-math
-	-fno-math-errno
-	-fno-trapping-math
-	-fno-signed-zeros
-	-fno-rounding-math
-	-fno-signaling-nans
-	-ffunction-sections
-	-fdata-sections
-	-fvirtual-function-elimination
-	-fstdarg-opt
-	-fimplicit-constexpr
-	-fomit-frame-pointer
-	-fno-ident
-	-fwhole-program-vtables
-	-fpeel-loops
-	-fipa-pta
-	-fext-dce
-	-fipa-ra
-	-fipa-icf
-	-fipa-bit-cp
-	-fipa-vrp
-	-fipa-reference
-	-fipa-reference-addressable)
+
+check_option(OPTIONS_RELEASE 
+	-O3
+	-fno-stack-protector
+	-fno-stack-clash-protection
+	-fcf-protection=none
+	-fno-unwind-tables
+	-fno-asynchronous-unwind-tables
+	-fvtable-verify=none
+	-fno-hardcfr-check-returning-calls
+	-fno-hardcfr-check-exceptions
+	-fno-harden-control-flow-redundancy
+	-fno-harden-conditional-branches
+	-fno-harden-compares)
 
 # Loading release options specific for cpu arch from toolchain file
 if("${ARCH_RELEASE}" STREQUAL "")

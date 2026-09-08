@@ -6,7 +6,7 @@ module Kernel
       string << arg.to_s
     end
     MKXP.puts string
-    return nil
+    nil
   end
   module_function :puts
 end
@@ -48,15 +48,13 @@ module Graphics
   end
 
   def self.adapted_file(path, extention = ".png")
-    file_tag = ""
-    if PhysFS.exist?(path + file_tag + extention)
-      return path + file_tag
+    if PhysFS.exist?(path + extention)
+      return path
     else
-      if File.exist?(path + file_tag + extention)
-        return path + file_tag
+      if File.exist?(path + extention)
+        return path
       end
     end
-    path
   end
 end
 
@@ -1457,25 +1455,6 @@ module RPG
       attr_accessor :guard
       attr_accessor :item
       attr_accessor :equip
-    end
-
-    class TestBattler
-      def initialize
-        @actor_id = 1
-        @level = 1
-        @weapon_id = 0
-        @armor1_id = 0
-        @armor2_id = 0
-        @armor3_id = 0
-        @armor4_id = 0
-      end
-      attr_accessor :actor_id
-      attr_accessor :level
-      attr_accessor :weapon_id
-      attr_accessor :armor1_id
-      attr_accessor :armor2_id
-      attr_accessor :armor3_id
-      attr_accessor :armor4_id
     end
 
     def initialize
