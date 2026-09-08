@@ -1,60 +1,72 @@
 #include <ruby.h>
+#include <ruby/util.h>
+
 #include <SDL3/SDL_version.h>
 #include <SDL3/SDL_gamepad.h>
 #include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_hints.h>
 #include <SDL3/SDL_locale.h>
+
+#include <map>
+
+#include "config.h"
 #include "security.h"
-#include "eventthread.h"
 #include "sunshine.h"
 #include "meow.h"
 #include "sharedstate.h"
 
 static VALUE sunshineSetCrashPrivacy(VALUE, VALUE v) {
-  is_privacy_crashdump_enabled = RTEST(v);
-  return v;
+	is_privacy_crashdump_enabled = RTEST(v);
+	return v;
 }
 
 static VALUE sunshineSetWallpaperMode(VALUE, VALUE v) {
-  std::string s(StringValueCStr(v));
-  shState->config().wallpaperMode = s;
-  return v;
+	std::string s(StringValueCStr(v));
+	shState->config().wallpaperMode = s;
+	return v;
 }
 
 static VALUE sunshineSetHint(VALUE, VALUE h, VALUE v) {
-  return SDL_SetHint(StringValueCStr(h), StringValueCStr(v));
+	return SDL_SetHint(StringValueCStr(h), StringValueCStr(v));
 }
 
 static VALUE SetCrashScreenData(VALUE, VALUE v) {
-  SDL_snprintf(crash_message, sizeof(crash_message), "%s", StringValueCStr(v));
-  show_crash_screen = true;
-  return Qnil;
+	SDL_snprintf(crash_message, sizeof(crash_message), "%s", StringValueCStr(v));
+	show_crash_screen = true;
+	return Qnil;
 }
 
 static VALUE obj_clone(VALUE self){
-    return rb_obj_clone(self);
+	return rb_obj_clone(self);
 }
 
 static VALUE a_last(VALUE self){
-    return rb_ary_entry(self, -1);
+	return rb_ary_entry(self, -1);
 }
 
 static VALUE int_times(VALUE self) {
-    long n = NUM2LONG(self);
+	long n = NUM2LONG(self);
 
-    if (!rb_block_given_p()) {
-        ID id_to_enum = rb_intern("to_enum");
-        VALUE sym = ID2SYM(rb_intern("times"));
-        return rb_funcall(self, id_to_enum, 1, sym);
-    }
+	if (!rb_block_given_p()) {
+		ID id_to_enum = rb_intern("to_enum");
+		VALUE sym = ID2SYM(rb_intern("times"));
+		return rb_funcall(self, id_to_enum, 1, sym);
+	}
 
-    if (n <= 0) return self;
+	if (n <= 0) return self;
 
-    for (long i = 0; i < n; ++i)
-        rb_yield(LONG2NUM(i));
+	for (long i = 0; i < n; ++i)
+		rb_yield(LONG2NUM(i));
 
-    return self;
+	return self;
 }
+
+const std::map<const char*, Sunshine::DisplayServerType> displayServerTypeMap = {
+	{ "UNKNOWN", Sunshine::DisplayServerType::Unknown },
+	{ "X11",     Sunshine::DisplayServerType::X11 },
+	{ "WAYLAND", Sunshine::DisplayServerType::Wayland },
+	{ "COCOA",   Sunshine::DisplayServerType::Cocoa },
+};
 
 void SunshineBindingInit(){
     VALUE module = rb_define_module("Sunshine");
@@ -91,4 +103,11 @@ void SunshineBindingInit(){
 	}else{
 		rb_const_set(module, rb_intern("P_LOCALE"), rb_str_new_cstr(Locale[0]->language));
 	}
+
+	// `DisplayServerType` enum export and current display server type as a constant.
+	VALUE dpt_enum_module = rb_define_module_under(module, "DisplayServerType");
+	for (auto pair : displayServerTypeMap)
+		rb_define_const(dpt_enum_module, pair.first, INT2FIX(pair.second));
+
+	rb_define_const(module, "DISPLAY_SERVER", INT2FIX(shState->sunshine().displayServerType()));
 }
