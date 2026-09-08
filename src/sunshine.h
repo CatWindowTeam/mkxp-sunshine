@@ -1,19 +1,18 @@
 #pragma once
 #include <boost/chrono.hpp>
-#include "bitmap.h"
+
+class Bitmap;
 
 //помойка ебаная
 inline boost::chrono::high_resolution_clock::time_point startTime;
-class Sunshine{
+
+class Sunshine {
 public:
 	Sunshine();
-
-	const char* noisePath = "Graphics/Misc/noise";
-
-	Bitmap* noiseBitmap;
+	~Sunshine();
 
 	void loadNoise();
-
+	
 	// TODO: find a better place for stuff like that, prob make some .cpp for OS stuff.
 	enum DisplayServerType : int {
 		Unknown = 0,
@@ -21,9 +20,11 @@ public:
 		Wayland,
 		Cocoa
 	};
-
+	
 	DisplayServerType displayServerType() const;
+	
+	Bitmap* noiseBitmap() const;
 
 private:
-	bool noiseLoaded = false;
+	Bitmap* noise;
 };

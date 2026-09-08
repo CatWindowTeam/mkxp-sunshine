@@ -59,7 +59,7 @@
 #include "dynamicLight.frag.xxd"
 
 #include "meow.h"
-#include "sunshine.h"
+#include "graphics.h"
 
 #define INIT_SHADER(vert, frag, name){ \
 	Shader::init(shader_##vert##_vert, shader_##vert##_vert_len, shader_##frag##_frag, shader_##frag##_frag_len, \

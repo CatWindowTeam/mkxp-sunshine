@@ -46,7 +46,6 @@
 #include <unistd.h>
 #endif
 #include <stdio.h>
-#include <string>
 
 SharedState *SharedState::instance = 0;
 static GlobalIBO *_globalIBO = 0;

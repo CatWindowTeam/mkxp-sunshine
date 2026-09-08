@@ -33,8 +33,6 @@
 #include "gl-meta.h"
 #include "global-ibo.h"
 #include "etc-internal.h"
-#include "quadarray.h"
-#include "texpool.h"
 #include "quad.h"
 #include "vertex.h"
 #include "tileatlas.h"
@@ -770,8 +768,8 @@ struct TilemapPrivate {
 			boost::chrono::duration<float> elapsed = currentTime - startTime;
 			tilemapShader.setTime(elapsed.count());
 
-			if (shState->sunshine().noiseBitmap)
-				tilemapShader.setNoiseTexture(shState->sunshine().noiseBitmap->getGLTypes().tex);
+			if (shState->sunshine().noiseBitmap())
+				tilemapShader.setNoiseTexture(shState->sunshine().noiseBitmap()->getGLTypes().tex);
 			
 			shaderVar = &tilemapShader;
 		}

@@ -34,8 +34,6 @@
 #include "shader.h"
 #include "glstate.h"
 #include "quadarray.h"
-#include "config.h"
-#include "debugwriter.h"
 #include "sunshine.h"
 
 #include <math.h>
@@ -585,8 +583,8 @@ void Sprite::draw(){
 
 				base = &shader;
 			
-				if (shState->sunshine().noiseBitmap)
-					shader.setNoiseTexture(shState->sunshine().noiseBitmap->getGLTypes().tex);
+				if (shState->sunshine().noiseBitmap())
+					shader.setNoiseTexture(shState->sunshine().noiseBitmap()->getGLTypes().tex);
 			
 				break;
 			}

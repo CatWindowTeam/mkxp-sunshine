@@ -3,7 +3,11 @@
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_video.h>
 
+#include "bitmap.h"
+
 #include <string_view>
+
+const char* NOISE_PATH = "Graphics/Misc/noise"; // TODO: find for this another place and make this not hardcoded right into engine.
 
 #ifndef IS_WINDOWS
 #ifdef _WIN32
@@ -13,13 +17,19 @@
 #endif
 #endif
 
-Sunshine::Sunshine() {}
+Sunshine::Sunshine() :
+	noise(nullptr)
+{}
 
-void Sunshine::loadNoise(){
-	if(!noiseLoaded){
-		Sunshine::noiseBitmap = new Bitmap(Sunshine::noisePath);
-		noiseLoaded = true;
-	}
+void Sunshine::loadNoise() {
+	if (this->noise == nullptr)
+		return;
+
+	this->noise = new Bitmap(NOISE_PATH);
+}
+
+Bitmap* Sunshine::noiseBitmap() const {
+	return this->noise;
 }
 
 // TODO: find a better place for stuff like that, prob make some .cpp for OS stuff.
@@ -34,4 +44,9 @@ Sunshine::DisplayServerType Sunshine::displayServerType() const {
 		if (name == "cocoa")   return DisplayServerType::Cocoa;
 	}
 	return DisplayServerType::Unknown;
+}
+
+Sunshine::~Sunshine() {
+	if (Sunshine::noise != nullptr)
+		delete Sunshine::noise;
 }
