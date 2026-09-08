@@ -379,7 +379,6 @@ add_link_options("$<$<CONFIG:Release>:${OPTIONS_LINKER_RELEASE}>")
 
 
 
-
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
 	if(ipo_supported)
 	    set_property(
