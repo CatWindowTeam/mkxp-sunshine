@@ -53,7 +53,6 @@ void initGamepadBinding(VALUE inputModule){
     rb_const_set(gamepadModule, rb_intern("JOYCON_RIGHT"), INT2FIX(SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT));
     rb_const_set(gamepadModule, rb_intern("JOYCON_PAIR"), INT2FIX(SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR));
     rb_const_set(gamepadModule, rb_intern("GAMECUBE"), INT2FIX(SDL_GAMEPAD_TYPE_GAMECUBE));
-    rb_const_set(gamepadModule, rb_intern("COUNT"), INT2FIX(SDL_GAMEPAD_TYPE_COUNT));
 
     VALUE gamepadButtonsModule = rb_define_module_under(inputModule, "GamepadButton");
     
@@ -84,7 +83,6 @@ void initGamepadBinding(VALUE inputModule){
     rb_const_set(gamepadButtonsModule, rb_intern("MISC4"), INT2FIX(SDL_GAMEPAD_BUTTON_MISC4));
     rb_const_set(gamepadButtonsModule, rb_intern("MISC5"), INT2FIX(SDL_GAMEPAD_BUTTON_MISC5));
     rb_const_set(gamepadButtonsModule, rb_intern("MISC6"), INT2FIX(SDL_GAMEPAD_BUTTON_MISC6));
-    rb_const_set(gamepadButtonsModule, rb_intern("COUNT"), INT2FIX(SDL_GAMEPAD_BUTTON_COUNT));
 
     VALUE gamepadAxisModule = rb_define_module_under(inputModule, "GamepadAxis");
     
@@ -95,5 +93,4 @@ void initGamepadBinding(VALUE inputModule){
     rb_const_set(gamepadAxisModule, rb_intern("RIGHTY"), INT2FIX(SDL_GAMEPAD_AXIS_RIGHTY));
     rb_const_set(gamepadAxisModule, rb_intern("LEFT_TRIGGER"), INT2FIX(SDL_GAMEPAD_AXIS_LEFT_TRIGGER));
     rb_const_set(gamepadAxisModule, rb_intern("RIGHT_TRIGGER"), INT2FIX(SDL_GAMEPAD_AXIS_RIGHT_TRIGGER));
-    rb_const_set(gamepadAxisModule, rb_intern("COUNT"), INT2FIX(SDL_GAMEPAD_AXIS_COUNT));
 }
