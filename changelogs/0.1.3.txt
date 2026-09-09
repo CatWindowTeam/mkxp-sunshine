@@ -8,3 +8,4 @@ Optimized Ruby Scripts
 Particle's memory leak fixed
 Optimized playback of frequently repeated sounds in settings
 Fixed clicking sounds when changing parameters in settings
+Improved Engine optimization
