@@ -31,9 +31,7 @@ macro(ProcessWithXXD outvar inputfile outdir)
 		DEPENDS ${inputfile}
 		COMMENT "Generating XXD for ${inputfile}"
 	)
-	list(APPEND ${outvar}
-		${outputfile}
-	)
+	list(APPEND ${outvar} ${outputfile})
 endmacro()
 
 foreach(item ${EMBEDDED_INPUT})
@@ -41,6 +39,8 @@ foreach(item ${EMBEDDED_INPUT})
 endforeach()
 
 add_executable(${PROJECT_NAME} ${EMBEDDED_SOURCE} main.c)
+add_link_options(-Wl,-O3 -Wl,--gc-sections -Wl,-z,noexecstack)
+target_compile_options(${PROJECT_NAME} PRIVATE -O3)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(SDL3_image CONFIG REQUIRED)
 find_package(SDL3_net CONFIG REQUIRED)

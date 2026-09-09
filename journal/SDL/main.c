@@ -4,6 +4,7 @@
 #include <SDL3_net/SDL_net.h>
 #include <SDL3/SDL_timer.h>
 #include <SDL3/SDL_thread.h>
+#include <SDL3/SDL_hints.h>
 #include "icon.png.xxd"
 #include "default.png.xxd"
 #include <stdio.h>
@@ -155,9 +156,12 @@ static int network_thread(void*) {
 
 
 int main(int argc, char* argv[]) {
+    // Configure SDL
+    SDL_SetHint(SDL_HINT_INVALID_PARAM_CHECKS, "1");
+    SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+
     // get game dir path
     load_game_directory(gamedir_path, sizeof(gamedir_path));
-
     for (int i = 1; i < argc; i++){
 	const char* arg = argv[i];
 	if ((SDL_strcmp(arg, "--port") == 0) && (i < (argc - 1))) {

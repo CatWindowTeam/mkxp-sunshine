@@ -30,7 +30,6 @@ check_ipo_supported(
 function(check_option output_var)
     set(CMAKE_REQUIRED_QUIET TRUE)
     set(result)
-    
     foreach(option IN LISTS ARGN)
         string(MAKE_C_IDENTIFIER "${option}" option_id)
         set(check_var "HAVE_OPTION_${option_id}")
@@ -351,7 +350,6 @@ endif()
 check_linker_option(OPTIONS_LINKER_RELEASE
 	-Wl,-O3
 	-Wl,--gc-sections
-	-Wl,--strip-all
 	-Wl,--no-copy-dt-needed-entries
 	-Wl,--icf=safe
 	-Wl,--strip-discarded
