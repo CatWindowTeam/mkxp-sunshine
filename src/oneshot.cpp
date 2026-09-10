@@ -174,98 +174,22 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	p->obscuredNeedToUpdate = false;
 	p->allowExit = true;
 	p->exiting = false;
-#ifdef windows
-	p->os = "windows";
-#elif apple
-	p->os = "macos";
-#elif unix_like
-	//TODO: FIX IT
-	p->os = "linux";
-#elif android
-	#ifdef TERMUX
-		p->os = "linux";
-	#else
-		p->os = "android";
-	#endif
-#elif haiku
-	p->os = "haiku";
-#endif
-
-	/********************
-	 * USERNAME/DOCS PATH
-	 ********************/
-#if windows
-	// Get language code
-	WCHAR wlang[9];
-	GetLocaleInfoW(LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME, wlang, sizeof(wlang) / sizeof(WCHAR));
-	p->lang = w32_fromWide(wlang) + "_";
-	GetLocaleInfoW(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, wlang, sizeof(wlang) / sizeof(WCHAR));
-	p->lang += w32_fromWide(wlang);
-
-	// Get user's name
-	ULONG size = 0;
-	GetUserNameEx(NameDisplay, 0, &size);
-	if (GetLastError() == ERROR_MORE_DATA){
-		// Get their full (display) name
-		WCHAR *name = new WCHAR[size];
-		GetUserNameEx(NameDisplay, name, &size);
-		p->userName = w32_fromWide(name);
-		delete[] name;
-	}else{
-		// Get their login name
-		DWORD size2 = 0;
-		GetUserName(0, &size2);
-		if (GetLastError() == ERROR_INSUFFICIENT_BUFFER){
-			WCHAR *name = new WCHAR[size2];
-			GetUserName(name, &size2);
-			p->userName = w32_fromWide(name);
-			delete[] name;
-		}
-	}
-	p->journal = "_______.exe";
-#else
-	// Get language code
-	const char *lc_all = SDL_getenv("LC_ALL");
-	const char *lang = SDL_getenv("LANG");
-	const char *code = (lc_all ? lc_all : lang);
-	if (code){
-		// find first dot, copy language code
-		int end = 0;
-		for (; code[end] && code[end] != '.'; ++end){}
-		p->lang = std::string(code, end);
-	}
-	else
-		p->lang = "en";
-
-// Get user's name
-#ifdef apple
-	struct passwd *pwd = getpwuid(geteuid());
-#elif unix_like
-	struct passwd *pwd = getpwuid(getuid());
-#endif
-
-#if defined(unix_like) || defined(haiku)
-	if (pwd){
-		if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ','){
-			// Get the user's full name
-			int comma = 0;
-			for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma){}
-			p->userName = std::string(pwd->pw_gecos, comma);
-		}
-		else{
-			p->userName = pwd->pw_name;
-		}
-	}
-	#elif android
-		p->userName = "Player";
-	#endif
-
-	#ifdef apple
-		p->journal = "_______.app";
+	#ifdef windows
+		p->os = "windows";
+	#elif apple
+		p->os = "macos";
 	#elif unix_like
-		p->journal = "_______";
+		//TODO: FIX IT
+		p->os = "linux";
+	#elif android
+		#ifdef TERMUX
+			p->os = "linux";
+		#else
+			p->os = "android";
+		#endif
+	#elif haiku
+		p->os = "haiku";
 	#endif
-#endif
 
 	// Get documents path
 	const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
@@ -286,54 +210,117 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	Debug() << "[oneshot] Game path    :" << p->gamePath;
 	Debug() << "[oneshot] Docs path    :" << p->docsPath;
 
-#ifdef unix_like
-	char const *xdg_current_desktop = SDL_getenv("XDG_CURRENT_DESKTOP");
-	gtk_init(0, 0);
+	
+	//USERNAME PATH
+	#if windows
+		// Get language code
+		WCHAR wlang[9];
+		GetLocaleInfoW(LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME, wlang, sizeof(wlang) / sizeof(WCHAR));
+		p->lang = w32_fromWide(wlang) + "_";
+		GetLocaleInfoW(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, wlang, sizeof(wlang) / sizeof(WCHAR));
+		p->lang += w32_fromWide(wlang);
 
-	if (xdg_current_desktop == NULL){
-		desktopEnv = "nope";
-	}else{
-		std::string desktop(xdg_current_desktop);
-		std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::SDL_tolower);
-		if (desktop.find("cinnamon") != std::string::npos){
-			desktopEnv = "cinnamon";
-		}else if (
-			desktop.find("gnome") != std::string::npos ||
-			desktop.find("unity") != std::string::npos)
-		{
-			desktopEnv = "gnome";
-		}else if (desktop.find("mate") != std::string::npos){
-			desktopEnv = "mate";
-		}else if (desktop.find("xfce") != std::string::npos){
-			desktopEnv = "xfce";
-		}else if (desktop.find("kde") != std::string::npos){
-			desktopEnv = "kde";
-		}else if (desktop.find("lxde") != std::string::npos){
-			desktopEnv = "lxde";
-		}else if (desktop.find("lxqt") != std::string::npos){
-			desktopEnv = "lxqt";
-		}else if (desktop.find("deepin") != std::string::npos){
-			desktopEnv = "deepin";
-		}else if (desktop.find("budgie") != std::string::npos){
-			desktopEnv = "budgie";
-		}else if (desktop.find("pantheon") != std::string::npos){
-			desktopEnv = "pantheon";
+		// Get user's name
+		ULONG size = 0;
+		GetUserNameEx(NameDisplay, 0, &size);
+		if (GetLastError() == ERROR_MORE_DATA){
+			// Get their full (display) name
+			WCHAR *name = new WCHAR[size];
+			GetUserNameEx(NameDisplay, name, &size);
+			p->userName = w32_fromWide(name);
+			delete[] name;
+		}else{
+			// Get their login name
+			DWORD size2 = 0;
+			GetUserName(0, &size2);
+			if (GetLastError() == ERROR_INSUFFICIENT_BUFFER){
+				WCHAR *name = new WCHAR[size2];
+				GetUserName(name, &size2);
+				p->userName = w32_fromWide(name);
+				delete[] name;
+			}
 		}
-	}
+		p->journal = "_______.exe";
+	#else
+		// Get language code
+		const char *lc_all = SDL_getenv("LC_ALL");
+		const char *lang = SDL_getenv("LANG");
+		const char *code = (lc_all ? lc_all : lang);
+		if (code){
+			// find first dot, copy language code
+			int end = 0;
+			for (; code[end] && code[end] != '.'; ++end){}
+			p->lang = std::string(code, end);
+		}else{
+			p->lang = "en";
+		}
 
-	Debug() << "[oneshot] Desktop env  :" << desktopEnv;
-#endif
+		// Get user's name
+		#ifdef apple
+			struct passwd *pwd = getpwuid(geteuid());
+		#elif unix_like
+			struct passwd *pwd = getpwuid(getuid());
+		#endif
 
-	/********
-	 * MISC
-	 ********/
-#if windows
-	// Get windows version
-	OSVERSIONINFOW version;
-	ZeroMemory(&version, sizeof(version));
-	version.dwOSVersionInfoSize = sizeof(version);
-	GetVersionEx(&version);
-#endif
+		#if unix_like
+			if (pwd){
+				if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ','){
+					// Get the user's full name
+					int comma = 0;
+					for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma){}
+					p->userName = std::string(pwd->pw_gecos, comma);
+				}else{
+					p->userName = pwd->pw_name;
+				}
+			}
+		#elif android
+			p->userName = "Player";
+		#elif haiku
+			p->userName = "HaikuPlayer";
+		#endif
+
+		#ifdef apple
+			p->journal = "_______.app";
+		#elif unix_like
+			p->journal = "_______";
+		#endif
+
+		#ifdef unix_like
+			char const *xdg_current_desktop = SDL_getenv("XDG_CURRENT_DESKTOP");
+			gtk_init(0, 0);
+			if(xdg_current_desktop == NULL){
+				desktopEnv = "nope";
+			}else{
+				std::string desktop(xdg_current_desktop);
+				std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::SDL_tolower);
+				if (desktop.find("cinnamon") != std::string::npos){
+					desktopEnv = "cinnamon";
+				}else if (
+					desktop.find("gnome") != std::string::npos ||
+					desktop.find("unity") != std::string::npos)
+				{
+					desktopEnv = "gnome";
+				}else if (desktop.find("mate") != std::string::npos){
+					desktopEnv = "mate";
+				}else if (desktop.find("xfce") != std::string::npos){
+					desktopEnv = "xfce";
+				}else if (desktop.find("kde") != std::string::npos){
+					desktopEnv = "kde";
+				}else if (desktop.find("lxde") != std::string::npos){
+					desktopEnv = "lxde";
+				}else if (desktop.find("lxqt") != std::string::npos){
+					desktopEnv = "lxqt";
+				}else if (desktop.find("deepin") != std::string::npos){
+					desktopEnv = "deepin";
+				}else if (desktop.find("budgie") != std::string::npos){
+					desktopEnv = "budgie";
+				}else if (desktop.find("pantheon") != std::string::npos){
+					desktopEnv = "pantheon";
+				}
+			}
+			Debug() << "[oneshot] Desktop env  :" << desktopEnv;
+		#endif
+	#endif
 }
 
 Oneshot::~Oneshot(){
