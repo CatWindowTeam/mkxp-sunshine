@@ -34,6 +34,8 @@
 	#include <gdk/gdk.h>
 #elif android
 	#include <SDL3/SDL_system.h>
+#elif haiku
+	//i idk whwat include here, meow
 #else
 	#error "Operating system not detected or unsupported."
 #endif
@@ -183,8 +185,10 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	#ifdef TERMUX
 		p->os = "linux";
 	#else
-		p->os = "Android";
+		p->os = "android";
 	#endif
+#elif haiku
+	p->os = "haiku";
 #endif
 
 	/********************
@@ -239,7 +243,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 #elif unix_like
 	struct passwd *pwd = getpwuid(getuid());
 #endif
-	#ifdef unix_like
+
+#if defined(unix_like) || defined(haiku)
 	if (pwd){
 		if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ','){
 			// Get the user's full name
@@ -247,18 +252,19 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 			for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma){}
 			p->userName = std::string(pwd->pw_gecos, comma);
 		}
-		else
+		else{
 			p->userName = pwd->pw_name;
+		}
 	}
 	#elif android
 		p->userName = "Player";
 	#endif
 
-#ifdef apple
-	p->journal = "_______.app";
-#elif unix_like
-	p->journal = "_______";
-#endif
+	#ifdef apple
+		p->journal = "_______.app";
+	#elif unix_like
+		p->journal = "_______";
+	#endif
 #endif
 
 	// Get documents path

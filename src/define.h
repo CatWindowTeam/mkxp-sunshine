@@ -23,3 +23,7 @@
 #if SDL_PLATFORM_EMSCRIPTEN
 	#define web 1
 #endif
+
+#if SDL_PLATFORM_HAIKU
+	#define haiku 1
+#endif
