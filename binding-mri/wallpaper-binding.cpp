@@ -73,9 +73,13 @@
 		// Fallback settings
 		static std::string fallbackPath;
 	#endif
+#elif haiku
+	//TODO: wallpaper support
 #endif
 
-#ifdef unix_like
+#ifdef haiku
+	//meow
+#elif unix_like
 	static bool gsettingsHasKey(GSettings *settings, const char *key){
 		GSettingsSchema *schema = NULL;
 		g_object_get(settings, "settings-schema", &schema, NULL);
@@ -454,6 +458,8 @@ RB_METHOD(wallpaperSet){
 end:
 	if (hKey)
 		RegCloseKey(hKey);
+#elif haiku
+		Debug() << "TODO: HaikuOS need wallpaper code too!!!";
 #else
 	std::string nameFix(name);
 	std::size_t found = nameFix.find("w32");
@@ -646,6 +652,8 @@ RB_METHOD(wallpaperReset){
 		if (hKey)
 			RegCloseKey(hKey);
 	}
+#elif haiku
+	Debug() << "TODO: HaikuOS need wallpaper code too!!!!111!!!1!!!";
 #else
 	#ifdef __APPLE__
 		MacDesktop::ResetBackground();
