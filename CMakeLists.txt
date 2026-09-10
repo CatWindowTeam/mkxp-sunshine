@@ -171,7 +171,7 @@ set(EMBEDDED_INPUT
 
 ## Process Embeddeds ##
 find_program(XXD_EXE
-  NAMES xxd xxd.exe
+  NAMES xxd tinyxxd xxd.exe
   REQUIRED
   HINTS
     ENV PATH
