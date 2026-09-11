@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 project(oneshot)
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
-
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
     Debug
     Release
@@ -76,7 +75,6 @@ function(check_linker_option output_var)
     set("${output_var}" "${result}" PARENT_SCOPE)
     set(CMAKE_REQUIRED_QUIET FALSE)
 endfunction()
-
 
 # Options
 option(STEAM "Build with Steam Support" OFF)
@@ -205,11 +203,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     list(APPEND MAIN_HEADERS src/mac-desktop.h)
     list(APPEND MAIN_SOURCE src/mac-desktop.mm)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake"
-	COMMENT "Executing /patches/mac/CompleteBundle.cmake"
-        VERBATIM
-    )
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake"
+	COMMENT "Executing /patches/mac/CompleteBundle.cmake" VERBATIM)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(LINUXPKGS REQUIRED gtk+-3.0 libxfconf-0 libseccomp)
