@@ -9,3 +9,6 @@ Particle's memory leak fixed
 Optimized playback of frequently repeated sounds in settings
 Fixed clicking sounds when changing parameters in settings
 Improved Engine optimization
+Added OpenBSD support
+Added Haiku support
+removed GTK3 messagebox implementation

@@ -30,14 +30,6 @@
 	#include <unistd.h>
 	#include <pwd.h>
 	#include <dlfcn.h>
-	#include <gtk/gtk.h>
-	#include <gdk/gdk.h>
-#elif android
-	#include <SDL3/SDL_system.h>
-#elif haiku
-	//i idk whwat include here, meow
-#else
-	#error "Operating system not detected or unsupported."
 #endif
 
 const Config conf;
@@ -71,66 +63,14 @@ struct OneshotPrivate{
 	bool obscuredNeedToUpdate;
 	bool obscuredCleared;
 
-	OneshotPrivate()
-		: window(0),
-		  winMutex(SDL_CreateMutex())
-	{
-	}
+	OneshotPrivate() : window(0), winMutex(SDL_CreateMutex()) {}
 
 	~OneshotPrivate(){
 		SDL_DestroyMutex(winMutex);
 	}
 };
 
-// OS-SPECIFIC FUNCTIONS
-#if unix_like
-struct linux_DialogData{
-	// Input
-	int type;
-	const char *body;
-	const char *title;
-
-	// Output
-	bool result;
-};
-
-static int linux_dialog(void *rawData){
-	linux_DialogData *data = reinterpret_cast<linux_DialogData *>(rawData);
-	// Determine correct flags
-	GtkMessageType gtktype;
-	GtkButtonsType gtkbuttons = GTK_BUTTONS_OK;
-	switch (data->type){
-	case Oneshot::MSG_INFO:
-		gtktype = GTK_MESSAGE_INFO;
-		break;
-	case Oneshot::MSG_YESNO:
-		gtktype = GTK_MESSAGE_QUESTION;
-		gtkbuttons = GTK_BUTTONS_YES_NO;
-		break;
-	case Oneshot::MSG_WARN:
-		gtktype = GTK_MESSAGE_WARNING;
-		break;
-	case Oneshot::MSG_ERR:
-		gtktype = GTK_MESSAGE_ERROR;
-		break;
-	default:
-		gtk_main_quit();
-		return 0;
-	}
-
-	// Display dialog and get result
-	GtkWidget *dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, gtktype, gtkbuttons, "%s", data->body);
-	gtk_window_set_title(GTK_WINDOW(dialog), data->title);
-	int result = gtk_dialog_run(GTK_DIALOG(dialog));
-	gtk_widget_destroy(dialog);
-
-	// Interpret result and return
-	data->result = (result == GTK_RESPONSE_OK || result == GTK_RESPONSE_YES);
-	gtk_main_quit();
-	return 0;
-}
-
-#elif windows
+#if windows
 /* Convert WCHAR pointer to std::string */
 static std::string w32_fromWide(const WCHAR *ustr){
 	std::string result;
@@ -210,7 +150,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	Debug() << "[oneshot] Game path    :" << p->gamePath;
 	Debug() << "[oneshot] Docs path    :" << p->docsPath;
 
-	
+
 	//USERNAME PATH
 	#if windows
 		// Get language code
@@ -287,7 +227,6 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 
 		#ifdef unix_like
 			char const *xdg_current_desktop = SDL_getenv("XDG_CURRENT_DESKTOP");
-			gtk_init(0, 0);
 			if(xdg_current_desktop == NULL){
 				desktopEnv = "nope";
 			}else{
@@ -401,12 +340,6 @@ void Oneshot::setAllowExit(bool allowExit){
 bool Oneshot::msgbox(int type, const char *body, const char *title){
 	if (!title)
 		title = "";
-#ifdef unix_like
-	linux_DialogData data = {type, body, title, 0};
-	gdk_threads_add_idle(linux_dialog, &data);
-	gtk_main();
-	return data.result;
-#else
 
 	// SDL message box
 	// Button data
@@ -482,7 +415,6 @@ bool Oneshot::msgbox(int type, const char *body, const char *title){
 #endif
 
 	return button ? true : false;
-#endif
 }
 
 std::string Oneshot::textinput(const char *prompt, int char_limit, const char *fontName){
