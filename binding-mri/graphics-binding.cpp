@@ -30,13 +30,106 @@
 #include "signals/rubydispatcher.h"
 
 #include "signalconnection-binding.h"
+#include "define.h"
 
 #include <vector>
+#include <cstring>
+
+#ifdef mkxp_android
+#include "input.h"
+#include "eventthread.h"
+
+void androidSetTouchControlsVisible(bool visible);
+
+static bool androidSceneIs(VALUE sceneVal, const char *name){
+	if (NIL_P(sceneVal))
+		return false;
+	VALUE sceneClass = rb_obj_class(sceneVal);
+	VALUE sceneName = rb_class_name(sceneClass);
+	return strcmp(StringValueCStr(sceneName), name) == 0;
+}
+
+static bool androidShouldShowTouchControls(){
+	VALUE sceneVal = rb_gv_get("$scene");
+	if (!androidSceneIs(sceneVal, "Scene_Map"))
+		return false;
+
+	VALUE gameTemp = rb_gv_get("$game_temp");
+	if (!NIL_P(gameTemp) && rb_respond_to(gameTemp, rb_intern("message_window_showing"))){
+		VALUE showing = rb_funcall(gameTemp, rb_intern("message_window_showing"), 0);
+		if (RTEST(showing))
+			return false;
+	}
+
+	VALUE gameSystem = rb_gv_get("$game_system");
+	if (!NIL_P(gameSystem) && rb_respond_to(gameSystem, rb_intern("map_interpreter"))){
+		VALUE interpreter = rb_funcall(gameSystem, rb_intern("map_interpreter"), 0);
+		if (!NIL_P(interpreter) && rb_respond_to(interpreter, rb_intern("running?"))){
+			VALUE running = rb_funcall(interpreter, rb_intern("running?"), 0);
+			if (RTEST(running))
+				return false;
+		}
+	}
+
+	return true;
+}
+
+static void androidHandleTitleClick(){
+	if (!EventThread::leftClickEdge())
+		return;
+
+	VALUE sceneVal = rb_gv_get("$scene");
+	if (!androidSceneIs(sceneVal, "Scene_Title"))
+		return;
+
+	VALUE cursorPos = rb_iv_get(sceneVal, "@cursor_pos");
+	if (NIL_P(cursorPos))
+		return;
+
+	VALUE sceneClass = rb_obj_class(sceneVal);
+	int menuX = NUM2INT(rb_const_get(sceneClass, rb_intern("MENU_X")));
+	int menuY = NUM2INT(rb_const_get(sceneClass, rb_intern("MENU_Y")));
+	int entryH = NUM2INT(rb_const_get(sceneClass, rb_intern("ENTRY_HEIGHT")));
+
+	int gw = shState->graphics().width();
+	int gh = shState->graphics().height();
+
+	int mx = shState->input().mouseX();
+	int my = shState->input().mouseY();
+
+	int menuLeft = gw - menuX;
+	int menuTop = gh - menuY;
+
+	if (mx < menuLeft || mx >= menuLeft + menuX || my < menuTop)
+		return;
+
+	int row = (my - menuTop) / entryH;
+
+	int maxIndex = 2;
+	VALUE gameSwitches = rb_gv_get("$game_switches");
+	if (!NIL_P(gameSwitches) && rb_respond_to(gameSwitches, rb_intern("[]"))){
+		VALUE sw160 = rb_funcall(gameSwitches, rb_intern("[]"), 1, INT2FIX(160));
+		VALUE sw152 = rb_funcall(gameSwitches, rb_intern("[]"), 1, INT2FIX(152));
+		if (RTEST(sw160) && RTEST(sw152))
+			maxIndex = 3;
+	}
+
+	if (row < 0 || row > maxIndex)
+		return;
+
+	rb_iv_set(sceneVal, "@cursor_pos", rb_float_new((double)row));
+}
+#endif
 
 RB_METHOD(graphicsUpdate){
 	RB_UNUSED_PARAM;
 
 	shState->graphics().update();
+
+#ifdef mkxp_android
+	androidSetTouchControlsVisible(androidShouldShowTouchControls());
+	androidHandleTitleClick();
+#endif
 
 	return Qnil;
 }

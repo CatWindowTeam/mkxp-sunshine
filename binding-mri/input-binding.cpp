@@ -44,6 +44,32 @@ RB_METHOD(inputUpdate){
 	return Qnil;
 }
 
+RB_METHOD(inputSetMouseEnabled){
+	RB_UNUSED_PARAM;
+	bool value;
+	rb_get_args(argc, argv, "b", &value RB_ARG_END);
+	EventThread::mouseEnabled = value;
+	return Qnil;
+}
+
+RB_METHOD(inputGetMouseEnabled){
+	RB_UNUSED_PARAM;
+	return EventThread::mouseEnabled ? Qtrue : Qfalse;
+}
+
+RB_METHOD(inputSetGamepadEnabled){
+	RB_UNUSED_PARAM;
+	bool value;
+	rb_get_args(argc, argv, "b", &value RB_ARG_END);
+	EventThread::gamepadEnabled = value;
+	return Qnil;
+}
+
+RB_METHOD(inputGetGamepadEnabled){
+	RB_UNUSED_PARAM;
+	return EventThread::gamepadEnabled ? Qtrue : Qfalse;
+}
+
 static int getButtonArg(int argc, VALUE *argv){
 	int num;
 
@@ -349,6 +375,10 @@ void inputBindingInit(){
 
 	// mkxp's input
 	_rb_define_module_function(module, "update", inputUpdate);
+	_rb_define_module_function(module, "mouse_enabled=", inputSetMouseEnabled);
+	_rb_define_module_function(module, "mouse_enabled?", inputGetMouseEnabled);
+	_rb_define_module_function(module, "gamepad_enabled=", inputSetGamepadEnabled);
+	_rb_define_module_function(module, "gamepad_enabled?", inputGetGamepadEnabled);
 	_rb_define_module_function(module, "press?", inputPress);
 	_rb_define_module_function(module, "trigger?", inputTrigger);
 	_rb_define_module_function(module, "repeat?", inputRepeat);

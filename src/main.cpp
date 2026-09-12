@@ -196,6 +196,8 @@ int main(int argc, char *argv[]){
 		SDL_SetHint(SDL_HINT_WINDOWS_RAW_KEYBOARD, "1");
 	#elif mkxp_android
 		SDL_SetHint(SDL_HINT_ANDROID_ALLOW_PERSISTENT_FOLDER_ACCESS, "1");
+		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "1");
+		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "1");
 	#elif vita
 		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
 	#endif

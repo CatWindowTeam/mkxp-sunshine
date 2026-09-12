@@ -505,6 +505,8 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
             mLayout = new RelativeLayout(this);
             mLayout.addView(mSurface);
+            mLayout.addView(new TouchControlsView(this), new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
 
             // Get our current screen orientation and pass it down.
             SDLActivity.nativeSetNaturalOrientation(SDLActivity.getNaturalOrientation());
@@ -814,11 +816,11 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                         mBackKeyHandler = new Handler(Looper.getMainLooper());
                     }
 
-                    onNativeKeyDown(KeyEvent.KEYCODE_BACK);
+                    onNativeKeyDown(KeyEvent.KEYCODE_X);
                     mBackKeyHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            onNativeKeyUp(KeyEvent.KEYCODE_BACK);
+                            onNativeKeyUp(KeyEvent.KEYCODE_X);
                         }
                     }, 500);
                 }
@@ -1629,6 +1631,9 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     }
 
     public static boolean handleKeyEvent(View v, int keyCode, KeyEvent event, InputConnection ic) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            keyCode = KeyEvent.KEYCODE_X;
+        }
         int deviceId = event.getDeviceId();
         int source = event.getSource();
         InputDevice device = InputDevice.getDevice(deviceId);

@@ -25,6 +25,7 @@
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_gamepad.h>
+#include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_log.h>
 #include <SDL3/SDL_messagebox.h>
 #include <SDL3/SDL_properties.h>
@@ -50,6 +51,8 @@ EventThread::ControllerState EventThread::gcState;
 EventThread::JoyState EventThread::joyState;
 EventThread::MouseState EventThread::mouseState;
 EventThread::TouchState EventThread::touchState;
+bool EventThread::mouseEnabled = true;
+bool EventThread::gamepadEnabled = true;
 
 /* User event codes */
 enum{
@@ -80,28 +83,12 @@ bool EventThread::allocUserEvents(){
 EventThread::EventThread(): fullscreen(false), showCursor(true){}
 
 #ifdef mkxp_android
-static SDL_Scancode androidFingerScan[MAX_FINGERS];
-
-static SDL_Scancode androidTouchZoneScan(float nx, float ny){
-	if (nx < 0.5f){
-		float dx = nx - 0.25f;
-		float dy = ny - 0.5f;
-		if (SDL_fabsf(dx) > SDL_fabsf(dy))
-			return dx < 0 ? SDL_SCANCODE_LEFT : SDL_SCANCODE_RIGHT;
-		return dy < 0 ? SDL_SCANCODE_UP : SDL_SCANCODE_DOWN;
-	}
-	return ny < 0.5f ? SDL_SCANCODE_X : SDL_SCANCODE_Z;
-}
-
-static void androidPushSynthKey(SDL_Scancode scan, bool down){
-	if (scan == SDL_SCANCODE_UNKNOWN)
-		return;
-	SDL_Event ev{};
-	ev.type = down ? SDL_EVENT_KEY_DOWN : SDL_EVENT_KEY_UP;
-	ev.key.scancode = scan;
-	ev.key.key = SDL_GetKeyFromScancode(scan, SDL_KMOD_NONE, false);
-	ev.key.down = down;
-	SDL_PushEvent(&ev);
+bool EventThread::leftClickEdge(){
+	static bool wasDown = false;
+	bool down = mouseState.buttons[SDL_BUTTON_LEFT];
+	bool edge = down && !wasDown;
+	wasDown = down;
+	return edge;
 }
 #endif
 
@@ -186,14 +173,28 @@ void EventThread::process(RGSSThreadData &rtData){
 			case SDL_EVENT_MOUSE_BUTTON_DOWN :
 			case SDL_EVENT_MOUSE_BUTTON_UP :
 			case SDL_EVENT_MOUSE_MOTION :
+				if (!EventThread::mouseEnabled)
+					continue;
+#ifndef mkxp_android
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					continue;
+#endif
 				break;
 
 			case SDL_EVENT_FINGER_DOWN :
 			case SDL_EVENT_FINGER_UP :
 			case SDL_EVENT_FINGER_MOTION :
 				if (event.tfinger.fingerID >= MAX_FINGERS)
+					continue;
+				break;
+
+			case SDL_EVENT_GAMEPAD_BUTTON_DOWN :
+			case SDL_EVENT_GAMEPAD_BUTTON_UP :
+			case SDL_EVENT_GAMEPAD_AXIS_MOTION :
+			case SDL_EVENT_JOYSTICK_BUTTON_DOWN :
+			case SDL_EVENT_JOYSTICK_BUTTON_UP :
+			case SDL_EVENT_JOYSTICK_AXIS_MOTION :
+				if (!EventThread::gamepadEnabled)
 					continue;
 				break;
 		}
@@ -395,11 +396,6 @@ void EventThread::process(RGSSThreadData &rtData){
 		case SDL_EVENT_FINGER_DOWN :
 			i = event.tfinger.fingerID;
 			touchState.fingers[i].down = true;
-#ifdef mkxp_android
-			androidFingerScan[i] = androidTouchZoneScan(event.tfinger.x, event.tfinger.y);
-			androidPushSynthKey(androidFingerScan[i], true);
-#endif
-			/* falls through */
 
 		case SDL_EVENT_FINGER_MOTION :
 			i = event.tfinger.fingerID;
@@ -410,10 +406,6 @@ void EventThread::process(RGSSThreadData &rtData){
 		case SDL_EVENT_FINGER_UP :
 			i = event.tfinger.fingerID;
 			SDL_memset(&touchState.fingers[i], 0, sizeof(touchState.fingers[0]));
-#ifdef mkxp_android
-			androidPushSynthKey(androidFingerScan[i], false);
-			androidFingerScan[i] = SDL_SCANCODE_UNKNOWN;
-#endif
 			break;
 
 		default :

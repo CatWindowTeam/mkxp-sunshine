@@ -13,6 +13,31 @@
 #include "sunshine.h"
 #include "meow.h"
 #include "sharedstate.h"
+#include "define.h"
+
+#ifdef mkxp_android
+#include <SDL3/SDL_system.h>
+#include <jni.h>
+
+void androidSetTouchControlsVisible(bool visible){
+	JNIEnv *env = (JNIEnv*)SDL_GetAndroidJNIEnv();
+	jobject activity = (jobject)SDL_GetAndroidActivity();
+	jclass activityClass = env->GetObjectClass(activity);
+	jmethodID getClassLoader = env->GetMethodID(activityClass, "getClassLoader", "()Ljava/lang/ClassLoader;");
+	jobject classLoader = env->CallObjectMethod(activity, getClassLoader);
+	jclass classLoaderClass = env->FindClass("java/lang/ClassLoader");
+	jmethodID loadClass = env->GetMethodID(classLoaderClass, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+	jstring className = env->NewStringUTF("org.libsdl.app.TouchControlsView");
+	jclass touchControlsClass = (jclass)env->CallObjectMethod(classLoader, loadClass, className);
+	jmethodID setVisible = env->GetStaticMethodID(touchControlsClass, "setVisible", "(Z)V");
+	env->CallStaticVoidMethod(touchControlsClass, setVisible, (jboolean)visible);
+	env->DeleteLocalRef(className);
+	env->DeleteLocalRef(touchControlsClass);
+	env->DeleteLocalRef(classLoaderClass);
+	env->DeleteLocalRef(classLoader);
+	env->DeleteLocalRef(activityClass);
+}
+#endif
 
 static VALUE sunshineSetCrashPrivacy(VALUE, VALUE v) {
   is_privacy_crashdump_enabled = RTEST(v);
