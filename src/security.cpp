@@ -11,7 +11,8 @@
 	//Yes its not best way, anyway better than nothing.
 	// https://www.man7.org/linux/man-pages/man2/syscalls.2.html
 	scmp_filter_ctx ctx;
-	const int seccomplist[] = {SCMP_SYS(bpf),
+	const int seccomplist[] = {
+	SCMP_SYS(bpf),
 	SCMP_SYS(set_mempolicy),
 	SCMP_SYS(set_mempolicy_home_node),
 	SCMP_SYS(vhangup),
@@ -50,14 +51,14 @@
 	SCMP_SYS(setgid),
 	SCMP_SYS(setns),
 	#ifdef __ARM_NR
-	SCMP_SYS(breakpoint),
+		SCMP_SYS(breakpoint),
 	#endif
 	#ifdef __powerpc__
-	SCMP_SYS(sys_debug_setcontext),
-	SCMP_SYS(rtas),
+		SCMP_SYS(sys_debug_setcontext),
+		SCMP_SYS(rtas),
 	#endif
 	#ifdef __alpha
-	SCMP_SYS(oldumount),
+		SCMP_SYS(oldumount),
 	#endif
 	SCMP_SYS(setpgid),
 	SCMP_SYS(pciconfig_write)};
@@ -68,7 +69,7 @@ void SecurityManagerInit(){
 	#ifndef __ANDROID__
 	#ifdef __linux__
 		Debug() << "[SECURITY] initializing SECCOMP filter...";
-		ctx = seccomp_init(SCMP_ACT_ALLOW); // Default action: Kill the process
+		ctx = seccomp_init(SCMP_ACT_ALLOW);
 		if(ctx == NULL) {
 		    WarnMsg("Warning: Failed to load SECCOMP! If you receive this warning, IT IS NOT RECOMMENDED to add any third-party modifications to Sunshine!");
 		}else{
@@ -78,35 +79,13 @@ void SecurityManagerInit(){
 			        Debug() << "seccomp_rule_add failed for " << seccomplist[i];
 			    }
 			}
-
-			//Extra rules
-			//Deny all network connections
-			if(seccomp_rule_add(ctx, SCMP_ACT_ERRNO(EPERM), SCMP_SYS(socket), 1, SCMP_CMP(0, SCMP_CMP_EQ, AF_INET))){
-				Debug() << "seccomp_rule_add failed for extra rules (socket AF_INET)";
-			}
-
-			if(seccomp_rule_add(ctx, SCMP_ACT_ERRNO(EPERM), SCMP_SYS(socket), 1, SCMP_CMP(0, SCMP_CMP_EQ, AF_INET6))){
-				Debug() << "seccomp_rule_add failed for extra rules (socket AF_INET6)";
-			}
-
-			if(seccomp_rule_add(ctx, SCMP_ACT_ERRNO(EPERM), SCMP_SYS(socketpair), 1, SCMP_CMP(0, SCMP_CMP_NE, AF_UNIX))){
-				Debug() << "seccomp_rule_add failed for extra rules (socketpair)";
-			}
 			if(seccomp_load(ctx) < 0) {
 			    WarnMsg("Warning: Failed to load SECCOMP! If you receive this warning, IT IS NOT RECOMMENDED to add any third-party modifications to Sunshine!");
 			    seccomp_release(ctx);
 			}
 		}
-		SDL_Sandbox Sandbox = SDL_GetSandbox();
-		securitystate = "sandboxed_SECCOMP";
-		if(Sandbox == SDL_SANDBOX_FLATPAK)
-			securitystate = "sandboxed_FLATPAK";
-		if(Sandbox == SDL_SANDBOX_SNAP)
-			securitystate = "sandboxed_SNAP";
 	#else
 		Debug() << "[SECURITY] SecurityManager doesn't support this platform.";
 	#endif
 	#endif
 }
-
-//void SecurityManagerDeInit(){}

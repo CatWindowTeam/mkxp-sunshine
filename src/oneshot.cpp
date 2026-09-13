@@ -11,9 +11,9 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3/SDL_messagebox.h>
 #include <SDL3/SDL_filesystem.h>
-// OS-Specific code
+#include <SDL3/SDL_locale.h>
 #if windows
-#define SECURITY_WIN32
+	#define SECURITY_WIN32
 	#include <windows.h>
 	#include <mmsystem.h>
 	#include <security.h>
@@ -64,42 +64,40 @@ struct OneshotPrivate{
 	bool obscuredCleared;
 
 	OneshotPrivate() : window(0), winMutex(SDL_CreateMutex()) {}
-
-	~OneshotPrivate(){
-		SDL_DestroyMutex(winMutex);
-	}
+	~OneshotPrivate(){ SDL_DestroyMutex(winMutex); }
 };
 
-#if windows
-/* Convert WCHAR pointer to std::string */
-static std::string w32_fromWide(const WCHAR *ustr){
-	std::string result;
-	int size = WideCharToMultiByte(CP_UTF8, 0, ustr, -1, 0, 0, 0, 0);
-	if (size > 0){
-		CHAR *str = new CHAR[size];
-		if (WideCharToMultiByte(CP_UTF8, 0, ustr, -1, str, size, 0, 0) == size)
-			result = str;
-		delete[] str;
-	}
-	return result;
-}
-/* Convert WCHAR pointer from const char* */
-static WCHAR *w32_toWide(const char *str){
-	if (str){
-		int size = MultiByteToWideChar(CP_UTF8, 0, str, -1, 0, 0);
+#ifdef windows
+	/* Convert WCHAR pointer to std::string */
+	static std::string w32_fromWide(const WCHAR *ustr){
+		std::string result;
+		int size = WideCharToMultiByte(CP_UTF8, 0, ustr, -1, 0, 0, 0, 0);
 		if (size > 0){
-			WCHAR *ustr = new WCHAR[size];
-			if (MultiByteToWideChar(CP_UTF8, 0, str, -1, ustr, size) == size)
-				return ustr;
-			delete[] ustr;
+			CHAR *str = new CHAR[size];
+			if (WideCharToMultiByte(CP_UTF8, 0, ustr, -1, str, size, 0, 0) == size)
+				result = str;
+			delete[] str;
 		}
+		return result;
 	}
 
-	// Return empty string
-	WCHAR *ustr = new WCHAR[1];
-	*ustr = 0;
-	return ustr;
-}
+	/* Convert WCHAR pointer from const char* */
+	static WCHAR *w32_toWide(const char *str){
+		if (str){
+			int size = MultiByteToWideChar(CP_UTF8, 0, str, -1, 0, 0);
+			if (size > 0){
+				WCHAR *ustr = new WCHAR[size];
+				if (MultiByteToWideChar(CP_UTF8, 0, str, -1, ustr, size) == size)
+					return ustr;
+				delete[] ustr;
+			}
+		}
+
+		// Return empty string
+		WCHAR *ustr = new WCHAR[1];
+		*ustr = 0;
+		return ustr;
+	}
 #endif
 
 Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
@@ -114,6 +112,16 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	p->obscuredNeedToUpdate = false;
 	p->allowExit = true;
 	p->exiting = false;
+	//locale
+	SDL_Locale** Locale = SDL_GetPreferredLocales(NULL);
+	if(Locale == nullptr){
+		Debug() << "Failed to detect prefered Locale, using english";
+		p->lang = "en";
+	}else{
+		p->lang = Locale[0]->language;
+	}
+
+	//OS
 	#ifdef windows
 		p->os = "windows";
 	#elif apple
@@ -133,40 +141,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 		p->os = "vita";
 	#endif
 
-	#ifdef vita
-		const char* path = "ux0:\data\Sunshine";
-	#else
-		// Get documents path
-		const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
-		if(path == NULL){
-			path = SDL_GetUserFolder(SDL_FOLDER_HOME);
-			if(path == NULL){
-				WarnMsg("Failed to get user dirs, using current directory as a fallback");
-				//use SDL instead this
-				path == ".";
-			}
-		}
-	#endif
-	p->docsPath = path;
+	//username
 	#ifdef windows
-		p->gamePath = std::string(path) + "\\My Games";
-	#else
-		p->gamePath = path;
-	#endif
-	Debug() << "[oneshot] Game path    :" << p->gamePath;
-	Debug() << "[oneshot] Docs path    :" << p->docsPath;
-
-
-	//USERNAME PATH
-	#if windows
-		// Get language code
-		WCHAR wlang[9];
-		GetLocaleInfoW(LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME, wlang, sizeof(wlang) / sizeof(WCHAR));
-		p->lang = w32_fromWide(wlang) + "_";
-		GetLocaleInfoW(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, wlang, sizeof(wlang) / sizeof(WCHAR));
-		p->lang += w32_fromWide(wlang);
-
-		// Get user's name
 		ULONG size = 0;
 		GetUserNameEx(NameDisplay, 0, &size);
 		if (GetLastError() == ERROR_MORE_DATA){
@@ -187,88 +163,90 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 			}
 		}
 		p->journal = "_______.exe";
-	#elif vita
-		p->userName = "PSVitaPlayer";
-		p->journal = "_______";
-	#else
-		// Get language code
-		const char *lc_all = SDL_getenv("LC_ALL");
-		const char *lang = SDL_getenv("LANG");
-		const char *code = (lc_all ? lc_all : lang);
-		if (code){
-			// find first dot, copy language code
-			int end = 0;
-			for (; code[end] && code[end] != '.'; ++end){}
-			p->lang = std::string(code, end);
-		}else{
-			p->lang = "en";
-		}
-
+	#elif unix_like
 		// Get user's name
 		#ifdef apple
 			struct passwd *pwd = getpwuid(geteuid());
 		#elif unix_like
 			struct passwd *pwd = getpwuid(getuid());
 		#endif
-
-		#if unix_like
-			if (pwd){
-				if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ','){
-					// Get the user's full name
-					int comma = 0;
-					for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma){}
-					p->userName = std::string(pwd->pw_gecos, comma);
-				}else{
-					p->userName = pwd->pw_name;
-				}
-			}
-		#elif android
-			p->userName = "Player";
-		#elif haiku
-			p->userName = "HaikuPlayer";
-		#endif
-
-		#ifdef apple
-			p->journal = "_______.app";
-		#elif unix_like
-			p->journal = "_______";
-		#endif
-
-		#ifdef unix_like
-			char const *xdg_current_desktop = SDL_getenv("XDG_CURRENT_DESKTOP");
-			if(xdg_current_desktop == NULL){
-				desktopEnv = "nope";
+		if (pwd){
+			if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ','){
+				// Get the user's full name
+				int comma = 0;
+				for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma){}
+				p->userName = std::string(pwd->pw_gecos, comma);
 			}else{
-				std::string desktop(xdg_current_desktop);
-				std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::SDL_tolower);
-				if (desktop.find("cinnamon") != std::string::npos){
-					desktopEnv = "cinnamon";
-				}else if (
-					desktop.find("gnome") != std::string::npos ||
-					desktop.find("unity") != std::string::npos)
-				{
-					desktopEnv = "gnome";
-				}else if (desktop.find("mate") != std::string::npos){
-					desktopEnv = "mate";
-				}else if (desktop.find("xfce") != std::string::npos){
-					desktopEnv = "xfce";
-				}else if (desktop.find("kde") != std::string::npos){
-					desktopEnv = "kde";
-				}else if (desktop.find("lxde") != std::string::npos){
-					desktopEnv = "lxde";
-				}else if (desktop.find("lxqt") != std::string::npos){
-					desktopEnv = "lxqt";
-				}else if (desktop.find("deepin") != std::string::npos){
-					desktopEnv = "deepin";
-				}else if (desktop.find("budgie") != std::string::npos){
-					desktopEnv = "budgie";
-				}else if (desktop.find("pantheon") != std::string::npos){
-					desktopEnv = "pantheon";
-				}
+				p->userName = pwd->pw_name;
 			}
-			Debug() << "[oneshot] Desktop env  :" << desktopEnv;
-		#endif
+		}
+		p->journal = "_______";
+	#else
+		p->journal = "_______";
+		p->userName = "Player";
 	#endif
+
+
+	// Get documents path
+	#ifdef android
+		const char* path = "/sdcard/Sunshine/Documents";
+	#elif vita
+		const char* path = "ux0:/data/Sunshine";
+	#else
+		const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
+		if(path == nullptr){
+			path = SDL_GetUserFolder(SDL_FOLDER_HOME);
+			if(path == nullptr){
+				WarnMsg("Failed to get user dirs, using current directory as a fallback");
+				path = ".";
+			}
+		}
+	#endif
+
+	p->docsPath = path;
+	#ifdef windows
+		p->gamePath = std::string(path) + "\\My Games";
+	#else
+		p->gamePath = path;
+	#endif
+	Debug() << "[oneshot] Game path    :" << p->gamePath;
+	Debug() << "[oneshot] Docs path    :" << p->docsPath;
+
+	#ifdef unix_like
+		char const *xdg_current_desktop = SDL_getenv("XDG_CURRENT_DESKTOP");
+		if(xdg_current_desktop == NULL){
+				desktopEnv = "nope";
+		}else{
+			std::string desktop(xdg_current_desktop);
+			std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::SDL_tolower);
+			if (desktop.find("cinnamon") != std::string::npos){
+				desktopEnv = "cinnamon";
+			}else if (
+				desktop.find("gnome") != std::string::npos ||
+				desktop.find("unity") != std::string::npos)
+			{
+				desktopEnv = "gnome";
+			}else if (desktop.find("mate") != std::string::npos){
+				desktopEnv = "mate";
+			}else if (desktop.find("xfce") != std::string::npos){
+				desktopEnv = "xfce";
+			}else if (desktop.find("kde") != std::string::npos){
+				desktopEnv = "kde";
+			}else if (desktop.find("lxde") != std::string::npos){
+				desktopEnv = "lxde";
+			}else if (desktop.find("lxqt") != std::string::npos){
+				desktopEnv = "lxqt";
+			}else if (desktop.find("deepin") != std::string::npos){
+				desktopEnv = "deepin";
+			}else if (desktop.find("budgie") != std::string::npos){
+				desktopEnv = "budgie";
+			}else if (desktop.find("pantheon") != std::string::npos){
+				desktopEnv = "pantheon";
+			}
+		}
+		Debug() << "[oneshot] Desktop env  :" << desktopEnv;
+	#endif
+
 }
 
 Oneshot::~Oneshot(){

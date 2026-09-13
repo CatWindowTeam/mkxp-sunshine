@@ -1,8 +1,7 @@
 #ifdef GLSLES
 
 #ifdef FRAGMENT_SHADER
-/* Only the fragment shader has no default float precision */
-precision mediump float;
+precision highp float;
 #endif
 
 #else

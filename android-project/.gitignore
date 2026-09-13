@@ -1,0 +1,12 @@
+.gradle/
+build/
+local.properties
+app/.cxx/
+app/build/
+app/libs/**/*.so
+app/jni/mkxp-sunshine
+app/jni/SDL/
+app/jni/SDL_image/
+app/jni/SDL_mixer/
+app/jni/SDL_net/
+app/jni/SDL_ttf/

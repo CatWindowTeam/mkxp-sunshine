@@ -147,8 +147,8 @@ void Config::read(int argc, char *argv[]){
 		gameFolder = "";
 		gameFolder.append(SDL_GetAndroidInternalStoragePath()).append("/Sunshine");
 	#elif vita
-		commonDataPath = prefPath("ux0:\data\SunshineSaves");
-		gameFolder = "ux0:\data\Sunshine";
+		commonDataPath = "ux0:/data/SunshineSaves";
+		gameFolder = "ux0:/data/Sunshine";
 	#else
 		commonDataPath = prefPath(".", "Sunshine");
 		if(pancakes){

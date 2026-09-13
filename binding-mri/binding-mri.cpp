@@ -59,7 +59,7 @@ static void mriBindingGc();
 ScriptBinding scriptBindingImpl = {
 	mriBindingExecute,
 	mriBindingTerminate,
-	mriBindingReset.
+	mriBindingReset,
 	mriBindingGc
 };
 

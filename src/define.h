@@ -1,10 +1,10 @@
 #pragma once
 #include <SDL3/SDL_platform_defines.h>
-#if defined(SDL_PLATFORM_AIX) || defined(SDL_PLATFORM_BSDI) || defined(SDL_PLATFORM_FREEBSD) || \
+#if !defined(SDL_PLATFORM_ANDROID) && (defined(SDL_PLATFORM_AIX) || defined(SDL_PLATFORM_BSDI) || defined(SDL_PLATFORM_FREEBSD) || \
     defined(SDL_PLATFORM_HPUX) || defined(SDL_PLATFORM_HURD) || defined(SDL_PLATFORM_IRIX) || \
     defined(SDL_PLATFORM_LINUX) || defined(SDL_PLATFORM_MACOS) || defined(SDL_PLATFORM_NETBSD) || \
     defined(SDL_PLATFORM_OPENBSD) || defined(SDL_PLATFORM_SOLARIS) || defined(SDL_PLATFORM_UNIX) || \
-    defined(SDL_PLATFORM_APPLE) || defined(SDL_PLATFORM_OSF)
+    defined(SDL_PLATFORM_APPLE) || defined(SDL_PLATFORM_OSF))
 	#define unix_like 1
 #endif
 

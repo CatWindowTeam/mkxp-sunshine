@@ -1,3 +1,2 @@
-#pragma once
-inline const char* securitystate = ""; 
+#pragma once 
 void SecurityManagerInit();

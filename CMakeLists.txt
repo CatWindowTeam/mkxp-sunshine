@@ -74,7 +74,6 @@ option(STEAM "Build with Steam Support" OFF)
 option(SANITIZERS "Enable sanitizers" OFF)
 option(NATIVE "Use native instructions,for local use only" OFF)
 option(STATIC "Build more static build" OFF)
-option(USE_RUBY "Build with ruby" ON)
 option(USE_OPENGL_ES2 "GLES2_HEADER define" OFF)
 set(VERSION_STRING "0.1.3" CACHE STRING "Version string")
 set(BINDING_PATH "binding-mri" CACHE STRING "Binding to use")
@@ -254,6 +253,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_compile_options(${LINUXPKGS_CFLAGS_OTHER})
     list(APPEND PLATFORM_LIBRARIES ${LINUXPKGS_LDFLAGS})
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
+    list(APPEND PLATFORM_LIBRARIES log)
     if(TERMUX)
     	find_package(PkgConfig REQUIRED)
     	pkg_check_modules(TERMUXPKGS REQUIRED libxfconf-0)
@@ -279,14 +279,16 @@ endif()
 
 if(ANDROID)
 	if(TERMUX)
-		add_executable(${PROJECT_NAME}
+		set(APP_TARGET ${PROJECT_NAME})
+		add_executable(${APP_TARGET}
                 	${MAIN_HEADERS}
                 	${MAIN_SOURCE}
                 	${BINDING_HEADERS}
                 	${BINDING_SOURCE}
                 	${EMBEDDED_SOURCE})
 	else()
-		add_library(${PROJECT_NAME} SHARED
+		set(APP_TARGET main)
+		add_library(${APP_TARGET} SHARED
                 	${MAIN_HEADERS}
                 	${MAIN_SOURCE}
                 	${BINDING_HEADERS}
@@ -294,6 +296,7 @@ if(ANDROID)
                 	${EMBEDDED_SOURCE})
 	endif()
 elseif(VITA)
+	set(APP_TARGET ${PROJECT_NAME})
 	add_executable(${PROJECT_NAME}
                 	${MAIN_HEADERS}
                 	${MAIN_SOURCE}
@@ -301,7 +304,8 @@ elseif(VITA)
                 	${BINDING_SOURCE}
                 	${EMBEDDED_SOURCE})	
 else()
-	add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
+	set(APP_TARGET ${PROJECT_NAME})
+	add_executable(${APP_TARGET} MACOSX_BUNDLE WIN32
 		${MAIN_HEADERS}
 		${MAIN_SOURCE}
 		${BINDING_HEADERS}
@@ -335,9 +339,6 @@ if(SANITIZERS)
 	add_compile_options(${SANITIZERS_OPTIONS})
 endif()
 
-
-
-
 check_option(OPTIONS_DEBUG
 	-g3
 	-fno-omit-frame-pointer
@@ -347,7 +348,6 @@ check_option(OPTIONS_DEBUG
 	-fno-optimize-sibling-calls
 	-Wall
 	-Wextra
-	-ftemplate-backtrace-limit=0
 	-fdiagnostics-show-template-tree
 	-fopt-info-all)
 
@@ -360,11 +360,11 @@ endif()
 
 check_option(OPTIONS_RELEASE 
 	-O3
-	-fno-stack-protector
 	-fno-stack-clash-protection
 	-fcf-protection=none
 	-fno-unwind-tables
-	-fno-asynchronous-unwind-tables)
+	-fno-asynchronous-unwind-tables
+	-fvtable-verify=none)
 
 # Loading release options specific for cpu arch from toolchain file
 if("${ARCH_RELEASE}" STREQUAL "")
@@ -386,13 +386,10 @@ if(NOT VITA)
 		-Wl,-z,start-stop-gc
 		-Wl,-z,noexecstack)
 	add_link_options("$<$<CONFIG:Release>:${OPTIONS_LINKER_RELEASE}>")
-else()
-	target_link_options(oneshot PRIVATE
-	    "-Wl,-z,max-page-size=0x2000"
-	)
 endif()
 
-target_compile_options(${PROJECT_NAME} PRIVATE
+target_compile_definitions(${APP_TARGET} PRIVATE $<$<CONFIG:Debug>:DEBUG>)
+target_compile_options(${APP_TARGET} PRIVATE
     -Wno-unused-parameter
     -Wno-tautological-pointer-compare
     "$<$<CONFIG:Debug>:${OPTIONS_DEBUG}>"
@@ -404,52 +401,81 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 
 
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release" AND ipo_supported AND NOT VITA)
-    set_property(
-        TARGET ${PROJECT_NAME}
-        PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
-    )
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+	if(ipo_supported)
+	    set_property(
+	        TARGET ${APP_TARGET}
+	        PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
+	    )
+	else()
+	    message(WARNING "IPO/LTO is not supported: ${ipo_error}")
+	endif()
 endif()
 
-# Used when creating crashdump or on debug text in main menu script
-target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION_STRING="${VERSION_STRING}")
+if(DEVBUILD)
+	target_compile_definitions(${APP_TARGET} PRIVATE DEVBUILD)
+endif()
+target_compile_definitions(${APP_TARGET} PRIVATE VERSION_STRING="${VERSION_STRING}")
+if(TERMUX)
+	target_compile_definitions(${APP_TARGET} PRIVATE TERMUX=1)
+endif()
 
 find_package(PkgConfig REQUIRED)
 find_package(BZip2 REQUIRED)
 find_package(ZLIB REQUIRED)
-find_package(SDL3 CONFIG REQUIRED)
-find_package(SDL3_image CONFIG REQUIRED)
-find_package(SDL3_mixer CONFIG REQUIRED)
-find_package(SDL3_ttf CONFIG REQUIRED)
-find_package(SDL3_net REQUIRED)
-find_package(Boost REQUIRED COMPONENTS program_options chrono)
-find_package(PhysFS REQUIRED)
+if(NOT TARGET SDL3::SDL3)
+	find_package(SDL3 CONFIG REQUIRED)
+endif()
+if(NOT TARGET SDL3_image::SDL3_image)
+	find_package(SDL3_image CONFIG REQUIRED)
+endif()
+if(NOT TARGET SDL3_mixer::SDL3_mixer)
+	find_package(SDL3_mixer CONFIG REQUIRED)
+endif()
+if(NOT TARGET SDL3_ttf::SDL3_ttf)
+	find_package(SDL3_ttf CONFIG REQUIRED)
+endif()
+if(NOT TARGET SDL3_net::SDL3_net)
+	find_package(SDL3_net REQUIRED)
+endif()
+if(ANDROID)
+	find_package(Boost REQUIRED COMPONENTS program_options chrono CONFIG)
+else()
+	find_package(Boost REQUIRED COMPONENTS program_options chrono)
+endif()
+find_package(PhysFS)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
-target_include_directories(${PROJECT_NAME} PRIVATE
+find_package(Ruby 3.4 
+	COMPONENTS Interpreter Development
+	REQUIRED)
+target_compile_definitions(${APP_TARGET} PRIVATE ${DEFINES})
+target_include_directories(${APP_TARGET} PRIVATE
 	src
 	include
 	${SDL_INCLUDE_DIRS}
 	${PIXMAN_INCLUDE_DIR}
 	${SIGC2_INCLUDE_DIRS}
 	${Ruby_INCLUDE_DIRS}
+	${Boost_INCLUDE_DIRS}
+	${PHYSFS_INCLUDE_DIR}
 	${ZLIB_INCLUDE_DIRS}
 	SDL3::Headers
 	Boost::headers
 	SDL3_mixer::SDL3_mixer
 	SDL3_net::SDL3_net)
+target_link_directories(${APP_TARGET} PRIVATE ${SIGC2_LIBRARY_DIRS})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(${APP_TARGET} PRIVATE
 	SDL3_image::SDL3_image
 	SDL3_mixer::SDL3_mixer
 	SDL3_ttf::SDL3_ttf
 	SDL3_net::SDL3_net
 	SDL3::SDL3
-	physfs
+	${PHYSFS_LIBRARY}
 	${PIXMAN_LIBRARY}
 	${SIGC2_LIBRARIES}
 	${PLATFORM_LIBRARIES}
@@ -463,12 +489,6 @@ if(VITA)
 	target_link_libraries(${PROJECT_NAME} PRIVATE webp sharpyuv)
 endif()
 
-if(USE_RUBY)
-	target_include_directories(${PROJECT_NAME} PRIVATE ${Ruby_INCLUDE_DIRS})
-	target_link_libraries(${PROJECT_NAME} PRIVATE ${Ruby_LIBRARIES})
-endif()
-
-add_subdirectory(scripts)
 if(VITA)
 	vita_create_self(${PROJECT_NAME}.self ${PROJECT_NAME})
 	vita_create_vpk(${PROJECT_NAME}.vpk ${VITA_TITLEID} ${PROJECT_NAME}.self

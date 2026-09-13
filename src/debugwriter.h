@@ -24,9 +24,10 @@
 #include <sstream>
 #include <vector>
 #include "meow.h"
-#ifdef __ANDROID__
+#include "define.h"
+#ifdef android
 	#include <android/log.h>
-#elif __EMSCRIPTEN__
+#elif web
 	#include <emscripten/console.h>
 #endif
 
@@ -53,10 +54,10 @@ public:
 
 	~Debug() {
 #ifdef __ANDROID__
-		//TODO: Linking error
-		//__android_log_write(ANDROID_LOG_DEBUG, "sunshine", buf.str().c_str());
 		#ifdef TERMUX
 			std::cout << buf.view() << '\n';
+		#else
+			__android_log_write(ANDROID_LOG_INFO, "sunshine", buf.str().c_str());
 		#endif
 #elif __EMSCRIPTEN__
 		emscripten_console_log(buf.str().c_str());

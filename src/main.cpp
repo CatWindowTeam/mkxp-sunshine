@@ -19,6 +19,8 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
+#include <SDL3/SDL_system.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
@@ -66,6 +68,10 @@
 	#ifdef ps2
 		SDL_PS2_SKIP_IOP_RESET();
 	#endif
+#endif
+
+#ifndef VERSION_STRING
+	#define VERSION_STRING "Unknown"
 #endif
 
 static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
@@ -165,6 +171,12 @@ int main(int argc, char *argv[]){
 		SDL_SetHint(SDL_HINT_VITA_PVR_OPENGL, "1");
 	#elif ps2
 		SDL_SetHint("SDL_HINT_PS2_GS_MODE", "NTSC");
+	#elif android
+		SDL_SetHint(SDL_HINT_ANDROID_ALLOW_PERSISTENT_FOLDER_ACCESS, "1");
+		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "1");
+		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "1");
+	#elif vita
+		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
 	#endif
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
@@ -193,7 +205,14 @@ int main(int argc, char *argv[]){
 	}
 #endif
 	/* Initialize physfs here so that config can call PHYSFS_getPrefDir */
-	PHYSFS_init(argv[0]);
+#ifdef android
+	PHYSFS_AndroidInit androidInit;
+	androidInit.jnienv = SDL_GetAndroidJNIEnv();
+	androidInit.context = SDL_GetAndroidActivity();
+	PHYSFS_init((const char *)&androidInit);
+#else
+	PHYSFS_init(argc > 0 ? argv[0] : "mkxp-sunshine");
+#endif
 
 	/* now we load the config */
 	Config conf;
@@ -225,7 +244,7 @@ int main(int argc, char *argv[]){
 	}
 
 	#ifdef vita
-		std::string shit = "ux0:\data\Sunshine";
+		std::string shit = "ux0:/data/Sunshine";
 	#else
 		std::string shit = SDL_GetUserFolder(SDL_FOLDER_HOME);
 	#endif
