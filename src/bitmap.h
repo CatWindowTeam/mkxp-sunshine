@@ -39,6 +39,7 @@ struct BitmapPrivate;
 class Bitmap : public Disposable{
 public:
 	Bitmap(const char *filename);
+	Bitmap(SDL_IOStream *src);
 	Bitmap(int width, int height);
 	/* Clone constructor */
 	Bitmap(const Bitmap &other);
@@ -103,10 +104,10 @@ public:
 
 	/* Binds the backing texture and sets the correct
 	 * texture size uniform in shader */
-	void bindTex(ShaderBase &shader);
+	void bindTex(ShaderBase &shader) noexcept;
 
 	/* Adds 'rect' to tainted area */
-	void taintArea(const IntRect &rect);
+	void taintArea(const IntRect &rect) noexcept;
 
 	Signal<void> modified;
 

@@ -62,6 +62,12 @@
 	#include "gamecontrollerdb.txt.xxd"
 #endif
 
+#ifdef DEBUG
+	#ifdef ps2
+		SDL_PS2_SKIP_IOP_RESET();
+	#endif
+#endif
+
 static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
 	rtData->rgssErrorMsg = msg;
 	rtData->ethread->requestTerminate();
@@ -145,22 +151,20 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 }
 
 int main(int argc, char *argv[]){
-	std::set_terminate(&terminate_stacktrace);
+	SDL_SetHint("SDL_HINT_INVALID_PARAM_CHECKS", "1");
     startTime = boost::chrono::high_resolution_clock::now();
-    #ifndef DEBUG
-    	SDL_SetHint(SDL_HINT_INVALID_PARAM_CHECKS, "1");
-	#endif
-	loadLanguageMetadata(); //there will be a segfault on fclose if I don't move it here
-	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
+    loadLanguageMetadata();
+	SDL_SetHint("SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS", "0");
 	SDL_SetAppMetadata("Oneshot: Sunshine", VERSION_STRING, "meow.catwindowteam.sunshine");
-	//X11 work on *BSD,Solaris too!
 	#if unix_like
-		SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
-		SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
+		SDL_SetHint("SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR", "0");
+		SDL_SetHint("SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT", "1");
 	#elif windows
-		SDL_SetHint(SDL_HINT_WINDOWS_RAW_KEYBOARD, "1");
-	#elif android
-		SDL_SetHint(SDL_HINT_ANDROID_ALLOW_PERSISTENT_FOLDER_ACCESS, "1");
+		SDL_SetHint("SDL_HINT_WINDOWS_RAW_KEYBOARD", "1");
+	#elif vita
+		SDL_SetHint(SDL_HINT_VITA_PVR_OPENGL, "1");
+	#elif ps2
+		SDL_SetHint("SDL_HINT_PS2_GS_MODE", "NTSC");
 	#endif
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
@@ -220,7 +224,11 @@ int main(int argc, char *argv[]){
 	    path = std::filesystem::current_path().string();
 	}
 
-	std::string shit = SDL_GetUserFolder(SDL_FOLDER_HOME);
+	#ifdef vita
+		std::string shit = "ux0:\data\Sunshine";
+	#else
+		std::string shit = SDL_GetUserFolder(SDL_FOLDER_HOME);
+	#endif
 	std::ofstream out(std::filesystem::path(shit) / "sunshine");
 	if (!out) {
 	    WarnMsg("Failed to write game directory path to temp file, problems with journal app expected!");
@@ -294,7 +302,6 @@ int main(int argc, char *argv[]){
 	int winW, winH;
 	SDL_GetWindowSize(win, &winW, &winH);
 	rtData.windowSizeMsg.post(Vec2i(winW, winH));
-	// self-test 
 	
 	/* start modloader */
 	ModLoader(conf, win);

@@ -263,7 +263,7 @@ struct WindowPrivate {
 		prepareCon.Disconnect();
 	}
 
-	void markControlVertDirty(){
+	void markControlVertDirty() noexcept{
 		controlsVertDirty = true;
 	}
 
@@ -320,8 +320,7 @@ struct WindowPrivate {
 			Quad::setTexRect(&vert[i*4], backgroundSrc);
 			Quad::setPosRect(&vert[i*4], bgRect);
 			i += 1;
-		}
-		else{
+		}else{
 			i += TileQuads::build(backgroundSrc, bgRect, &vert[i*4]);
 		}
 
@@ -337,9 +336,9 @@ struct WindowPrivate {
 		i += Quad::setTexPosRect(&vert[i*4], cornersSrc.bl, cornerRects.bl);
 		i += Quad::setTexPosRect(&vert[i*4], cornersSrc.br, cornerRects.br);
 
-		for (int j = 0; j < count*4; ++j)
+		for (int j = 0; j < count*4; ++j){
 			vert[j].color = Vec4(1, 1, 1, 1);
-
+		}
 
 		FloatRect texRect = FloatRect(0, 0, size.x, size.y);
 		baseTexQuad.setTexPosRect(texRect, texRect);

@@ -129,18 +129,24 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 		#endif
 	#elif haiku
 		p->os = "haiku";
+	#elif vita
+		p->os = "vita";
 	#endif
 
-	// Get documents path
-	const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
-	if(path == NULL){
-		path = SDL_GetUserFolder(SDL_FOLDER_HOME);
+	#ifdef vita
+		const char* path = "ux0:\data\Sunshine";
+	#else
+		// Get documents path
+		const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
 		if(path == NULL){
-			WarnMsg("Failed to get user dirs, using current directory as a fallback");
-			//use SDL instead this
-			path == ".";
+			path = SDL_GetUserFolder(SDL_FOLDER_HOME);
+			if(path == NULL){
+				WarnMsg("Failed to get user dirs, using current directory as a fallback");
+				//use SDL instead this
+				path == ".";
+			}
 		}
-	}
+	#endif
 	p->docsPath = path;
 	#ifdef windows
 		p->gamePath = std::string(path) + "\\My Games";
@@ -181,6 +187,9 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 			}
 		}
 		p->journal = "_______.exe";
+	#elif vita
+		p->userName = "PSVitaPlayer";
+		p->journal = "_______";
 	#else
 		// Get language code
 		const char *lc_all = SDL_getenv("LC_ALL");

@@ -38,6 +38,9 @@ struct ScriptBinding{
 	/* Instructs the binding to issue a game reset.
 	 * Same conditions as for terminate apply */
 	void (*reset) (void);
+
+	// Call Garbage collector of binding
+	void (*gc) (void);
 };
 
 /* VTable defined in the binding source */

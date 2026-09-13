@@ -23,11 +23,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <ruby.h>
 #include "meow.h"
-#undef vsnprintf
-#undef snprintf
-
 #ifdef __ANDROID__
 	#include <android/log.h>
 #elif __EMSCRIPTEN__
@@ -54,13 +50,6 @@ public:
 
 		return *this;
 	}
-	// it puts absolutely all the numbers here
-	/*
-	Debug& operator<<(VALUE v){
-	    VALUE inspected = rb_inspect(v);
-	    buf << StringValueCStr(inspected);
-	    return *this;
-	}*/
 
 	~Debug() {
 #ifdef __ANDROID__

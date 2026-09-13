@@ -1,29 +1,22 @@
 cmake_minimum_required(VERSION 3.20)
-project(oneshot)
-if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
-endif()
-set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
-    Debug
-    Release
-)
-
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message(FATAL_ERROR "In-source builds are disabled. Use: cmake -S . -B build")
 endif()
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+project(oneshot)
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    Debug
+    Release
+)
 
 include(FindPackageHandleStandardArgs)
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
 include(CheckLinkerFlag)
 include(CheckIPOSupported)
-
-check_ipo_supported(
-    RESULT ipo_supported
-    OUTPUT ipo_error
-    LANGUAGES CXX C
-)
 
 # Helper for checking if options supported by compiller
 function(check_option output_var)
@@ -81,10 +74,58 @@ option(STEAM "Build with Steam Support" OFF)
 option(SANITIZERS "Enable sanitizers" OFF)
 option(NATIVE "Use native instructions,for local use only" OFF)
 option(STATIC "Build more static build" OFF)
+option(USE_RUBY "Build with ruby" ON)
 option(USE_OPENGL_ES2 "GLES2_HEADER define" OFF)
 set(VERSION_STRING "0.1.3" CACHE STRING "Version string")
+set(BINDING_PATH "binding-mri" CACHE STRING "Binding to use")
+set(VITASDK_PATH "/usr/local/vitasdk" CACHE STRING "VitaSDK path")
 option(DEVBUILD "Developoment build" OFF)
 option(TERMUX "Build for TERMUX" OFF)
+option(VITA "Build for PSVita" OFF)
+
+if(NOT VITA)
+    check_ipo_supported(
+        RESULT ipo_supported
+        OUTPUT ipo_error
+        LANGUAGES CXX C
+    )
+else()
+    set(ipo_supported FALSE)
+    set(CMAKE_POSITION_INDEPENDENT_CODE OFF)
+    add_compile_options(
+        -fno-pic
+        -fno-PIC
+        -fno-pie
+        -fno-PIE
+    )
+
+    add_link_options(
+        -fno-pie
+        -no-pie
+    )
+endif()
+
+#prepare Vita specific thinks
+if(VITA)
+    if(NOT DEFINED VITASDK_PATH OR VITASDK_PATH STREQUAL "")
+        if(DEFINED ENV{VITASDK})
+            set(VITASDK_PATH "$ENV{VITASDK}")
+        else()
+            set(VITASDK_PATH "/usr/local/vitasdk")
+        endif()
+    endif()
+    include("${VITASDK_PATH}/share/vita.cmake" REQUIRED)
+
+    set(VITA_APP_NAME "Oneshot: Sunshine")
+    set(VITA_TITLEID "OSS936174")
+    set(VITA_VERSION "00.13")
+
+    # SDL3_mixer CMake helper modules
+    list(PREPEND CMAKE_MODULE_PATH "${VITASDK_PATH}/SDL_mixer/cmake")
+    if(NOT EXISTS "${VITASDK_PATH}/SDL_mixer/cmake/PkgConfigHelper.cmake")
+        message(FATAL_ERROR "PkgConfigHelper.cmake not found in ${VITASDK_PATH}/SDL_mixer/cmake")
+    endif()
+endif()
 
 # Configuration
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
@@ -102,6 +143,7 @@ endif()
 # Make build more static
 if(STATIC)
 	set(ZLIB_USE_STATIC_LIBS ON)
+	set(Boost_USE_STATIC_RUNTIME ON)
 endif()
 
 # For local builds
@@ -128,8 +170,8 @@ endif()
 # recursive search instead of hardcored list
 file(GLOB_RECURSE MAIN_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.h*")
 file(GLOB_RECURSE MAIN_SOURCE CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.c*")
-file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/binding-mri/*.h*")
-file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/binding-mri/*.c*")
+file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/${BINDING_PATH}/*.h*")
+file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/${BINDING_PATH}/*.c*")
 set(EMBEDDED_INPUT
 	shader/common.h
 	shader/transSimple.frag
@@ -225,18 +267,13 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     include_directories(${FREEBSDPKGS_INCLUDE_DIRS})
     add_compile_options(${FREEBSDPKGS_CFLAGS_OTHER})
     list(APPEND PLATFORM_LIBRARIES ${FREEBSDPKGS_LDFLAGS})
-    set(STEAM OFF)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "OpenBSD")
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(OPENBSDPKGS REQUIRED libxfconf-0)
     include_directories(${OPENBSDPKGS_INCLUDE_DIRS})
     add_compile_options(${OPENBSDPKGS_CFLAGS_OTHER})
     list(APPEND PLATFORM_LIBRARIES ${OPENBSDPKGS_LDFLAGS})
-    set(STEAM OFF)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Haiku")
-    set(STEAM OFF)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-    set(STEAM OFF)
     set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
 endif()
 
@@ -256,6 +293,13 @@ if(ANDROID)
                 	${BINDING_SOURCE}
                 	${EMBEDDED_SOURCE})
 	endif()
+elseif(VITA)
+	add_executable(${PROJECT_NAME}
+                	${MAIN_HEADERS}
+                	${MAIN_SOURCE}
+                	${BINDING_HEADERS}
+                	${BINDING_SOURCE}
+                	${EMBEDDED_SOURCE})	
 else()
 	add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 		${MAIN_HEADERS}
@@ -270,11 +314,7 @@ if(STEAM)
         list(APPEND MAIN_SOURCE steamshim/steamshim_child.c)
         add_definitions(-DSTEAM)
         add_subdirectory(steamshim_parent)
-        # steam_appid.txt
-        configure_file(
-                "${CMAKE_SOURCE_DIR}/steam_appid.txt"
-                "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/steam_appid.txt"
-                COPYONLY)
+        configure_file("${CMAKE_SOURCE_DIR}/steam_appid.txt" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/steam_appid.txt" COPYONLY)
 endif()
 
 # Common arguments on specific CPU arch
@@ -318,24 +358,13 @@ else()
 	check_option(ARCH_DEBUG_OPTIONS ${ARCH_DEBUG})
 endif()
 
-#Platform Specific
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    check_option(OPTIONS_RELEASE_LINUX -fno-plt)
-endif()
-
 check_option(OPTIONS_RELEASE 
 	-O3
 	-fno-stack-protector
 	-fno-stack-clash-protection
 	-fcf-protection=none
 	-fno-unwind-tables
-	-fno-asynchronous-unwind-tables
-	-fvtable-verify=none
-	-fno-hardcfr-check-returning-calls
-	-fno-hardcfr-check-exceptions
-	-fno-harden-control-flow-redundancy
-	-fno-harden-conditional-branches
-	-fno-harden-compares)
+	-fno-asynchronous-unwind-tables)
 
 # Loading release options specific for cpu arch from toolchain file
 if("${ARCH_RELEASE}" STREQUAL "")
@@ -344,18 +373,25 @@ else()
 	check_option(ARCH_RELEASE_OPTIONS ${ARCH_RELEASE})
 endif()
 
-check_linker_option(OPTIONS_LINKER_RELEASE
-	-Wl,-O3
-	-Wl,--gc-sections
-	-Wl,--no-copy-dt-needed-entries
-	-Wl,--icf=safe
-	-Wl,--strip-discarded
-	-Wl,--relax
-	-Wl,-z,pack-relative-relocs
-	-Wl,-z,start-stop-gc
-	-Wl,-z,noexecstack)
-
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:DEBUG>)
+if(NOT VITA)
+	check_linker_option(OPTIONS_LINKER_RELEASE
+		-Wl,-O3
+		-Wl,--gc-sections
+		-Wl,--no-copy-dt-needed-entries
+		-Wl,--icf=safe
+		-Wl,--strip-discarded
+		-Wl,--relax
+		-Wl,-z,pack-relative-relocs
+		-Wl,-z,start-stop-gc
+		-Wl,-z,noexecstack)
+	add_link_options("$<$<CONFIG:Release>:${OPTIONS_LINKER_RELEASE}>")
+else()
+	target_link_options(oneshot PRIVATE
+	    "-Wl,-z,max-page-size=0x2000"
+	)
+endif()
+
 target_compile_options(${PROJECT_NAME} PRIVATE
     -Wno-unused-parameter
     -Wno-tautological-pointer-compare
@@ -365,25 +401,21 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     "$<$<CONFIG:Release>:${OPTIONS_RELEASE_LINUX}>"
     "$<$<CONFIG:Release>:${ARCH_RELEASE_OPTIONS}>"
 )
-add_link_options("$<$<CONFIG:Release>:${OPTIONS_LINKER_RELEASE}>")
 
 
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-	if(ipo_supported)
-	    set_property(
-	        TARGET ${PROJECT_NAME}
-	        PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
-	    )
-	else()
-	    message(WARNING "IPO/LTO is not supported: ${ipo_error}")
-	endif()
+if(CMAKE_BUILD_TYPE STREQUAL "Release" AND ipo_supported AND NOT VITA)
+    set_property(
+        TARGET ${PROJECT_NAME}
+        PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
+    )
 endif()
 
 # Used when creating crashdump or on debug text in main menu script
 target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION_STRING="${VERSION_STRING}")
 
 find_package(PkgConfig REQUIRED)
+find_package(BZip2 REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(SDL3_image CONFIG REQUIRED)
@@ -394,12 +426,10 @@ find_package(Boost REQUIRED COMPONENTS program_options chrono)
 find_package(PhysFS REQUIRED)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
-find_package(Ruby 3.0 REQUIRED COMPONENTS Development)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
-
 target_include_directories(${PROJECT_NAME} PRIVATE
 	src
 	include
@@ -414,11 +444,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 	SDL3_net::SDL3_net)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-	SDL3::SDL3
 	SDL3_image::SDL3_image
 	SDL3_mixer::SDL3_mixer
 	SDL3_ttf::SDL3_ttf
 	SDL3_net::SDL3_net
+	SDL3::SDL3
 	physfs
 	${PIXMAN_LIBRARY}
 	${SIGC2_LIBRARIES}
@@ -429,4 +459,24 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	${Boost_LIBRARIES}
 	ZLIB::ZLIB)
 
+if(VITA)
+	target_link_libraries(${PROJECT_NAME} PRIVATE webp sharpyuv)
+endif()
+
+if(USE_RUBY)
+	target_include_directories(${PROJECT_NAME} PRIVATE ${Ruby_INCLUDE_DIRS})
+	target_link_libraries(${PROJECT_NAME} PRIVATE ${Ruby_LIBRARIES})
+endif()
+
 add_subdirectory(scripts)
+if(VITA)
+	vita_create_self(${PROJECT_NAME}.self ${PROJECT_NAME})
+	vita_create_vpk(${PROJECT_NAME}.vpk ${VITA_TITLEID} ${PROJECT_NAME}.self
+	  VERSION ${VITA_VERSION}
+	  NAME ${VITA_APP_NAME}
+	  FILE sce_sys/icon0.png sce_sys/icon0.png
+	  FILE sce_sys/livearea/contents/bg.png sce_sys/livearea/contents/bg.png
+	  FILE sce_sys/livearea/contents/startup.png sce_sys/livearea/contents/startup.png
+	  FILE sce_sys/livearea/contents/template.xml sce_sys/livearea/contents/template.xml
+	)
+endif()

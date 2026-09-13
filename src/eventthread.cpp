@@ -43,7 +43,7 @@
 #include <cstdio>
 #include <map>
 #include <iostream>
-#include <ruby.h>
+#include "binding.h"
 
 uint8_t EventThread::keyStates[];
 EventThread::ControllerState EventThread::gcState;
@@ -225,8 +225,7 @@ void EventThread::process(RGSSThreadData &rtData){
 		/* Now process the rest */
 		switch (event.type){
 		case SDL_EVENT_LOW_MEMORY:
-			if(is_ruby_initialized)
-				rb_gc();
+			scriptBinding->execute();
 			break;
 		case SDL_EVENT_QUIT:
 		case SDL_EVENT_WINDOW_DESTROYED:

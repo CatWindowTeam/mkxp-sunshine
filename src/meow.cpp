@@ -11,14 +11,17 @@
 #include <SDL3/SDL_cpuinfo.h>
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_mouse.h>
+#include <SDL3/SDL_stdinc.h>
+
 #include "meow.h"
 #include "exception.h"
 #include "config.h"
 #include "gl-fun.h"
 #include "debugwriter.h"
 #include "define.h"
+#include "binding.h"
 #include "sharedstate.h"
-#include <SDL3/SDL_stdinc.h>
+
 #include <ctime>
 #include <fstream>
 #include <string>
@@ -27,24 +30,27 @@
 #include <iostream>
 #include <chrono>
 #include <format>
-#include <ruby/internal/interpreter.h>
-#undef vsnprintf
-#undef snprintf
-#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__NetBSD__)
-#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+
+#if !defined(ps2) && !defined(vita)
+    #include <boost/stacktrace.hpp>
+    #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__NetBSD__)
+    	#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+    #endif
 #endif
-#include <boost/stacktrace.hpp>
+
 #include <physfs.h>
 #include "sunshine.h"
+
 #ifdef android
 	#include <android/api-level.h>
 #endif
+
 #include "crash.png.xxd"
 using namespace std;
 
 //help functions
 static inline const char* glGetStringInt(GLenum name){
-	return (const char*) gl.GetString(name);
+	return(const char*)gl.GetString(name);
 }
 
 #define STR2(x) #x
@@ -70,47 +76,47 @@ static inline const char* glGetStringInt(GLenum name){
 // https://stackoverflow.com/questions/152016/detecting-cpu-architecture-compile-time
 const static char* get_processor(){
 	#if defined(__x86_64__) || defined(_M_X64)
-        return "x86_64";
+        	return "x86_64";
         #elif defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
-        return "x86_32";
+        	return "x86_32";
         #elif defined(__ARM_ARCH_2__)
-        return "ARM2";
+        	return "ARM2";
         #elif defined(__ARM_ARCH_3__) || defined(__ARM_ARCH_3M__)
-        return "ARM3";
+        	return "ARM3";
         #elif defined(__ARM_ARCH_4T__) || defined(__TARGET_ARM_4T)
-        return "ARM4T";
+        	return "ARM4T";
         #elif defined(__ARM_ARCH_5_) || defined(__ARM_ARCH_5E_)
-        return "ARM5"
+        	return "ARM5";
         #elif defined(__ARM_ARCH_6T2_) || defined(__ARM_ARCH_6T2_)
-        return "ARM6T2";
+        	return "ARM6T2";
         #elif defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) || defined(__ARM_ARCH_6K__) || defined(__ARM_ARCH_6Z__) || defined(__ARM_ARCH_6ZK__)
-        return "ARM6";
+        	return "ARM6";
         #elif defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
-        return "ARM7";
+        	return "ARM7";
         #elif defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
-        return "ARM7A";
+        	return "ARM7A";
         #elif defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
-        return "ARM7R";
+        	return "ARM7R";
         #elif defined(__ARM_ARCH_7M__)
-        return "ARM7M";
+        	return "ARM7M";
         #elif defined(__ARM_ARCH_7S__)
-        return "ARM7S";
+        	return "ARM7S";
         #elif defined(__aarch64__) || defined(_M_ARM64)
-        return "ARM64";
+        	return "ARM64";
         #elif defined(mips) || defined(__mips__) || defined(__mips)
-        return "MIPS";
+        	return "MIPS";
         #elif defined(__sh__)
-        return "SUPERH";
+        	return "SUPERH";
         #elif defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) || defined(__POWERPC__) || defined(__ppc__) || defined(__PPC__) || defined(_ARCH_PPC)
-        return "POWERPC";
+        	return "POWERPC";
         #elif defined(__PPC64__) || defined(__ppc64__) || defined(_ARCH_PPC64)
-        return "POWERPC64";
+        	return "POWERPC64";
         #elif defined(__sparc__) || defined(__sparc)
-        return "SPARC";
+        	return "SPARC";
         #elif defined(__m68k__)
-        return "M68K";
+        	return "M68K";
         #else
-        return "UNKNOWN";
+        	return "UNKNOWN";
         #endif
 }
 
@@ -120,15 +126,11 @@ void crash(Exception::Type type, const char *fmt, ...){
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
     show_crash_screen = true;
-    if (is_ruby_initialized) {
-        ruby_stop(-1);
-    }
+    scriptBinding->terminate();
 }
-
 
 // Here we prepare information that we display on crash screen and write in crashdump later
 static std::vector<std::string> prepare_crash_info(){
-	boost::stacktrace::stacktrace trace;
 	std::vector<std::string> c = {};
 	c.emplace_back("If you're sure that the problem is not with");
 	c.emplace_back("your device, nor with your modifications, nor your ham-fisted setup, please");
@@ -158,15 +160,19 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back("");
 	//maybe we should use C++ stacktrace?
 	c.emplace_back("[STACK TRACE]");
-	for (const auto& frame : trace) {
-    		c.push_back(boost::stacktrace::to_string(frame));
-	}
+	#if defined(ps2) || defined(vita)
+	    // TODO: PS2/Vita stacktrace implementation
+	#else
+	    boost::stacktrace::stacktrace trace;
+	    for (const auto& frame : trace) {
+	        c.push_back(boost::stacktrace::to_string(frame));
+	    }
+	#endif
 	c.emplace_back("");
 	c.emplace_back("");
 	c.emplace_back("");
 	return c;
 }
-
 
 void crash_screen(SDL_Window* win){
 	SDL_ShowCursor();
@@ -191,7 +197,6 @@ void crash_screen(SDL_Window* win){
 	}else{
 		SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
 	}
-
 
 	static int w = 0;
 	static unsigned int pager_start = 0;
@@ -246,12 +251,12 @@ void crash_screen(SDL_Window* win){
 
 			count = 40;
 			SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-	    		SDL_RenderClear(ren);
+	    	SDL_RenderClear(ren);
 			SDL_SetRenderScale(ren, 1.0f, 1.0f);
-	    		SDL_RenderTexture(ren, tex, NULL, &dst);
+	    	SDL_RenderTexture(ren, tex, NULL, &dst);
 			SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 			SDL_SetRenderScale(ren, 2.0f, 2.0f);
-	    		SDL_RenderDebugText(ren, 5, 5, "World machine crashed! :(");
+	    	SDL_RenderDebugText(ren, 5, 5, "World machine crashed! :(");
 			SDL_SetRenderScale(ren, 1.5f, 1.5f);
 			SDL_RenderDebugText(ren, 5, 20, shit);
 			SDL_SetRenderScale(ren, 1.0f, 1.0f);
@@ -261,8 +266,8 @@ void crash_screen(SDL_Window* win){
 					SDL_RenderDebugTextFormat(ren, 10, count, "%s| %s", std::format("{:03}", i).c_str(), cd[i].c_str());
 				}
 			}
-	    		SDL_RenderPresent(ren);
-	    		SDL_Delay(96);
+	    	SDL_RenderPresent(ren);
+	    	SDL_Delay(96);
 		}
 		SDL_DestroyTexture(tex);
 		SDL_DestroyRenderer(ren);
@@ -300,16 +305,8 @@ void WarnMsg(const char *fmt, ...) {
     SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
     va_end(args);
     Debug() << "[WARN] " << buf;
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", buf, NULL);
+    #ifndef ps2
+    	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", buf, NULL);
+    #endif
     SDL_free(buf);
-}
-
-// Lets handle std::terminate errors too
-//https://www.boost.org/doc/libs/latest/doc/html/stacktrace/getting_started.html#stacktrace.getting_started.handle_terminates
-void terminate_stacktrace() {
-    try {
-	std::cerr << "World machine has crashed!\n";
-        std::cerr << boost::stacktrace::stacktrace();
-    } catch (...) {}
-    std::abort();
 }

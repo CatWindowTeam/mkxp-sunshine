@@ -104,7 +104,7 @@ void ModLoader(Config conf, SDL_Window* win){
                 preloaded_script_count++;
             }
         }
-        sleep(1);
+        SDL_Delay(1000);
         stop_render = true;
 	if(!conf.Modloader.skip_modloader_screen){
         	SDL_WaitThread(render_thread_pointer, NULL);

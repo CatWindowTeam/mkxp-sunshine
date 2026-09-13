@@ -26,6 +26,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_surface.h>
+#include <SDL3/SDL_iostream.h>
 
 #include <pixman.h>
 
@@ -251,6 +252,34 @@ Bitmap::Bitmap(const char *filename){
 		TEX::bind(p->gl.tex);
 		TEX::uploadImage(p->gl.width, p->gl.height, imgSurf->pixels, GL_RGBA);
 
+		SDL_DestroySurface(imgSurf);
+	}
+	p->addTaintedArea(rect());
+}
+
+Bitmap::Bitmap(SDL_IOStream *src){
+	SDL_Surface *imgSurf = IMG_Load_IO(src, false);
+	p->ensureFormat(imgSurf, SDL_PIXELFORMAT_ABGR8888);
+	if (imgSurf->w > glState.caps.maxTexSize || imgSurf->h > glState.caps.maxTexSize){
+		/* Mega surface */
+		p = new BitmapPrivate(this);
+		p->megaSurface = imgSurf;
+		SDL_SetSurfaceBlendMode(p->megaSurface, SDL_BLENDMODE_NONE);
+	}else{
+		/* Regular surface */
+		TEXFBO tex;
+		try{
+			tex = shState->texPool().request(imgSurf->w, imgSurf->h);
+		}
+		catch (const Exception &e){
+			SDL_DestroySurface(imgSurf);
+			throw e;
+		}
+
+		p = new BitmapPrivate(this);
+		p->gl = tex;
+		TEX::bind(p->gl.tex);
+		TEX::uploadImage(p->gl.width, p->gl.height, imgSurf->pixels, GL_RGBA);
 		SDL_DestroySurface(imgSurf);
 	}
 	p->addTaintedArea(rect());
@@ -1220,11 +1249,11 @@ void Bitmap::ensureNonMega() const{
 	GUARD_MEGA;
 }
 
-void Bitmap::bindTex(ShaderBase &shader){
+void Bitmap::bindTex(ShaderBase &shader) noexcept {
 	p->bindTexture(shader);
 }
 
-void Bitmap::taintArea(const IntRect &rect){
+void Bitmap::taintArea(const IntRect &rect) noexcept {
 	p->addTaintedArea(rect);
 }
 

@@ -143,14 +143,17 @@ void Config::read(int argc, char *argv[]){
 
 	SE.sourceCount = clamp(SE.sourceCount, 1, 64);
 	#if defined(__ANDROID__) && !defined(TERMUX)
-	commonDataPath = prefPath(SDL_GetAndroidInternalStoragePath(), "/SunshineSaves");
-	gameFolder = "";
-	gameFolder.append(SDL_GetAndroidInternalStoragePath()).append("/Sunshine");
+		commonDataPath = prefPath(SDL_GetAndroidInternalStoragePath(), "/SunshineSaves");
+		gameFolder = "";
+		gameFolder.append(SDL_GetAndroidInternalStoragePath()).append("/Sunshine");
+	#elif vita
+		commonDataPath = prefPath("ux0:\data\SunshineSaves");
+		gameFolder = "ux0:\data\Sunshine";
 	#else
-	commonDataPath = prefPath(".", "Sunshine");
-	if(pancakes){
-		commonDataPath = prefPath(".", "Sunshine_Pancakes");
-	}
+		commonDataPath = prefPath(".", "Sunshine");
+		if(pancakes){
+			commonDataPath = prefPath(".", "Sunshine_Pancakes");
+		}
 	#endif
 
 	if(windowTitle == "")

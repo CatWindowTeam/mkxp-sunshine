@@ -54,11 +54,13 @@ extern const int binding_mri_module_rpg1_rb_len;
 static void mriBindingExecute();
 static void mriBindingTerminate();
 static void mriBindingReset();
+static void mriBindingGc();
 
 ScriptBinding scriptBindingImpl = {
 	mriBindingExecute,
 	mriBindingTerminate,
-	mriBindingReset
+	mriBindingReset.
+	mriBindingGc
 };
 
 ScriptBinding *scriptBinding = &scriptBindingImpl;
@@ -537,7 +539,6 @@ static void mriBindingExecute(){
 	RUBY_INIT_STACK;
 	ruby_init();
 	ruby_init_loadpath();
-	is_ruby_initialized = true;
 	rb_enc_set_default_external(rb_enc_from_encoding(rb_utf8_encoding()));
 	Config &conf = shState->rtData().config;
 	if (!conf.rubyLoadpaths.empty()){
@@ -573,4 +574,8 @@ static void mriBindingTerminate(){
 
 static void mriBindingReset(){
 	rb_raise(getRbData()->exc[Reset], " ");
+}
+
+static void mriBindingGc(){
+	rb_gc();	
 }

@@ -1,4 +1,3 @@
 #pragma once
-inline const char* securitystate = "unsandboxed"; 
+inline const char* securitystate = ""; 
 void SecurityManagerInit();
-//void SecurityManagerDeInit();
