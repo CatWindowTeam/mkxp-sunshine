@@ -12,3 +12,6 @@ Improved Engine optimization
 Added OpenBSD support
 Added Haiku support
 removed GTK3 messagebox implementation
+Added Android Support
+Some PSVita patches
+Language detection rewrited to SDL locale API
