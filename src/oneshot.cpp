@@ -30,6 +30,10 @@
 	#include <unistd.h>
 	#include <pwd.h>
 	#include <dlfcn.h>
+#elif mkxp_android
+	#include <SDL3/SDL_system.h>
+#else
+	#error "Operating system not detected or unsupported."
 #endif
 
 const Config conf;
@@ -121,7 +125,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	#elif unix_like
 		//TODO: FIX IT
 		p->os = "linux";
-	#elif android
+	#elif mkxp_android
 		#ifdef TERMUX
 			p->os = "linux";
 		#else
@@ -131,16 +135,86 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 		p->os = "haiku";
 	#endif
 
+	/********************
+	 * USERNAME/DOCS PATH
+	 ********************/
+#if windows
+	// Get language code
+	WCHAR wlang[9];
+	GetLocaleInfoW(LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME, wlang, sizeof(wlang) / sizeof(WCHAR));
+	p->lang = w32_fromWide(wlang) + "_";
+	GetLocaleInfoW(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, wlang, sizeof(wlang) / sizeof(WCHAR));
+	p->lang += w32_fromWide(wlang);
+
+	// Get user's name
+	ULONG size = 0;
+	GetUserNameEx(NameDisplay, 0, &size);
+	if (GetLastError() == ERROR_MORE_DATA){
+		// Get their full (display) name
+		WCHAR *name = new WCHAR[size];
+		GetUserNameEx(NameDisplay, name, &size);
+		p->userName = w32_fromWide(name);
+		delete[] name;
+	}else{
+		// Get their login name
+		DWORD size2 = 0;
+		GetUserName(0, &size2);
+		if (GetLastError() == ERROR_INSUFFICIENT_BUFFER){
+			WCHAR *name = new WCHAR[size2];
+			GetUserName(name, &size2);
+			p->userName = w32_fromWide(name);
+			delete[] name;
+		}
+	}
+	p->journal = "_______.exe";
+#else
+	// Get language code
+	const char *lc_all = SDL_getenv("LC_ALL");
+	const char *lang = SDL_getenv("LANG");
+	const char *code = (lc_all ? lc_all : lang);
+	if (code){
+		// find first dot, copy language code
+		int end = 0;
+		for (; code[end] && code[end] != '.'; ++end){}
+		p->lang = std::string(code, end);
+	}
+	else
+		p->lang = "en";
+
+// Get user's name
+#ifdef apple
+	struct passwd *pwd = getpwuid(geteuid());
+#elif unix_like
+	struct passwd *pwd = getpwuid(getuid());
+#endif
+	#ifdef unix_like
+	if (pwd){
+		if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ','){
+			// Get the user's full name
+			int comma = 0;
+			for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma){}
+			p->userName = std::string(pwd->pw_gecos, comma);
+		}
+		else
+			p->userName = pwd->pw_name;
+	}
+	#elif mkxp_android
+		p->userName = "Player";
+	#endif
+
 	// Get documents path
+#ifdef mkxp_android
+	const char* path = "/sdcard/Sunshine/Documents";
+#else
 	const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
 	if(path == NULL){
 		path = SDL_GetUserFolder(SDL_FOLDER_HOME);
 		if(path == NULL){
 			WarnMsg("Failed to get user dirs, using current directory as a fallback");
-			//use SDL instead this
-			path == ".";
+			path = ".";
 		}
 	}
+#endif
 	p->docsPath = path;
 	#ifdef windows
 		p->gamePath = std::string(path) + "\\My Games";
@@ -213,7 +287,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 					p->userName = pwd->pw_name;
 				}
 			}
-		#elif android
+		#elif mkxp_android
 			p->userName = "Player";
 		#elif haiku
 			p->userName = "HaikuPlayer";

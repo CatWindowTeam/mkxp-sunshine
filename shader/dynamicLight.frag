@@ -17,11 +17,6 @@ varying vec2 v_texCoord;
 const vec2 tileSize = vec2(32, 32);
 const float powerBase = 255.0;
 
-float distance(vec2 a, vec2 b){
-	vec2 c = a - b;
-	return sqrt(c.x * c.x + c.y * c.y);
-}
-
 void main(){
 	vec2 screenPoint = v_texCoord / texSizeInv;
 	//vec2 mapPoint = cameraPosition + screenPoint;

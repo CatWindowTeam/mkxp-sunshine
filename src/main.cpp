@@ -19,6 +19,8 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
+#include <SDL3/SDL_system.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
@@ -62,6 +64,39 @@
 	#include "gamecontrollerdb.txt.xxd"
 #endif
 
+#ifndef VERSION_STRING
+	#define VERSION_STRING "Unknown"
+#endif
+
+#ifdef mkxp_android
+#include <android/log.h>
+#include <unistd.h>
+#include <pthread.h>
+
+static void *androidStdioLogThread(void *arg){
+	int fd = *reinterpret_cast<int*>(arg);
+	char buf[1024];
+	ssize_t n;
+	while ((n = read(fd, buf, sizeof(buf) - 1)) > 0){
+		buf[n] = '\0';
+		__android_log_write(ANDROID_LOG_INFO, "SunshineStdio", buf);
+	}
+	return nullptr;
+}
+
+static void redirectStdioToLogcat(){
+	static int pipeFd[2];
+	pipe(pipeFd);
+	dup2(pipeFd[1], STDOUT_FILENO);
+	dup2(pipeFd[1], STDERR_FILENO);
+	setvbuf(stdout, nullptr, _IONBF, 0);
+	setvbuf(stderr, nullptr, _IONBF, 0);
+	pthread_t thread;
+	pthread_create(&thread, nullptr, androidStdioLogThread, &pipeFd[0]);
+	pthread_detach(thread);
+}
+#endif
+
 static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
 	rtData->rgssErrorMsg = msg;
 	rtData->ethread->requestTerminate();
@@ -77,7 +112,7 @@ int rgssThreadFun(void *userdata){
 	/* Setup GL context */
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	//https://wiki.libsdl.org/SDL3/README-android
-	#ifdef android
+	#ifdef mkxp_android
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
@@ -146,6 +181,9 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 
 int main(int argc, char *argv[]){
 	std::set_terminate(&terminate_stacktrace);
+#ifdef mkxp_android
+	redirectStdioToLogcat();
+#endif
     startTime = boost::chrono::high_resolution_clock::now();
     #ifndef DEBUG
     	SDL_SetHint(SDL_HINT_INVALID_PARAM_CHECKS, "1");
@@ -159,8 +197,12 @@ int main(int argc, char *argv[]){
 		SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT, "1");
 	#elif windows
 		SDL_SetHint(SDL_HINT_WINDOWS_RAW_KEYBOARD, "1");
-	#elif android
+	#elif mkxp_android
 		SDL_SetHint(SDL_HINT_ANDROID_ALLOW_PERSISTENT_FOLDER_ACCESS, "1");
+		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "1");
+		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "1");
+	#elif vita
+		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
 	#endif
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
@@ -189,7 +231,14 @@ int main(int argc, char *argv[]){
 	}
 #endif
 	/* Initialize physfs here so that config can call PHYSFS_getPrefDir */
-	PHYSFS_init(argv[0]);
+#ifdef mkxp_android
+	PHYSFS_AndroidInit androidInit;
+	androidInit.jnienv = SDL_GetAndroidJNIEnv();
+	androidInit.context = SDL_GetAndroidActivity();
+	PHYSFS_init((const char *)&androidInit);
+#else
+	PHYSFS_init(argc > 0 ? argv[0] : "mkxp-sunshine");
+#endif
 
 	/* now we load the config */
 	Config conf;

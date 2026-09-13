@@ -36,7 +36,7 @@
 #include <boost/stacktrace.hpp>
 #include <physfs.h>
 #include "sunshine.h"
-#ifdef android
+#ifdef mkxp_android
 	#include <android/api-level.h>
 #endif
 #include "crash.png.xxd"
@@ -150,8 +150,15 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back(std::string{"Detected Platform: "} + SDL_GetPlatform());
 	c.emplace_back(std::string{"Last PhysFS error: "} + PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 	c.emplace_back(std::string{"Last SDL Error on the current thread: "} + SDL_GetError());
-	#ifdef android
+	#ifdef mkxp_android
 		c.emplace_back(std::string{"Android API: "} + std::to_string(android_get_device_api_level()));
+		if(!is_privacy_crashdump_enabled){
+			c.emplace_back(std::string{"Is ChromeBook? "} + (SDL_IsChromebook() ? "true" : "false"));
+			c.emplace_back(std::string{"Is Phone? "} + (SDL_IsPhone() ? "true" : "false"));
+			c.emplace_back(std::string{"Is Tablet? "} + (SDL_IsTablet() ? "true" : "false"));
+			c.emplace_back(std::string{"Is Samsung DeX? "} + (SDL_IsDeXMode() ? "true" : "false"));
+			c.emplace_back(std::string{"Is TV? "} + (SDL_IsTV() ? "true" : "false"));
+		}
 	#endif
 	c.emplace_back("");
 	c.emplace_back("");
@@ -274,6 +281,7 @@ void ErrorMsg(const char *fmt, ...) {
     va_start(args, fmt);
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
+    Debug() << "[ERRORMSG]" << crash_message;
     show_crash_screen = true;
 }
 
@@ -282,6 +290,7 @@ void ErrorMsg(Exception::Type t, const char *fmt, ...) {
     va_start(args, fmt);
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
+    Debug() << "[ERRORMSG]" << crash_message;
     show_crash_screen = true;
 }
 

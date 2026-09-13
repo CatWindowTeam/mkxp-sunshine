@@ -35,7 +35,7 @@ const float chromatic_power = 0.0005;
 
 const vec2 scale = vec2(0.85, 0.8);
 
-float distance(vec2 v) {
+float distanceFromOrigin(vec2 v) {
 	return sqrt(v.x * v.x + v.y * v.y);
 }
 
@@ -51,7 +51,7 @@ void main(){
 	uv -= 0.5;
 	uv /= scale;
 
-	float uv_dist = distance(uv);
+	float uv_dist = distanceFromOrigin(uv);
 	uv = mix(uv, vec2(0), uv_dist * -disort) / (1.0 + disort / 2.0);
 
 	float lines_uv = (uv.y / lines_scale) - uTime * lines_speed;

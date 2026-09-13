@@ -23,6 +23,59 @@
 #include "disposable-binding.h"
 #include "viewportelement-binding.h"
 #include "binding-util.h"
+#include "define.h"
+
+#ifdef mkxp_android
+#include "sharedstate.h"
+#include "input.h"
+#include "eventthread.h"
+
+static void androidHandleSelectableClick(VALUE self, Window *w){
+	VALUE itemMax = rb_iv_get(self, "@item_max");
+	VALUE columnMax = rb_iv_get(self, "@column_max");
+	VALUE active = rb_iv_get(self, "@active");
+
+	if (!FIXNUM_P(itemMax) || !FIXNUM_P(columnMax) || !RTEST(active))
+		return;
+
+	if (!EventThread::leftClickEdge())
+		return;
+
+	int itemMaxI = FIX2INT(itemMax);
+	int columnMaxI = FIX2INT(columnMax);
+	if (itemMaxI <= 0 || columnMaxI <= 0)
+		return;
+
+	int wx = w->getX(), wy = w->getY();
+	int ww = w->getWidth(), wh = w->getHeight();
+	int oy = w->getOY();
+	int mx = shState->input().mouseX();
+	int my = shState->input().mouseY();
+
+	if (mx < wx || mx >= wx + ww || my < wy || my >= wy + wh)
+		return;
+
+	int cursorWidth = ww / columnMaxI - 32;
+	if (cursorWidth <= 0)
+		return;
+
+	int lx = mx - wx - 16;
+	int ly = my - wy - 16 + oy;
+	if (lx < 0 || ly < 0)
+		return;
+
+	int col = lx / (cursorWidth + 32);
+	int row = ly / 32;
+	int clickIndex = row * columnMaxI + col;
+
+	if (col < 0 || col >= columnMaxI || clickIndex < 0 || clickIndex >= itemMaxI)
+		return;
+
+	VALUE curIndex = rb_iv_get(self, "@index");
+	if (!FIXNUM_P(curIndex) || FIX2INT(curIndex) != clickIndex)
+		rb_funcall(self, rb_intern("index="), 1, INT2FIX(clickIndex));
+}
+#endif
 
 DEF_TYPE(Window);
 
@@ -43,6 +96,10 @@ RB_METHOD(windowUpdate){
 	Window *w = getPrivateData<Window>(self);
 
 	w->update();
+
+#ifdef mkxp_android
+	androidHandleSelectableClick(self, w);
+#endif
 
 	return Qnil;
 }

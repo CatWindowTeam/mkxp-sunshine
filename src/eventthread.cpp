@@ -25,6 +25,8 @@
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_gamepad.h>
+#include <SDL3/SDL_mouse.h>
+#include <SDL3/SDL_log.h>
 #include <SDL3/SDL_messagebox.h>
 #include <SDL3/SDL_properties.h>
 #include <SDL3/SDL_timer.h>
@@ -50,6 +52,8 @@ EventThread::ControllerState EventThread::gcState;
 EventThread::JoyState EventThread::joyState;
 EventThread::MouseState EventThread::mouseState;
 EventThread::TouchState EventThread::touchState;
+bool EventThread::mouseEnabled = true;
+bool EventThread::gamepadEnabled = true;
 
 /* User event codes */
 enum{
@@ -78,6 +82,16 @@ bool EventThread::allocUserEvents(){
 }
 
 EventThread::EventThread(): fullscreen(false), showCursor(true){}
+
+#ifdef mkxp_android
+bool EventThread::leftClickEdge(){
+	static bool wasDown = false;
+	bool down = mouseState.buttons[SDL_BUTTON_LEFT];
+	bool edge = down && !wasDown;
+	wasDown = down;
+	return edge;
+}
+#endif
 
 void EventThread::process(RGSSThreadData &rtData){
 	SDL_Event event;
@@ -151,14 +165,28 @@ void EventThread::process(RGSSThreadData &rtData){
 			case SDL_EVENT_MOUSE_BUTTON_DOWN :
 			case SDL_EVENT_MOUSE_BUTTON_UP :
 			case SDL_EVENT_MOUSE_MOTION :
+				if (!EventThread::mouseEnabled)
+					continue;
+#ifndef mkxp_android
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					continue;
+#endif
 				break;
 
 			case SDL_EVENT_FINGER_DOWN :
 			case SDL_EVENT_FINGER_UP :
 			case SDL_EVENT_FINGER_MOTION :
 				if (event.tfinger.fingerID >= MAX_FINGERS)
+					continue;
+				break;
+
+			case SDL_EVENT_GAMEPAD_BUTTON_DOWN :
+			case SDL_EVENT_GAMEPAD_BUTTON_UP :
+			case SDL_EVENT_GAMEPAD_AXIS_MOTION :
+			case SDL_EVENT_JOYSTICK_BUTTON_DOWN :
+			case SDL_EVENT_JOYSTICK_BUTTON_UP :
+			case SDL_EVENT_JOYSTICK_AXIS_MOTION :
+				if (!EventThread::gamepadEnabled)
 					continue;
 				break;
 		}
@@ -355,7 +383,6 @@ void EventThread::process(RGSSThreadData &rtData){
 		case SDL_EVENT_FINGER_DOWN :
 			i = event.tfinger.fingerID;
 			touchState.fingers[i].down = true;
-			/* falls through */
 
 		case SDL_EVENT_FINGER_MOTION :
 			i = event.tfinger.fingerID;

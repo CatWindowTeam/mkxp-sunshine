@@ -26,6 +26,7 @@
 #include "etc-internal.h"
 #include "sdl-util.h"
 #include "keybindings.h"
+#include "define.h"
 
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_joystick.h>
@@ -82,7 +83,17 @@ public:
 	static MouseState mouseState;
 	static TouchState touchState;
 
+	static bool mouseEnabled;
+	static bool gamepadEnabled;
+
 	static bool allocUserEvents();
+
+#ifdef mkxp_android
+	/* Edge-detects a left click/tap directly off the raw mouseState,
+	 * independent of Input::update()'s once-per-frame trigger buffer
+	 * (which may not have refreshed yet at the point callers need this). */
+	static bool leftClickEdge();
+#endif
 
 	EventThread();
 
