@@ -364,7 +364,10 @@ check_option(OPTIONS_RELEASE
 	-fcf-protection=none
 	-fno-unwind-tables
 	-fno-asynchronous-unwind-tables
-	-fvtable-verify=none)
+	-fvtable-verify=none
+	-fno-ident
+	-fsplit-stack
+	-fstrub=disable)
 
 # Loading release options specific for cpu arch from toolchain file
 if("${ARCH_RELEASE}" STREQUAL "")

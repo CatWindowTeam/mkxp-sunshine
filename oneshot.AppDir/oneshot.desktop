@@ -1,10 +1,10 @@
 [Desktop Entry]
 Type=Application
 Name=OneShot: Sunshine
-Exec=oneshot %F
+Exec=/oneshot %F
 Comment=Fan-made remake of Oneshot(2016)
 Comment[ru]=Фанатский ремейк Oneshot(2016)
-Icon=oneshot
+Icon=/oneshot_icon
 Categories=Game;
 Terminal=false
 X-AppImage-Arch=x86_64

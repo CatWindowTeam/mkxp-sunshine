@@ -1,0 +1,9 @@
+#!/bin/sh
+APPDIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+if [ -n "${APPIMAGE:-}" ]; then
+    BASEDIR="$(dirname "$(readlink -f "$APPIMAGE")")"
+else
+    BASEDIR="$PWD"
+fi
+cd "$BASEDIR" || exit 1
+exec "$APPDIR/oneshot" "$@"
