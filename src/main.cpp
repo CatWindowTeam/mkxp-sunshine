@@ -289,6 +289,8 @@ int main(int argc, char *argv[]){
 	 * dealing with icons; don't interfere with them */
 #ifdef unix_like
 	setupWindowIcon(conf, win);
+#elif vita
+	//
 #else
 	(void) setupWindowIcon;
 #endif
@@ -321,7 +323,12 @@ int main(int argc, char *argv[]){
 	int winW, winH;
 	SDL_GetWindowSize(win, &winW, &winH);
 	rtData.windowSizeMsg.post(Vec2i(winW, winH));
-	
+
+	#ifdef vita
+		if (!PHYSFS_mount("app0:sunshine.zip", nullptr, 0)) {
+	    	WarnMsg("Failed to mount assets archive: %s", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+		}
+	#endif
 	/* start modloader */
 	ModLoader(conf, win);
 	/* Load and post key bindings */

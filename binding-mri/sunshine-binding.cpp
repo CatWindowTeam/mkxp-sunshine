@@ -5,6 +5,7 @@
 #include <SDL3/SDL_gamepad.h>
 #include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_hints.h>
+#include <SDL3/SDL_video.h>
 
 #include "config.h"
 #include "sunshine.h"
@@ -15,7 +16,6 @@
 #ifdef android
 	#include <SDL3/SDL_system.h>
 	#include <jni.h>
-
 	void androidSetTouchControlsVisible(bool visible){
 		JNIEnv *env = (JNIEnv*)SDL_GetAndroidJNIEnv();
 		jobject activity = (jobject)SDL_GetAndroidActivity();
@@ -95,12 +95,9 @@ void SunshineBindingInit(){
 		rb_const_set(module, rb_intern("DEVBUILD"), Qfalse);
 	#endif
 	rb_define_singleton_method(module, "crash_privacy=", RUBY_METHOD_FUNC(sunshineSetCrashPrivacy), 1);
-	rb_define_singleton_method(module, "crashprivacy=", RUBY_METHOD_FUNC(sunshineSetCrashPrivacy), 1);
 	rb_define_singleton_method(module, "SetCrashScreenData", RUBY_METHOD_FUNC(SetCrashScreenData), 1);
 	rb_define_singleton_method(module, "wallpaper_mode=", RUBY_METHOD_FUNC(sunshineSetWallpaperMode), 1);
-	rb_define_singleton_method(module, "wallpapermode=", RUBY_METHOD_FUNC(sunshineSetWallpaperMode), 1);
 	rb_define_singleton_method(module, "set_sdl_hint", RUBY_METHOD_FUNC(sunshineSetHint), 2);
-	rb_define_singleton_method(module, "setSDLHint", RUBY_METHOD_FUNC(sunshineSetHint), 2);
 	if (!rb_respond_to(rb_mGC, rb_intern("start")))
 	    rb_define_singleton_method(rb_mGC, "start", RUBY_METHOD_FUNC(rb_gc_start), 0);
 
@@ -112,4 +109,15 @@ void SunshineBindingInit(){
 
 	if (!rb_respond_to(rb_cInteger, rb_intern("times")))
 	    rb_define_method(rb_cInteger, "times", RUBY_METHOD_FUNC(int_times), 0);
+
+	//detect unsupported enviroment like wayland or PSVita	
+	#ifdef vita
+		rb_const_set(module, rb_intern("UNSUPPORTED_ENVIROMENT"), Qtrue);
+	#else
+		if(SDL_GetCurrentVideoDriver() == "wayland"){
+			rb_const_set(module, rb_intern("UNSUPPORTED_ENVIROMENT"), Qtrue);
+		}else{
+			rb_const_set(module, rb_intern("UNSUPPORTED_ENVIROMENT"), Qfalse);
+		}
+	#endif
 }

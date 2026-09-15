@@ -81,6 +81,7 @@ set(VITASDK_PATH "/usr/local/vitasdk" CACHE STRING "VitaSDK path")
 option(DEVBUILD "Developoment build" OFF)
 option(TERMUX "Build for TERMUX" OFF)
 option(VITA "Build for PSVita" OFF)
+set(SUNSHINE_ASSETS_PATH "../SunshineAssets" CACHE STRING "Used only on Vita")
 
 if(NOT VITA)
     check_ipo_supported(
@@ -340,16 +341,8 @@ if(SANITIZERS)
 endif()
 
 check_option(OPTIONS_DEBUG
-	-g3
-	-fno-omit-frame-pointer
-	-Og
-	-fcheck-new
-	-fstrict-flex-arrays=3
-	-fno-optimize-sibling-calls
-	-Wall
-	-Wextra
-	-fdiagnostics-show-template-tree
-	-fopt-info-all)
+	-g
+	-Og)
 
 # Load platfrom specific debug options for compiler from toolchain file
 if("${ARCH_DEBUG}" STREQUAL "")
@@ -361,13 +354,23 @@ endif()
 check_option(OPTIONS_RELEASE 
 	-O3
 	-fno-stack-clash-protection
-	-fcf-protection=none
 	-fno-unwind-tables
 	-fno-asynchronous-unwind-tables
 	-fvtable-verify=none
 	-fno-ident
-	-fsplit-stack
-	-fstrub=disable)
+	-fstrub=disable
+	-fno-harden-compares
+	-fno-harden-conditional-branches
+	-fno-harden-control-flow-redundancy
+	-fno-hardcfr-check-exceptions
+	-fno-hardcfr-check-returning-calls
+	-fhardcfr-check-noreturn-calls=never
+	-fhardcfr-skip-leaf
+	-ffunction-sections
+	-fdata-sections
+	-ftrivial-auto-var-init=uninitialized
+	-fzero-call-used-regs=skip
+	-fomit-frame-pointer)
 
 # Loading release options specific for cpu arch from toolchain file
 if("${ARCH_RELEASE}" STREQUAL "")
@@ -377,19 +380,17 @@ else()
 endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:DEBUG>)
-if(NOT VITA)
-	check_linker_option(OPTIONS_LINKER_RELEASE
-		-Wl,-O3
-		-Wl,--gc-sections
-		-Wl,--no-copy-dt-needed-entries
-		-Wl,--icf=safe
-		-Wl,--strip-discarded
-		-Wl,--relax
-		-Wl,-z,pack-relative-relocs
-		-Wl,-z,start-stop-gc
-		-Wl,-z,noexecstack)
-	add_link_options("$<$<CONFIG:Release>:${OPTIONS_LINKER_RELEASE}>")
-endif()
+check_linker_option(OPTIONS_LINKER_RELEASE
+	-Wl,-O3
+	-Wl,--gc-sections
+	-Wl,--no-copy-dt-needed-entries
+	-Wl,--icf=safe
+	-Wl,--strip-discarded
+	-Wl,--relax
+	-Wl,-z,pack-relative-relocs
+	-Wl,-z,noexecstack
+	-Wl,--build-id=none)
+add_link_options("$<$<CONFIG:Release>:${OPTIONS_LINKER_RELEASE}>")
 
 target_compile_definitions(${APP_TARGET} PRIVATE $<$<CONFIG:Debug>:DEBUG>)
 target_compile_options(${APP_TARGET} PRIVATE
@@ -452,9 +453,9 @@ find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
-find_package(Ruby 3.4 
-	COMPONENTS Interpreter Development
-	REQUIRED)
+#find_package(Ruby 3.4 
+#	COMPONENTS Interpreter Development
+#	REQUIRED)
 target_compile_definitions(${APP_TARGET} PRIVATE ${DEFINES})
 target_include_directories(${APP_TARGET} PRIVATE
 	src
@@ -493,13 +494,25 @@ if(VITA)
 endif()
 
 if(VITA)
-	vita_create_self(${PROJECT_NAME}.self ${PROJECT_NAME})
+	add_custom_command(
+		OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/build/sunshine.zip
+	    COMMENT "Creating sunshine.zip ..."
+	    COMMAND mkdir ${CMAKE_CURRENT_SOURCE_DIR}/build/sunshune_zip
+	    COMMAND mkdir ${CMAKE_CURRENT_SOURCE_DIR}/build/sunshune_zip/Data
+	    COMMAND ${CMAKE_COMMAND} -E copy_directory "${SUNSHINE_ASSETS_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/build/sunshune_zip/"
+	    COMMAND ruby ${CMAKE_CURRENT_SOURCE_DIR}/rpgscript.rb ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ ${CMAKE_CURRENT_SOURCE_DIR}/build/sunshune_zip/
+	    COMMAND zip -X -9 -r ${CMAKE_CURRENT_SOURCE_DIR}/build/sunshine.zip ${CMAKE_CURRENT_SOURCE_DIR}/build/sunshune_zip/ -x ".git/*" "*/.git/*"
+		DEPENDS "${SUNSHINE_ASSETS_PATH}"
+	    VERBATIM
+	)
+	vita_create_self(${PROJECT_NAME}.self ${PROJECT_NAME} STRIPPED NOASLR)
 	vita_create_vpk(${PROJECT_NAME}.vpk ${VITA_TITLEID} ${PROJECT_NAME}.self
 	  VERSION ${VITA_VERSION}
 	  NAME ${VITA_APP_NAME}
-	  FILE sce_sys/icon0.png sce_sys/icon0.png
-	  FILE sce_sys/livearea/contents/bg.png sce_sys/livearea/contents/bg.png
-	  FILE sce_sys/livearea/contents/startup.png sce_sys/livearea/contents/startup.png
-	  FILE sce_sys/livearea/contents/template.xml sce_sys/livearea/contents/template.xml
+	  FILE ${CMAKE_CURRENT_SOURCE_DIR}/sce_sys/icon0.png sce_sys/icon0.png
+	  FILE ${CMAKE_CURRENT_SOURCE_DIR}/sce_sys/livearea/contents/bg.png sce_sys/livearea/contents/bg.png
+	  FILE ${CMAKE_CURRENT_SOURCE_DIR}/sce_sys/livearea/contents/startup.png sce_sys/livearea/contents/startup.png
+	  FILE ${CMAKE_CURRENT_SOURCE_DIR}/sce_sys/livearea/contents/template.xml sce_sys/livearea/contents/template.xml
+	  FILE ${CMAKE_CURRENT_SOURCE_DIR}/build/sunshine.zip sunshine.zip
 	)
 endif()

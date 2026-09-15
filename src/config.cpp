@@ -160,9 +160,15 @@ void Config::read(int argc, char *argv[]){
 		game.title = "OneShot: Sunshine";
 	game.scripts = "Data/xScripts.rxdata";
 
-	resolutionOverridden = defScreenW > 0 || defScreenH > 0;
-	defScreenW = defScreenW <= 0 ? 640 : defScreenW;
-	defScreenH = defScreenH <= 0 ? 480 : defScreenH;
+	#ifdef vita
+		resolutionOverridden = true;
+		defScreenW = 960;
+		defScreenH = 544;
+	#else
+		resolutionOverridden = defScreenW > 0 || defScreenH > 0;
+		defScreenW = defScreenW <= 0 ? 640 : defScreenW;
+		defScreenH = defScreenH <= 0 ? 480 : defScreenH;
+	#endif
 
 #ifdef STEAM
 	/* Override fullscreen config if Big Picture */

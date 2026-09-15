@@ -1,5 +1,4 @@
 Added Logger Ruby class
-Reworked VALUE support in debugwriter.h
 Apple Cmake fix
 Ruby Error Handling Fix
 Added Sunshine.SetCrashScreenData
