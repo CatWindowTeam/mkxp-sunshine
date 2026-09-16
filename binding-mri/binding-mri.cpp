@@ -87,7 +87,7 @@ void ModLoaderBindingInit();
 void journalBindingInit();
 void wallpaperBindingInit();
 #ifdef unix_like
-void wallpaperBindingTerminate();
+	void wallpaperBindingTerminate();
 #endif
 void nikoBindingInit();
 void oneshotBindingInit();
@@ -252,7 +252,6 @@ static VALUE rgssMainRescue(VALUE arg, VALUE exc){
 static void processReset(){
 	shState->graphics().reset();
 	shState->audio().reset();
-
 	shState->rtData().rqReset.clear();
 	shState->graphics().repaintWait(shState->rtData().rqResetFinish, false);
 }
@@ -287,7 +286,6 @@ RB_METHOD(mriRgssStop){
 	RB_UNUSED_PARAM;
 	while (true)
 		shState->graphics().update();
-
 	return Qnil;
 }
 
@@ -360,13 +358,11 @@ struct BacktraceData{
 	BoostHash<std::string, std::string> scriptNames;
 };
 
-#define SCRIPT_SECTION_FMT "Section%03ld"
-
 static void runRMXPScripts(BacktraceData &btData){
 	const Config &conf = shState->rtData().config;
 	const std::string &scriptPack = conf.game.scripts;
 	if (!shState->fileSystem().exists(scriptPack.c_str())){
-		ErrorMsg("Unable to open '%s'", scriptPack.c_str());
+		ErrorMsg("Unable to open %s", scriptPack.c_str());
 		return;
 	}
 
@@ -431,7 +427,7 @@ static void runRMXPScripts(BacktraceData &btData){
 		for (std::set<std::string>::iterator i = preloadScripts.begin();
 			i != preloadScripts.end(); ++i){
 			    runCustomScript(*i);
-			}
+		}
 	}
 
 
@@ -525,7 +521,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	file.resize(SDL_strlen(file.c_str()));
 	file = btData.scriptNames.value(file, file);
 
-	SDL_snprintf(crash_message, sizeof(crash_message), "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
+	SDL_snprintf(crash_message, sizeof(crash_message), "Script '%s' line %s: %s occured.%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
     show_crash_screen = true;
 }
 
@@ -546,7 +542,6 @@ static void mriBindingExecute(){
 		VALUE lpaths = rb_gv_get("$:");
 		for (size_t i = 0; i < conf.rubyLoadpaths.size(); ++i){
 			std::string &path = conf.rubyLoadpaths[i];
-
 			VALUE pathv = rb_str_new(path.c_str(), path.size());
 			rb_ary_push(lpaths, pathv);
 		}
@@ -567,15 +562,25 @@ static void mriBindingExecute(){
 
 static void mriBindingTerminate(){
 	rb_raise(rb_eSystemExit, " ");
-#ifdef unix_like
-	wallpaperBindingTerminate();
-#endif
+	#ifdef unix_like
+		wallpaperBindingTerminate();
+	#endif
 }
 
 static void mriBindingReset(){
 	rb_raise(getRbData()->exc[Reset], " ");
 }
 
+static VALUE call_compact(VALUE unused){
+    return rb_funcall(rb_mGC, rb_intern("compact"), 0);
+}
+
 static void mriBindingGc(){
-	rb_gc();	
+	rb_gc();
+	int state = 0;
+	rb_protect(call_compact, Qnil, &state);
+	if(state){
+		Debug() << "Heap compaction failed!";
+		rb_set_errinfo(Qnil);
+	}
 }

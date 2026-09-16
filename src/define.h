@@ -8,7 +8,7 @@
 	#define unix_like 1
 #endif
 
-#if defined(SDL_WINAPI_FAMILY_PHONE) || defined(SDL_PLATFORM_WINDOWS) || defined(SDL_PLATFORM_WIN32) || defined(SDL_PLATFORM_WINGDK)
+#if defined(SDL_PLATFORM_WINDOWS) || defined(SDL_PLATFORM_WIN32)
 	#define windows 1
 #endif
 
@@ -16,7 +16,7 @@
 	#define android 1
 #endif
 
-#if defined(SDL_PLATFORM_APPLE) || defined(SDL_PLATFORM_TVOS) || defined(SDL_PLATFORM_VISIONOS)
+#if defined(SDL_PLATFORM_APPLE)
 	#define apple 1
 #endif
 
@@ -30,8 +30,8 @@
 
 #if SDL_PLATFORM_PS2
 	#define ps2 1
-#endif 
+#endif
 
 #if SDL_PLATFORM_VITA
 	#define vita 1
-#endif 
+#endif

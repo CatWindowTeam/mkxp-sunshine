@@ -122,9 +122,9 @@ int rgssThreadFun(void *userdata){
 	gl.Clear(GL_COLOR_BUFFER_BIT);
 	SDL_GL_SwapWindow(win);
 
-#ifndef NDEBUG
-	GLDebugLogger dLogger;
-#endif
+	#ifndef NDEBUG
+		GLDebugLogger dLogger;
+	#endif
 
 	try{
 		SharedState::initInstance(threadData);
@@ -170,7 +170,7 @@ int main(int argc, char *argv[]){
 	#elif windows
 		SDL_SetHint("SDL_HINT_WINDOWS_RAW_KEYBOARD", "1");
 	#elif vita
-		SDL_SetHint(SDL_HINT_VITA_PVR_OPENGL, "1");
+		SDL_SetHint(SDL_HINT_VITA_PVR_OPENGL, "0");
 		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
 	#elif ps2
 		SDL_SetHint("SDL_HINT_PS2_GS_MODE", "NTSC");
@@ -187,35 +187,27 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 
-#ifdef STEAM
-	if (!STEAMSHIM_init()){
-		WarnMsg("Could not initialize Steamworks API");
-		return 1;
-	}
-#endif
+	#ifdef STEAM
+		if (!STEAMSHIM_init()){
+			WarnMsg("Could not initialize Steamworks API");
+			return 1;
+		}
+	#endif
 
 	if (!EventThread::allocUserEvents()){
 		WarnMsg("Error allocating SDL user events");
 		return 1;
 	}
 
-#ifndef WORKDIR_CURRENT
-	/* set working directory */
-	const char *dataDir = SDL_GetBasePath();
-	if (dataDir) {
-		int result = chdir(dataDir);
-		(void)result;
-	}
-#endif
 	/* Initialize physfs here so that config can call PHYSFS_getPrefDir */
-#ifdef android
-	PHYSFS_AndroidInit androidInit;
-	androidInit.jnienv = SDL_GetAndroidJNIEnv();
-	androidInit.context = SDL_GetAndroidActivity();
-	PHYSFS_init((const char *)&androidInit);
-#else
-	PHYSFS_init(argc > 0 ? argv[0] : "mkxp-sunshine");
-#endif
+	#ifdef android
+		PHYSFS_AndroidInit androidInit;
+		androidInit.jnienv = SDL_GetAndroidJNIEnv();
+		androidInit.context = SDL_GetAndroidActivity();
+		PHYSFS_init((const char *)&androidInit);
+	#else
+		PHYSFS_init(argc > 0 ? argv[0] : "oneshot");
+	#endif
 
 	/* now we load the config */
 	Config conf;
@@ -290,13 +282,13 @@ int main(int argc, char *argv[]){
 	}
 	/* OSX and Windows have their own native ways of
 	 * dealing with icons; don't interfere with them */
-#ifdef unix_like
-	setupWindowIcon(conf, win);
-#elif vita
-	//
-#else
-	(void) setupWindowIcon;
-#endif
+	#ifdef unix_like
+		setupWindowIcon(conf, win);
+	#elif vita
+		//this code useless under vita!
+	#else
+		(void) setupWindowIcon;
+	#endif
 
 	SDL_AudioSpec spec{};
 	spec.format = SDL_AUDIO_F32;
@@ -314,7 +306,6 @@ int main(int argc, char *argv[]){
 	}
 
 	EventThread eventThread;
-
 	float refreshRate = 60.0f;
 	SDL_DisplayID displayID = SDL_GetDisplayForWindow(win);
 	const SDL_DisplayMode *mode = SDL_GetCurrentDisplayMode(displayID);
@@ -322,13 +313,12 @@ int main(int argc, char *argv[]){
 	    refreshRate = mode->refresh_rate;
 	}
 
-	RGSSThreadData rtData(&eventThread, win, mixer, refreshRate, conf);
-	
-#ifndef STEAM
-	/* Add controller bindings from embedded controller DB */
-	SDL_IOStream *controllerDB = SDL_IOFromConstMem(assets_gamecontrollerdb_txt, assets_gamecontrollerdb_txt_len);
-	SDL_AddGamepadMappingsFromIO(controllerDB, 1);
-#endif
+	RGSSThreadData rtData(&eventThread, win, mixer, refreshRate, conf);	
+	#ifndef STEAM
+		/* Add controller bindings from embedded controller DB */
+		SDL_IOStream *controllerDB = SDL_IOFromConstMem(assets_gamecontrollerdb_txt, assets_gamecontrollerdb_txt_len);
+		SDL_AddGamepadMappingsFromIO(controllerDB, 1);
+	#endif
 
 	int winW, winH;
 	SDL_GetWindowSize(win, &winW, &winH);
@@ -358,7 +348,6 @@ int main(int argc, char *argv[]){
 			Debug() << "[main] RGSS thread ack'd request after " << i*10 << "ms";
 			break;
 		}
-
 		/* Give RGSS thread some time to respond */
 		SDL_Delay(10);
 	}

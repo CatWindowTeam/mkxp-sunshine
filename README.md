@@ -3,4 +3,4 @@ It is a specialized fork of [mkxp-oneshot](https://github.com/elizagamedev/mkxp-
 
 # Mirrors
 [Github](https://github.com/CatWindowTeam/mkxp-sunshine)
-[git.snxrzx.xyz](https://git.snxrzx.xyz/snxrzx/mkxp-sunshine)
+[git.artemiy-dev.ru](https://git.artemiy.ru/snxrzx/mkxp-sunshine)
