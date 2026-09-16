@@ -25,15 +25,17 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
 #include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_video.h>
 #include <physfs.h>
 #include <stdio.h>
 
 #ifdef _MSC_VER
-#include <direct.h>
-#define _chdir chdir
+	#include <direct.h>
+	#define _chdir chdir
 #else
-#include <unistd.h>
+	#include <unistd.h>
 #endif
+
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -95,9 +97,9 @@ int rgssThreadFun(void *userdata){
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
 	#endif
 
-#ifndef NDEBUG
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-#endif
+	#ifndef NDEBUG
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+	#endif
 
 	glCtx = SDL_GL_CreateContext(win);
 	if (!glCtx){
@@ -169,6 +171,7 @@ int main(int argc, char *argv[]){
 		SDL_SetHint("SDL_HINT_WINDOWS_RAW_KEYBOARD", "1");
 	#elif vita
 		SDL_SetHint(SDL_HINT_VITA_PVR_OPENGL, "1");
+		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
 	#elif ps2
 		SDL_SetHint("SDL_HINT_PS2_GS_MODE", "NTSC");
 	#elif android
@@ -226,7 +229,7 @@ int main(int argc, char *argv[]){
 	#endif
 
 	if (!conf.gameFolder.empty()){
-		if (chdir(conf.gameFolder.c_str()) != 0){
+		if(chdir(conf.gameFolder.c_str()) != 0){
 			WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
 			return 0;
 		}
@@ -234,12 +237,12 @@ int main(int argc, char *argv[]){
 
 	std::string path;
 	if (!conf.gameFolder.empty()) {
-	    if (conf.gameFolder == ".") {
+	    if(conf.gameFolder == ".") {
 	        path = std::filesystem::current_path().string();
-	    } else {
+	    }else{
 	        path = std::filesystem::absolute(conf.gameFolder).string();
 	    }
-	} else {
+	}else{
 	    path = std::filesystem::current_path().string();
 	}
 
@@ -310,10 +313,17 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 
-	SDL_DisplayMode mode;
 	EventThread eventThread;
-	RGSSThreadData rtData(&eventThread, win, mixer, mode.refresh_rate, conf);
 
+	float refreshRate = 60.0f;
+	SDL_DisplayID displayID = SDL_GetDisplayForWindow(win);
+	const SDL_DisplayMode *mode = SDL_GetCurrentDisplayMode(displayID);
+	if(mode != nullptr && mode->refresh_rate > 0.0f) {
+	    refreshRate = mode->refresh_rate;
+	}
+
+	RGSSThreadData rtData(&eventThread, win, mixer, refreshRate, conf);
+	
 #ifndef STEAM
 	/* Add controller bindings from embedded controller DB */
 	SDL_IOStream *controllerDB = SDL_IOFromConstMem(assets_gamecontrollerdb_txt, assets_gamecontrollerdb_txt_len);
