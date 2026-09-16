@@ -354,8 +354,6 @@ endif()
 check_option(OPTIONS_RELEASE 
 	-O3
 	-fno-stack-clash-protection
-	-fno-unwind-tables
-	-fno-asynchronous-unwind-tables
 	-fvtable-verify=none
 	-fno-ident
 	-fstrub=disable
