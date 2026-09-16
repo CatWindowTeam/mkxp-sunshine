@@ -38,7 +38,7 @@ cp build/oneshot build/bandle
 
 cp -r ../SunshineAssets/* build/bandle
 cp oneshot.conf build/bandle
-zip -9 -r build/OneshotSunshine_Linux.zip build/bandle/*
+zip -X -9 -x ".git/*" "*/.git/*" -r build/OneshotSunshine_Linux.zip build/bandle/*
 
 # Cleanup.
 rm -rf build

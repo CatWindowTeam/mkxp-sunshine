@@ -40,7 +40,7 @@ cp build/oneshot build/bandle
 cp -r ../SunshineAssets/* build/bandle
 cp oneshot.conf build/bandle
 cd build/bandle/
-zip -9 -r ../OneshotSunshine_Windows.zip .
+zip -X -9 -x ".git/*" "*/.git/*" -r ../OneshotSunshine_Windows.zip .
 cd ../..
 
 # Cleanup.
