@@ -205,6 +205,7 @@ set(EMBEDDED_INPUT
 	assets/icon.png
 	assets/gamecontrollerdb.txt
 	assets/crash.png
+	assets/noise.png
 	assets/the_modded_machine.png
 	binding-mri/module_rpg1.rb
 )
@@ -314,6 +315,11 @@ else()
 		${EMBEDDED_SOURCE})
 endif()
 
+set_target_properties(${APP_TARGET} PROPERTIES
+    BUILD_RPATH "$ORIGIN"
+    INSTALL_RPATH "$ORIGIN"
+)
+
 if(STEAM)
         list(APPEND MAIN_HEADERS steamshim/steamshim_child.h)
         list(APPEND MAIN_SOURCE steamshim/steamshim_child.c)
@@ -402,15 +408,16 @@ target_compile_options(${APP_TARGET} PRIVATE
 )
 
 
-
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-	if(ipo_supported)
-	    set_property(
-	        TARGET ${APP_TARGET}
-	        PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
-	    )
-	else()
-	    message(WARNING "IPO/LTO is not supported: ${ipo_error}")
+if(CMAKE_SYSTEM_NAME NOT STREQUAL "Windows")
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		if(ipo_supported)
+	    	set_property(
+	        	TARGET ${APP_TARGET}
+	        	PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
+	    	)
+		else()
+	    	message(WARNING "IPO/LTO is not supported: ${ipo_error}")
+		endif()
 	endif()
 endif()
 
