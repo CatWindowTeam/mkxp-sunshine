@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef WINDOW_H
-#define WINDOW_H
-
+#pragma once
 #include "viewport.h"
 #include "disposable.h"
 
@@ -72,5 +70,3 @@ private:
 
 	ABOUT_TO_ACCESS_DISP
 };
-
-#endif // WINDOW_H

@@ -196,15 +196,6 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 
-	#ifndef WORKDIR_CURRENT
-		/* set working directory */
-		const char *dataDir = SDL_GetBasePath();
-		if (dataDir) {
-			int result = chdir(dataDir);
-			(void)result;
-		}
-	#endif
-
 	/* Initialize physfs here so that config can call PHYSFS_getPrefDir */
 	#ifdef android
 		PHYSFS_AndroidInit androidInit;
@@ -212,7 +203,7 @@ int main(int argc, char *argv[]){
 		androidInit.context = SDL_GetAndroidActivity();
 		PHYSFS_init((const char *)&androidInit);
 	#else
-		PHYSFS_init(argc > 0 ? argv[0] : "mkxp-sunshine");
+		PHYSFS_init(argc > 0 ? argv[0] : "oneshot");
 	#endif
 
 	/* now we load the config */
@@ -349,7 +340,6 @@ int main(int argc, char *argv[]){
 			Debug() << "[main] RGSS thread ack'd request after " << i*10 << "ms";
 			break;
 		}
-
 		/* Give RGSS thread some time to respond */
 		SDL_Delay(10);
 	}
