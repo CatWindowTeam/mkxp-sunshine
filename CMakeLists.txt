@@ -241,7 +241,7 @@ endforeach()
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     list(APPEND MAIN_SOURCE assets/resources.rc)
     list(APPEND DEFINES UNICODE)
-    list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi winmm z)
+    list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi winmm z mingw32)
     include_directories(${CMAKE_CURRENT_BINARY_DIR}/windows)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     list(APPEND MAIN_HEADERS src/mac-desktop.h)
@@ -492,7 +492,8 @@ target_link_libraries(${APP_TARGET} PRIVATE
 	Boost::boost
 	Boost::chrono
 	${Boost_LIBRARIES}
-	ZLIB::ZLIB)
+	ZLIB::ZLIB
+	physfs)
 
 if(VITA)
 	target_link_libraries(${PROJECT_NAME} PRIVATE webp sharpyuv)
