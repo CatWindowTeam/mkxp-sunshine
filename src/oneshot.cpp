@@ -120,6 +120,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	}else{
 		p->lang = Locale[0]->language;
 	}
+	SDL_free(Locale);
 
 	//OS
 	#ifdef windows

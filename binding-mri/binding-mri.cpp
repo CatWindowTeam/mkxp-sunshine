@@ -87,7 +87,7 @@ void ModLoaderBindingInit();
 void journalBindingInit();
 void wallpaperBindingInit();
 #ifdef unix_like
-void wallpaperBindingTerminate();
+	void wallpaperBindingTerminate();
 #endif
 void nikoBindingInit();
 void oneshotBindingInit();
@@ -287,7 +287,6 @@ RB_METHOD(mriRgssStop){
 	RB_UNUSED_PARAM;
 	while (true)
 		shState->graphics().update();
-
 	return Qnil;
 }
 
@@ -576,6 +575,16 @@ static void mriBindingReset(){
 	rb_raise(getRbData()->exc[Reset], " ");
 }
 
+static VALUE call_compact(VALUE unused){
+    return rb_funcall(rb_mGC, rb_intern("compact"), 0);
+}
+
 static void mriBindingGc(){
-	rb_gc();	
+	rb_gc();
+	int state = 0;
+	rb_protect(call_gc_compact, Qnil, &state);
+	if(state){
+		Debug() << "Heap compaction failed!";
+		rb_set_errinfo(Qnil);
+	}
 }
