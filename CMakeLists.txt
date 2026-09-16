@@ -408,7 +408,7 @@ target_compile_options(${APP_TARGET} PRIVATE
 )
 
 
-if(CMAKE_SYSTEM_NAME NOT STREQUAL "Windows")
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	if(CMAKE_BUILD_TYPE STREQUAL "Release")
 		if(ipo_supported)
 	    	set_property(
