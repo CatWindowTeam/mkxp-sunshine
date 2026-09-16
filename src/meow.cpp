@@ -78,7 +78,7 @@ const static char* get_processor(){
 	#if defined(__x86_64__) || defined(_M_X64)
         	return "x86_64";
         #elif defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
-        	return "x86_32";
+        	return "x86";
         #elif defined(__ARM_ARCH_2__)
         	return "ARM2";
         #elif defined(__ARM_ARCH_3__) || defined(__ARM_ARCH_3M__)
@@ -131,7 +131,8 @@ void crash(Exception::Type type, const char *fmt, ...){
 
 // Here we prepare information that we display on crash screen and write in crashdump later
 static std::vector<std::string> prepare_crash_info(){
-	std::vector<std::string> c = {};
+	std::vector<std::string> c;
+	c.reserve(logs.size() + 25);
 	c.emplace_back("If you're sure that the problem is not with");
 	c.emplace_back("your device, nor with your modifications, nor your ham-fisted setup, please");
 	c.emplace_back("report the bug to the developers");
@@ -168,9 +169,6 @@ static std::vector<std::string> prepare_crash_info(){
 	        c.push_back(boost::stacktrace::to_string(frame));
 	    }
 	#endif
-	c.emplace_back("");
-	c.emplace_back("");
-	c.emplace_back("");
 	return c;
 }
 
@@ -279,7 +277,7 @@ void ErrorMsg(const char *fmt, ...) {
     va_start(args, fmt);
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-    Debug() << "[ERRORMSG]" << crash_message;
+    Debug() << "[ERRMSG] " << crash_message;
     show_crash_screen = true;
 }
 
@@ -288,7 +286,7 @@ void ErrorMsg(Exception::Type t, const char *fmt, ...) {
     va_start(args, fmt);
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-    Debug() << "[ERRORMSG]" << crash_message;
+    Debug() << "[ERRMSG] " << crash_message;
     show_crash_screen = true;
 }
 

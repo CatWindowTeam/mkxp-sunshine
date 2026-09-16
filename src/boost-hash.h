@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef BOOSTHASH_H
-#define BOOSTHASH_H
-
+#pragma once
 #include <boost/unordered/unordered_map.hpp>
 #include <boost/unordered/unordered_set.hpp>
 
@@ -46,11 +44,12 @@ public:
 		return (iter != p.cend());
 	}
 
-	inline void insert(const K &key, const V &value) noexcept {
-		p.insert(PairType(key, value));
+	inline void insert(const K &key, const V &value) {
+		//p.insert(PairType(key, value));
+    		p.emplace(key, value);
 	}
 
-	inline void remove(const K &key) noexcept {
+	inline void remove(const K &key) {
 		p.erase(key);
 	}
 
@@ -72,15 +71,15 @@ public:
 		return iter->second;
 	}
 
-	inline V &operator[](const K &key) noexcept {
+	inline V &operator[](const K &key) {
 		return p[key];
 	}
 
-	inline const_iterator cbegin() const noexcept{
+	inline const_iterator cbegin() const {
 		return p.cbegin();
 	}
 
-	inline const_iterator cend() const noexcept {
+	inline const_iterator cend() const {
 		return p.cend();
 	}
 };
@@ -94,27 +93,25 @@ private:
 public:
 	typedef typename BoostType::const_iterator const_iterator;
 
-	inline bool contains(const K &key){
+	inline bool contains(const K &key) const {
 		const_iterator iter = p.find(key);
 
 		return (iter != p.cend());
 	}
 
-	inline void insert(const K &key) noexcept {
+	inline void insert(const K &key) {
 		p.insert(key);
 	}
 
-	inline void remove(const K &key) noexcept{
+	inline void remove(const K &key) {
 		p.erase(key);
 	}
 
-	inline const_iterator cbegin() const noexcept{
+	inline const_iterator cbegin() const {
 		return p.cbegin();
 	}
 
-	inline const_iterator cend() const noexcept{
+	inline const_iterator cend() const {
 		return p.cend();
 	}
 };
-
-#endif // BOOSTHASH_H

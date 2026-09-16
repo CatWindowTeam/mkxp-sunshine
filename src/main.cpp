@@ -29,10 +29,10 @@
 #include <stdio.h>
 
 #ifdef _MSC_VER
-#include <direct.h>
-#define _chdir chdir
+	#include <direct.h>
+	#define _chdir chdir
 #else
-#include <unistd.h>
+	#include <unistd.h>
 #endif
 #include <string>
 #include <iostream>
@@ -95,9 +95,9 @@ int rgssThreadFun(void *userdata){
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
 	#endif
 
-#ifndef NDEBUG
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-#endif
+	#ifndef NDEBUG
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+	#endif
 
 	glCtx = SDL_GL_CreateContext(win);
 	if (!glCtx){
@@ -120,9 +120,9 @@ int rgssThreadFun(void *userdata){
 	gl.Clear(GL_COLOR_BUFFER_BIT);
 	SDL_GL_SwapWindow(win);
 
-#ifndef NDEBUG
-	GLDebugLogger dLogger;
-#endif
+	#ifndef NDEBUG
+		GLDebugLogger dLogger;
+	#endif
 
 	try{
 		SharedState::initInstance(threadData);
@@ -184,35 +184,36 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 
-#ifdef STEAM
-	if (!STEAMSHIM_init()){
-		WarnMsg("Could not initialize Steamworks API");
-		return 1;
-	}
-#endif
+	#ifdef STEAM
+		if (!STEAMSHIM_init()){
+			WarnMsg("Could not initialize Steamworks API");
+			return 1;
+		}
+	#endif
 
 	if (!EventThread::allocUserEvents()){
 		WarnMsg("Error allocating SDL user events");
 		return 1;
 	}
 
-#ifndef WORKDIR_CURRENT
-	/* set working directory */
-	const char *dataDir = SDL_GetBasePath();
-	if (dataDir) {
-		int result = chdir(dataDir);
-		(void)result;
-	}
-#endif
+	#ifndef WORKDIR_CURRENT
+		/* set working directory */
+		const char *dataDir = SDL_GetBasePath();
+		if (dataDir) {
+			int result = chdir(dataDir);
+			(void)result;
+		}
+	#endif
+
 	/* Initialize physfs here so that config can call PHYSFS_getPrefDir */
-#ifdef android
-	PHYSFS_AndroidInit androidInit;
-	androidInit.jnienv = SDL_GetAndroidJNIEnv();
-	androidInit.context = SDL_GetAndroidActivity();
-	PHYSFS_init((const char *)&androidInit);
-#else
-	PHYSFS_init(argc > 0 ? argv[0] : "mkxp-sunshine");
-#endif
+	#ifdef android
+		PHYSFS_AndroidInit androidInit;
+		androidInit.jnienv = SDL_GetAndroidJNIEnv();
+		androidInit.context = SDL_GetAndroidActivity();
+		PHYSFS_init((const char *)&androidInit);
+	#else
+		PHYSFS_init(argc > 0 ? argv[0] : "mkxp-sunshine");
+	#endif
 
 	/* now we load the config */
 	Config conf;
@@ -287,13 +288,13 @@ int main(int argc, char *argv[]){
 	}
 	/* OSX and Windows have their own native ways of
 	 * dealing with icons; don't interfere with them */
-#ifdef unix_like
-	setupWindowIcon(conf, win);
-#elif vita
-	//
-#else
-	(void) setupWindowIcon;
-#endif
+	#ifdef unix_like
+		setupWindowIcon(conf, win);
+	#elif vita
+		//this code useless under vita!
+	#else
+		(void) setupWindowIcon;
+	#endif
 
 	SDL_AudioSpec spec{};
 	spec.format = SDL_AUDIO_F32;
@@ -314,11 +315,11 @@ int main(int argc, char *argv[]){
 	EventThread eventThread;
 	RGSSThreadData rtData(&eventThread, win, mixer, mode.refresh_rate, conf);
 
-#ifndef STEAM
-	/* Add controller bindings from embedded controller DB */
-	SDL_IOStream *controllerDB = SDL_IOFromConstMem(assets_gamecontrollerdb_txt, assets_gamecontrollerdb_txt_len);
-	SDL_AddGamepadMappingsFromIO(controllerDB, 1);
-#endif
+	#ifndef STEAM
+		/* Add controller bindings from embedded controller DB */
+		SDL_IOStream *controllerDB = SDL_IOFromConstMem(assets_gamecontrollerdb_txt, assets_gamecontrollerdb_txt_len);
+		SDL_AddGamepadMappingsFromIO(controllerDB, 1);
+	#endif
 
 	int winW, winH;
 	SDL_GetWindowSize(win, &winW, &winH);
