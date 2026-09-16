@@ -453,9 +453,9 @@ find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
-#find_package(Ruby 3.4 
-#	COMPONENTS Interpreter Development
-#	REQUIRED)
+find_package(Ruby 3.4
+	COMPONENTS Interpreter Development
+	REQUIRED)
 target_compile_definitions(${APP_TARGET} PRIVATE ${DEFINES})
 target_include_directories(${APP_TARGET} PRIVATE
 	src
