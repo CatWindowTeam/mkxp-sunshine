@@ -379,7 +379,6 @@ else()
 	check_option(ARCH_RELEASE_OPTIONS ${ARCH_RELEASE})
 endif()
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:DEBUG>)
 check_linker_option(OPTIONS_LINKER_RELEASE
 	-Wl,-O3
 	-Wl,--gc-sections
