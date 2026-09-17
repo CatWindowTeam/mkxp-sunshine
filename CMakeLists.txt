@@ -307,7 +307,7 @@ elseif(VITA)
                 	${EMBEDDED_SOURCE})	
 else()
 	set(APP_TARGET ${PROJECT_NAME})
-	add_executable(${APP_TARGET} MACOSX_BUNDLE
+	add_executable(${APP_TARGET} MACOSX_BUNDLE WIN32
 		${MAIN_HEADERS}
 		${MAIN_SOURCE}
 		${BINDING_HEADERS}
