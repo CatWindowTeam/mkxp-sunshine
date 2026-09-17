@@ -205,6 +205,7 @@ set(EMBEDDED_INPUT
 	assets/icon.png
 	assets/gamecontrollerdb.txt
 	assets/crash.png
+	assets/noise.png
 	assets/the_modded_machine.png
 	binding-mri/module_rpg1.rb
 )
@@ -240,7 +241,7 @@ endforeach()
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     list(APPEND MAIN_SOURCE assets/resources.rc)
     list(APPEND DEFINES UNICODE)
-    list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi winmm z)
+    list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi winmm z mingw32)
     include_directories(${CMAKE_CURRENT_BINARY_DIR}/windows)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     list(APPEND MAIN_HEADERS src/mac-desktop.h)
@@ -314,6 +315,11 @@ else()
 		${EMBEDDED_SOURCE})
 endif()
 
+set_target_properties(${APP_TARGET} PROPERTIES
+    BUILD_RPATH "$ORIGIN"
+    INSTALL_RPATH "$ORIGIN"
+)
+
 if(STEAM)
         list(APPEND MAIN_HEADERS steamshim/steamshim_child.h)
         list(APPEND MAIN_SOURCE steamshim/steamshim_child.c)
@@ -354,8 +360,6 @@ endif()
 check_option(OPTIONS_RELEASE 
 	-O3
 	-fno-stack-clash-protection
-	-fno-unwind-tables
-	-fno-asynchronous-unwind-tables
 	-fvtable-verify=none
 	-fno-ident
 	-fstrub=disable
@@ -403,15 +407,16 @@ target_compile_options(${APP_TARGET} PRIVATE
 )
 
 
-
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-	if(ipo_supported)
-	    set_property(
-	        TARGET ${APP_TARGET}
-	        PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
-	    )
-	else()
-	    message(WARNING "IPO/LTO is not supported: ${ipo_error}")
+if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		if(ipo_supported)
+	    	set_property(
+	        	TARGET ${APP_TARGET}
+	        	PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
+	    	)
+		else()
+	    	message(WARNING "IPO/LTO is not supported: ${ipo_error}")
+		endif()
 	endif()
 endif()
 
@@ -446,7 +451,7 @@ if(ANDROID)
 else()
 	find_package(Boost REQUIRED COMPONENTS program_options chrono)
 endif()
-find_package(PhysFS)
+find_package(PhysFS REQUIRED)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
@@ -486,7 +491,8 @@ target_link_libraries(${APP_TARGET} PRIVATE
 	Boost::boost
 	Boost::chrono
 	${Boost_LIBRARIES}
-	ZLIB::ZLIB)
+	ZLIB::ZLIB
+	physfs)
 
 if(VITA)
 	target_link_libraries(${PROJECT_NAME} PRIVATE webp sharpyuv)

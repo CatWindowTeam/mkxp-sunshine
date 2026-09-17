@@ -1,12 +1,10 @@
-#pragma once
 #include "sunshine.h"
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_video.h>
 #include "bitmap.h"
 #include <string_view>
 
-const char* NOISE_PATH = "Graphics/Misc/noise"; // TODO: find for this another place and make this not hardcoded right into engine.
-
+const char* NOISE_PATH = "Graphics/Misc/noise";
 Sunshine::Sunshine() : noise(nullptr) {}
 
 void Sunshine::loadNoise() {
