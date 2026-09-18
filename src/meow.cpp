@@ -29,9 +29,9 @@
 #include <iostream>
 #include <chrono>
 
-#if !defined(ps2) && !defined(vita)
+#if !defined(ps2) && !defined(vita) && !defined(__NetBSD__)
     #include <boost/stacktrace.hpp>
-    #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__NetBSD__)
+    #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__)
     	#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
     #endif
 #endif
@@ -159,7 +159,7 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back("");
 	//maybe we should use C++ stacktrace?
 	c.emplace_back("[STACK TRACE]");
-	#if defined(ps2) || defined(vita)
+	#if defined(ps2) || defined(vita) || defined(__NetBSD__)
 	    // TODO: PS2/Vita stacktrace implementation
 	#else
 	    boost::stacktrace::stacktrace trace;
