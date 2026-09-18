@@ -2,7 +2,6 @@
 #include "debugwriter.h"
 #include "meow.h"
 #include "config.h"
-#include "security.h"
 
 #include <filesystem>
 #include <string>
@@ -74,9 +73,6 @@ void ModLoader(Config conf, SDL_Window* win){
     }else if (fs::is_empty(conf.Modloader.ModsDirPath)) {
         Debug() << "[MODLOADER] Mods directory is empty, skipping...";
         return;
-    }
-    if(conf.SecurityEngine){
-    	SecurityManagerInit();
     }
     SDL_Thread* render_thread_pointer = NULL;
     if(!conf.Modloader.skip_modloader_screen){

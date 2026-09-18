@@ -71,7 +71,6 @@ endfunction()
 
 # Options
 option(STEAM "Build with Steam Support" OFF)
-option(SANITIZERS "Enable sanitizers" OFF)
 option(NATIVE "Use native instructions,for local use only" OFF)
 option(STATIC "Build more static build" OFF)
 option(USE_OPENGL_ES2 "GLES2_HEADER define" OFF)
@@ -250,7 +249,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	COMMENT "Executing /patches/mac/CompleteBundle.cmake" VERBATIM)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_package(PkgConfig REQUIRED)
-    pkg_check_modules(LINUXPKGS REQUIRED libxfconf-0 libseccomp)
+    pkg_check_modules(LINUXPKGS REQUIRED libxfconf-0)
     include_directories(${LINUXPKGS_INCLUDE_DIRS})
     add_compile_options(${LINUXPKGS_CFLAGS_OTHER})
     list(APPEND PLATFORM_LIBRARIES ${LINUXPKGS_LDFLAGS})
@@ -336,16 +335,6 @@ else()
 	add_compile_options(${ARCH_COMMON_OPTIONS})
 endif()
 
-# TODO: fix
-if(SANITIZERS)
-	# ASan + Ruby = SEGFAULT
-	set(SANITIZERS "undefined,leak,shift,shift-base,shift-exponent,integer-divide-by-zero,unreachable,vla-bound,null,signed-integer-overflow,bounds,alignment,object-size,float-divide-by-zero,float-cast-overflow,nonnull-attribute,returns-nonnull-attribute,bool,enum,vptr,pointer-overflow,builtin")
-	add_compile_options(-fsanitize=${SANITIZERS})
-	add_link_options(-fsanitize=${SANITIZERS})
-	check_option(SANITIZERS_OPTIONS -fsanitize-memory-track-origins=2)
-	add_compile_options(${SANITIZERS_OPTIONS})
-endif()
-
 check_option(OPTIONS_DEBUG
 	-g
 	-Og)
@@ -403,7 +392,6 @@ target_compile_options(${APP_TARGET} PRIVATE
     "$<$<CONFIG:Debug>:${OPTIONS_DEBUG}>"
     "$<$<CONFIG:Debug>:${ARCH_DEBUG_OPTIONS}>"
     "$<$<CONFIG:Release>:${OPTIONS_RELEASE}>"
-    "$<$<CONFIG:Release>:${OPTIONS_RELEASE_LINUX}>"
     "$<$<CONFIG:Release>:${ARCH_RELEASE_OPTIONS}>"
 )
 

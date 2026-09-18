@@ -227,22 +227,24 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 				desktop.find("unity") != std::string::npos)
 			{
 				desktopEnv = "gnome";
-			}else if (desktop.find("mate") != std::string::npos){
+			}else if(desktop.find("mate") != std::string::npos){
 				desktopEnv = "mate";
-			}else if (desktop.find("xfce") != std::string::npos){
+			}else if(desktop.find("xfce") != std::string::npos){
 				desktopEnv = "xfce";
-			}else if (desktop.find("kde") != std::string::npos){
+			}else if(desktop.find("kde") != std::string::npos){
 				desktopEnv = "kde";
-			}else if (desktop.find("lxde") != std::string::npos){
+			}else if(desktop.find("lxde") != std::string::npos){
 				desktopEnv = "lxde";
-			}else if (desktop.find("lxqt") != std::string::npos){
+			}else if(desktop.find("lxqt") != std::string::npos){
 				desktopEnv = "lxqt";
-			}else if (desktop.find("deepin") != std::string::npos){
+			}else if(desktop.find("deepin") != std::string::npos){
 				desktopEnv = "deepin";
-			}else if (desktop.find("budgie") != std::string::npos){
+			}else if(desktop.find("budgie") != std::string::npos){
 				desktopEnv = "budgie";
-			}else if (desktop.find("pantheon") != std::string::npos){
+			}else if(desktop.find("pantheon") != std::string::npos){
 				desktopEnv = "pantheon";
+			}else if(desktop.find("Hyprland") != std::string::npos){
+				desktopEnv = "hyperland";
 			}
 		}
 		Debug() << "[oneshot] Desktop env  :" << desktopEnv;
