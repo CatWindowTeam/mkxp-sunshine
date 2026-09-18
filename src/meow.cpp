@@ -242,21 +242,24 @@ void crash_screen(SDL_Window* win){
 					}
 				}
 		    }
-		count = 40;
-		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-	    SDL_RenderClear(ren);
-		SDL_SetRenderScale(ren, 1.0f, 1.0f);
-	    SDL_RenderTexture(ren, tex, NULL, &dst);
-		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-		SDL_SetRenderScale(ren, 2.0f, 2.0f);
-	    SDL_RenderDebugText(ren, 5, 5, "World machine crashed! :(");
-		SDL_SetRenderScale(ren, 1.5f, 1.5f);
-		SDL_RenderDebugText(ren, 5, 20, shit);
-		SDL_SetRenderScale(ren, 1.0f, 1.0f);
+			count = 40;
+			SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+	    	SDL_RenderClear(ren);
+			SDL_SetRenderScale(ren, 1.0f, 1.0f);
+	    	SDL_RenderTexture(ren, tex, NULL, &dst);
+			SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+			SDL_SetRenderScale(ren, 2.0f, 2.0f);
+	    	SDL_RenderDebugText(ren, 5, 5, "World machine crashed! :(");
+			SDL_SetRenderScale(ren, 1.5f, 1.5f);
+			SDL_RenderDebugText(ren, 5, 20, shit);
+			SDL_SetRenderScale(ren, 1.0f, 1.0f);
+			char index_str[32];
 			for (int i = pager_start; i <= pager_end; ++i){
 				if(i < (cd.size() - 1)){
 					count = count + 10;
-					SDL_RenderDebugTextFormat(ren, 10, count, "%s| %s", std::format("{:03}", i).c_str(), cd[i].c_str());
+					snprintf(index_str, sizeof(index_str), "%03d", i);
+					SDL_RenderDebugTextFormat(ren, 10, count, "%s| %s", index_str, cd[i].c_str());
+					//SDL_RenderDebugTextFormat(ren, 10, count, "%s| %s", std::format("{:03}", i).c_str(), cd[i].c_str());
 				}
 			}
 	    	SDL_RenderPresent(ren);
