@@ -29,7 +29,14 @@
 #include <cstdlib>
 #include <iostream>
 #include <chrono>
-#include <format>
+
+#include <SDL3/SDL_platform_defines.h>
+#ifdef SDL_PLATFORM_NETBSD
+	#include <fmt/format.h>
+#else
+	#include <format>
+#endif
+
 
 #if !defined(ps2) && !defined(vita)
     #include <boost/stacktrace.hpp>
