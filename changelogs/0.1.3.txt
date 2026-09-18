@@ -14,3 +14,4 @@ removed GTK3 messagebox implementation
 Added Android Support
 Some PSVita patches
 Language detection rewrited to SDL locale API
+SecurityEngine removed
