@@ -274,7 +274,7 @@ int main(int argc, char *argv[]){
 		SDL_SetWindowFullscreen(win, true);
 
 	if (!win){
-		WarnMsg("Error creating window: %s", SDL_GetError());
+		WarnMsg("%s", SDL_GetError());
 		MIX_Quit();
 		TTF_Quit();
 		SDL_Quit();

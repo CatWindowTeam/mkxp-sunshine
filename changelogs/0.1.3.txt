@@ -15,3 +15,4 @@ Added Android Support
 Some PSVita patches
 Language detection rewrited to SDL locale API
 SecurityEngine removed
+Added NetBSD support
