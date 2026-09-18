@@ -12,6 +12,11 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
     Release
 )
 
+# suppress Boost warning
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW)
+endif()
+
 include(FindPackageHandleStandardArgs)
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
@@ -97,17 +102,8 @@ if(NOT VITA)
 else()
     set(ipo_supported FALSE)
     set(CMAKE_POSITION_INDEPENDENT_CODE OFF)
-    add_compile_options(
-        -fno-pic
-        -fno-PIC
-        -fno-pie
-        -fno-PIE
-    )
-
-    add_link_options(
-        -fno-pie
-        -no-pie
-    )
+    add_compile_options(-fno-pic -fno-PIC -fno-pie -fno-PIE)
+    add_link_options(-fno-pie -no-pie)
 endif()
 
 #prepare Vita specific thinks
@@ -139,11 +135,6 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# suppress Boost warning
-if(POLICY CMP0167)
-    cmake_policy(SET CMP0167 OLD)
-endif()
 
 # Make build more static
 if(STATIC)
@@ -247,6 +238,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     list(APPEND MAIN_SOURCE assets/resources.rc)
     list(APPEND DEFINES UNICODE)
     list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi winmm z mingw32)
+    include(cmake/os/windows.cmake)
     include_directories(${CMAKE_CURRENT_BINARY_DIR}/windows)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     list(APPEND MAIN_HEADERS src/mac-desktop.h)
@@ -375,7 +367,8 @@ check_option(OPTIONS_RELEASE
 	-fdata-sections
 	-ftrivial-auto-var-init=uninitialized
 	-fzero-call-used-regs=skip
-	-fomit-frame-pointer)
+	-fomit-frame-pointer
+	-fno-rtti)
 
 # Loading release options specific for cpu arch from toolchain file
 if("${ARCH_RELEASE}" STREQUAL "")
@@ -389,12 +382,19 @@ check_linker_option(OPTIONS_LINKER_RELEASE
 	-Wl,--gc-sections
 	-Wl,--no-copy-dt-needed-entries
 	-Wl,--icf=safe
-	-Wl,--strip-discarded
+	-Wl,--strip-all
 	-Wl,--relax
 	-Wl,-z,pack-relative-relocs
 	-Wl,-z,noexecstack
 	-Wl,--build-id=none)
 add_link_options("$<$<CONFIG:Release>:${OPTIONS_LINKER_RELEASE}>")
+
+if("${ARCH_LINKER_RELEASE}" STREQUAL "")
+	message(STATUS "ARCH_LINKER_RELEASE empty")
+else()
+	check_option(ARCH_RELEASE_OPTIONS_LINKER ${ARCH_LINKER_RELEASE})
+endif()
+add_link_options("$<$<CONFIG:Release>:${ARCH_RELEASE_OPTIONS_LINKER}>")
 
 target_compile_definitions(${APP_TARGET} PRIVATE $<$<CONFIG:Debug>:DEBUG>)
 target_compile_options(${APP_TARGET} PRIVATE
@@ -405,6 +405,20 @@ target_compile_options(${APP_TARGET} PRIVATE
     "$<$<CONFIG:Release>:${OPTIONS_RELEASE}>"
     "$<$<CONFIG:Release>:${ARCH_RELEASE_OPTIONS}>"
 )
+
+if("${OS_RELEASE}" STREQUAL "")
+	message(STATUS "OS_RELEASE empty")
+else()
+	check_option(OS_RELEASE_UNCHECKED ${OS_RELEASE})
+endif()
+target_compile_options(${APP_TARGET} PRIVATE "$<$<CONFIG:Release>:${OS_RELEASE_UNCHECKED}>")
+
+if("${OS_RELEASE_LINKER}" STREQUAL "")
+	message(STATUS "OS_RELEASE_LINKER empty")
+else()
+	check_linker_option(OS_RELEASE_LINKER_UNCHECKED ${OS_RELEASE_LINKER})
+endif()
+add_link_options("$<$<CONFIG:Release>:${OS_RELEASE_LINKER_UNCHECKED}>")
 
 
 if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")

@@ -5,19 +5,15 @@ class TestSprite < Sprite
   attr_accessor :bitmap2
   attr_accessor :x_r
   attr_accessor :y_r
-
   def initialize(viewport)
     super(viewport)
-  
     @direction_x = 0.0
     @direction_y = 0.0
     @bitmap1 = nil
     @bitmap2 = nil
     @time = 0
     @u = false
-
     self.bitmap = Bitmap.new(96, 96)
-    
     @x_r = 0.0
     @y_r = 0.0
   end
@@ -45,6 +41,7 @@ class TestSprite < Sprite
 end
 
 begin
+  score = 0
   Graphics.frame_rate = 5000
   Graphics.frameskip = false
   Font.default_size = 10
@@ -55,12 +52,11 @@ begin
   bitmap2 = RPG::Cache.face("niko_speak")
   viewport = Viewport.new()
   time = 0.0
-
   debug = Sprite.new(viewport)
   debug.z = 10
   debug.bitmap = Bitmap.new(Graphics.width, Graphics.height)
-
   while true
+  	score += 1
     time += 1.0
     sprite = TestSprite.new(viewport)
     sprite.bitmap1 = bitmap1
@@ -70,39 +66,34 @@ begin
     sprite.direction_x = Math.sin(time / 60.0)
     sprite.direction_y = Math.cos(time / 60.0)
     sprite.z = -time
-    sprite.opacity = 1
-    sprite.blend_type = 1
+    sprite.opacity = rand(1..100)
+    sprite.blend_type = rand(1..3)
     sprite.shader = Shader::WorldMachine
     sprites << sprite;
-
     sprites.each do |s|
       s.update
     end
-
     debug.bitmap.clear
-    debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 10), "#{sprites.length}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 30), "#{MKXP.data_directory}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 50), "Ruby #{RUBY_VERSION}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 70), "SDL #{Sunshine::SDLVersion_major}.#{Sunshine::SDLVersion_minor}.#{Sunshine::SDLVersion_micro}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 90), "#{Graphics.frame_count}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 110), "#{Graphics.frame_rate}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 130), "#{Graphics.brightness}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 150), "#{Graphics.x}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 170), "#{Graphics.y}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 190), "#{Journal.active?}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 210), "#{Oneshot::USER_NAME}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 230), "#{Oneshot::OS}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 240), "#{Oneshot::DE}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 260), "#{Oneshot::SAVE_PATH}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 280), "#{Oneshot::DOCS_PATH}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 300), "#{Oneshot::GAME_PATH}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 320), "#{Oneshot::JOURNAL}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 340), "#{Oneshot::LANG}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 360), "#{Steam.enabled?}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 380), "#{Sunshine::VERSION}")
-	debug.bitmap.draw_text(Rect.new(0, 0, Graphics.width, 400), "#{Sunshine::P_LOCALE}")
-
-	
+    debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{sprites.length}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{MKXP.data_directory}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "Ruby #{RUBY_VERSION}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "SDL #{Sunshine::SDLVersion_major}.#{Sunshine::SDLVersion_minor}.#{Sunshine::SDLVersion_micro}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Graphics.frame_count}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Graphics.frame_rate}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Graphics.brightness}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Graphics.x}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Graphics.y}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Journal.active?}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Oneshot::USER_NAME}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Oneshot::OS}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Oneshot::DE}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Oneshot::SAVE_PATH}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Oneshot::DOCS_PATH}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Oneshot::GAME_PATH}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Oneshot::JOURNAL}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Oneshot::LANG}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Steam.enabled?}")
+	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Sunshine::VERSION}")
     # Update Screen
     Graphics.update
     if sprites.length > 2000
@@ -122,5 +113,7 @@ rescue StandardError => e
   end
 ensure
   Audio.bgm_stop
+  puts "--- SCORE ---"
+  puts score
   Oneshot.exiting true
 end
