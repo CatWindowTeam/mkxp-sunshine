@@ -109,8 +109,6 @@ void loadLanguageMetadata() {
 				}
 			}
 		}
-
-		//fclose(fontsFile);
 	}
 
 

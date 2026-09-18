@@ -1,7 +1,5 @@
 #pragma once
-
 #include "signals/signalconnection.h"
-
 #include <ruby.h>
 
 extern void rubyConnection_free(void* ptr);
@@ -9,8 +7,7 @@ extern void rubyConnection_mark(void* ptr);
 extern const rb_data_type_t rubyConnection_type;
 extern VALUE rb_cRubyConnection;
 
-struct RubyConnection
-{
+struct RubyConnection{
     VALUE proc;
     SignalConnection connection;
 

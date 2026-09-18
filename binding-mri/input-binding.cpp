@@ -21,13 +21,10 @@
 
 #include "input.h"
 #include "sharedstate.h"
-#include "exception.h"
 #include "binding-util.h"
 #include "util.h"
 #include "eventthread.h"
-
 #include "keybindings-binding.h"
-
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_gamepad.h>

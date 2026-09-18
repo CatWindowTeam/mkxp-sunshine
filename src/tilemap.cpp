@@ -25,7 +25,6 @@
 #include "bitmap.h"
 #include "table.h"
 #include "signals/signal.h"
-
 #include "sharedstate.h"
 #include "config.h"
 #include "glstate.h"
@@ -39,29 +38,20 @@
 #include "tilemap-common.h"
 #include "sunshine.h"
 #include "signals/rubydispatcher.h"
-
 #include <boost/chrono.hpp>
-
 #include <SDL3/SDL_stdinc.h>
 #include <algorithm>
 #include <vector>
-
 #include <SDL3/SDL_surface.h>
-#include <SDL3/SDL_thread.h>
 
 extern const StaticRect autotileRects[];
-
 typedef std::vector<SVertex> SVVector;
-
 static const int tilesetW  = 8 * 32;
 static const int autotileW = 3 * 32;
 static const int autotileH = 4 * 32;
-
 static const unsigned char autotileCount = 7;
-
 static const int atAreaW = autotileW * 4;
 static const int atAreaH = autotileH * autotileCount;
-
 static const int tsLaneW = tilesetW / 2;
 
 /* Vocabulary:

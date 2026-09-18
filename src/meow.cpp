@@ -5,14 +5,10 @@
 #include <SDL3/SDL_audio.h>
 #include <SDL3/SDL_video.h>
 #include <SDL3_image/SDL_image.h>
-#include <SDL3/SDL_filesystem.h>
 #include <SDL3/SDL_timer.h>
-#include <SDL3/SDL_system.h>
-#include <SDL3/SDL_cpuinfo.h>
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_stdinc.h>
-
 #include "meow.h"
 #include "exception.h"
 #include "config.h"
@@ -20,14 +16,12 @@
 #include "debugwriter.h"
 #include "define.h"
 #include "binding.h"
-#include "sharedstate.h"
-
+#include <physfs.h>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <cstdlib>
 #include <iostream>
-#include <chrono>
 
 #if !defined(ps2) && !defined(vita) && !defined(__NetBSD__)
     #include <boost/stacktrace.hpp>
@@ -35,9 +29,6 @@
     	#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
     #endif
 #endif
-
-#include <physfs.h>
-#include "sunshine.h"
 
 #ifdef android
 	#include <android/api-level.h>

@@ -24,7 +24,6 @@
 #include "sharedstate.h"
 #include "glstate.h"
 #include "boost-hash.h"
-#include "debugwriter.h"
 #include "meow.h"
 
 #include <list>

@@ -23,7 +23,6 @@
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "keybindings.h"
-#include "exception.h"
 #include "util.h"
 #include "define.h"
 

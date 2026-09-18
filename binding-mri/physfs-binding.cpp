@@ -1,11 +1,9 @@
 #include <physfs.h>
-#include "binding-util.h"
-#include "sharedstate.h"
-#include "filesystem.h"
-#include "util.h"
 #include <ruby.h>
 #include <stdexcept>
 #include <string>
+#include <vector>
+#include "meow.h"
 VALUE module = Qnil;
 VALUE rb_ePhysFSError = Qnil;
 

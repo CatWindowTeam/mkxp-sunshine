@@ -28,7 +28,7 @@
 #include "sound/audio.h"
 #include "oneshot.h"
 #ifdef STEAM
-#include "steam.h"
+	#include "steam.h"
 #endif
 #include "glstate.h"
 #include "shader.h"
@@ -43,9 +43,8 @@
 #include "sunshine.h"
 
 #ifndef _MSC_VER
-#include <unistd.h>
+	#include <unistd.h>
 #endif
-#include <stdio.h>
 
 SharedState *SharedState::instance = 0;
 static GlobalIBO *_globalIBO = 0;
@@ -210,7 +209,7 @@ GSATT(Audio&, audio)
 GSATT(Oneshot&, oneshot)
 GSATT(Sunshine&, sunshine)
 #ifdef STEAM
-GSATT(Steam&, steam)
+	GSATT(Steam&, steam)
 #endif
 GSATT(GLState&, _glState)
 GSATT(ShaderSet&, shaders)

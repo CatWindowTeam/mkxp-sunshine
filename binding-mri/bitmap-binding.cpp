@@ -22,7 +22,6 @@
 #include "bitmap.h"
 #include "font.h"
 #include "exception.h"
-#include "sharedstate.h"
 #include "disposable-binding.h"
 #include "binding-util.h"
 #include "binding-types.h"

@@ -20,11 +20,8 @@
 */
 
 #include "binding-util.h"
-
-#include "sharedstate.h"
 #include "filesystem.h"
 #include "util.h"
-
 #include "ruby/encoding.h"
 #include "ruby/intern.h"
 #include <ruby.h>

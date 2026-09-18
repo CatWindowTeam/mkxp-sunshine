@@ -20,10 +20,7 @@
 */
 
 #include "table.h"
-
 #include <SDL3/SDL_stdinc.h>
-#include <algorithm>
-
 #include "serial-util.h"
 #include "exception.h"
 #include "util.h"

@@ -1,10 +1,7 @@
 //https://silverhammermba.github.io/emberb/c/
 //https://docs.ruby-lang.org/capi/en/master/d8/d68/include_2ruby_2internal_2intern_2string_8h.html
-#include "binding-util.h"
-#include "util.h"
 #include "debugwriter.h"
 #include "modloader.h"
-#include "config.h"
 #include <ruby.h>
 #include <physfs.h>
 #include <string>

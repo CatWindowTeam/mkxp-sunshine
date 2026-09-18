@@ -50,10 +50,10 @@
 
 #include <time.h>
 #ifndef _MSC_VER
-#if windows
-	#define _SYS_TIME_H_
-#endif
-#include <sys/time.h>
+	#if windows
+		#define _SYS_TIME_H_
+	#endif
+	#include <sys/time.h>
 #endif
 #include <errno.h>
 #include <algorithm>

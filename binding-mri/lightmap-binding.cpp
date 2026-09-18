@@ -1,7 +1,6 @@
 #include "lightmap.h"
 #include "disposable-binding.h"
 #include "flashable-binding.h"
-#include "sceneelement-binding.h"
 #include "viewportelement-binding.h"
 #include "binding-util.h"
 

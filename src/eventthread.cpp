@@ -26,11 +26,8 @@
 #include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_gamepad.h>
 #include <SDL3/SDL_mouse.h>
-#include <SDL3/SDL_log.h>
 #include <SDL3/SDL_messagebox.h>
-#include <SDL3/SDL_properties.h>
 #include <SDL3/SDL_timer.h>
-#include <SDL3/SDL_thread.h>
 #include <SDL3/SDL_touch.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_stdinc.h>

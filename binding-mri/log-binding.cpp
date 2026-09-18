@@ -10,28 +10,32 @@ static VALUE SetLogLevel(VALUE, VALUE v) {
 
 static VALUE debug(VALUE, VALUE v) {
   if(loglevel >= 4){
-  	Debug() << "[DEBUG " << rb_sourcefile() << ":" << rb_sourceline() << "] " << v;
+  	VALUE inspected = rb_inspect(v);
+  	Debug() << "[DEBUG " << rb_sourcefile() << ":" << rb_sourceline() << "] " << StringValueCStr(inspected);
   }
   return v;
 }
 
 static VALUE Info(VALUE, VALUE v) {
   if(loglevel >= 3){
-  	Debug() << "[INFO " << rb_sourcefile() << ":" << rb_sourceline() << "] " << v;
+  	VALUE inspected = rb_inspect(v);
+  	Debug() << "[INFO " << rb_sourcefile() << ":" << rb_sourceline() << "] " << StringValueCStr(inspected);
   }
   return v;
 }
 
 static VALUE Warn(VALUE, VALUE v) {
   if(loglevel >= 2){
-  	Debug() << "[WARN " << rb_sourcefile() << ":" << rb_sourceline() << "] " << v;
+  	VALUE inspected = rb_inspect(v);
+  	Debug() << "[WARN " << rb_sourcefile() << ":" << rb_sourceline() << "] " << StringValueCStr(inspected);
   }
   return v;
 }
 
 static VALUE Error(VALUE, VALUE v) {
   if(loglevel >= 1){
-  	Debug() << "[ERROR " << rb_sourcefile() << ":" << rb_sourceline() << "] " << v;
+  	VALUE inspected = rb_inspect(v);
+  	Debug() << "[ERROR " << rb_sourcefile() << ":" << rb_sourceline() << "] " << StringValueCStr(inspected);
   }
   return v;
 }

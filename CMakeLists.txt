@@ -80,7 +80,13 @@ set(VITASDK_PATH "/usr/local/vitasdk" CACHE STRING "VitaSDK path")
 option(DEVBUILD "Developoment build" OFF)
 option(TERMUX "Build for TERMUX" OFF)
 option(VITA "Build for PSVita" OFF)
+option(CODE_ANAL "Code analysis" OFF)
 set(SUNSHINE_ASSETS_PATH "../SunshineAssets" CACHE STRING "Used only on Vita")
+
+if(CODE_ANAL)
+	set(CMAKE_C_COMPILER_LAUNCHER "${CMAKE_SOURCE_DIR}/cmake/code_anal.sh")
+	set(CMAKE_CXX_COMPILER_LAUNCHER "${CMAKE_SOURCE_DIR}/cmake/code_anal.sh")
+endif()
 
 if(NOT VITA)
     check_ipo_supported(

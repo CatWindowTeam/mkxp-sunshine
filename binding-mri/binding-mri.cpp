@@ -33,7 +33,6 @@
 #include "sound/audio.h"
 #include "boost-hash.h"
 #include "meow.h"
-#include "sunshine.h"
 #include "modloader.h"
 
 #include <ruby/internal/gc.h>
@@ -46,7 +45,6 @@
 #include <zlib.h>
 #include <inttypes.h>
 #include <time.h>
-#include <algorithm>
 #include <SDL3/SDL_filesystem.h>
 extern const char binding_mri_module_rpg1_rb[];
 extern const int binding_mri_module_rpg1_rb_len;

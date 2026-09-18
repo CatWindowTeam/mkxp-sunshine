@@ -35,10 +35,6 @@ void subRectImageUpload(GLint srcW, GLint srcX, GLint srcY, GLint dstX, GLint ds
 
 		TEX::uploadSubImage(dstX, dstY, dstW, dstH, src->pixels, format);
 	}else{
-		//SDL_PixelFormat *form = src->format;
-		/*SDL_Surface *tmp = SDL_CreateSurface(0, dstW, dstH, form->BitsPerPixel,
-		                                        form->Rmask, form->Gmask, form->Bmask, form->Amask);*/
-
 		SDL_Surface* tmp = SDL_CreateSurface(dstW, dstH, src->format);
 		SDL_Rect srcRect = { srcX, srcY, dstW, dstH };
 

@@ -19,16 +19,13 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef EXCEPTION_H
-#define EXCEPTION_H
-
+#pragma once
 #include <SDL3/SDL_stdinc.h>
 #include <string>
 
 struct Exception{
 	enum Type{
 		RGSSError,
-		RUBYError,
 		NoFileError,
 		IOError,
 		ShaderError,
@@ -41,9 +38,6 @@ struct Exception{
 		PHYSFSError,
 		SDLError,
 		MKXPError,
-
-		//modloader
-		ModLoaderError,
 	};
 
 	Type type;
@@ -59,5 +53,3 @@ struct Exception{
 		va_end(ap);
 	}
 };
-
-#endif // EXCEPTION_H

@@ -1,11 +1,8 @@
-#include "binding.h"
-#include "binding-util.h"
 #include "debugwriter.h"
 #include <ruby.h>
 #include <ruby/debug.h>
 #include <inttypes.h>
 #include <time.h>
-#include <string>
 #include <vector>
 VALUE tp = Qnil;
 static std::vector<uint64_t> call_stack;

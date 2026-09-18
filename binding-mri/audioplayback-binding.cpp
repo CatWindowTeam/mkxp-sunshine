@@ -2,8 +2,7 @@
 #include "binding-util.h"
 #include "debugwriter.h"
 
-void audioplayback_free(void* ptr)
-{
+void audioplayback_free(void* ptr){
     AudioPlayback* pb = (AudioPlayback*)ptr;
     delete pb;
 }
@@ -18,8 +17,7 @@ VALUE audioplayback_klass;
 
 static VALUE rb_playbackPlay(int argc, VALUE *argv, VALUE self) {
     PLAYBACK
-    switch (argc)
-    {
+    switch (argc){
         case 0:{
             pb->play();
             break;

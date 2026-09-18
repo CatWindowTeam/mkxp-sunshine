@@ -1,12 +1,8 @@
 #include <ruby.h>
 #include <ruby/util.h>
-
 #include <SDL3/SDL_version.h>
-#include <SDL3/SDL_gamepad.h>
-#include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_hints.h>
 #include <SDL3/SDL_video.h>
-
 #include "config.h"
 #include "sunshine.h"
 #include "meow.h"

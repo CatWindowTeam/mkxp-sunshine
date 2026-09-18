@@ -1,10 +1,8 @@
 #include "binding-util.h"
 #include "binding-types.h"
-#include "pipe.h"
 #include "debugwriter.h"
 #include "i18n.h"
 #include "define.h"
-#include <SDL3/SDL.h>
 #include <SDL3/SDL.h>
 #include <SDL3_net/SDL_net.h>
 #include "sharedstate.h"

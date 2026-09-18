@@ -1,5 +1,5 @@
 #ifdef STEAM
-#include "steam.h"
+	#include "steam.h"
 #endif
 #include "etc.h"
 #include "sharedstate.h"

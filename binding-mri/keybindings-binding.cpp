@@ -4,24 +4,20 @@
 
 #include "keybindings-binding.h"
 
-void sourceDesc_free(void* ptr)
-{
+void sourceDesc_free(void* ptr){
     SourceDesc* kb = (SourceDesc*)ptr;
     delete kb;
 }
 
 const rb_data_type_t sourceDesc_type = { "SourceDesc", {0, sourceDesc_free, 0}, 0, 0, RUBY_TYPED_FREE_IMMEDIATELY };
 
-static VALUE sourceDesc_alloc(VALUE klass)
-{
+static VALUE sourceDesc_alloc(VALUE klass){
     SourceDesc* ptr = ALLOC(SourceDesc);
-
     return TypedData_Wrap_Struct(klass, &sourceDesc_type, ptr);
 }
 
 // fabrics
-static VALUE rb_source_key(VALUE klass, VALUE scan)
-{
+static VALUE rb_source_key(VALUE klass, VALUE scan){
     SourceDesc* s = new SourceDesc();
 
     s->type = Key;
@@ -30,8 +26,7 @@ static VALUE rb_source_key(VALUE klass, VALUE scan)
     return TypedData_Wrap_Struct(klass, &sourceDesc_type, s);
 }
 
-static VALUE rb_source_caxis(VALUE klass, VALUE axis, VALUE dir)
-{
+static VALUE rb_source_caxis(VALUE klass, VALUE axis, VALUE dir){
     SourceDesc* s = new SourceDesc();
 
     s->type = CAxis;
@@ -41,8 +36,7 @@ static VALUE rb_source_caxis(VALUE klass, VALUE axis, VALUE dir)
     return TypedData_Wrap_Struct(klass, &sourceDesc_type, s);
 }
 
-static VALUE rb_source_cbutton(VALUE klass, VALUE button)
-{
+static VALUE rb_source_cbutton(VALUE klass, VALUE button){
     SourceDesc* s = new SourceDesc();
 
     s->type = CButton;
@@ -51,8 +45,7 @@ static VALUE rb_source_cbutton(VALUE klass, VALUE button)
     return TypedData_Wrap_Struct(klass, &sourceDesc_type, s);
 }
 
-static VALUE rb_source_jaxis(VALUE klass, VALUE axis, VALUE dir)
-{
+static VALUE rb_source_jaxis(VALUE klass, VALUE axis, VALUE dir){
     SourceDesc* s = new SourceDesc();
 
     s->type = JAxis;
@@ -62,8 +55,7 @@ static VALUE rb_source_jaxis(VALUE klass, VALUE axis, VALUE dir)
     return TypedData_Wrap_Struct(klass, &sourceDesc_type, s);
 }
 
-static VALUE rb_source_jhat(VALUE klass, VALUE hat, VALUE pos)
-{
+static VALUE rb_source_jhat(VALUE klass, VALUE hat, VALUE pos){
     SourceDesc* s = new SourceDesc();
 
     s->type = JHat;
@@ -73,8 +65,7 @@ static VALUE rb_source_jhat(VALUE klass, VALUE hat, VALUE pos)
     return TypedData_Wrap_Struct(klass, &sourceDesc_type, s);
 }
 
-static VALUE rb_source_jbutton(VALUE klass, VALUE button)
-{
+static VALUE rb_source_jbutton(VALUE klass, VALUE button){
     SourceDesc* s = new SourceDesc();
 
     s->type = JButton;
@@ -90,62 +81,54 @@ static VALUE rb_source_jbutton(VALUE klass, VALUE button)
 
 #define TYPE_IS src->type == SourceType
 
-static VALUE rb_source_type(VALUE self)
-{
+static VALUE rb_source_type(VALUE self){
     SOURCE_DESC
     return INT2NUM(src->type);
 }
 
-static VALUE rb_source_scancode(VALUE self)
-{
+static VALUE rb_source_scancode(VALUE self){
     SOURCE_DESC
     if (TYPE_IS::Key)
         return INT2NUM(src->d.scan);
     return Qnil;
 }
 
-static VALUE rb_source_button(VALUE self)
-{
+static VALUE rb_source_button(VALUE self){
     SOURCE_DESC
     if (TYPE_IS::CButton || TYPE_IS::JButton)
         return INT2NUM(src->d.jb);
     return Qnil;
 }
 
-static VALUE rb_source_axis(VALUE self)
-{
+static VALUE rb_source_axis(VALUE self){
     SOURCE_DESC
     if (TYPE_IS::CAxis || TYPE_IS::JAxis)
         return INT2NUM(src->d.ja.axis);
     return Qnil;
 }
 
-static VALUE rb_source_dir(VALUE self)
-{
+static VALUE rb_source_dir(VALUE self){
     SOURCE_DESC
     if (TYPE_IS::CAxis || TYPE_IS::JAxis)
         return INT2NUM(src->d.ja.dir);
     return Qnil;
 }
 
-static VALUE rb_source_hat(VALUE self)
-{
+static VALUE rb_source_hat(VALUE self){
     SOURCE_DESC
     if (TYPE_IS::JHat)
         return INT2NUM(src->d.jh.hat);
     return Qnil;
 }
 
-static VALUE rb_source_pos(VALUE self)
-{
+static VALUE rb_source_pos(VALUE self){
     SOURCE_DESC
     if (TYPE_IS::JHat)
         return INT2NUM(src->d.jh.pos);
     return Qnil;
 }
 
-static VALUE rb_source_marshal_dump(VALUE self)
-{
+static VALUE rb_source_marshal_dump(VALUE self){
     SourceDesc* src;
     TypedData_Get_Struct(self, SourceDesc, &sourceDesc_type, src);
 
@@ -153,8 +136,7 @@ static VALUE rb_source_marshal_dump(VALUE self)
 
     rb_ary_push(arr, INT2NUM(src->type));
 
-    switch (src->type)
-    {
+    switch (src->type){
         case SourceType::Key:
             rb_ary_push(arr, INT2NUM(src->d.scan));
             break;
@@ -182,8 +164,7 @@ static VALUE rb_source_marshal_dump(VALUE self)
     return arr;
 }
 
-static VALUE rb_source_marshal_load(VALUE self, VALUE data)
-{
+static VALUE rb_source_marshal_load(VALUE self, VALUE data){
     SourceDesc* src;
     TypedData_Get_Struct(self, SourceDesc, &sourceDesc_type, src);
 
@@ -192,8 +173,7 @@ static VALUE rb_source_marshal_load(VALUE self, VALUE data)
     VALUE type = rb_ary_entry(data, 0);
     src->type = static_cast<SourceType>(NUM2INT(type));
 
-    switch (src->type)
-    {
+    switch (src->type){
         case SourceType::Key:
             src->d.scan = static_cast<SDL_Scancode>(NUM2INT(rb_ary_entry(data, 1)));
             break;

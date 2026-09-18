@@ -1,10 +1,5 @@
 #include <ruby.h>
-
 #include "shader.h"
-
-#include "disposable-binding.h"
-#include "binding-util.h"
-#include "binding-types.h"
 
 VALUE rb_mShader;
 

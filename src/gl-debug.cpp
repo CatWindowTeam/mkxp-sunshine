@@ -31,7 +31,6 @@ struct GLDebugLoggerPrivate{
 	time_t timestamp;
 	GLDebugLoggerPrivate(const char *logFilename){
 		(void) logFilename;
-
 		stream = &std::clog;
 	}
 

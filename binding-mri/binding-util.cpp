@@ -28,6 +28,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include <assert.h>
+#include <SDL3/SDL_stdinc.h>
+#include <string>
 
 RbData *getRbData(){
 	return static_cast<RbData*>(shState->bindingData());

@@ -22,7 +22,6 @@
 #include "etc.h"
 #include "binding-util.h"
 #include "serializable-binding.h"
-#include "sharedstate.h"
 
 DEF_TYPE(Color);
 DEF_TYPE(Tone);

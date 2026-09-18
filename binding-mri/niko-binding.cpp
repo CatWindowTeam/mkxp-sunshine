@@ -1,9 +1,6 @@
+#include <ruby.h>
 #include "binding-util.h"
 #include "binding-types.h"
-#include "sharedstate.h"
-#include "debugwriter.h"
-#include "eventthread.h"
-#include "define.h"
 
 
 RB_METHOD(nikoPrepare){

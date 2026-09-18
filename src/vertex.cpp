@@ -21,7 +21,6 @@
 
 #include "vertex.h"
 #include "util.h"
-
 #include <cstddef>
 
 CVertex::CVertex() : color(1, 1, 1, 1){}

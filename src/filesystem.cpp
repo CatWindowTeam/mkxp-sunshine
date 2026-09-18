@@ -29,11 +29,8 @@
 #include "boost-hash.h"
 #include "debugwriter.h"
 #include "meow.h"
-
 #include <physfs.h>
-
 #include <SDL3/SDL_stdinc.h>
-#include <algorithm>
 #include <vector>
 #include <stack>
 

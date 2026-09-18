@@ -1,29 +1,23 @@
-#include "etc.h"
 #include "binding-util.h"
-#include "binding-types.h"
-#include "debugwriter.h"
-#include "sharedstate.h"
-
 #include "signalconnection-binding.h"
 
 void RubyConnection::Disconnect(){
     RubyConnection::connection.Disconnect();
 }
+
 bool RubyConnection::Connected(){
     return RubyConnection::connection.Connected();
 }
 
 VALUE rb_cRubyConnection = Qnil;
 
-void rubyConnection_free(void* ptr)
-{
+void rubyConnection_free(void* ptr){
     RubyConnection* conn = static_cast<RubyConnection*>(ptr);
     conn->Disconnect();
     delete conn;
 }
 
-void rubyConnection_mark(void *ptr)
-{
+void rubyConnection_mark(void *ptr){
     RubyConnection *conn = static_cast<RubyConnection*>(ptr);
 
     if (!NIL_P(conn->proc))
@@ -32,8 +26,7 @@ void rubyConnection_mark(void *ptr)
 
 const rb_data_type_t rubyConnection_type = { "RubyConnection", {rubyConnection_mark, rubyConnection_free, 0}, 0, 0, RUBY_TYPED_FREE_IMMEDIATELY };
 
-static VALUE rubyConnection_alloc(VALUE klass)
-{
+static VALUE rubyConnection_alloc(VALUE klass){
     RubyConnection* ptr = ALLOC(RubyConnection);
     return TypedData_Wrap_Struct(klass, &rubyConnection_type, ptr);
 }

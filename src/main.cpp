@@ -45,7 +45,6 @@
 #include <boost/chrono.hpp>
 #include "sharedstate.h"
 #include "eventthread.h"
-#include "gl-debug.h"
 #include "debugwriter.h"
 #include "exception.h"
 #include "gl-fun.h"
