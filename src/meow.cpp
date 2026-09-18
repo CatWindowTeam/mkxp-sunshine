@@ -22,21 +22,12 @@
 #include "binding.h"
 #include "sharedstate.h"
 
-#include <ctime>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <cstdlib>
 #include <iostream>
 #include <chrono>
-
-#include <SDL3/SDL_platform_defines.h>
-#ifdef SDL_PLATFORM_NETBSD
-	#include <fmt/format.h>
-#else
-	#include <format>
-#endif
-
 
 #if !defined(ps2) && !defined(vita)
     #include <boost/stacktrace.hpp>
@@ -209,7 +200,7 @@ void crash_screen(SDL_Window* win){
 	SDL_GetCurrentRenderOutputSize(ren, NULL, &w);
 	static int items_count = (((w / 10) * 10) / 10);
 	static unsigned int pager_end = items_count;
-	const static char* shit = "[S - save crashdump to file]";
+	const static char* shit = "[S - save crash info to crash.txt]";
 	//cd -- crashdump
 	std::vector<std::string> cd = prepare_crash_info();
 	if(!skip_crash_screen){
@@ -225,24 +216,22 @@ void crash_screen(SDL_Window* win){
 	    	(float)100};
 
 		while(!quit) {
-	    		while(SDL_PollEvent(&e)) {
-	        		if(e.type == SDL_EVENT_QUIT) quit = true;
+	    	while(SDL_PollEvent(&e)) {
+	        	if(e.type == SDL_EVENT_QUIT) quit = true;
 				if(e.type == SDL_EVENT_KEY_UP){
 					if(e.key.scancode == SDL_SCANCODE_DOWN) {
 						if(pager_end < cd.size()){
-							 pager_start++;
-							 pager_end++;
+							pager_start++;
+							pager_end++;
 						}
-    					}else if(e.key.scancode == SDL_SCANCODE_UP) {
+    				}else if(e.key.scancode == SDL_SCANCODE_UP) {
 						if(pager_start != 0){
-                                                         pager_start--;
-							 pager_end--;
-                                                }
-				        }else if(e.key.scancode == SDL_SCANCODE_S){
-						const auto now = std::chrono::system_clock::now();
-						const std::string filename = std::format("crash_{:%Y-%m-%d_%H-%M-%S}.txt", now);
-						std::ofstream file(filename);
-    						for(const auto& l : cd){
+							pager_start--;
+							pager_end--;
+						}
+					}else if(e.key.scancode == SDL_SCANCODE_S){
+						std::ofstream file("crash.txt");
+	    				for(const auto& l : cd){
 							file << l << '\n';
 						}
 						shit = "[SAVED!]";
@@ -252,19 +241,18 @@ void crash_screen(SDL_Window* win){
 						quit = true;
 					}
 				}
-	    		}
-
-			count = 40;
-			SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-	    	SDL_RenderClear(ren);
-			SDL_SetRenderScale(ren, 1.0f, 1.0f);
-	    	SDL_RenderTexture(ren, tex, NULL, &dst);
-			SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-			SDL_SetRenderScale(ren, 2.0f, 2.0f);
-	    	SDL_RenderDebugText(ren, 5, 5, "World machine crashed! :(");
-			SDL_SetRenderScale(ren, 1.5f, 1.5f);
-			SDL_RenderDebugText(ren, 5, 20, shit);
-			SDL_SetRenderScale(ren, 1.0f, 1.0f);
+		    }
+		count = 40;
+		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+	    SDL_RenderClear(ren);
+		SDL_SetRenderScale(ren, 1.0f, 1.0f);
+	    SDL_RenderTexture(ren, tex, NULL, &dst);
+		SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+		SDL_SetRenderScale(ren, 2.0f, 2.0f);
+	    SDL_RenderDebugText(ren, 5, 5, "World machine crashed! :(");
+		SDL_SetRenderScale(ren, 1.5f, 1.5f);
+		SDL_RenderDebugText(ren, 5, 20, shit);
+		SDL_SetRenderScale(ren, 1.0f, 1.0f);
 			for (int i = pager_start; i <= pager_end; ++i){
 				if(i < (cd.size() - 1)){
 					count = count + 10;
