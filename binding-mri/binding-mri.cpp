@@ -33,6 +33,7 @@
 #include "sound/audio.h"
 #include "boost-hash.h"
 #include "meow.h"
+#include "config.h"
 #include "modloader.h"
 
 #include <ruby/internal/gc.h>
@@ -357,7 +358,6 @@ struct BacktraceData{
 };
 
 static void runRMXPScripts(BacktraceData &btData){
-	const Config &conf = shState->rtData().config;
 	const std::string &scriptPack = conf.game.scripts;
 	if (!shState->fileSystem().exists(scriptPack.c_str())){
 		ErrorMsg("Unable to open %s", scriptPack.c_str());
@@ -534,7 +534,6 @@ static void mriBindingExecute(){
 	ruby_init();
 	ruby_init_loadpath();
 	rb_enc_set_default_external(rb_enc_from_encoding(rb_utf8_encoding()));
-	Config &conf = shState->rtData().config;
 	if (!conf.rubyLoadpaths.empty()){
 		/* Setup custom load paths */
 		VALUE lpaths = rb_gv_get("$:");

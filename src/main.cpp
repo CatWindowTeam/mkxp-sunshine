@@ -49,16 +49,14 @@
 #include "exception.h"
 #include "gl-fun.h"
 #include "i18n.h"
-
 #include "sunshine.h"
 #include "modloader.h"
-
 #include "define.h"
 #include "meow.h"
-
 #include "binding.h"
-
+#include "CLI11.hpp"
 #include "icon.png.xxd"
+
 #ifdef STEAM
 	#include "steamshim/steamshim_child.h"
 #else
@@ -83,7 +81,6 @@ static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
 
 int rgssThreadFun(void *userdata){
 	RGSSThreadData *threadData = static_cast<RGSSThreadData*>(userdata);
-	const Config &conf = threadData->config;
 	SDL_Window *win = threadData->window;
 	SDL_GLContext glCtx;
 
@@ -144,12 +141,7 @@ int rgssThreadFun(void *userdata){
 
 static void setupWindowIcon(const Config &conf, SDL_Window *win){
 	SDL_IOStream *iconSrc;
-
-	if (conf.iconPath.empty())
-		iconSrc = SDL_IOFromConstMem(assets_icon_png, assets_icon_png_len);
-	else
-		iconSrc = SDL_IOFromFile(conf.iconPath.c_str(), "rb");
-
+	iconSrc = SDL_IOFromConstMem(assets_icon_png, assets_icon_png_len);
 	SDL_Surface *iconImg = IMG_Load_IO(iconSrc, true);
 	if (iconImg){
 		SDL_SetWindowIcon(win, iconImg);
@@ -158,6 +150,7 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 }
 
 int main(int argc, char *argv[]){
+	conf.read(argc, argv);
 	SDL_SetHint("SDL_HINT_INVALID_PARAM_CHECKS", "1");
     startTime = boost::chrono::high_resolution_clock::now();
     loadLanguageMetadata();
@@ -210,9 +203,6 @@ int main(int argc, char *argv[]){
 		PHYSFS_init(argc > 0 ? argv[0] : "oneshot");
 	#endif
 
-	/* now we load the config */
-	Config conf;
-	conf.read(argc, argv);
 	#if windows
 		if(conf.Windows_AllocConsole == true){
     			AllocConsole();
@@ -250,9 +240,6 @@ int main(int argc, char *argv[]){
 	} else {
 	    out << path;
 	}
-
-	if (conf.windowTitle.empty())
-		conf.windowTitle = conf.game.title;
 
 	if (TTF_Init() == false){
 		WarnMsg("Error initializing SDL_ttf: %s", SDL_GetError());
@@ -311,7 +298,7 @@ int main(int argc, char *argv[]){
 	    refreshRate = mode->refresh_rate;
 	}
 
-	RGSSThreadData rtData(&eventThread, win, mixer, refreshRate, conf);	
+	RGSSThreadData rtData(&eventThread, win, mixer, refreshRate);	
 	#ifndef STEAM
 		/* Add controller bindings from embedded controller DB */
 		SDL_IOStream *controllerDB = SDL_IOFromConstMem(assets_gamecontrollerdb_txt, assets_gamecontrollerdb_txt_len);

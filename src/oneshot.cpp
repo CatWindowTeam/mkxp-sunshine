@@ -5,6 +5,7 @@
 #include "font.h"
 #include "config.h"
 #include "define.h"
+#include "config.h" 
 
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
@@ -31,10 +32,6 @@
 	#include <pwd.h>
 	#include <dlfcn.h>
 #endif
-
-const Config conf;
-#define DEF_SCREEN_W conf.defScreenW
-#define DEF_SCREEN_H conf.defScreenH
 
 struct OneshotPrivate{
 	// Main SDL window
@@ -103,7 +100,7 @@ struct OneshotPrivate{
 Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	p = new OneshotPrivate();
 	p->window = threadData.window;
-	p->savePath = threadData.config.commonDataPath.substr(0, threadData.config.commonDataPath.size() - 1);
+	p->savePath = conf.commonDataPath.substr(0, conf.commonDataPath.size() - 1);
 	p->winX = 0;
 	p->winY = 0;
 	SDL_GetWindowSize(p->window, &p->winW, &p->winH);
@@ -413,13 +410,13 @@ std::string Oneshot::textinput(const char *prompt, int char_limit, const char *f
 	fontNames->push_back("VL Gothic");
 	Font *font = new Font(fontNames, 18);
 
-	Bitmap *promptBmp = new Bitmap(DEF_SCREEN_W, DEF_SCREEN_H);
+	Bitmap *promptBmp = new Bitmap(conf.defScreenW, conf.defScreenH);
 	promptBmp->setInitFont(font);
-	promptBmp->drawText(0, 0, DEF_SCREEN_W, DEF_SCREEN_H, prompt, 1);
+	promptBmp->drawText(0, 0, conf.defScreenW, conf.defScreenH, prompt, 1);
 
-	Bitmap *inputBmp = new Bitmap(DEF_SCREEN_W, DEF_SCREEN_H);
+	Bitmap *inputBmp = new Bitmap(conf.defScreenW, conf.defScreenH);
 	inputBmp->setInitFont(font);
-	inputBmp->drawText(0, 0, DEF_SCREEN_W, DEF_SCREEN_H, "", 1);
+	inputBmp->drawText(0, 0, conf.defScreenW, conf.defScreenH, "", 1);
 
 	std::string inputTextPrev = std::string("");
 	threadData.acceptingTextInput.set();
@@ -431,7 +428,7 @@ std::string Oneshot::textinput(const char *prompt, int char_limit, const char *f
 	while (threadData.acceptingTextInput){
 		if (inputTextPrev != threadData.inputText){
 			inputBmp->clear();
-			inputBmp->drawText(DEF_SCREEN_W / 2, DEF_SCREEN_H / 2, DEF_SCREEN_W, DEF_SCREEN_H, threadData.inputText.c_str(), 1);
+			inputBmp->drawText(conf.defScreenW / 2, conf.defScreenH / 2, conf.defScreenW, conf.defScreenH, threadData.inputText.c_str(), 1);
 			inputTextPrev = threadData.inputText;
 		}
 	}

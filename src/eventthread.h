@@ -19,22 +19,18 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef EVENTTHREAD_H
-#define EVENTTHREAD_H
-
+#pragma once
 #include "config.h"
 #include "etc-internal.h"
 #include "sdl-util.h"
 #include "keybindings.h"
 #include "define.h"
-
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_gamepad.h>
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_mutex.h>
 #include <SDL3_mixer/SDL_mixer.h>
-
 #include <string>
 
 struct RGSSThreadData;
@@ -265,21 +261,16 @@ struct RGSSThreadData{
 	Vec2i screenOffset;
 	const int refreshRate;
 
-	Config config;
-
 	std::string rgssErrorMsg;
 	std::string inputText;
 	int inputTextLimit;
 
-	RGSSThreadData(EventThread *ethread, SDL_Window *window, MIX_Mixer *mixer, int refreshRate, const Config& newconf)
+	RGSSThreadData(EventThread *ethread, SDL_Window *window, MIX_Mixer *mixer, int refreshRate)
 	    : allowExit(true),
 	      ethread(ethread),
 	      window(window),
 	      mixer(mixer),
 	      sizeResoRatio(1, 1),
-	      refreshRate(refreshRate),
-	      config(newconf)
-	{}
+	      refreshRate(refreshRate)
+		{}
 };
-
-#endif // EVENTTHREAD_H

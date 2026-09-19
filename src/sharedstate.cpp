@@ -20,7 +20,6 @@
 */
 
 #include "sharedstate.h"
-
 #include "util.h"
 #include "filesystem.h"
 #include "graphics.h"
@@ -41,6 +40,7 @@
 #include "binding.h"
 #include "exception.h"
 #include "sunshine.h"
+#include "config.h"
 
 #ifndef _MSC_VER
 	#include <unistd.h>
@@ -69,9 +69,9 @@ struct SharedStatePrivate{
 
 	Oneshot oneshot;
 	Sunshine sunshine;
-#ifdef STEAM
-	Steam steam;
-#endif
+	#ifdef STEAM
+		Steam steam;
+	#endif
 
 	GLState _glState;
 
@@ -99,17 +99,17 @@ struct SharedStatePrivate{
 	      sdlWindow(threadData->window),
 		  rubyDispatcher(),
 		  mainDispatcher(),
-	      fileSystem(threadData->config.allowSymlinks),
+	      fileSystem(conf.allowSymlinks),
 	      eThread(*threadData->ethread),
 	      rtData(*threadData),
-	      config(threadData->config),
+	      config(conf),
 	      graphics(threadData),
 	      input(*threadData),
 	      audio(*threadData),
 	      oneshot(*threadData),
 	      sunshine(),
-	      _glState(threadData->config),
-	      fontState(threadData->config),
+	      _glState(conf),
+	      fontState(conf),
 	      stampCounter(0)
 	{
 		/* Shaders have been compiled in ShaderSet's constructor */

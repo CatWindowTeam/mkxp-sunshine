@@ -457,9 +457,9 @@ struct GraphicsPrivate{
 	TEX::ID obscuredTex;
 
 	GraphicsPrivate(RGSSThreadData *rtData)
-	    : scRes(rtData->config.defScreenW, rtData->config.defScreenH),
+	    : scRes(conf.defScreenW, conf.defScreenH),
 	      scSize(scRes),
-	      winSize(rtData->config.defScreenW, rtData->config.defScreenH),
+	      winSize(conf.defScreenW, conf.defScreenH),
 	      screen(scRes.x, scRes.y),
 	      threadData(rtData),
 	      glCtx(SDL_GL_GetCurrentContext()),
@@ -506,7 +506,7 @@ struct GraphicsPrivate{
 	void recalculateScreenSize(RGSSThreadData *rtData){
 		scSize = winSize;
 
-		if (!rtData->config.fixedAspectRatio){
+		if (!conf.fixedAspectRatio){
 			scOffset = Vec2i(0, 0);
 			return;
 		}
@@ -567,7 +567,7 @@ struct GraphicsPrivate{
 	}
 
 	void metaBlitBufferFlippedScaled(){
-		GLMeta::blitRectangle(IntRect(0, 0, scRes.x, scRes.y), IntRect(scOffset.x, scSize.y+scOffset.y, scSize.x, -scSize.y), threadData->config.smoothScaling);
+		GLMeta::blitRectangle(IntRect(0, 0, scRes.x, scRes.y), IntRect(scOffset.x, scSize.y+scOffset.y, scSize.x, -scSize.y), conf.smoothScaling);
 	}
 
 	void redrawScreen(){
@@ -607,14 +607,14 @@ struct GraphicsPrivate{
 Graphics::Graphics(RGSSThreadData *data){
 	p = new GraphicsPrivate(data);
 
-	if (data->config.syncToRefreshrate){
+	if (conf.syncToRefreshrate){
 		p->frameRate = data->refreshRate;
 		p->fpsLimiter.disabled = true;
 	}
-	else if (data->config.fixedFramerate > 0){
-		p->fpsLimiter.setDesiredFPS(data->config.fixedFramerate);
+	else if (conf.fixedFramerate > 0){
+		p->fpsLimiter.setDesiredFPS(conf.fixedFramerate);
 	}
-	else if (data->config.fixedFramerate < 0){
+	else if (conf.fixedFramerate < 0){
 		p->fpsLimiter.disabled = true;
 	}
 }
@@ -635,7 +635,7 @@ void Graphics::update(bool limitFps){
 
 	if (limitFps){
 		if (p->fpsLimiter.frameSkipRequired()){
-			if (p->threadData->config.frameSkip){
+			if (conf.frameSkip){
 				/* Skip frame */
 				p->fpsLimiter.delay();
 				++p->frameCount;
@@ -787,10 +787,10 @@ DEF_ATTR_SIMPLE(Graphics, FrameCount, int, p->frameCount)
 void Graphics::setFrameRate(int value){
 	p->frameRate = clamp(value, 10, 120);
 
-	if (p->threadData->config.syncToRefreshrate)
+	if (conf.syncToRefreshrate)
 		return;
 
-	if (p->threadData->config.fixedFramerate > 0)
+	if (conf.fixedFramerate > 0)
 		return;
 
 	p->fpsLimiter.setDesiredFPS(p->frameRate);
@@ -970,19 +970,19 @@ void Graphics::setVsync(int value){
 }
 
 bool Graphics::getSmooth() const{
-	return p->threadData->config.smoothScaling;
+	return conf.smoothScaling;
 }
 
 void Graphics::setSmooth(bool value){
-	p->threadData->config.smoothScaling = value;
+	conf.smoothScaling = value;
 }
 
 bool Graphics::getFrameskip() const{
-	return p->threadData->config.frameSkip;
+	return conf.frameSkip;
 }
 
 void Graphics::setFrameskip(bool value){
-	p->threadData->config.frameSkip = value;
+	conf.frameSkip = value;
 }
 
 bool Graphics::getShowCursor() const{

@@ -19,11 +19,8 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef GLSTATE_H
-#define GLSTATE_H
-
+#pragma once
 #include "etc.h"
-
 #include <stack>
 #include <assert.h>
 
@@ -87,8 +84,7 @@ class GLBlendMode : public GLProperty<BlendType>{
 	void apply(const BlendType &value);
 };
 
-class GLBlend : public GLProperty<bool>
-{
+class GLBlend : public GLProperty<bool>{
 	void apply(const bool &value);
 };
 
@@ -120,5 +116,3 @@ public:
 
 	GLState(const Config &conf);
 };
-
-#endif // GLSTATE_H

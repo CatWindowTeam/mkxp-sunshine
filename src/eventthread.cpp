@@ -38,6 +38,7 @@
 #include "debugwriter.h"
 #include "oneshot.h"
 #include "meow.h"
+#include "config.h"
 
 #include <cstdio>
 #include <map>
@@ -95,7 +96,7 @@ void EventThread::process(RGSSThreadData &rtData){
 	SDL_Window *win = rtData.window;
 	UnidirMessage<Vec2i> &windowSizeMsg = rtData.windowSizeMsg;
 
-	fullscreen = rtData.config.fullscreen;
+	fullscreen = conf.fullscreen;
 
 	fps.lastFrame = SDL_GetPerformanceCounter();
 	fps.displayCounter = 0;
@@ -275,21 +276,19 @@ void EventThread::process(RGSSThreadData &rtData){
 					displayingFPS = true;
 				}else{
 					displayingFPS = false;
-
 					if (fullscreen){
 						/* Prevent fullscreen flicker */
-						SDL_strlcpy(pendingTitle, rtData.config.windowTitle.c_str(), sizeof(pendingTitle));
+						SDL_strlcpy(pendingTitle, conf.windowTitle.c_str(), sizeof(pendingTitle));
 						break;
 					}
 
-					SDL_SetWindowTitle(win, rtData.config.windowTitle.c_str());
+					SDL_SetWindowTitle(win, conf.windowTitle.c_str());
 				}
-
 				break;
 			}
 
 			if (event.key.scancode == SDL_SCANCODE_F12){
-				if (!rtData.config.debugMode)
+				if (!conf.debugMode)
 					break;
 
 				if (resetting)
@@ -315,7 +314,7 @@ void EventThread::process(RGSSThreadData &rtData){
 
 		case SDL_EVENT_KEY_UP :
 			if (event.key.scancode == SDL_SCANCODE_F12){
-				if (!rtData.config.debugMode)
+				if (!conf.debugMode)
 					break;
 
 				resetting = false;
@@ -420,7 +419,7 @@ void EventThread::process(RGSSThreadData &rtData){
 				SDL_SetWindowPosition(win, event.window.data1, event.window.data2);
 				break;
 			case REQUEST_MESSAGEBOX :
-				SDL_ShowSimpleMessageBox(event.user.code, rtData.config.windowTitle.c_str(), (const char*) event.user.data1, win);
+				SDL_ShowSimpleMessageBox(event.user.code, conf.windowTitle.c_str(), (const char*) event.user.data1, win);
 				SDL_free(event.user.data1);
 				msgBoxDone.set();
 				break;
@@ -434,7 +433,7 @@ void EventThread::process(RGSSThreadData &rtData){
 				if (!fps.sendUpdates)
 					break;
 
-				SDL_snprintf(buffer, sizeof(buffer), "%s - %d FPS", rtData.config.windowTitle.c_str(), event.user.code);
+				SDL_snprintf(buffer, sizeof(buffer), "%s - %d FPS", conf.windowTitle.c_str(), event.user.code);
 				Debug() << "FPS " << event.user.code;
 				/* Updating the window title in fullscreen
 				 * mode seems to cause flickering */

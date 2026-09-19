@@ -93,7 +93,6 @@ RB_METHOD(journalActive){
 #endif
 
 void journalBindingInit(){
-	const static Config &conf = shState->rtData().config;
 	SDL_snprintf(addr, 65, "%s", conf.journal_address.c_str());
 	port = conf.journal_port;
 	#ifdef JOURNAL_ENABLED

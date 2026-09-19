@@ -1,180 +1,85 @@
-/*
-** config.cpp
-**
-** This file is part of mkxp.
-**
-** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
-**
-** mkxp is free software: you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** mkxp is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
+//TODO: autogen of descs
+#include <SDL3/SDL_filesystem.h>
+#include <SDL3/SDL_messagebox.h>
 #include "config.h"
-
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/parsers.hpp>
-#include <boost/program_options/variables_map.hpp>
-
-#include <physfs.h>
-
-#include <fstream>
-#include <SDL3/SDL_stdinc.h>
-#include <cstdlib>
-
-#include "debugwriter.h"
+#include "meow.h"
 #include "util.h"
-#include "sdl-util.h"
-#include <SDL3/SDL_system.h>
-namespace std{
-	std::ostream& operator<<(std::ostream &os, const std::vector<std::string> &vec){
-		for (auto item : vec){
-			os << item << " ";
-		}
-		return os;
-	}
-}
+#include "define.h"
 
 static std::string prefPath(const char *org, const char *app){
-	const char *path = PHYSFS_getPrefDir(org, app);
-
+	const char *path = SDL_GetPrefPath(org, app);
 	if (!path)
 		return std::string();
-
 	return path;
 }
 
-template<typename T>
-std::set<T> setFromVec(const std::vector<T> &vec){
-	return std::set<T>(vec.begin(), vec.end());
-}
-
-typedef std::vector<std::string> StringVec;
-namespace po = boost::program_options;
-
-#define CONF_FILE "oneshot.conf"
-
-Config::Config() {}
-
-void Config::read(int argc, char *argv[]){
-#define PO_DESC_ALL \
-	PO_DESC(debugMode,                       bool,        false       ) \
-	PO_DESC(fullscreen,                      bool,        false       ) \
-	PO_DESC(fixedAspectRatio,                bool,        true        ) \
-	PO_DESC(smoothScaling,                   bool,        false       ) \
-	PO_DESC(defScreenW,                      int,         0           ) \
-	PO_DESC(defScreenH,                      int,         0           ) \
-	PO_DESC(windowTitle,                     std::string, ""          ) \
-	PO_DESC(commonDataPath,                  std::string, ""          ) \
-	PO_DESC(Modloader.ModsDirPath,           std::string, "mods"      ) \
-	PO_DESC(Modloader.skip_modloader_screen, bool,        false       ) \
-	PO_DESC(fixedFramerate,                  int,         0           ) \
-	PO_DESC(frameSkip,                       bool,        true        ) \
-	PO_DESC(syncToRefreshrate,               bool,        false       ) \
-	PO_DESC(solidFonts,                      bool,        false       ) \
-	PO_DESC(subImageFix,                     bool,        false       ) \
-	PO_DESC(enableBlitting,                  bool,        true        ) \
-	PO_DESC(maxTextureSize,                  int,         0           ) \
-	PO_DESC(gameFolder,                      std::string, "."         ) \
-	PO_DESC(allowSymlinks,                   bool,        false       ) \
-	PO_DESC(iconPath,                        std::string, ""          ) \
-	PO_DESC(wallpaperMode,                   std::string, "normal"    ) \
-	PO_DESC(SE.sourceCount,                  int,         6           ) \
-	PO_DESC(pathCache,                       bool,        true        ) \
-	PO_DESC(Windows_AllocConsole,            bool,        false       ) \
-	PO_DESC(pancakes,                        bool,        false       ) \
-	PO_DESC(journal_address,                 std::string, "127.0.0.1" ) \
-	PO_DESC(journal_port,                    int,         23821       )
-
-// Not gonna take your shit boost
-#define GUARD_ALL( SDL_exp ) try { SDL_exp } catch(...) {}
-#define PO_DESC(key, type, def) (#key, po::value< type >()->default_value(def))
-
-	po::options_description podesc;
-	podesc.add_options()
-	        PO_DESC_ALL
-	        ("fontSub", po::value<StringVec>()->composing()->default_value(StringVec()))
-	        ("rubyLoadpath", po::value<StringVec>()->composing()->default_value(StringVec()));
-
-	po::variables_map vm;
-
-	/* Parse command line options */
-	try{
-		po::parsed_options cmdPo = po::command_line_parser(argc, argv).options(podesc).run();
-		po::store(cmdPo, vm);
-	}catch (po::error &error){
-		Debug() << "[config] " << error.what();
-	}
-
-	/* Parse configuration file */
-	SDLRWStream confFile(CONF_FILE, "r");
-
-	if (confFile){
-		try{
-			po::store(po::parse_config_file(confFile.stream(), podesc, true), vm);
-			po::notify(vm);
-		}
-		catch (po::error &error){
-			Debug() << CONF_FILE":" << error.what();
-		}
-	}
-
-#undef PO_DESC
-#define PO_DESC(key, type, def) GUARD_ALL( key = vm[#key].as< type >(); )
-
-	PO_DESC_ALL;
-
-	GUARD_ALL( fontSubs = vm["fontSub"].as<StringVec>(); );
-
-	GUARD_ALL( rubyLoadpaths = vm["rubyLoadpath"].as<StringVec>(); );
-
-#undef PO_DESC
-#undef PO_DESC_ALL
-
-	SE.sourceCount = clamp(SE.sourceCount, 1, 64);
-	#if defined(__ANDROID__) && !defined(TERMUX)
+Config conf;
+void Config::read(int argc, char* argv[]) {
+	#ifdef defined(android) && !defined(TERMUX)
 		commonDataPath = prefPath(SDL_GetAndroidInternalStoragePath(), "/SunshineSaves");
 		gameFolder = "";
 		gameFolder.append(SDL_GetAndroidInternalStoragePath()).append("/Sunshine");
-	#elif vita
-		commonDataPath = "ux0:/data/SunshineSaves";
-		gameFolder = "ux0:/data/Sunshine";
-	#else
-		commonDataPath = prefPath(".", "Sunshine");
-		if(pancakes){
-			commonDataPath = prefPath(".", "Sunshine_Pancakes");
-		}
 	#endif
-
-	if(windowTitle == "")
-		game.title = "OneShot: Sunshine";
-	game.scripts = "Data/xScripts.rxdata";
-
-	#ifdef vita
-		resolutionOverridden = true;
-		defScreenW = 960;
-		defScreenH = 544;
-	#else
-		resolutionOverridden = defScreenW > 0 || defScreenH > 0;
-		defScreenW = defScreenW <= 0 ? 640 : defScreenW;
-		defScreenH = defScreenH <= 0 ? 480 : defScreenH;
-	#endif
-
-#ifdef STEAM
-	/* Override fullscreen config if Big Picture */
-	if (const char *env = SDL_getenv("SteamTenfoot")){
-		if (!SDL_strcmp(env, "1"))
-			fullscreen = true;
-	}
-#endif
+	SE.sourceCount = clamp(SE.sourceCount, 1, 64);
+    CLI::App a{"Engine of Sunshine"};
+    argv = a.ensure_utf8(argv);
+    a.add_option("-d,--debug", debugMode, "Enable reset on F12 press and other debug stuff");
+    a.add_option("-f,--fullscreen", fullscreen, "Start game in fullscreen mode but Game Scripts"
+    											"can just enforce window mode so this exists only for debuging");
+    a.add_option("--fixedAspectRatio", fixedAspectRatio, "Preserve game screen aspect ratio, as opposed to stretch-to-fill");
+    a.add_option("--Windows.Alloc_console", debugMode, "Create new console window with debug output, windows only");
+	a.add_option("--smoothScaling", smoothScaling, "Apply linear interpolation when game screen is upscaled. Can be overriden by game scripts.");
+	a.add_option("--width", defScreenW, "Window width");
+	a.add_option("--height", defScreenH, "Window height");
+	a.add_option("--windowTitle", windowTitle, "Window Title");
+	a.add_option("--fixedFramerate", fixedFramerate, "Enforce a static frame rate");
+	a.add_option("--frameSkip", frameSkip, "Skip (don't draw) frames when behind. Can be overriden by game scripts");
+	a.add_option("--syncToRefreshrate", syncToRefreshrate, "Use a fixed framerate that is approx. equal to the "
+																"native screen refresh rate. This is different from"
+																" 'fixedFramerate' because the actual frame rate is"
+																"reported back to the game, ensuring correct timers."
+																"If the screen refresh rate cannot be determined, this option is force-disabled");
+	a.add_option("--solidFonts", solidFonts, "Don't use alpha blending when rendering text");
+	a.add_option("--subImageFix", subImageFix, "Work around buggy graphics drivers which don't properly synchronize texture access," 
+													  "most apparent when text doesn't show up or the map tileset doesn't render at all");
+	a.add_option("--enableBlitting", enableBlitting, "framebuffer blitting if the driver is capable of it. Some drivers carry buggy"
+														   "implementations of this functionality, so disabling it can be used as a workaround");
+	a.add_option("--maxTextureSize", maxTextureSize, "Limit the maximum size (width, height) of most textures mkxp will create"
+															"(exceptions are rendering backbuffers and similar). If set to 0, the hardware maximum is used."
+															"This is useful for recording traces that can be played back on machines with lower specs.");
+	a.add_option("--gameFolder", gameFolder, "Game Folder path");
+	a.add_option("--allowSymlinks", allowSymlinks, "Allow symlinks for game assets to be followed");
+	a.add_option("--pathCache", pathCache, "Index all accesible assets via their lower case path (emulates windows case insensitivity)");
+	a.add_option("--JournalAddress", journal_address, "journal_address");
+	a.add_option("--JournalPort", journal_port, "journal_port");
+	a.add_option("--Modloader.ModsDirPath", Modloader.ModsDirPath, "Debug Mode");
+	a.add_option("--Modloader.skip_modloader_screen", Modloader.skip_modloader_screen, "Skip Modloader screen");
+	a.add_option("--game.scripts", game.scripts, "Scripts File");
+	a.add_option<std::vector<std::string>>("--fS,--fontSubs", fontSubs, "# Font substitutions allow drop-in replacements of fonts"
+																		" to be used without changing the RGSS scripts,"
+																		" eg. providing 'Open Sans' when the game thinkgs it's"
+																		" using 'Arial'. Font family to be substituted and"
+																		" replacement family are separated by one sole '>'."
+																		"Be careful not to include any spaces."
+																		"This is not connected to the built-in font, which is "
+																		"always used when a non-existing font family is requested by RGSS.");
+    a.set_config("--config", "sunshine.conf", "Config file", false);
+    try{
+        a.parse(argc, argv);
+    }catch (const CLI::ParseError &e) {
+    	if(e.get_exit_code() == 0){
+    		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Help", a.help().c_str(), NULL);
+    	}else{
+    		WarnMsg("Failed to parse config or command line arguments! Error: %s", e.what());
+    		std::exit(e.get_exit_code());	
+    	}
+    }
+    resolutionOverridden = defScreenW != 640 || defScreenH != 480;
+    #ifdef STEAM
+    	/* Override fullscreen config if Big Picture */
+    	if (const char *env = SDL_getenv("SteamTenfoot")){
+    		if (!SDL_strcmp(env, "1"))
+    			fullscreen = true;
+    	}
+    #endif
 }
-

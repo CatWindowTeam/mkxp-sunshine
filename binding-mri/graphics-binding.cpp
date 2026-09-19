@@ -31,6 +31,7 @@
 #include "signalconnection-binding.h"
 #include "define.h"
 #include <cstring>
+
 #ifdef android
 	#include "input.h"
 	#include "eventthread.h"
@@ -405,7 +406,5 @@ void graphicsBindingInit(){
 	INIT_GRA_PROP_BIND( ShowCursor, "show_cursor" );
 	INIT_GRA_PROP_BIND( Smooth,     "smooth"      );
 	INIT_GRA_PROP_BIND( Frameskip,  "frameskip"   );
-
-	const Config &conf = shState->rtData().config;
 	rb_define_const(module, "RESOLUTION_OVERRIDDEN", rb_bool_new(conf.resolutionOverridden));
 }

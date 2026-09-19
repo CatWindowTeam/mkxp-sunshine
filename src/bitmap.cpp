@@ -27,16 +27,14 @@
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_iostream.h>
-
 #include <pixman.h>
-
 #include "gl-util.h"
 #include "gl-meta.h"
 #include "quad.h"
 #include "quadarray.h"
 #include "transform.h"
 #include "exception.h"
-
+#include "config.h"
 #include "meow.h"
 #include "sharedstate.h"
 #include "glstate.h"
@@ -983,7 +981,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 
 	SDL_Surface *txtSurf;
 
-	if (shState->rtData().config.solidFonts)
+	if (conf.solidFonts)
 		txtSurf = TTF_RenderText_Solid(font, str, SDL_strlen(str), c);
 	else
 		txtSurf = TTF_RenderText_Blended(font, str, SDL_strlen(str), c);
@@ -1003,7 +1001,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 		SDL_Surface *outline;
 		/* set the next font render to render the outline */
 		TTF_SetFontOutline(font, OUTLINE_SIZE);
-		if (shState->rtData().config.solidFonts)
+		if (conf.solidFonts)
 			outline = TTF_RenderText_Solid(font, str, SDL_strlen(str), co);
 		else
 			outline = TTF_RenderText_Blended(font, str, SDL_strlen(str), co);

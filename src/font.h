@@ -19,15 +19,11 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FONT_H
-#define FONT_H
-
+#pragma once
 #include "etc.h"
 #include "util.h"
-
 #include <vector>
 #include <string>
-
 #include <SDL3_ttf/SDL_ttf.h>
 
 struct SDL_IOStream;
@@ -111,5 +107,3 @@ public:
 private:
 	FontPrivate *p;
 };
-
-#endif // FONT_H

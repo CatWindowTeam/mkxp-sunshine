@@ -20,10 +20,8 @@
 */
 
 #include "keybindings.h"
-
 #include "config.h"
 #include "util.h"
-
 #include <SDL3/SDL_stdinc.h>
 
 struct KbBindingData{

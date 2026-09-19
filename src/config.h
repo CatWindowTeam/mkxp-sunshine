@@ -1,92 +1,74 @@
-/*
-** config.h
-**
-** This file is part of mkxp.
-**
-** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
-**
-** mkxp is free software: you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** mkxp is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-#ifndef CONFIG_H
-#define CONFIG_H
-
+#pragma once
 #include <string>
 #include <vector>
-#include <set>
+#include "define.h"
+#include "CLI11.hpp"
 
-struct Config{
-	bool debugMode;
-	bool fullscreen;
-	bool fixedAspectRatio;
-	bool resolutionOverridden;
-	bool Windows_AllocConsole;
-	bool smoothScaling;
-	bool pancakes;
-	int defScreenW;
-	int defScreenH;
-	std::string windowTitle;
+struct Config {
+    bool debugMode = false;
+    bool fullscreen = false;
+    bool fixedAspectRatio = true;
+    bool Windows_AllocConsole = false;
+    bool smoothScaling = false;
 
-	int fixedFramerate;
-	bool frameSkip;
-	bool syncToRefreshrate;
+    #ifdef vita
+		resolutionOverridden = true;
+		defScreenW = 960;
+		defScreenH = 544;
+	#else
+		bool resolutionOverridden = false;
+    	int defScreenW = 640;
+    	int defScreenH = 480;
+    #endif
+    std::string windowTitle = "Oneshot: Sunshine";
 
-	bool solidFonts;
+    int fixedFramerate = 0;
+    bool frameSkip = true;
+    bool syncToRefreshrate = true;
 
-	bool subImageFix;
-	bool enableBlitting;
-	int maxTextureSize;
+    bool solidFonts = false;
 
-	std::string gameFolder;
-	bool allowSymlinks;
-	bool pathCache;
-	bool SecurityEngine;
+    bool subImageFix = false;
+    bool enableBlitting = true;
+    int maxTextureSize = 0;
+    bool allowSymlinks = false;
+    bool pathCache = true;
 
-	std::string iconPath;
+    std::string wallpaperMode = "normal";
+    std::string journal_address = "127.0.0.1";
+    int journal_port = 23821;
 
-	std::string wallpaperMode;
-	std::string journal_address;
-	int journal_port;
+    struct {
+        int sourceCount = 6;
+    } SE;
 
-	struct{
-		int sourceCount;
-	} SE;
+    struct {
+        std::string ModsDirPath = "mods";
+        bool skip_modloader_screen = false;
+    } Modloader;
 
-	struct{
-		std::string ModsDirPath;
-		bool skip_modloader_screen;
-	} Modloader;
+    bool useScriptNames = false;
 
-	bool useScriptNames;
+    std::vector<std::string> fontSubs;
+    std::vector<std::string> rubyLoadpaths;
 
-	std::string customScript;
-	std::vector<std::string> rtps;
-	std::vector<std::string> fontSubs;
-	std::vector<std::string> rubyLoadpaths;
-	/* Game INI contents */
-	struct {
-		std::string scripts;
-		std::string title;
-	} game;
+    struct {
+        std::string scripts = "Data/xScripts.rxdata";
+    } game;
 
-	/* Internal */
-	std::string customDataPath;
-	std::string commonDataPath;
+	std::string commonDataPath_org;
+    std::string commonDataPath_app;
 
-	Config();
-
-	void read(int argc, char *argv[]);
+	#ifdef vita
+    	std::string customDataPath;
+    	std::string commonDataPath = "ux0:/data/Sunshine";
+    	std::string gameFolder = "ux0:/data/Sunshine";
+    #else
+    	std::string customDataPath;
+    	std::string commonDataPath;
+    	std::string gameFolder;    	
+    #endif
+    void read(int argc, char* argv[]);
 };
 
-#endif // CONFIG_H
+extern Config conf;

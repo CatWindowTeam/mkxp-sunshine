@@ -19,11 +19,9 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KEYBINDINGS_H
-#define KEYBINDINGS_H
-
+#pragma once
 #include "input.h"
-
+#include "config.h"
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_gamepad.h>
@@ -110,5 +108,3 @@ BDescVec genDefaultBindings();
 
 void storeBindings(const BDescVec &d, const Config &conf);
 BDescVec loadBindings(const Config &conf);
-
-#endif // KEYBINDINGS_H
