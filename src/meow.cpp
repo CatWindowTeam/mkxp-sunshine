@@ -23,13 +23,6 @@
 #include <cstdlib>
 #include <iostream>
 
-#if !defined(ps2) && !defined(vita) && !defined(__NetBSD__) && !defined(psp)
-    #include <boost/stacktrace.hpp>
-    #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__)
-    	#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
-    #endif
-#endif
-
 #ifdef android
 	#include <android/api-level.h>
 #endif
@@ -130,11 +123,9 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back(std::string{"COMPILER: "} + COMPILER_NAME + std::string{" "} + COMPILER_VER);
 	c.emplace_back("");
 	c.emplace_back("");
-	c.emplace_back("");
 	c.emplace_back("[LOGS]");
 	c.insert(c.end(), logs.begin(), logs.end());
 	c.emplace_back("[LOGS END]");
-	c.emplace_back("");
 	c.emplace_back("");
 	c.emplace_back("");
 	c.emplace_back(std::string{"Audio driver: "} + SDL_GetCurrentAudioDriver());
@@ -144,19 +135,6 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back(std::string{"Last SDL Error on the current thread: "} + SDL_GetError());
 	#ifdef android
 		c.emplace_back(std::string{"Android API: "} + std::to_string(android_get_device_api_level()));
-	#endif
-	c.emplace_back("");
-	c.emplace_back("");
-	c.emplace_back("");
-	//maybe we should use C++ stacktrace?
-	c.emplace_back("[STACK TRACE]");
-	#if defined(ps2) || defined(vita) || defined(__NetBSD__) || defined(psp) 
-	    // TODO: PS2/Vita stacktrace implementation
-	#else
-	    boost::stacktrace::stacktrace trace;
-	    for (const auto& frame : trace) {
-	        c.push_back(boost::stacktrace::to_string(frame));
-	    }
 	#endif
 	return c;
 }

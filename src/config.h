@@ -39,10 +39,6 @@ struct Config {
     int journal_port = 23821;
 
     struct {
-        int sourceCount = 6;
-    } SE;
-
-    struct {
         std::string ModsDirPath = "mods";
         bool skip_modloader_screen = false;
     } Modloader;

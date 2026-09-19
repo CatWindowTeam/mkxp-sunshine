@@ -24,7 +24,6 @@
 #endif
 
 #include "graphics.h"
-
 #include "util.h"
 #include "gl-util.h"
 #include "sharedstate.h"
@@ -969,20 +968,8 @@ void Graphics::setVsync(int value){
 	p->threadData->ethread->requestVsync(value);
 }
 
-bool Graphics::getSmooth() const{
-	return conf.smoothScaling;
-}
-
 void Graphics::setSmooth(bool value){
 	conf.smoothScaling = value;
-}
-
-bool Graphics::getFrameskip() const{
-	return conf.frameSkip;
-}
-
-void Graphics::setFrameskip(bool value){
-	conf.frameSkip = value;
 }
 
 bool Graphics::getShowCursor() const{
@@ -996,6 +983,19 @@ void Graphics::setShowCursor(bool value){
 Scene *Graphics::getScreen() const{
 	return &p->screen;
 }
+
+bool Graphics::getSmooth() const{
+	return conf.smoothScaling;
+}
+
+bool Graphics::getFrameskip() const{
+	return conf.frameSkip;
+}
+
+void Graphics::setFrameskip(bool value){
+	conf.frameSkip = value;
+}
+
 
 void Graphics::repaintWait(const AtomicFlag &exitCond, bool checkReset){
 	if (exitCond)

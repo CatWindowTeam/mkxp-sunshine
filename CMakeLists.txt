@@ -349,7 +349,10 @@ check_option(OPTIONS_RELEASE
 	-ftrivial-auto-var-init=uninitialized
 	-fzero-call-used-regs=skip
 	-fomit-frame-pointer
-	-fno-rtti)
+	-fno-rtti
+	-fno-unwind-tables
+	-fno-asynchronous-unwind-tables
+	)
 
 # Loading release options specific for cpu arch from toolchain file
 if("${ARCH_RELEASE}" STREQUAL "")
@@ -454,11 +457,9 @@ else()
 endif()
 
 if(ANDROID)
-	find_package(Boost REQUIRED COMPONENTS program_options chrono CONFIG)
-elseif(PSP)
 	find_package(Boost REQUIRED COMPONENTS chrono CONFIG)
 else()
-	find_package(Boost REQUIRED COMPONENTS program_options chrono)
+	find_package(Boost REQUIRED COMPONENTS chrono)
 endif()
 
 find_package(PhysFS REQUIRED)
