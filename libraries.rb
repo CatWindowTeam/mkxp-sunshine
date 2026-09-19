@@ -45,8 +45,13 @@ BLACKLIST = [
   "msvcp_win.dll"
 ]
 
+outDir = "libs"
+if ARGV.length >= 1
+  outDir = ARGV[0]
+end
+
 files = []
-while line = gets
+while line = STDIN.gets
   if line =~ / => (\/.*) \(/
     path = $1
     filename = File.basename(path)
@@ -55,5 +60,5 @@ while line = gets
     files << path
   end
 end
-FileUtils.cp(files, 'libs')
+FileUtils.cp(files, outDir)
 puts "copying libraries done."

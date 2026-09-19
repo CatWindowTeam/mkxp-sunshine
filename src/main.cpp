@@ -57,6 +57,14 @@
 #include "CLI11.hpp"
 #include "icon.png.xxd"
 
+#ifndef NDEBUG
+#include "gl-debug.h"
+#endif
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #ifdef STEAM
 	#include "steamshim/steamshim_child.h"
 #else

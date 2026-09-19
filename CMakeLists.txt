@@ -220,7 +220,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     list(APPEND MAIN_SOURCE assets/resources.rc)
     list(APPEND DEFINES UNICODE)
     list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi winmm z mingw32)
-    include(cmake/os/windows.cmake)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     list(APPEND MAIN_HEADERS src/mac-desktop.h)
     list(APPEND MAIN_SOURCE src/mac-desktop.mm)
@@ -299,6 +298,10 @@ else()
 		${EMBEDDED_SOURCE})
 endif()
 
+if (WIN32)
+	target_link_options(${APP_TARGET} PRIVATE -municode) # HAVING NO IDEA HOW DOES THIS EVEN WORK.
+endif()
+
 set_target_properties(${APP_TARGET} PROPERTIES
     BUILD_RPATH "$ORIGIN"
     INSTALL_RPATH "$ORIGIN"
@@ -350,8 +353,10 @@ check_option(OPTIONS_RELEASE
 	-fzero-call-used-regs=skip
 	-fomit-frame-pointer
 	-fno-rtti
-	-fno-unwind-tables
-	-fno-asynchronous-unwind-tables
+	
+	# breaks compilation on windows
+	# -fno-unwind-tables
+	# -fno-asynchronous-unwind-tables
 	)
 
 # Loading release options specific for cpu arch from toolchain file
