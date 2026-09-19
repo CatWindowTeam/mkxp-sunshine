@@ -18,7 +18,6 @@
 ** You should have received a copy of the GNU General Public License
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #pragma once
 #include <iostream>
 #include <sstream>
@@ -48,22 +47,21 @@ public:
 	Debug &operator<<(const std::vector<T> &v){
 		for (size_t i = 0; i < v.size(); ++i)
 			buf << v[i] << " ";
-
 		return *this;
 	}
 
 	~Debug() {
-#ifdef __ANDROID__
-		#ifdef TERMUX
-			std::cout << buf.view() << '\n';
+		#ifdef android
+			#ifdef TERMUX
+				std::cout << buf.view() << '\n';
+			#else
+				__android_log_write(ANDROID_LOG_INFO, "sunshine", buf.str().c_str());
+			#endif
+		#elif web
+			emscripten_console_log(buf.str().c_str());
 		#else
-			__android_log_write(ANDROID_LOG_INFO, "sunshine", buf.str().c_str());
+			std::cout << buf.view() << '\n';
 		#endif
-#elif __EMSCRIPTEN__
-		emscripten_console_log(buf.str().c_str());
-#else
-		std::cout << buf.view() << '\n';
-#endif
 		logs.emplace_back(buf.view());
 	}
 
