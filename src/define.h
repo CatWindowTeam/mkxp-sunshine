@@ -35,3 +35,7 @@
 #if SDL_PLATFORM_VITA
 	#define vita 1
 #endif
+
+#if SDL_PLATFORM_PSP
+	#define psp 1
+#endif

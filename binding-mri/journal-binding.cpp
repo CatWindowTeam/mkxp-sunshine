@@ -1,16 +1,18 @@
 #include "binding-util.h"
 #include "binding-types.h"
-#include "debugwriter.h"
-#include "i18n.h"
-#include "define.h"
-#include <SDL3/SDL.h>
-#include <SDL3_net/SDL_net.h>
 #include "sharedstate.h"
 #include "eventthread.h"
+#include "debugwriter.h"
+#include "define.h"
+#include <SDL3/SDL.h>
 #include "config.h"
 static char lang[4] = "en";
 static char addr[65] = "127.0.0.1";
 static unsigned int port = 0;
+
+#ifdef JOURNAL_ENABLED
+
+#include <SDL3_net/SDL_net.h>
 void SendRaw(const char *address, int port, const char *raw){
     NET_Address *addr = NET_ResolveHostname(address);
     if (!addr) {
@@ -71,13 +73,34 @@ RB_METHOD(journalActive){
 	return Qtrue;
 }
 
+#else
+
+RB_METHOD(journalSet){
+	RB_UNUSED_PARAM;
+	return Qnil;
+}
+
+RB_METHOD(journalLangSet){
+        RB_UNUSED_PARAM;
+        return Qnil;
+}
+
+RB_METHOD(journalActive){
+	RB_UNUSED_PARAM;
+	return Qtrue;
+}
+
+#endif
+
 void journalBindingInit(){
 	const static Config &conf = shState->rtData().config;
 	SDL_snprintf(addr, 65, "%s", conf.journal_address.c_str());
 	port = conf.journal_port;
-	if (!NET_Init()) {
-		Debug() << "NET_Init() failed: " << SDL_GetError();
-	}
+	#ifdef JOURNAL_ENABLED
+		if (!NET_Init()) {
+			Debug() << "NET_Init() failed: " << SDL_GetError();
+		}
+	#endif
 	VALUE module = rb_define_module("Journal");
 	_rb_define_module_function(module, "set", journalSet);
 	_rb_define_module_function(module, "setLang", journalLangSet);

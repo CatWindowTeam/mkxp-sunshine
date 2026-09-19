@@ -22,6 +22,7 @@ include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
 include(CheckLinkerFlag)
 include(CheckIPOSupported)
+include(cmake/xxd.cmake)
 
 # Helper for checking if options supported by compiller
 function(check_option output_var)
@@ -84,7 +85,9 @@ set(BINDING_PATH "binding-mri" CACHE STRING "Binding to use")
 set(VITASDK_PATH "/usr/local/vitasdk" CACHE STRING "VitaSDK path")
 option(DEVBUILD "Developoment build" OFF)
 option(TERMUX "Build for TERMUX" OFF)
-option(VITA "Build for PSVita" OFF)
+option(VITA "Build for Playstation Vita" OFF)
+option(PSP "Build for PlayStation Portable" OFF)
+option(PS2 "Build for PlayStation 2" OFF)
 option(CODE_ANAL "Code analysis" OFF)
 set(SUNSHINE_ASSETS_PATH "../SunshineAssets" CACHE STRING "Used only on Vita")
 
@@ -206,28 +209,7 @@ set(EMBEDDED_INPUT
 	binding-mri/module_rpg1.rb
 )
 
-## Process Embeddeds ##
-find_program(XXD_EXE
-  NAMES xxd tinyxxd xxd.exe
-  REQUIRED
-  HINTS
-    ENV PATH
-    /usr/bin /usr/local/bin .
-)
 
-macro(ProcessWithXXD outvar inputfile outdir)
-	get_filename_component(basefile ${inputfile} NAME)
-	set(outputfile ${outdir}/${basefile}.xxd)
-	set_source_files_properties(${outputfile} PROPERTIES HEADER_FILE_ONLY TRUE)
-	add_custom_command(
-		OUTPUT ${outputfile}
-		COMMAND ${XXD_EXE} -i ${inputfile} ${outputfile}
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		DEPENDS ${inputfile}
-		COMMENT "Generating XXD for ${inputfile}"
-	)
-	list(APPEND ${outvar} ${outputfile})
-endmacro()
 
 foreach(item ${EMBEDDED_INPUT})
 	ProcessWithXXD(EMBEDDED_SOURCE ${item} ${CMAKE_CURRENT_BINARY_DIR})
@@ -239,7 +221,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     list(APPEND DEFINES UNICODE)
     list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi winmm z mingw32)
     include(cmake/os/windows.cmake)
-    include_directories(${CMAKE_CURRENT_BINARY_DIR}/windows)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     list(APPEND MAIN_HEADERS src/mac-desktop.h)
     list(APPEND MAIN_SOURCE src/mac-desktop.mm)
@@ -457,23 +438,35 @@ endif()
 if(NOT TARGET SDL3_ttf::SDL3_ttf)
 	find_package(SDL3_ttf CONFIG REQUIRED)
 endif()
-if(NOT TARGET SDL3_net::SDL3_net)
-	find_package(SDL3_net REQUIRED)
+
+if(NOT PSP)
+	if(NOT TARGET SDL3_net::SDL3_net)
+		find_package(SDL3_net REQUIRED)
+	endif()
+	
+	find_package(Ruby 3.4
+		COMPONENTS Interpreter Development
+		REQUIRED
+		)
+	target_compile_definitions(${APP_TARGET} PRIVATE JOURNAL_ENABLED=1)
+else()
+	target_compile_definitions(${APP_TARGET} PRIVATE JOURNAL_ENABLED=0)
 endif()
+
 if(ANDROID)
 	find_package(Boost REQUIRED COMPONENTS program_options chrono CONFIG)
+elseif(PSP)
+	find_package(Boost REQUIRED COMPONENTS chrono CONFIG)
 else()
 	find_package(Boost REQUIRED COMPONENTS program_options chrono)
 endif()
+
 find_package(PhysFS REQUIRED)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
-find_package(Ruby 3.4
-	COMPONENTS Interpreter Development
-	REQUIRED)
 target_compile_definitions(${APP_TARGET} PRIVATE ${DEFINES})
 target_include_directories(${APP_TARGET} PRIVATE
 	src

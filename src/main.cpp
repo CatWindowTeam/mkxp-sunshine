@@ -168,6 +168,7 @@ int main(int argc, char *argv[]){
 		SDL_SetHint("SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT", "1");
 	#elif windows
 		SDL_SetHint("SDL_HINT_WINDOWS_RAW_KEYBOARD", "1");
+		SDL_SetHint("SDL_HINT_WINDOWS_RAW_KEYBOARD_EXCLUDE_HOTKEYS", "1");
 	#elif vita
 		SDL_SetHint(SDL_HINT_VITA_PVR_OPENGL, "0");
 		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
@@ -180,6 +181,7 @@ int main(int argc, char *argv[]){
 	#elif vita
 		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
 	#endif
+
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false){
 		WarnMsg("Error initializing SDL: %s", SDL_GetError());
@@ -269,9 +271,6 @@ int main(int argc, char *argv[]){
 	Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 
 	win = SDL_CreateWindow(conf.windowTitle.c_str(), conf.defScreenW, conf.defScreenH, winFlags);
-	if (conf.fullscreen)
-		SDL_SetWindowFullscreen(win, true);
-
 	if (!win){
 		WarnMsg("%s", SDL_GetError());
 		MIX_Quit();
@@ -279,12 +278,12 @@ int main(int argc, char *argv[]){
 		SDL_Quit();
 		return 1;
 	}
+	if (conf.fullscreen){ SDL_SetWindowFullscreen(win, true); }
+	
 	/* OSX and Windows have their own native ways of
 	 * dealing with icons; don't interfere with them */
 	#ifdef unix_like
 		setupWindowIcon(conf, win);
-	#elif vita
-		//this code useless under vita!
 	#else
 		(void) setupWindowIcon;
 	#endif

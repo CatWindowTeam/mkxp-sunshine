@@ -23,7 +23,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#if !defined(ps2) && !defined(vita) && !defined(__NetBSD__)
+#if !defined(ps2) && !defined(vita) && !defined(__NetBSD__) && !defined(psp)
     #include <boost/stacktrace.hpp>
     #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__)
     	#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
@@ -150,7 +150,7 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back("");
 	//maybe we should use C++ stacktrace?
 	c.emplace_back("[STACK TRACE]");
-	#if defined(ps2) || defined(vita) || defined(__NetBSD__)
+	#if defined(ps2) || defined(vita) || defined(__NetBSD__) || defined(psp) 
 	    // TODO: PS2/Vita stacktrace implementation
 	#else
 	    boost::stacktrace::stacktrace trace;
@@ -250,7 +250,6 @@ void crash_screen(SDL_Window* win){
 					count = count + 10;
 					snprintf(index_str, sizeof(index_str), "%03d", i);
 					SDL_RenderDebugTextFormat(ren, 10, count, "%s| %s", index_str, cd[i].c_str());
-					//SDL_RenderDebugTextFormat(ren, 10, count, "%s| %s", std::format("{:03}", i).c_str(), cd[i].c_str());
 				}
 			}
 	    	SDL_RenderPresent(ren);
