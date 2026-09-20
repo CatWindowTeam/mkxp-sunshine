@@ -27,8 +27,8 @@ public:
 
 	void clearStaticLightSources();
 	void clearDynamicLightSources();
-	void addStaticLightSource(LightSource source);
-	void addDynamicLightSource(LightSource source);
+	void addStaticLightSource(const LightSource source);
+	void addDynamicLightSource(const LightSource source);
 	void removeStaticLightSource(float x, float y);
 	void initDynAttribs();
 
