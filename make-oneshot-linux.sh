@@ -20,7 +20,7 @@ cp libs/* build/bandle
 cp build/oneshot build/bandle
 
 cp -r ../SunshineAssets/* build/bandle
-cp oneshot.conf build/bandle
+cp sunshine.conf build/bandle
 zip -X -9 -x ".git/*" "*/.git/*" -r build/OneshotSunshine_Linux.zip build/bandle/*
 
 rm -rf libs
