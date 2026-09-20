@@ -21,7 +21,7 @@
 
 #include "rgssad.h"
 #include "boost-hash.h"
-
+#include <string>
 #include <SDL3/SDL_stdinc.h>
 
 struct RGSS_entryData{

@@ -3,8 +3,6 @@
 #include <fstream>
 #include <vector>
 #include <map>
-#include <boost/algorithm/string/replace.hpp>
-
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_filesystem.h>
 #include "etc.h"
@@ -58,9 +56,6 @@
 		static bool xfceHasSingleWorkspaceProps = false;
 		static bool xfceSingleWorkspaceMode = false;
 		static int xfceSingleWorkspaceNumber = 0;
-		// KDE settings
-		static std::map<std::string, std::string> defPlugins, defPictures, defColors, defModes;
-		static std::map<std::string, bool> defBlurs;
 		// LXDE settings
 		static std::string originalBgPath = "";
 		static std::string originalBgMode = "";
@@ -254,71 +249,7 @@
 				g_error_free(xferror);
 			}
 		} else if (desktop == "kde") {
-			std::ifstream configFile;
-			configFile.open(std::string(SDL_getenv("HOME")) + "/.config/plasma-org.kde.plasma.desktop-appletsrc", std::ios::in);
-			if (configFile.is_open()) {
-				std::string line;
-				std::vector<std::string> sections;
-				std::size_t undefined = 999999999;
-				bool readPlugin = false, readOther = false;
-				std::string containment;
-				while (getline(configFile, line)) {
-					std::size_t index = undefined, lastIndex = undefined;
-					if (line.size() == 0) {
-						readPlugin = false;
-						readOther = false;
-					} else if (readPlugin) {
-						index = line.find('=');
-						if (line.substr(0, index) == "wallpaperplugin") {
-							defPlugins[containment] = line.substr(index + 1);
-						}
-					} else if (readOther) {
-						index = line.find('=');
-						std::string key = line.substr(0, index);
-						std::string val = line.substr(index + 1);
-						if (key == "Image") {
-							defPictures[containment] = val;
-						} else if (key == "Color") {
-							defColors[containment] = val;
-						} else if (key == "FillMode") {
-							defModes[containment] = val;
-						} else if (key == "Blur") {
-							defBlurs[containment] = (val == "true");
-						}
-					} else if (line.at(0) == '[') {
-						sections.clear();
-						while (true) {
-							index = line.find(lastIndex == undefined ? '[' : ']', index == undefined ? 0 : index);
-							if (index == std::string::npos) {
-								break;
-							}
-							if (lastIndex == undefined) {
-								lastIndex = index;
-							} else {
-								sections.push_back(line.substr(lastIndex + 1, index - lastIndex - 1));
-								lastIndex = undefined;
-							}
-						}
-						if (sections.size() == 2 && sections[0] == "Containments") {
-							readPlugin = true;
-							containment = sections[1];
-						} else if (
-							sections.size() == 5 &&
-							sections[0] == "Containments" &&
-							sections[2] == "Wallpaper" &&
-							sections[3] == "org.kde.image" &&
-							sections[4] == "General"
-						) {
-							readOther = true;
-							containment = sections[1];
-						}
-					}
-				}
-				configFile.close();
-			} else {
-				Debug() << "[desktopEnvironmentInit] FATAL: Cannot find desktop configuration!";
-				desktop = "kde_error";
-			}
+			Debug() << "TODO: KDE support";
 		} else {
 			const char* homeC = SDL_getenv("HOME");
 			std::string home = homeC ? homeC : "";
@@ -550,32 +481,7 @@ end:
 			}
 			system("xfdesktop --reload &");
 		} else if (desktop == "kde") {
-			std::stringstream command;
-			std::string concatPath(gameDirStr + path);
-			boost::replace_all(concatPath, "\\", "\\\\");
-			boost::replace_all(concatPath, "\"", "\\\"");
-			boost::replace_all(concatPath, "'", "\\x27");
-			command << "qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
-				"var allDesktops = desktops();" <<
-				"for (var i = 0, l = allDesktops.length; i < l; ++i) {" <<
-					"var d = allDesktops[i];" <<
-					"d.wallpaperPlugin = \"org.kde.image\";" <<
-					"d.currentConfigGroup = [\"Wallpaper\", \"org.kde.image\", \"General\"];" <<
-					"d.writeConfig(\"Image\", \"file://" << concatPath << "\");" <<
-					"d.writeConfig(\"FillMode\", \"6\");" <<
-					"d.writeConfig(\"Blur\", false);" <<
-					"d.writeConfig(\"Color\", [\"" <<
-						std::to_string((color >> 16) & 0xFF) << "\", \"" <<
-						std::to_string((color >> 8) & 0xFF) << "\", \"" <<
-						std::to_string(color & 0xFF) <<
-					"\"]);" <<
-				"}" <<
-			"'";
-			int result = system(command.str().c_str());
-			#ifdef DEBUG
-				Debug() << "[wallpaperSet] Wallpaper command:" << command.str();
-				Debug() << "[wallpaperSet] Result:" << result;
-			#endif
+			Debug() << "TODO: KDE support";
 		} else if (desktop == "lxde") {
 				std::string concatPath = gameDirStr + path;
 				std::string cmd = "pcmanfm -w \"" + concatPath + "\"" + " --wallpaper-mode=center";
@@ -708,57 +614,7 @@ RB_METHOD(wallpaperReset){
 			}
 			system("xfdesktop --reload &");
 		} else if (desktop == "kde") {
-			std::stringstream command;
-			command << "qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
-					"var allDesktops = desktops();" <<
-					"var data = {";
-			// Plugin, picture, color, mode, blur
-			for (auto const& x : defPlugins) {
-				command << "\"" << x.first << "\": {"
-						<< "plugin: \"" << x.second << "\"";
-				if (defPictures.find(x.first) != defPictures.end()) {
-					std::string picture = defPictures[x.first];
-					boost::replace_all(picture, "\\", "\\\\");
-					boost::replace_all(picture, "\"", "\\\"");
-					boost::replace_all(picture, "'", "\\x27");
-					command << ", picture: \"" << picture << "\"";
-				}
-				if (defColors.find(x.first) != defColors.end()) {
-					command << ", color: \"" << defColors[x.first] << "\"";
-				}
-				if (defModes.find(x.first) != defModes.end()) {
-					command << ", mode: \"" << defModes[x.first] << "\"";
-				}
-				if (defBlurs.find(x.first) != defBlurs.end() && defBlurs[x.first]) {
-					command << ", blur: true";
-				}
-				command << "},";
-			}
-			command << "\"no\": {}};" <<
-				"for (var i = 0, l = allDesktops.length; i < l; ++i) {" <<
-					"var d = allDesktops[i];" <<
-					"var dat = data[d.id];" <<
-					"d.wallpaperPlugin = dat.plugin;" <<
-					"d.currentConfigGroup = [\"Wallpaper\", \"org.kde.image\", \"General\"];" <<
-					"if (dat.picture) {" <<
-						"d.writeConfig(\"Image\", dat.picture);" <<
-					"}" <<
-					"if (dat.color) {" <<
-						"d.writeConfig(\"Color\", dat.color.split(\",\"));" <<
-					"}" <<
-					"if (dat.mode) {" <<
-						"d.writeConfig(\"FillMode\", dat.mode);" <<
-					"}" <<
-					"if (dat.blur) {" <<
-						"d.writeConfig(\"Blur\", dat.blur);" <<
-					"}" <<
-				"}" <<
-			"'";
-			int result = system(command.str().c_str());
-			#ifdef DEBUG
-				Debug() << "[wallpaperReset] Reset wallpaper command:" << command.str();
-				Debug() << "[wallpaperReset] Reset result:" << result;
-			#endif
+			Debug() << "TODO: KDE support";
 		} else if(desktop == "lxde"){
 			if (originalBgPath != "" && originalBgMode != ""){
 				std::string cmd = "pcmanfm -w \"" + originalBgPath + "\"" + " --wallpaper-mode=" + originalBgMode;

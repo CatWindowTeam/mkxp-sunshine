@@ -38,7 +38,6 @@
 #include "tilemap-common.h"
 #include "sunshine.h"
 #include "signals/rubydispatcher.h"
-#include <boost/chrono.hpp>
 #include <SDL3/SDL_stdinc.h>
 #include <algorithm>
 #include <vector>
@@ -754,8 +753,8 @@ struct TilemapPrivate {
 			
 			tilemapShader.setOffset(viewpPos);
 
-			boost::chrono::high_resolution_clock::time_point currentTime = boost::chrono::high_resolution_clock::now();
-			boost::chrono::duration<float> elapsed = currentTime - startTime;
+			auto currentTime = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<float> elapsed = currentTime - startTime;
 			tilemapShader.setTime(elapsed.count());
 
 			if (shState->sunshine().noiseBitmap())

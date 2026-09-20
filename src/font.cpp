@@ -20,7 +20,6 @@
 */
 
 #include "font.h"
-
 #include "sharedstate.h"
 #include "filesystem.h"
 #include "exception.h"
@@ -28,7 +27,6 @@
 #include "util.h"
 #include "config.h"
 #include "meow.h"
-
 #include <string>
 #include <utility>
 
@@ -53,7 +51,7 @@ struct SharedFontStatePrivate{
 
 	/* Pool of already opened fonts; once opened, they are reused
 	 * and never closed until the termination of the program */
-	BoostHash<FontKey, TTF_Font*> pool;
+	BoostHash<FontKey, TTF_Font*, PairHash> pool;
 };
 
 SharedFontState::SharedFontState(const Config &conf){

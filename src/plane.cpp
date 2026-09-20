@@ -37,6 +37,7 @@
 #include "sunshine.h"
 
 #include "signals/signal.h"
+#include <chrono>
 
 static float fwrap(float value, float range){
 	float res = SDL_fmod(value, range);
@@ -352,8 +353,9 @@ void Plane::draw(){
 			break;
 		}
 	}
-	boost::chrono::high_resolution_clock::time_point currentTime = boost::chrono::high_resolution_clock::now();
-	boost::chrono::duration<float> elapsed = currentTime - startTime;
+	
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<float> elapsed = currentTime - startTime;
 	base->setTime(elapsed.count());
 	base->setTranslation(Vec2i());
 
@@ -382,7 +384,6 @@ void Plane::onGeometryChange(const Scene::Geometry &geo){
 
 void Plane::releaseResources(){
 	unlink();
-
 	delete p;
 }
 

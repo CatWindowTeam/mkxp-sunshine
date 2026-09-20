@@ -1,8 +1,8 @@
 #pragma once
-#include <boost/chrono.hpp>
+#include <chrono>
 
 class Bitmap;
-	inline boost::chrono::high_resolution_clock::time_point startTime;
+	inline std::chrono::high_resolution_clock::time_point startTime;
 
 class Sunshine {
 public:

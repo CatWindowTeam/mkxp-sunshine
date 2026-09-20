@@ -2,11 +2,9 @@
 #include "sharedstate.h"
 #include "binding-util.h"
 #include "eventthread.h"
-
+#include <zlib.h>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_stdinc.h>
-#include <boost/crc.hpp>
-#include <stdlib.h>
 
 RB_METHOD(oneshotSetYesNo){
 	RB_UNUSED_PARAM;
@@ -85,11 +83,10 @@ RB_METHOD(oneshotShake){
 RB_METHOD(oneshotCRC32){
 	RB_UNUSED_PARAM;
 	VALUE string;
-	boost::crc_32_type result;
 	rb_get_args(argc, argv, "S", &string RB_ARG_END);
-	std::string str = std::string(RSTRING_PTR(string), RSTRING_LEN(string));
-	result.process_bytes(str.data(), str.length());
-	return UINT2NUM(result.checksum());
+	uLong crc = crc32(0L, Z_NULL, 0);
+	crc = crc32(crc, reinterpret_cast<const Bytef*>(RSTRING_PTR(string)), RSTRING_LEN(string));
+	return UINT2NUM(static_cast<std::uint32_t>(crc));
 }
 
 static VALUE oneshotSetObscuredUpdating(VALUE self, VALUE rb_bool){
@@ -106,7 +103,7 @@ void oneshotBindingInit(){
 	// Constants
 	rb_const_set(module, rb_intern("OS"), rb_str_new2(shState->oneshot().os().c_str()));
 	#ifdef unix_like
-	rb_const_set(module, rb_intern("DE"), rb_str_new2(shState->oneshot().desktopEnv.c_str()));
+		rb_const_set(module, rb_intern("DE"), rb_str_new2(shState->oneshot().desktopEnv.c_str()));
 	#endif
 	rb_const_set(module, rb_intern("USER_NAME"), rb_str_new2(shState->oneshot().userName().c_str()));
 	rb_const_set(module, rb_intern("SAVE_PATH"), rb_str_new2(shState->oneshot().savePath().c_str()));
@@ -129,6 +126,5 @@ void oneshotBindingInit(){
 	_rb_define_module_function(module, "exiting", oneshotExiting);
 	_rb_define_module_function(module, "shake", oneshotShake);
 	_rb_define_module_function(module, "crc32", oneshotCRC32);
-
 	rb_define_module_function(module, "obscured_updating=", RUBY_METHOD_FUNC(oneshotSetObscuredUpdating), 1);
 }

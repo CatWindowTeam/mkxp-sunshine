@@ -12,11 +12,6 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
     Release
 )
 
-# suppress Boost warning
-if(POLICY CMP0167)
-    cmake_policy(SET CMP0167 NEW)
-endif()
-
 include(FindPackageHandleStandardArgs)
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
@@ -142,7 +137,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Make build more static
 if(STATIC)
 	set(ZLIB_USE_STATIC_LIBS ON)
-	set(Boost_USE_STATIC_RUNTIME ON)
 endif()
 
 # For local builds
@@ -384,7 +378,6 @@ else()
 endif()
 add_link_options("$<$<CONFIG:Release>:${ARCH_RELEASE_OPTIONS_LINKER}>")
 
-target_compile_definitions(${APP_TARGET} PRIVATE $<$<CONFIG:Debug>:DEBUG>)
 target_compile_options(${APP_TARGET} PRIVATE
     -Wno-unused-parameter
     -Wno-tautological-pointer-compare
@@ -463,12 +456,6 @@ else()
 	target_compile_definitions(${APP_TARGET} PRIVATE JOURNAL_ENABLED=0)
 endif()
 
-if(ANDROID)
-	find_package(Boost REQUIRED COMPONENTS chrono CONFIG)
-else()
-	find_package(Boost REQUIRED COMPONENTS chrono)
-endif()
-
 find_package(PhysFS REQUIRED)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
@@ -483,11 +470,9 @@ target_include_directories(${APP_TARGET} PRIVATE
 	${PIXMAN_INCLUDE_DIR}
 	${SIGC2_INCLUDE_DIRS}
 	${Ruby_INCLUDE_DIRS}
-	${Boost_INCLUDE_DIRS}
 	${PHYSFS_INCLUDE_DIR}
 	${ZLIB_INCLUDE_DIRS}
 	SDL3::Headers
-	Boost::headers
 	SDL3_mixer::SDL3_mixer
 	SDL3_net::SDL3_net)
 target_link_directories(${APP_TARGET} PRIVATE ${SIGC2_LIBRARY_DIRS})
@@ -503,9 +488,6 @@ target_link_libraries(${APP_TARGET} PRIVATE
 	${SIGC2_LIBRARIES}
 	${PLATFORM_LIBRARIES}
 	${Ruby_LIBRARIES}
-	Boost::boost
-	Boost::chrono
-	${Boost_LIBRARIES}
 	ZLIB::ZLIB
 	physfs)
 

@@ -1,117 +1,102 @@
-/*
-** boost-hash.h
-**
-** This file is part of mkxp.
-**
-** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
-**
-** mkxp is free software: you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** mkxp is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//TODO: review this bullshit
 
 #pragma once
-#include <boost/unordered/unordered_map.hpp>
-#include <boost/unordered/unordered_set.hpp>
-
+#include <unordered_map>
+#include <unordered_set>
+#include <functional>
 #include <utility>
 
-/* Wrappers around the boost unordered template classes,
- * exposing an interface similar to Qt's QHash/QSet */
+struct PairHash{
+    template<typename T1, typename T2>
+    std::size_t operator()(const std::pair<T1, T2>& value) const{
+        const std::size_t h1 = std::hash<T1>{}(value.first);
+        const std::size_t h2 = std::hash<T2>{}(value.second);
+        return h1 ^(h2 + static_cast<std::size_t>(0x9e3779b9) + (h1 << 6) + (h1 >> 2));
+    }
+};
 
-template<typename K, typename V>
+template<typename K, typename V, typename Hash = std::hash<K>>
 class BoostHash{
 private:
-	typedef boost::unordered_map<K, V> BoostType;
-	typedef std::pair<K, V> PairType;
-	BoostType p;
+    using MapType = std::unordered_map<K, V, Hash>;
+
+    MapType data;
 
 public:
-	typedef typename BoostType::const_iterator const_iterator;
+    using const_iterator = typename MapType::const_iterator;
+    bool contains(const K& key) const{
+        return data.find(key) != data.cend();
+    }
 
-	inline bool contains(const K &key) const{
-		const_iterator iter = p.find(key);
+    void insert(const K& key, const V& value){
+        data.emplace(key, value);
+    }
 
-		return (iter != p.cend());
-	}
+    void remove(const K& key){
+        data.erase(key);
+    }
 
-	inline void insert(const K &key, const V &value) {
-		//p.insert(PairType(key, value));
-    		p.emplace(key, value);
-	}
+    V value(const K& key) const{
+        auto iter = data.find(key);
 
-	inline void remove(const K &key) {
-		p.erase(key);
-	}
+        if (iter == data.cend()) {
+            return V{};
+        }
 
-	inline const V value(const K &key) const{
-		const_iterator iter = p.find(key);
+        return iter->second;
+    }
 
-		if (iter == p.cend())
-			return V();
+    V value(const K& key, const V& defaultValue) const{
+        auto iter = data.find(key);
 
-		return iter->second;
-	}
+        if (iter == data.cend()) {
+            return defaultValue;
+        }
 
-	inline const V value(const K &key, const V &defaultValue) const{
-		const_iterator iter = p.find(key);
+        return iter->second;
+    }
 
-		if (iter == p.cend())
-			return defaultValue;
+    V& operator[](const K& key){
+        return data[key];
+    }
 
-		return iter->second;
-	}
+    const_iterator cbegin() const{
+        return data.cbegin();
+    }
 
-	inline V &operator[](const K &key) {
-		return p[key];
-	}
-
-	inline const_iterator cbegin() const {
-		return p.cbegin();
-	}
-
-	inline const_iterator cend() const {
-		return p.cend();
-	}
+    const_iterator cend() const{
+        return data.cend();
+    }
 };
+
 
 template<typename K>
 class BoostSet{
 private:
-	typedef boost::unordered_set<K> BoostType;
-	BoostType p;
+    using SetType = std::unordered_set<K>;
+
+    SetType data;
 
 public:
-	typedef typename BoostType::const_iterator const_iterator;
+    using const_iterator = typename SetType::const_iterator;
 
-	inline bool contains(const K &key) const {
-		const_iterator iter = p.find(key);
+    bool contains(const K& key) const{
+        return data.find(key) != data.cend();
+    }
 
-		return (iter != p.cend());
-	}
+    void insert(const K& key){
+        data.insert(key);
+    }
 
-	inline void insert(const K &key) {
-		p.insert(key);
-	}
+    void remove(const K& key){
+        data.erase(key);
+    }
 
-	inline void remove(const K &key) {
-		p.erase(key);
-	}
+    const_iterator cbegin() const{
+        return data.cbegin();
+    }
 
-	inline const_iterator cbegin() const {
-		return p.cbegin();
-	}
-
-	inline const_iterator cend() const {
-		return p.cend();
-	}
+    const_iterator cend() const{
+        return data.cend();
+    }
 };

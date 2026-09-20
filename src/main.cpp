@@ -42,7 +42,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <exception>
-#include <boost/chrono.hpp>
+#include <chrono>
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "debugwriter.h"
@@ -54,11 +54,13 @@
 #include "define.h"
 #include "meow.h"
 #include "binding.h"
-#include "CLI11.hpp"
 #include "icon.png.xxd"
 
 #ifndef NDEBUG
 	#include "gl-debug.h"
+	#ifdef ps2
+		SDL_PS2_SKIP_IOP_RESET();
+	#endif
 #endif
 
 #ifdef _WIN32
@@ -69,12 +71,6 @@
 	#include "steamshim/steamshim_child.h"
 #else
 	#include "gamecontrollerdb.txt.xxd"
-#endif
-
-#ifdef DEBUG
-	#ifdef ps2
-		SDL_PS2_SKIP_IOP_RESET();
-	#endif
 #endif
 
 #ifndef VERSION_STRING
@@ -160,7 +156,7 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 int main(int argc, char *argv[]){
 	conf.read(argc, argv);
 	SDL_SetHint("SDL_HINT_INVALID_PARAM_CHECKS", "1");
-    startTime = boost::chrono::high_resolution_clock::now();
+    startTime = std::chrono::high_resolution_clock::now();
     loadLanguageMetadata();
 	SDL_SetHint("SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS", "0");
 	SDL_SetAppMetadata("Oneshot: Sunshine", VERSION_STRING, "meow.catwindowteam.sunshine");

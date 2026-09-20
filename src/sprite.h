@@ -19,8 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SPRITE_H
-#define SPRITE_H
+#pragma once
 
 #include "scene.h"
 #include "flashable.h"
@@ -28,8 +27,6 @@
 #include "viewport.h"
 #include "util.h"
 #include "shader.h"
-
-#include <boost/chrono.hpp>
 
 class Bitmap;
 struct Color;
@@ -94,5 +91,3 @@ private:
 
 	ABOUT_TO_ACCESS_DISP
 };
-
-#endif // SPRITE_H

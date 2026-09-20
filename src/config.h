@@ -62,7 +62,7 @@ struct Config {
     #else
     	std::string customDataPath;
     	std::string commonDataPath;
-    	std::string gameFolder;    	
+    	std::string gameFolder = ".";    	
     #endif
     void read(int argc, char* argv[]);
 };

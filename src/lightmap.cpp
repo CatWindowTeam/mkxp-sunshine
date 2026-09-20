@@ -1,12 +1,10 @@
 #include "lightmap.h"
-
 #include "sharedstate.h"
 #include "bitmap.h"
 #include "etc.h"
 #include "etc-internal.h"
 #include "util.h"
 #include "signals/signal.h"
-
 #include "gl-util.h"
 #include "quad.h"
 #include "shader.h"
@@ -14,11 +12,9 @@
 #include "quadarray.h"
 #include "config.h"
 #include "sunshine.h"
-
 #include <math.h>
-
 #include <SDL3/SDL_rect.h>
-#include <boost/chrono.hpp>
+#include <chrono>
 
 struct LightMapPrivate{
 
@@ -235,8 +231,8 @@ void LightMap::draw(){
 	shader.setLightSources(p->gpuBuffer);
 	shader.setAmbient(p->ambient);
 
-	boost::chrono::high_resolution_clock::time_point currentTime = boost::chrono::high_resolution_clock::now();
-	boost::chrono::duration<float> elapsed = currentTime - startTime;
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<float> elapsed = currentTime - startTime;
 	shader.setTime(elapsed.count());
 
 	glState.blendMode.pushSet(BlendMultiply);

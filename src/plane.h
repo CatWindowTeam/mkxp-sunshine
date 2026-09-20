@@ -19,14 +19,10 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PLANE_H
-#define PLANE_H
-
+#pragma once
 #include "disposable.h"
 #include "viewport.h"
 #include "shader.h"
-
-#include <boost/chrono.hpp>
 
 class Bitmap;
 struct Color;
@@ -65,5 +61,3 @@ private:
 
 	ABOUT_TO_ACCESS_DISP
 };
-
-#endif // PLANE_H

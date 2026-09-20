@@ -19,6 +19,8 @@ void Config::read(int argc, char* argv[]) {
 		commonDataPath = prefPath(SDL_GetAndroidInternalStoragePath(), "/SunshineSaves");
 		gameFolder = "";
 		gameFolder.append(SDL_GetAndroidInternalStoragePath()).append("/Sunshine");
+	#else
+		commonDataPath = prefPath("CatWindowTeam", "/Sunshine");
 	#endif
     CLI::App a{"Engine of Sunshine"};
     argv = a.ensure_utf8(argv);

@@ -50,7 +50,7 @@ typedef std::list<CacheNode> CNodeList;
 
 struct TexPoolPrivate{
 	/* Contains all cached TexFBOs, grouped by size */
-	BoostHash<Size, CNodeList> poolHash;
+	BoostHash<Size, CNodeList, PairHash> poolHash;
 
 	/* Contains all cached TexFBOs, sorted by release time */
 	std::list<TEXFBO> priorityQueue;

@@ -20,14 +20,12 @@
 */
 
 #include "sprite.h"
-
 #include "sharedstate.h"
 #include "bitmap.h"
 #include "etc.h"
 #include "etc-internal.h"
 #include "util.h"
 #include "signals/signal.h"
-
 #include "gl-util.h"
 #include "quad.h"
 #include "transform.h"
@@ -35,12 +33,9 @@
 #include "glstate.h"
 #include "quadarray.h"
 #include "sunshine.h"
-
 #include <math.h>
-
 #include <SDL3/SDL_rect.h>
-
-#include <boost/chrono.hpp>
+#include <chrono>
 
 #ifndef M_PI
 	#define M_PI 3.14159265358979323846
@@ -641,8 +636,8 @@ void Sprite::draw(){
 			}
 		}
 	}
-	boost::chrono::high_resolution_clock::time_point currentTime = boost::chrono::high_resolution_clock::now();
-	boost::chrono::duration<float> elapsed = currentTime - startTime;
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<float> elapsed = currentTime - startTime;
 	base->setTime(elapsed.count());
 
 	base->applyViewportProj();
@@ -653,8 +648,7 @@ void Sprite::draw(){
 
 	p->bitmap->bindTex(*base);
 	
-	if (smooth)
-	{
+	if (smooth){
 		//TEX::generateMipMaps();
 		TEX::setSmooth(true);
 	}
