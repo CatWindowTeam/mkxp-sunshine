@@ -495,6 +495,8 @@ if(VITA)
 	target_link_libraries(${PROJECT_NAME} PRIVATE webp sharpyuv)
 endif()
 
+add_subdirectory(scripts)
+
 if(VITA)
 	add_custom_command(
 		OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/build/sunshine.zip
