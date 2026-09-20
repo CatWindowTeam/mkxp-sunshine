@@ -43,6 +43,7 @@ end
 begin
   score = 0
   Graphics.frame_rate = 5000
+  Graphics.vsync_mode = 0
   Graphics.frameskip = false
   Font.default_size = 10
   Oneshot.allow_exit true

@@ -346,7 +346,9 @@ check_option(OPTIONS_RELEASE
 	-ftrivial-auto-var-init=uninitialized
 	-fzero-call-used-regs=skip
 	-fomit-frame-pointer
-	-fno-rtti)
+	-fno-rtti
+	-ffp-contract=fast
+	-mno-ibt)
 
 check_option(OPTIONS_RELEASE_WINDOWS_INCOMPATIBLE
 	-fno-unwind-tables
@@ -368,7 +370,8 @@ check_linker_option(OPTIONS_LINKER_RELEASE
 	-Wl,--relax
 	-Wl,-z,pack-relative-relocs
 	-Wl,-z,noexecstack
-	-Wl,--build-id=none)
+	-Wl,--build-id=none
+	-Wl,--as-needed)
 add_link_options("$<$<CONFIG:Release>:${OPTIONS_LINKER_RELEASE}>")
 
 if("${ARCH_LINKER_RELEASE}" STREQUAL "")
@@ -389,21 +392,6 @@ target_compile_options(${APP_TARGET} PRIVATE
 if(NOT WIN32)
 	target_compile_options(${APP_TARGET} PRIVATE "$<$<CONFIG:Release>:${OPTIONS_RELEASE_WINDOWS_INCOMPATIBLE}>")
 endif()
-
-if("${OS_RELEASE}" STREQUAL "")
-	message(STATUS "OS_RELEASE empty")
-else()
-	check_option(OS_RELEASE_UNCHECKED ${OS_RELEASE})
-endif()
-target_compile_options(${APP_TARGET} PRIVATE "$<$<CONFIG:Release>:${OS_RELEASE_UNCHECKED}>")
-
-if("${OS_RELEASE_LINKER}" STREQUAL "")
-	message(STATUS "OS_RELEASE_LINKER empty")
-else()
-	check_linker_option(OS_RELEASE_LINKER_UNCHECKED ${OS_RELEASE_LINKER})
-endif()
-add_link_options("$<$<CONFIG:Release>:${OS_RELEASE_LINKER_UNCHECKED}>")
-
 
 if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 	if(CMAKE_BUILD_TYPE STREQUAL "Release")
