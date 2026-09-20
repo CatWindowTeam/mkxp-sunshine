@@ -20,7 +20,7 @@ android {
                 abiFilters 'arm64-v8a'
             }
             cmake {
-                arguments "-DANDROID_PLATFORM=android-21", "-DANDROID_STL=c++_static", "-DCMAKE_PREFIX_PATH=/android-deps/installed", "-DCMAKE_FIND_ROOT_PATH=/android-deps/installed"
+                arguments "-DANDROID_PLATFORM=android-21", "-DANDROID_STL=c++_static", "-DCMAKE_PREFIX_PATH=/android-deps/installed", "-DCMAKE_FIND_ROOT_PATH=/android-deps/installed", "-C/android-deps/ruby-findpackage.cmake"
                 // abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
                 abiFilters 'arm64-v8a'
             }
