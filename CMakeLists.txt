@@ -352,12 +352,11 @@ check_option(OPTIONS_RELEASE
 	-ftrivial-auto-var-init=uninitialized
 	-fzero-call-used-regs=skip
 	-fomit-frame-pointer
-	-fno-rtti
-	
-	# breaks compilation on windows
-	# -fno-unwind-tables
-	# -fno-asynchronous-unwind-tables
-	)
+	-fno-rtti)
+
+check_option(OPTIONS_RELEASE_WINDOWS_INCOMPATIBLE
+	-fno-unwind-tables
+	-fno-asynchronous-unwind-tables)
 
 # Loading release options specific for cpu arch from toolchain file
 if("${ARCH_RELEASE}" STREQUAL "")
@@ -394,6 +393,9 @@ target_compile_options(${APP_TARGET} PRIVATE
     "$<$<CONFIG:Release>:${OPTIONS_RELEASE}>"
     "$<$<CONFIG:Release>:${ARCH_RELEASE_OPTIONS}>"
 )
+if(NOT WIN32)
+	target_compile_options(${APP_TARGET} PRIVATE "$<$<CONFIG:Release>:${OPTIONS_RELEASE_WINDOWS_INCOMPATIBLE}>")
+endif()
 
 if("${OS_RELEASE}" STREQUAL "")
 	message(STATUS "OS_RELEASE empty")

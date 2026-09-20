@@ -53,7 +53,7 @@ void Config::read(int argc, char* argv[]) {
 	a.add_option("--Modloader.ModsDirPath", Modloader.ModsDirPath, "Debug Mode");
 	a.add_option("--Modloader.skip_modloader_screen", Modloader.skip_modloader_screen, "Skip Modloader screen");
 	a.add_option("--game.scripts", game.scripts, "Scripts File");
-	a.add_option<std::vector<std::string>>("--fS,--fontSubs", fontSubs, "# Font substitutions allow drop-in replacements of fonts"
+	a.add_option<std::vector<std::string>>("--fS,--fontSubs", fontSubs, "Font substitutions allow drop-in replacements of fonts"
 																		" to be used without changing the RGSS scripts,"
 																		" eg. providing 'Open Sans' when the game thinkgs it's"
 																		" using 'Arial'. Font family to be substituted and"

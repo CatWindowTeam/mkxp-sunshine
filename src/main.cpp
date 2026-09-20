@@ -58,11 +58,11 @@
 #include "icon.png.xxd"
 
 #ifndef NDEBUG
-#include "gl-debug.h"
+	#include "gl-debug.h"
 #endif
 
 #ifdef _WIN32
-#include <windows.h>
+	#include <windows.h>
 #endif
 
 #ifdef STEAM

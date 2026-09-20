@@ -1,13 +1,11 @@
 #!/bin/bash
 BUILD_DIR=build
-
-set -euo pipefail # MSYS2 specific thing
+set -euo pipefail
 ROOTDIR=$(cd $(dirname $0) && pwd)
 
 BUILD_ROOT_DIR=$ROOTDIR/$BUILD_DIR
 BUNDLING_DIR=$BUILD_ROOT_DIR/bundle # fix this typo, please
 SCRIPTS_ROOT_DIR=$ROOTDIR/scripts
-
 BUNDLE_OUT=$BUILD_ROOT_DIR/OneshotSunshine_Windows.zip
 
 main() {
