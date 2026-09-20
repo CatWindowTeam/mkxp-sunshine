@@ -2,7 +2,7 @@
 #include <chrono>
 
 class Bitmap;
-	inline std::chrono::high_resolution_clock::time_point startTime;
+inline std::chrono::high_resolution_clock::time_point startTime;
 
 class Sunshine {
 public:
