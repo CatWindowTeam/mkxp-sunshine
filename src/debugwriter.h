@@ -24,7 +24,7 @@
 #include <vector>
 #include "meow.h"
 #include "define.h"
-#ifdef android
+#ifdef mkxp_android
 	#include <android/log.h>
 #elif web
 	#include <emscripten/console.h>
