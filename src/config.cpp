@@ -15,7 +15,7 @@ static std::string prefPath(const char *org, const char *app){
 
 Config conf;
 void Config::read(int argc, char* argv[]) {
-	#if defined(android) && !defined(TERMUX)
+	#if defined(mkxp_android) && !defined(TERMUX)
 		commonDataPath = prefPath(SDL_GetAndroidInternalStoragePath(), "/SunshineSaves");
 		gameFolder = "";
 		gameFolder.append(SDL_GetAndroidInternalStoragePath()).append("/Sunshine");

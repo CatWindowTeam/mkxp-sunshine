@@ -625,22 +625,22 @@ struct InputPrivate {
 	}
 
 	void initMsBindings(){
-#ifdef android
-		msBindings.resize(4);
-#else
-		msBindings.resize(3);
-#endif
+		#ifdef mkxp_android
+			msBindings.resize(4);
+		#else
+			msBindings.resize(3);
+		#endif
 
 		size_t i = 0;
 		msBindings[i++] = MsBinding(SDL_BUTTON_LEFT,   Input::MouseLeft);
 		msBindings[i++] = MsBinding(SDL_BUTTON_MIDDLE, Input::MouseMiddle);
 		msBindings[i++] = MsBinding(SDL_BUTTON_RIGHT,  Input::MouseRight);
-#ifdef android
-		/* On Android a tap has no keyboard behind it, so a plain
-		 * left click/tap doubles as the Action button everywhere
-		 * (dialogue advance, "press any key" events, menu confirm). */
-		msBindings[i++] = MsBinding(SDL_BUTTON_LEFT, Input::Action);
-#endif
+		#ifdef mkxp_android
+			/* On Android a tap has no keyboard behind it, so a plain
+			 * left click/tap doubles as the Action button everywhere
+			 * (dialogue advance, "press any key" events, menu confirm). */
+			msBindings[i++] = MsBinding(SDL_BUTTON_LEFT, Input::Action);
+		#endif
 	}
 
 	void pollBindings(Input::ButtonCode &repeatCand){

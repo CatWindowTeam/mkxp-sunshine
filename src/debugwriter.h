@@ -51,7 +51,7 @@ public:
 	}
 
 	~Debug() {
-		#ifdef android
+		#ifdef mkxp_android
 			#ifdef TERMUX
 				std::cout << buf.view() << '\n';
 			#else

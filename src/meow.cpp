@@ -23,7 +23,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#ifdef android
+#ifdef mkxp_android
 	#include <android/api-level.h>
 #endif
 
@@ -133,7 +133,7 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back(std::string{"Detected Platform: "} + SDL_GetPlatform());
 	c.emplace_back(std::string{"Last PhysFS error: "} + PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 	c.emplace_back(std::string{"Last SDL Error on the current thread: "} + SDL_GetError());
-	#ifdef android
+	#ifdef mkxp_android
 		c.emplace_back(std::string{"Android API: "} + std::to_string(android_get_device_api_level()));
 	#endif
 	return c;

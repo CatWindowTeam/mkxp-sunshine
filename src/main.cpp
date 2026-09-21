@@ -91,7 +91,7 @@ int rgssThreadFun(void *userdata){
 	/* Setup GL context */
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	//https://wiki.libsdl.org/SDL3/README-android
-	#ifdef android
+	#ifdef mkxp_android
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
@@ -171,7 +171,7 @@ int main(int argc, char *argv[]){
 		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
 	#elif ps2
 		SDL_SetHint("SDL_HINT_PS2_GS_MODE", "NTSC");
-	#elif android
+	#elif mkxp_android
 		SDL_SetHint(SDL_HINT_ANDROID_ALLOW_PERSISTENT_FOLDER_ACCESS, "1");
 		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "1");
 		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "1");
@@ -198,7 +198,7 @@ int main(int argc, char *argv[]){
 	}
 
 	/* Initialize physfs here so that config can call PHYSFS_getPrefDir */
-	#ifdef android
+	#ifdef mkxp_android
 		PHYSFS_AndroidInit androidInit;
 		androidInit.jnienv = SDL_GetAndroidJNIEnv();
 		androidInit.context = SDL_GetAndroidActivity();

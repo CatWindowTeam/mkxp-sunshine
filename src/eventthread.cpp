@@ -81,7 +81,7 @@ bool EventThread::allocUserEvents(){
 
 EventThread::EventThread(): fullscreen(false), showCursor(true){}
 
-#ifdef android
+#ifdef mkxp_android
 	bool EventThread::leftClickEdge(){
 		static bool wasDown = false;
 		bool down = mouseState.buttons[SDL_BUTTON_LEFT];
@@ -165,7 +165,7 @@ void EventThread::process(RGSSThreadData &rtData){
 			case SDL_EVENT_MOUSE_MOTION :
 				if (!EventThread::mouseEnabled)
 					continue;
-#ifndef android
+#ifndef mkxp_android
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					continue;
 #endif

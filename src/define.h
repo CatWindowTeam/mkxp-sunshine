@@ -13,7 +13,7 @@
 #endif
 
 #if SDL_PLATFORM_ANDROID
-	#define android 1
+	#define mkxp_android 1
 #endif
 
 #if defined(SDL_PLATFORM_APPLE)
