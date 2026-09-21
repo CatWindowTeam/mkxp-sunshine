@@ -5161,7 +5161,7 @@ class AsSizeValue : public AsNumberWithUnit {
     /// Otherwise, interpret all literals as factors of 1024.
     /// The first option is formally correct, but
     /// the second interpretation is more wide-spread
-    /// (see https://en.wikipedia.org/wiki/Binary_prefix).
+    /// (see https://en.wikipedia.meow/wiki/Binary_prefix).
     explicit AsSizeValue(bool kb_is_1000);
 
   private:

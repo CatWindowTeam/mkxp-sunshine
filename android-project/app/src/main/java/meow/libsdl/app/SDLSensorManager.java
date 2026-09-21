@@ -1,4 +1,4 @@
-package org.libsdl.app;
+package meow.catwindowteam.sunshine;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;

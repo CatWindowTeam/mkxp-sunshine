@@ -16,7 +16,7 @@
 #   public *;
 #}
 
--keep,includedescriptorclasses,allowoptimization class org.libsdl.app.SDLActivity {
+-keep,includedescriptorclasses,allowoptimization class meow.catwindowteam.sunshine.SDLActivity {
     java.lang.String nativeGetHint(java.lang.String); # Java-side doesn't use this, so it gets minified, but C-side still tries to register it
     java.lang.String clipboardGetText();
     boolean clipboardHasText();
@@ -55,7 +55,7 @@
     java.lang.String formatLocale(java.util.Locale);
 }
 
--keep,includedescriptorclasses,allowoptimization class org.libsdl.app.HIDDeviceManager {
+-keep,includedescriptorclasses,allowoptimization class meow.catwindowteam.sunshine.HIDDeviceManager {
     void closeDevice(int);
     boolean initialize(boolean, boolean);
     boolean openDevice(int);
@@ -63,13 +63,13 @@
     int writeReport(int, byte[], boolean);
 }
 
--keep,includedescriptorclasses,allowoptimization class org.libsdl.app.SDLAudioManager {
+-keep,includedescriptorclasses,allowoptimization class meow.catwindowteam.sunshine.SDLAudioManager {
     void registerAudioDeviceCallback();
     void unregisterAudioDeviceCallback();
     void audioSetThreadPriority(boolean, int);
 }
 
--keep,includedescriptorclasses,allowoptimization class org.libsdl.app.SDLControllerManager {
+-keep,includedescriptorclasses,allowoptimization class meow.catwindowteam.sunshine.SDLControllerManager {
     void joystickSetSensorsEnabled(int, boolean);
     void detectDevices();
     void joystickSetLED(int, int, int, int);
