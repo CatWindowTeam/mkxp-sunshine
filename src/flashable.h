@@ -19,19 +19,13 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FLASHABLE_H
-#define FLASHABLE_H
-
+#pragma once
 #include "etc.h"
 #include "etc-internal.h"
 
 class Flashable{
 public:
-	Flashable()
-	    : flashColor(0, 0, 0, 0),
-	      flashing(false),
-	      emptyFlashFlag(false)
-	{}
+	Flashable() : flashColor(0, 0, 0, 0), flashing(false), emptyFlashFlag(false) {}
 
 	virtual ~Flashable() {}
 
@@ -81,5 +75,3 @@ private:
 	int duration;
 	int counter;
 };
-
-#endif // FLASHABLE_H

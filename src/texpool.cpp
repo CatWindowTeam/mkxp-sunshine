@@ -25,7 +25,6 @@
 #include "glstate.h"
 #include "meow.h"
 #include "util.h"
-
 #include <list>
 #include <utility>
 #include <assert.h>
@@ -109,9 +108,6 @@ TEXFBO TexPool::request(int width, int height){
 
 		p->memSize -= byteCount(size);
 		--p->objCount;
-
-//		Debug() << "TexPool: <?+> (" << width << height << ")";
-
 		return cnode.obj;
 	}
 
@@ -125,8 +121,6 @@ TEXFBO TexPool::request(int width, int height){
 	TEXFBO::allocEmpty(cnode.obj, width, height);
 	TEXFBO::linkFBO(cnode.obj);
 
-//	Debug() << "TexPool: <?-> (" << width << height << ")";
-
 	return cnode.obj;
 }
 
@@ -138,7 +132,6 @@ void TexPool::release(TEXFBO &obj){
 
 	if (p->disabled){
 		/* If we're disabled, delete without caching */
-//		Debug() << "TexPool: <!#> (" << obj.width << obj.height << ")";
 		TEXFBO::fini(obj);
 		return;
 	}
@@ -152,8 +145,6 @@ void TexPool::release(TEXFBO &obj){
 	while (newMemSize > p->maxMemSize){
 		if (p->objCount == 0)
 			break;
-
-//		Debug() << "TexPool: <!~> Size:" << p->memSize;
 
 		/* Retrieve object with lowest priority for deletion */
 		CacheNode last;
@@ -172,8 +163,6 @@ void TexPool::release(TEXFBO &obj){
 
 		newMemSize -= byteCount(removedSize);
 		--p->objCount;
-
-//		Debug() << "TexPool: <!-> (" << last.obj.width << last.obj.height << ")";
 	}
 
 	p->memSize = newMemSize;
@@ -187,12 +176,8 @@ void TexPool::release(TEXFBO &obj){
 	bucket.push_back(cnode);
 
 	++p->objCount;
-
-//	Debug() << "TexPool: <!+> (" << obj.width << obj.height << ") Current size:" << p->memSize;
 }
 
 void TexPool::disable(){
 	p->disabled = true;
 }
-
-
