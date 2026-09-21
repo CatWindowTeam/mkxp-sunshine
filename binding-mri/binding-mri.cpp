@@ -518,7 +518,9 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 
 	/* Shrink to fit */
 	file.resize(SDL_strlen(file.c_str()));
-	file = btData.scriptNames.value(file, file);
+	auto scriptIt = btData.scriptNames.find(file);
+	if (scriptIt != btData.scriptNames.end())
+		file = scriptIt->second;
 
 	SDL_snprintf(crash_message, sizeof(crash_message), "Script '%s' line %s: %s occured.%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
     show_crash_screen = true;

@@ -24,6 +24,7 @@
 #include "sharedstate.h"
 #include "glstate.h"
 #include "meow.h"
+#include "util.h"
 
 #include <list>
 #include <utility>
@@ -50,7 +51,7 @@ typedef std::list<CacheNode> CNodeList;
 
 struct TexPoolPrivate{
 	/* Contains all cached TexFBOs, grouped by size */
-	tsl::robin_map<Size, CNodeList> poolHash;
+	tsl::robin_map<Size, CNodeList, PairHash> poolHash;
 
 	/* Contains all cached TexFBOs, sorted by release time */
 	std::list<TEXFBO> priorityQueue;

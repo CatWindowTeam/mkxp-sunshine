@@ -26,6 +26,17 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <utility>
+#include <functional>
+
+struct PairHash{
+	template<typename T1, typename T2>
+	std::size_t operator()(const std::pair<T1, T2>& value) const{
+		const std::size_t h1 = std::hash<T1>{}(value.first);
+		const std::size_t h2 = std::hash<T2>{}(value.second);
+		return h1 ^ (h2 + static_cast<std::size_t>(0x9e3779b9) + (h1 << 6) + (h1 >> 2));
+	}
+};
 
 static inline int wrapRange(int value, int min, int max){
 	if (value >= min && value <= max)

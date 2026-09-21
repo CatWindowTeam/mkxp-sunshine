@@ -52,7 +52,7 @@ struct SharedFontStatePrivate{
 
 	/* Pool of already opened fonts; once opened, they are reused
 	 * and never closed until the termination of the program */
-	tsl::robin_map<FontKey, TTF_Font*> pool;
+	tsl::robin_map<FontKey, TTF_Font*, PairHash> pool;
 };
 
 SharedFontState::SharedFontState(const Config &conf){
@@ -69,12 +69,12 @@ SharedFontState::SharedFontState(const Config &conf){
 		std::string from = raw.substr(0, sepPos);
 		std::string to   = raw.substr(sepPos+1);
 
-		p->subs.insert(from, to);
+		p->subs.emplace(from, to);
 	}
 }
 
 SharedFontState::~SharedFontState(){
-	tsl::robin_map<FontKey, TTF_Font*>::const_iterator iter;
+	tsl::robin_map<FontKey, TTF_Font*, PairHash>::const_iterator iter;
 	for (iter = p->pool.cbegin(); iter != p->pool.cend(); ++iter)
 		TTF_CloseFont(iter->second);
 
@@ -117,7 +117,10 @@ TTF_Font *SharedFontState::getFont(std::string family, unsigned int size){
 
 	FontKey key(family, size);
 
-	TTF_Font *font = p->pool.value(key);
+	TTF_Font *font = nullptr;
+	auto fontIt = p->pool.find(key);
+	if (fontIt != p->pool.end())
+		font = fontIt->second;
 
 	if (font)
 		return font;

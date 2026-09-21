@@ -380,7 +380,7 @@ static PHYSFS_EnumerateCallbackResult cacheEnumCB(void *d, const char *origdir, 
 		list.push_back(lowerFilename);
 
 		/* Add the lower -> mixed mapping of the file's full path */
-		data.p->pathCache.insert(lowerCase, mixedCase);
+		data.p->pathCache.emplace(lowerCase, mixedCase);
 	}
 
 	return PHYSFS_ENUM_OK;
