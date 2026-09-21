@@ -1,6 +1,7 @@
 //TODO: autogen of descs
 #include <SDL3/SDL_filesystem.h>
 #include <SDL3/SDL_messagebox.h>
+#include <SDL3/SDL_system.h>
 #include "config.h"
 #include "meow.h"
 #include "util.h"
