@@ -25,7 +25,7 @@
 #include "binding-util.h"
 #include "define.h"
 
-#ifdef android
+#ifdef mkxp_android
 	#include "sharedstate.h"
 	#include "input.h"
 	#include "eventthread.h"
@@ -97,9 +97,9 @@ RB_METHOD(windowUpdate){
 
 	w->update();
 
-#ifdef android
-	androidHandleSelectableClick(self, w);
-#endif
+	#ifdef mkxp_android
+		androidHandleSelectableClick(self, w);
+	#endif
 
 	return Qnil;
 }

@@ -32,7 +32,7 @@
 #include "define.h"
 #include <cstring>
 
-#ifdef android
+#ifdef mkxp_android
 	#include "input.h"
 	#include "eventthread.h"
 
@@ -122,19 +122,17 @@ RB_METHOD(graphicsUpdate){
 
 	shState->graphics().update();
 
-#ifdef android
-	androidSetTouchControlsVisible(androidShouldShowTouchControls());
-	androidHandleTitleClick();
-#endif
+	#ifdef mkxp_android
+		androidSetTouchControlsVisible(androidShouldShowTouchControls());
+		androidHandleTitleClick();
+	#endif
 
 	return Qnil;
 }
 
 RB_METHOD(graphicsFreeze){
 	RB_UNUSED_PARAM;
-
 	shState->graphics().freeze();
-
 	return Qnil;
 }
 

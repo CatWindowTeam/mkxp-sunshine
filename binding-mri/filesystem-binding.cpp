@@ -27,7 +27,7 @@
 #include <ruby.h>
 
 #include "define.h"
-#ifdef android
+#ifdef mkxp_android
 	#include <filesystem>
 #endif
 
@@ -39,12 +39,12 @@ DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
 
 VALUE fileIntForPath(const char *path, bool rubyExc){
 	SDL_IOStream* ops = nullptr;
-#ifdef android
-	std::string absPath = std::filesystem::absolute(path).string();
-	ops = SDL_IOFromFile(absPath.c_str(), "r");
-#else
-	ops = SDL_IOFromFile(path, "r");
-#endif
+	#ifdef mkxp_android
+		std::string absPath = std::filesystem::absolute(path).string();
+		ops = SDL_IOFromFile(absPath.c_str(), "r");
+	#else
+		ops = SDL_IOFromFile(path, "r");
+	#endif
 	if (!ops){
 		if (rubyExc) {
 			rb_raise(rb_eIOError, "Cannot open file: %s", path);

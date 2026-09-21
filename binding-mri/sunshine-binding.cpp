@@ -8,8 +8,7 @@
 #include "meow.h"
 #include "sharedstate.h"
 #include "define.h"
-
-#ifdef android
+#ifdef mkxp_android
 	#include <SDL3/SDL_system.h>
 	#include <jni.h>
 	void androidSetTouchControlsVisible(bool visible){

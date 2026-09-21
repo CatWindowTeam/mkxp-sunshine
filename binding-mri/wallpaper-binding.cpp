@@ -408,7 +408,7 @@ end:
 			isCached = true;
 		}
 		MacDesktop::ChangeBackground(shState->config().gameFolder + path, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, (color & 0xFF) / 255.0);
-	#elif android
+	#elif mkxp_android
 		return Qnil;
 	#else
 		char gameDir[PATH_MAX];
@@ -565,7 +565,7 @@ RB_METHOD(wallpaperReset){
 #else
 	#ifdef __APPLE__
 		MacDesktop::ResetBackground();
-	#elif android
+	#elif mkxp_android
 		return Qnil;
 	#else
 		desktopEnvironmentInit();

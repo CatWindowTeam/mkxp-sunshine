@@ -23,7 +23,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#ifdef android
+#ifdef mkxp_android
 	#include <android/api-level.h>
 #endif
 
@@ -133,7 +133,7 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back(std::string{"Detected Platform: "} + SDL_GetPlatform());
 	c.emplace_back(std::string{"Last PhysFS error: "} + PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 	c.emplace_back(std::string{"Last SDL Error on the current thread: "} + SDL_GetError());
-	#ifdef android
+	#ifdef mkxp_android
 		c.emplace_back(std::string{"Android API: "} + std::to_string(android_get_device_api_level()));
 	#endif
 	return c;
@@ -224,7 +224,7 @@ void crash_screen(SDL_Window* win){
 			SDL_SetRenderScale(ren, 1.0f, 1.0f);
 			char index_str[32];
 			for (int i = pager_start; i <= pager_end; ++i){
-				if(i < (cd.size() - 1)){
+				if(i < cd.size()){
 					count = count + 10;
 					snprintf(index_str, sizeof(index_str), "%03d", i);
 					SDL_RenderDebugTextFormat(ren, 10, count, "%s| %s", index_str, cd[i].c_str());

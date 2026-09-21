@@ -84,12 +84,12 @@ public:
 
 	static bool allocUserEvents();
 
-#ifdef android
-	/* Edge-detects a left click/tap directly off the raw mouseState,
-	 * independent of Input::update()'s once-per-frame trigger buffer
-	 * (which may not have refreshed yet at the point callers need this). */
-	static bool leftClickEdge();
-#endif
+	#ifdef mkxp_android
+		/* Edge-detects a left click/tap directly off the raw mouseState,
+		 * independent of Input::update()'s once-per-frame trigger buffer
+		 * (which may not have refreshed yet at the point callers need this). */
+		static bool leftClickEdge();
+	#endif
 
 	EventThread();
 

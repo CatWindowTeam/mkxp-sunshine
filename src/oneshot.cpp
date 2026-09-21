@@ -127,7 +127,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	#elif unix_like
 		//TODO: FIX IT
 		p->os = "linux";
-	#elif android
+	#elif mkxp_android
 		#ifdef TERMUX
 			p->os = "linux";
 		#else
@@ -186,7 +186,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 
 
 	// Get documents path
-	#ifdef android
+	#ifdef mkxp_android
 		const char* path = "/sdcard/Sunshine/Documents";
 	#elif vita
 		const char* path = "ux0:/data/Sunshine";
