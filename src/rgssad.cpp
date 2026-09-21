@@ -20,7 +20,8 @@
 */
 
 #include "rgssad.h"
-#include "boost-hash.h"
+#include <tsl/robin_map.h>
+#include <tsl/robin_set.h>
 #include <string>
 #include <SDL3/SDL_stdinc.h>
 
@@ -54,11 +55,11 @@ struct RGSS_archiveData{
 
 	/* Maps: file path
 	 * to:   entry data */
-	BoostHash<std::string, RGSS_entryData> entryHash;
+	tsl::robin_map<std::string, RGSS_entryData> entryHash;
 
 	/* Maps: directory path,
 	 * to:   list of contained entries */
-	BoostHash<std::string, BoostSet<std::string> > dirHash;
+	tsl::robin_map<std::string, tsl::robin_set<std::string> > dirHash;
 };
 
 static bool readUint32(PHYSFS_Io *io, uint32_t &result){
@@ -253,7 +254,7 @@ static const PHYSFS_Io RGSS_IoTemplate ={
     RGSS_ioDestroy
 };
 
-static void processDirectories(RGSS_archiveData *data, BoostSet<std::string> &topLevel, char *nameBuf, uint32_t nameLen){
+static void processDirectories(RGSS_archiveData *data, tsl::robin_set<std::string> &topLevel, char *nameBuf, uint32_t nameLen){
 	/* Check for top level entries */
 	for (uint32_t i = 0; i < nameLen; ++i){
 		bool slash = nameBuf[i] == '/';
@@ -279,7 +280,7 @@ static void processDirectories(RGSS_archiveData *data, BoostSet<std::string> &to
 			const char *dir = nameBuf;
 			const char *entry = &nameBuf[i+1];
 
-			BoostSet<std::string> &entryList = data->dirHash[dir];
+			tsl::robin_set<std::string> &entryList = data->dirHash[dir];
 			entryList.insert(entry);
 		}
 }
@@ -315,7 +316,7 @@ static void* RGSS_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *cl
 	uint32_t magic = RGSS_MAGIC;
 
 	/* Top level entry list */
-	BoostSet<std::string> &topLevel = data->dirHash[""];
+	tsl::robin_set<std::string> &topLevel = data->dirHash[""];
 
 	while (true){
 		/* Read filename length,
@@ -347,7 +348,7 @@ static void* RGSS_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *cl
 		entry.size = entrySize;
 		entry.startMagic = magic;
 
-		data->entryHash.insert(nameBuf, entry);
+		data->entryHash.emplace(nameBuf, entry);
 		processDirectories(data, topLevel, nameBuf, nameLen);
 
 		io->seek(io, entry.offset + entry.size);
@@ -364,9 +365,9 @@ static PHYSFS_EnumerateCallbackResult RGSS_enumerateFiles(void *opaque, const ch
 	if (!data->dirHash.contains(_dirname))
 		return PHYSFS_ENUM_STOP;
 
-	const BoostSet<std::string> &entries = data->dirHash[_dirname];
+	const tsl::robin_set<std::string> &entries = data->dirHash[_dirname];
 
-	BoostSet<std::string>::const_iterator iter;
+	tsl::robin_set<std::string>::const_iterator iter;
 	for (iter = entries.cbegin(); iter != entries.cend(); ++iter)
 		cb(callbackdata, origdir, iter->c_str());
 
@@ -503,7 +504,7 @@ static void* RGSS3_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *c
 	data->archiveIo = io;
 
 	/* Top level entry list */
-	BoostSet<std::string> &topLevel = data->dirHash[""];
+	tsl::robin_set<std::string> &topLevel = data->dirHash[""];
 
 	while (true){
 		uint32_t offset, size, magic, nameLen;
@@ -543,7 +544,7 @@ static void* RGSS3_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *c
 		entry.size = size;
 		entry.startMagic = magic;
 
-		data->entryHash.insert(nameBuf, entry);
+		data->entryHash.emplace(nameBuf, entry);
 		processDirectories(data, topLevel, nameBuf, nameLen);
 
 		continue;

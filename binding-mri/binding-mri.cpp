@@ -31,7 +31,8 @@
 #include "debugwriter.h"
 #include "graphics.h"
 #include "sound/audio.h"
-#include "boost-hash.h"
+#include <tsl/robin_map.h>
+#include <tsl/robin_set.h>
 #include "meow.h"
 #include "config.h"
 #include "modloader.h"
@@ -354,7 +355,7 @@ VALUE kernelLoadDataInt(const char *filename, bool rubyExc);
 
 struct BacktraceData{
 	/* Maps: Ruby visible filename, To: Actual script name */
-	BoostHash<std::string, std::string> scriptNames;
+	tsl::robin_map<std::string, std::string> scriptNames;
 };
 
 static void runRMXPScripts(BacktraceData &btData){
@@ -451,7 +452,7 @@ static void runRMXPScripts(BacktraceData &btData){
 			fname = newStringUTF8(buf, len);
 			rb_gc_register_address(&fname);
 
-			btData.scriptNames.insert(buf, scriptName);
+			btData.scriptNames.emplace(buf, scriptName);
 			int state;
 			evalString(string, fname, &state);
 

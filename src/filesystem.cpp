@@ -26,7 +26,7 @@
 #include "util.h"
 #include "exception.h"
 #include "sharedstate.h"
-#include "boost-hash.h"
+#include <tsl/robin_map.h>
 #include "debugwriter.h"
 #include "meow.h"
 #include <physfs.h>
@@ -259,10 +259,10 @@ static void strTolower(std::string &str){
 struct FileSystemPrivate{
 	/* Maps: lower case full filepath,
 	 * To:   mixed case full filepath */
-	BoostHash<std::string, std::string> pathCache;
+	tsl::robin_map<std::string, std::string> pathCache;
 	/* Maps: lower case directory path,
 	 * To:   list of lower case filenames */
-	BoostHash<std::string, std::vector<std::string> > fileLists;
+	tsl::robin_map<std::string, std::vector<std::string> > fileLists;
 
 	/* This is for compatibility with games that take Windows'
 	 * case insensitivity for granted */
@@ -451,7 +451,7 @@ struct OpenReadEnumData{
 
 	/* Optional hash to translate full filepaths
 	 * (used with path cache) */
-	BoostHash<std::string, std::string> *pathTrans;
+	tsl::robin_map<std::string, std::string> *pathTrans;
 
 	/* Number of files we've attempted to read and parse */
 	size_t matchCount;
@@ -461,7 +461,7 @@ struct OpenReadEnumData{
 	 * doesn't get changed before we get back into our code */
 	const char *physfsError;
 
-	OpenReadEnumData(FileSystem::OpenHandler &handler, const char *filename, size_t filenameN, BoostHash<std::string, std::string> *pathTrans)
+	OpenReadEnumData(FileSystem::OpenHandler &handler, const char *filename, size_t filenameN, tsl::robin_map<std::string, std::string> *pathTrans)
 	    : handler(handler), filename(filename), filenameN(filenameN),
 	      pathTrans(pathTrans), matchCount(0), stopSearching(false),
 	      physfsError(0)

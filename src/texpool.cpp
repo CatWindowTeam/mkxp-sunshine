@@ -23,14 +23,14 @@
 #include "exception.h"
 #include "sharedstate.h"
 #include "glstate.h"
-#include "boost-hash.h"
 #include "meow.h"
 
 #include <list>
 #include <utility>
 #include <assert.h>
 #include <string.h>
-
+#include <tsl/robin_map.h>
+#include <tsl/robin_set.h>
 typedef std::pair<uint16_t, uint16_t> Size;
 
 static uint32_t byteCount(Size &s){
@@ -50,7 +50,7 @@ typedef std::list<CacheNode> CNodeList;
 
 struct TexPoolPrivate{
 	/* Contains all cached TexFBOs, grouped by size */
-	BoostHash<Size, CNodeList, PairHash> poolHash;
+	tsl::robin_map<Size, CNodeList> poolHash;
 
 	/* Contains all cached TexFBOs, sorted by release time */
 	std::list<TEXFBO> priorityQueue;

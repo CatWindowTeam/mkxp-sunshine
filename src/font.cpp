@@ -23,7 +23,8 @@
 #include "sharedstate.h"
 #include "filesystem.h"
 #include "exception.h"
-#include "boost-hash.h"
+#include <tsl/robin_map.h>
+#include <tsl/robin_set.h>
 #include "util.h"
 #include "config.h"
 #include "meow.h"
@@ -43,15 +44,15 @@ struct FontSet{
 struct SharedFontStatePrivate{
 	/* Maps: font family name, To: substituted family name,
 	 * as specified via configuration file / arguments */
-	BoostHash<std::string, std::string> subs;
+	tsl::robin_map<std::string, std::string> subs;
 
 	/* Maps: font family name, To: set of physical
 	 * font filenames located in "Fonts/" */
-	BoostHash<std::string, FontSet> sets;
+	tsl::robin_map<std::string, FontSet> sets;
 
 	/* Pool of already opened fonts; once opened, they are reused
 	 * and never closed until the termination of the program */
-	BoostHash<FontKey, TTF_Font*, PairHash> pool;
+	tsl::robin_map<FontKey, TTF_Font*> pool;
 };
 
 SharedFontState::SharedFontState(const Config &conf){
@@ -73,7 +74,7 @@ SharedFontState::SharedFontState(const Config &conf){
 }
 
 SharedFontState::~SharedFontState(){
-	BoostHash<FontKey, TTF_Font*>::const_iterator iter;
+	tsl::robin_map<FontKey, TTF_Font*>::const_iterator iter;
 	for (iter = p->pool.cbegin(); iter != p->pool.cend(); ++iter)
 		TTF_CloseFont(iter->second);
 
@@ -140,7 +141,7 @@ TTF_Font *SharedFontState::getFont(std::string family, unsigned int size){
 		crash(Exception::SDLError, "%s", SDL_GetError());
 	}
 
-	p->pool.insert(key, font);
+	p->pool.emplace(key, font);
 	return font;
 }
 

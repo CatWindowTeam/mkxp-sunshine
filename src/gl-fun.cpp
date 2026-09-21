@@ -20,7 +20,7 @@
 */
 
 #include "gl-fun.h"
-#include "boost-hash.h"
+#include <tsl/robin_set.h>
 #include "meow.h"
 #include <SDL3/SDL_video.h>
 #include <string>
@@ -29,7 +29,7 @@ GLFunctions gl;
 
 typedef const GLubyte* (APIENTRYP _PFNGLGETSTRINGIPROC) (GLenum, GLuint);
 
-static void parseExtensionsCore(_PFNGLGETINTEGERVPROC GetIntegerv, BoostSet<std::string> &out){
+static void parseExtensionsCore(_PFNGLGETINTEGERVPROC GetIntegerv, tsl::robin_set<std::string> &out){
 	_PFNGLGETSTRINGIPROC GetStringi = (_PFNGLGETSTRINGIPROC) SDL_GL_GetProcAddress("glGetStringi");
 
 	GLint extCount = 0;
@@ -39,7 +39,7 @@ static void parseExtensionsCore(_PFNGLGETINTEGERVPROC GetIntegerv, BoostSet<std:
 		out.insert((const char*) GetStringi(GL_EXTENSIONS, i));
 }
 
-static void parseExtensionsCompat(_PFNGLGETSTRINGPROC GetString, BoostSet<std::string> &out){
+static void parseExtensionsCompat(_PFNGLGETSTRINGPROC GetString, tsl::robin_set<std::string> &out){
 	const char *ext = (const char*) GetString(GL_EXTENSIONS);
 
 	if (!ext)
@@ -99,7 +99,7 @@ void initGLFunctions(){
 		GL_ES_FUN;
 	}
 
-	BoostSet<std::string> ext;
+	tsl::robin_set<std::string> ext;
 
 	if (glMajor >= 3)
 		parseExtensionsCore(gl.GetIntegerv, ext);
