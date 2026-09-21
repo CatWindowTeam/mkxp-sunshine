@@ -423,7 +423,7 @@ static void runRMXPScripts(BacktraceData &btData){
 
 	//Execute preloaded scripts
 	if(modloader_is_enabled){
-		for (std::set<std::string>::iterator i = preloadScripts.begin();
+		for (tsl::robin_set<std::string>::iterator i = preloadScripts.begin();
 			i != preloadScripts.end(); ++i){
 			    runCustomScript(*i);
 		}

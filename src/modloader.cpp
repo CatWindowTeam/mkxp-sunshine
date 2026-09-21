@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <tsl/robin_set.h>
 #include "the_modded_machine.png.xxd"
 namespace fs = std::filesystem;
 static bool stop_render = false;
@@ -48,8 +49,8 @@ static int renderer_thread(void* data){
 	while(!stop_render){
 		index_on_screen = 10;
 		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-	        SDL_RenderClear(ren);
-	        SDL_RenderTexture(ren, tex, NULL, NULL);
+	    SDL_RenderClear(ren);
+	    SDL_RenderTexture(ren, tex, NULL, NULL);
 		SDL_SetRenderDrawColor(ren, 150, 100, 255, 255);
 		std::size_t size = modloader_logs.size();
 		std::size_t n = std::min<std::size_t>(static_cast<std::size_t>(N), size);
@@ -76,9 +77,8 @@ void ModLoader(Config conf, SDL_Window* win){
     }
     SDL_Thread* render_thread_pointer = NULL;
     if(!conf.Modloader.skip_modloader_screen){
-    	render_thread_pointer = SDL_CreateThread(renderer_thread, "ModRenderer", win);
+    	render_thread_pointer = SDL_CreateThread(renderer_thread, "MLRender", win);
     }
-    std::vector<std::string> mod_list = {};
     try {
         // 1.check if any zip(mod) file, 2.mount mod via PhysFS
         for (const auto &entry : fs::directory_iterator(conf.Modloader.ModsDirPath, fs::directory_options::skip_permission_denied)) {
@@ -89,12 +89,15 @@ void ModLoader(Config conf, SDL_Window* win){
             auto ext = p.extension().string();
             std::string full = p.string();
 
-            if (ext == ".zip") {
-                int ok = PHYSFS_mount(full.c_str(), "", 0);
-                mod_list.emplace_back(full);
-                modloader_add_to_log("Added mod " + full);
-                mods_count++;
-            } else if (ext == ".rb") {
+            if (ext == ".zip"){
+                if(PHYSFS_mount(full.c_str(), "", 0)){
+                	std::string message = "Failed to load " + full + ", error: " + PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
+                	modloader_add_to_log(message);
+                }else{
+                	modloader_add_to_log("Loaded mod " + full);
+                	mods_count++;
+                }
+            }else if (ext == ".rb"){
                 preloadScripts.insert(full);
                 modloader_add_to_log("Added script " + full);
                 preloaded_script_count++;
