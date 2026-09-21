@@ -9,6 +9,7 @@ android {
     compileSdkVersion 35
     ndkVersion = "28.2.13676358"
     defaultConfig {
+        applicationId "meow.catwindowteam.sunshine"
         minSdkVersion 26
         targetSdkVersion 35
         versionCode 1
