@@ -33,6 +33,7 @@
 #include <SDL3/SDL_stdinc.h>
 #include <vector>
 #include <stack>
+#include <memory>
 
 #ifdef __APPLE__
 	#define OS_OSX
@@ -261,8 +262,11 @@ struct FileSystemPrivate{
 	 * To:   mixed case full filepath */
 	tsl::robin_map<std::string, std::string> pathCache;
 	/* Maps: lower case directory path,
-	 * To:   list of lower case filenames */
-	tsl::robin_map<std::string, std::vector<std::string> > fileLists;
+	 * To:   list of lower case filenames
+	 * Values are heap-allocated so pointers to them stay valid
+	 * across rehashes of this map (tsl::robin_map does not give
+	 * reference stability like std::unordered_map does) */
+	tsl::robin_map<std::string, std::unique_ptr<std::vector<std::string> > > fileLists;
 
 	/* This is for compatibility with games that take Windows'
 	 * case insensitivity for granted */
@@ -365,10 +369,12 @@ static PHYSFS_EnumerateCallbackResult cacheEnumCB(void *d, const char *origdir, 
 
 	if (stat.filetype == PHYSFS_FILETYPE_DIRECTORY){
 		/* Create a new list for this directory */
-		std::vector<std::string> &list = data.p->fileLists[lowerCase];
+		std::unique_ptr<std::vector<std::string> > &listPtr = data.p->fileLists[lowerCase];
+		if (!listPtr)
+			listPtr = std::make_unique<std::vector<std::string> >();
 
 		/* Iterate over its contents */
-		data.fileLists.push(&list);
+		data.fileLists.push(listPtr.get());
 		PHYSFS_enumerate(fullPath, cacheEnumCB, d);
 		data.fileLists.pop();
 	}else{
@@ -388,7 +394,10 @@ static PHYSFS_EnumerateCallbackResult cacheEnumCB(void *d, const char *origdir, 
 
 void FileSystem::createPathCache(){
 	CacheEnumData data(p);
-	data.fileLists.push(&p->fileLists[""]);
+	std::unique_ptr<std::vector<std::string> > &rootList = p->fileLists[""];
+	if (!rootList)
+		rootList = std::make_unique<std::vector<std::string> >();
+	data.fileLists.push(rootList.get());
 	PHYSFS_enumerate("", cacheEnumCB, &data);
 
 	p->havePathCache = true;
@@ -557,10 +566,14 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 	if (p->havePathCache){
 		/* Get the list of files contained in this directory
 		 * and manually iterate over them */
-		const std::vector<std::string> &fileList = p->fileLists[dir];
+		auto it = p->fileLists.find(dir);
 
-		for (size_t i = 0; i < fileList.size(); ++i)
-			openReadEnumCB(&data, dir, fileList[i].c_str());
+		if (it != p->fileLists.end()){
+			const std::vector<std::string> &fileList = *it->second;
+
+			for (size_t i = 0; i < fileList.size(); ++i)
+				openReadEnumCB(&data, dir, fileList[i].c_str());
+		}
 	}else{
 		PHYSFS_enumerate(dir, openReadEnumCB, &data);
 	}
