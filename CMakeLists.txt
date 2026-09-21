@@ -446,6 +446,15 @@ find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
+if(ANDROID)
+	# Link sigc++ statically: Gradle's CMake integration only packages .so
+	# files that this CMake project actually builds, so a dynamically
+	# linked sigc++-2.0 resolved via pkg-config from an external prefix
+	# never ends up in the APK, causing a dlopen failure at runtime.
+	set(SIGC2_INCLUDE_DIRS ${SIGC2_STATIC_INCLUDE_DIRS})
+	set(SIGC2_LIBRARY_DIRS ${SIGC2_STATIC_LIBRARY_DIRS})
+	set(SIGC2_LIBRARIES ${SIGC2_STATIC_LIBRARIES})
+endif()
 find_package(tsl-robin-map REQUIRED)
 target_compile_definitions(${APP_TARGET} PRIVATE ${DEFINES})
 target_include_directories(${APP_TARGET} PRIVATE
