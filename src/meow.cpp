@@ -224,7 +224,7 @@ void crash_screen(SDL_Window* win){
 			SDL_SetRenderScale(ren, 1.0f, 1.0f);
 			char index_str[32];
 			for (int i = pager_start; i <= pager_end; ++i){
-				if(i < (cd.size() - 1)){
+				if(i < cd.size()){
 					count = count + 10;
 					snprintf(index_str, sizeof(index_str), "%03d", i);
 					SDL_RenderDebugTextFormat(ren, 10, count, "%s| %s", index_str, cd[i].c_str());
