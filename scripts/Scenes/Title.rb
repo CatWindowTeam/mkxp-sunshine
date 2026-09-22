@@ -49,11 +49,7 @@ class Scene_Title
     if File.exist?("Graphics/Titles/#{translation_name}.png")
       @sprite.bitmap = RPG::Cache.title(translation_name)
     else
-      if Sunshine::DEVBUILD
-      	@sprite.bitmap = RPG::Cache.title("dev.png")
-      else
-		@sprite.bitmap = RPG::Cache.title($data_system.title_name)
-      end
+	  @sprite.bitmap = RPG::Cache.title($data_system.title_name)
     end
 
     @sprite.x = Graphics.width / 2

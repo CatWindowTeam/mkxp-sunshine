@@ -84,11 +84,6 @@ void SunshineBindingInit(){
     rb_const_set(module, rb_intern("SDLVersion_minor"), INT2NUM(SDL_MINOR_VERSION));
     rb_const_set(module, rb_intern("SDLVersion_micro"), INT2NUM(SDL_MICRO_VERSION));
 	rb_const_set(module, rb_intern("VERSION"), rb_str_new_cstr(VERSION_STRING));
-	#ifdef DEVBUILD
-		rb_const_set(module, rb_intern("DEVBUILD"), Qtrue);
-	#else
-		rb_const_set(module, rb_intern("DEVBUILD"), Qfalse);
-	#endif
 	rb_define_singleton_method(module, "crash_privacy=", RUBY_METHOD_FUNC(sunshineSetCrashPrivacy), 1);
 	rb_define_singleton_method(module, "SetCrashScreenData", RUBY_METHOD_FUNC(SetCrashScreenData), 1);
 	rb_define_singleton_method(module, "wallpaper_mode=", RUBY_METHOD_FUNC(sunshineSetWallpaperMode), 1);
