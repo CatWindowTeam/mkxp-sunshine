@@ -2,11 +2,9 @@
 #include <ruby/util.h>
 #include <SDL3/SDL_version.h>
 #include <SDL3/SDL_hints.h>
-#include <SDL3/SDL_video.h>
 #include "config.h"
 #include "sunshine.h"
 #include "meow.h"
-#include "sharedstate.h"
 #include "define.h"
 #ifdef mkxp_android
 	#include <SDL3/SDL_system.h>
@@ -38,7 +36,7 @@ static VALUE sunshineSetCrashPrivacy(VALUE, VALUE v) {
 
 static VALUE sunshineSetWallpaperMode(VALUE, VALUE v) {
 	std::string s(StringValueCStr(v));
-	shState->config().wallpaperMode = s;
+	conf.wallpaperMode = s;
 	return v;
 }
 
@@ -101,13 +99,9 @@ void SunshineBindingInit(){
 	    rb_define_method(rb_cInteger, "times", RUBY_METHOD_FUNC(int_times), 0);
 
 	//detect unsupported enviroment like wayland or PSVita	
-	#ifdef vita
+	#ifdef defind(vita) || defind(psp) || defind(ps2) || defind(haiku) || defind(web) || defind(unix_like) || defind(android)
 		rb_const_set(module, rb_intern("UNSUPPORTED_ENVIROMENT"), Qtrue);
 	#else
-		if(SDL_GetCurrentVideoDriver() == "wayland"){
-			rb_const_set(module, rb_intern("UNSUPPORTED_ENVIROMENT"), Qtrue);
-		}else{
-			rb_const_set(module, rb_intern("UNSUPPORTED_ENVIROMENT"), Qfalse);
-		}
+		rb_const_set(module, rb_intern("UNSUPPORTED_ENVIROMENT"), Qtrue);
 	#endif
 }
