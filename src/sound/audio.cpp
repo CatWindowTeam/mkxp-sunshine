@@ -20,16 +20,15 @@
 */
 
 #include "audio.h"
-
 #include "sharedstate.h"
 #include "eventthread.h"
-
+#include <tsl/robin_map.h>
 #include <vector>
 #include <memory>
 
 struct AudioPrivate{
-	std::unordered_map<std::string, std::shared_ptr<AudioSource>> cache;
-	std::unordered_map<MIX_Track*, AudioPlayback*> playbacks;
+	tsl::robin_map<std::string, std::shared_ptr<AudioSource>> cache;
+	tsl::robin_map<MIX_Track*, AudioPlayback*> playbacks;
 	std::vector<AudioGroup*> groups;
 
 	AudioPrivate() {}
@@ -41,8 +40,7 @@ struct AudioPrivate{
 	}
 };
 
-Audio::Audio(RGSSThreadData &threadData)
-{
+Audio::Audio(RGSSThreadData &threadData){
 	mixer = threadData.mixer;
 	p = new AudioPrivate();
 }

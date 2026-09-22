@@ -64,10 +64,7 @@ struct PingPong{
 	uint8_t srcInd, dstInd;
 	int screenW, screenH;
 
-	PingPong(int screenW, int screenH)
-	    : srcInd(0), dstInd(1),
-	      screenW(screenW), screenH(screenH)
-	{
+	PingPong(int screenW, int screenH) : srcInd(0), dstInd(1), screenW(screenW), screenH(screenH){
 		for (int i = 0; i < 2; ++i){
 			TEXFBO::init(rt[i]);
 			TEXFBO::allocEmpty(rt[i], screenW, screenH);
@@ -94,7 +91,6 @@ struct PingPong{
 	void resize(int width, int height){
 		screenW = width;
 		screenH = height;
-
 		for (int i = 0; i < 2; ++i)
 			TEXFBO::allocEmpty(rt[i], width, height);
 	}
@@ -245,8 +241,7 @@ public:
 
 		if (colorEffect || flashEffect){
 			gl.BlendEquation(GL_FUNC_ADD);
-			gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
-			                     GL_ZERO, GL_ONE);
+			gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
 		}
 
 		if (colorEffect){
