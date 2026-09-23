@@ -11,10 +11,10 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
 )
 project(oneshot)
 include(CheckIPOSupported)
-include(${CMAKE_SOURCE_DIR}/cmake/xxd.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/check.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/options.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/vita.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/xxd.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/check.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/options.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/vita.cmake)
 
 # cmake/vita.cmake
 vita_prepare()
@@ -26,13 +26,13 @@ check_ipo_supported(
 )
 
 # find src, embeds and binding src
-include(${CMAKE_SOURCE_DIR}/cmake/source.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/source.cmake)
 #add_executable
-include(${CMAKE_SOURCE_DIR}/cmake/add_exec.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_exec.cmake)
 # platform specific tweaks
-include(${CMAKE_SOURCE_DIR}/cmake/platform.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/platform.cmake)
 
-include(${CMAKE_SOURCE_DIR}/cmake/compiler_tweaks.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/compiler_tweaks.cmake)
 
 if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 	if(ipo_supported)
@@ -45,6 +45,6 @@ if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 	endif()
 endif()
 
-include(${CMAKE_SOURCE_DIR}/cmake/deps.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/deps.cmake)
 add_subdirectory(scripts)
 vita_finish()
