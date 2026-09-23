@@ -33,17 +33,6 @@
 #include <ruby.h>
 #include <ruby/version.h>
 
-#ifdef RUBY_API_VERSION_MAJOR
-#define RAPI_MAJOR RUBY_API_VERSION_MAJOR
-#define RAPI_MINOR RUBY_API_VERSION_MINOR
-#define RAPI_TEENY RUBY_API_VERSION_TEENY
-#else
-#define RAPI_MAJOR RUBY_VERSION_MAJOR
-#define RAPI_MINOR RUBY_VERSION_MINOR
-#define RAPI_TEENY RUBY_VERSION_TEENY
-#endif
-#define RAPI_FULL ((RAPI_MAJOR * 100) + (RAPI_MINOR * 10) + RAPI_TEENY)
-
 enum RbException {
     RGSS = 0,
     Reset,
@@ -80,11 +69,6 @@ void raiseRbExc(const Exception &exc);
 #define DECL_TYPE(Klass) extern rb_data_type_t Klass##Type
 #define DEF_TYPE_FLAGS 0
 
-/*
-#define DEF_TYPE_CUSTOMNAME_AND_FREE(Klass, Name, Free) \
-    rb_data_type_t Klass##Type = { Name, { 0, Free, 0, { 0, 0 } }, 0, 0, (void*)DEF_TYPE_FLAGS }
-*/
-
 // should able to compile now, i think?
 #define DEF_TYPE_CUSTOMNAME_AND_FREE(Klass, Name, Free) \
     rb_data_type_t Klass##Type = { Name, { 0, Free, 0, }, 0, NULL, DEF_TYPE_FLAGS }
@@ -100,7 +84,6 @@ void raiseRbExc(const Exception &exc);
 template <rb_data_type_t *rbType> static VALUE classAllocate(VALUE klass) {
     return rb_data_typed_object_wrap(klass, 0, rbType);
 }
-
 
 template <class C> static void freeInstance(void *inst) {
     delete static_cast<C *>(inst);
@@ -121,7 +104,7 @@ static inline C *getPrivateDataCheck(VALUE self, const rb_data_type_t &type){
     if (!rb_typeddata_is_kind_of(self, &type))
         rb_raise(rb_eTypeError, "Can't convert %s into %s", ownname, type.wrap_struct_name);
 
-        void *obj = RTYPEDDATA_DATA(self);
+    void *obj = RTYPEDDATA_DATA(self);
     return static_cast<C *>(obj);
 }
 
@@ -133,8 +116,7 @@ inline VALUE wrapObject(void *p, const rb_data_type_t &type, VALUE underKlass = 
     VALUE klass = rb_const_get(underKlass, rb_intern(type.wrap_struct_name));
     VALUE obj = rb_obj_alloc(klass);
     setPrivateData(obj, p);
-
-return obj;
+	return obj;
 }
 
 inline VALUE wrapProperty(VALUE self, void *prop, const char *iv, const rb_data_type_t &type, VALUE underKlass = rb_cObject) {
@@ -148,10 +130,10 @@ int rb_get_args(int argc, VALUE *argv, const char *format, ...);
 
 /* Always terminate 'rb_get_args' with this */
 #ifndef NDEBUG
-#  define RB_ARG_END_VAL ((void *) -1)
-#  define RB_ARG_END , RB_ARG_END_VAL
+	#define RB_ARG_END_VAL ((void *) -1)
+	#define RB_ARG_END , RB_ARG_END_VAL
 #else
-#  define RB_ARG_END
+	#define RB_ARG_END
 #endif
 
 typedef VALUE (*RubyMethod)(int argc, VALUE *argv, VALUE self);
@@ -188,15 +170,10 @@ static inline VALUE objectLoad(int argc, VALUE *argv, VALUE self) {
     const char *data;
     int dataLen;
     rb_get_args(argc, argv, "s", &data, &dataLen RB_ARG_END);
-
     VALUE obj = rb_obj_alloc(self);
-
     C *c = 0;
-
     GUARD_EXC(c = C::deserialize(data, dataLen););
-
     setPrivateData(obj, c);
-
     return obj;
 }
 
@@ -253,8 +230,7 @@ inline void rb_bool_arg(VALUE arg, bool *out, int argPos = 0) {
 
 inline void rb_check_argc(int actual, int expected){
     if (actual != expected)
-        rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)",
-                 actual, expected);
+        rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", actual, expected);
 }
 
 #define RB_NA_METHOD(name) \

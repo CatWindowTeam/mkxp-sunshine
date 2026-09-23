@@ -19,44 +19,32 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VIEWPORTELEMENTBINDING_H
-#define VIEWPORTELEMENTBINDING_H
-
+#pragma once
 #include "viewport.h"
 #include "sharedstate.h"
 #include "binding-util.h"
 #include "binding-types.h"
-
 #include "sceneelement-binding.h"
 #include "disposable-binding.h"
 
 template<class C>
-RB_METHOD(viewportElementGetViewport){
-	RB_UNUSED_PARAM;
-
+static VALUE viewportElementGetViewport(VALUE self){
 	checkDisposed<C>(self);
-
 	return rb_iv_get(self, "viewport");
 }
 
 template<class C>
-RB_METHOD(viewportElementSetViewport){
-	RB_UNUSED_PARAM;
-
+static VALUE viewportElementSetViewport(int argc, VALUE *argv, VALUE self){
 	ViewportElement *ve = getPrivateData<C>(self);
 
 	VALUE viewportObj = Qnil;
 	Viewport *viewport = 0;
-
 	rb_get_args(argc, argv, "o", &viewportObj RB_ARG_END);
-
 	if (!NIL_P(viewportObj))
 		viewport = getPrivateDataCheck<Viewport>(viewportObj, ViewportType);
 
 	GUARD_EXC( ve->setViewport(viewport); );
-
 	rb_iv_set(self, "viewport", viewportObj);
-
 	return viewportObj;
 }
 
@@ -70,7 +58,6 @@ static C *viewportElementInitialize(int argc, VALUE *argv, VALUE self){
 
 	if (!NIL_P(viewportObj)){
 		viewport = getPrivateDataCheck<Viewport>(viewportObj, ViewportType);
-
 		disposableAddChild(viewportObj, self);
 	}
 
@@ -79,16 +66,12 @@ static C *viewportElementInitialize(int argc, VALUE *argv, VALUE self){
 
 	/* Set property objects */
 	rb_iv_set(self, "viewport", viewportObj);
-
 	return ve;
 }
 
 template<class C>
 void viewportElementBindingInit(VALUE klass){
 	sceneElementBindingInit<C>(klass);
-
-	_rb_define_method(klass, "viewport", viewportElementGetViewport<C>);
+	rb_define_singleton_method(klass, "viewport", RUBY_METHOD_FUNC(viewportElementGetViewport<C>), 0);
 	_rb_define_method(klass, "viewport=", viewportElementSetViewport<C>);
 }
-
-#endif // VIEWPORTELEMENTBINDING_H

@@ -28,28 +28,23 @@
 
 DEF_TYPE(Viewport);
 
-RB_METHOD(viewportInitialize){
+static VALUE viewportInitialize(int argc, VALUE *argv, VALUE self){
 	Viewport *v;
 
 	if (argc == 0){
 		v = new Viewport();
-	}
-	else if (argc == 1){
+	}else if (argc == 1){
 		/* The rect arg is only used to init the viewport,
 		 * and does NOT replace its 'rect' property */
 		VALUE rectObj;
 		Rect *rect;
-
+		
 		rb_get_args(argc, argv, "o", &rectObj RB_ARG_END);
-
 		rect = getPrivateDataCheck<Rect>(rectObj, RectType);
-
 		v = new Viewport(rect);
 	}else{
 		int x, y, width, height;
-
 		rb_get_args(argc, argv, "iiii", &x, &y, &width, &height RB_ARG_END);
-
 		v = new Viewport(x, y, width, height);
 	}
 
@@ -66,7 +61,6 @@ RB_METHOD(viewportInitialize){
 	 * of this viewport, so we can dispose them when the viewport
 	 * is disposed */
 	rb_iv_set(self, "elements", rb_ary_new());
-
 	return self;
 }
 
@@ -76,7 +70,6 @@ DEF_PROP_OBJ_VAL(Viewport, Tone,  Tone,  "tone")
 
 DEF_PROP_I(Viewport, OX)
 DEF_PROP_I(Viewport, OY)
-
 DEF_PROP_F(Viewport, ScaleX)
 DEF_PROP_F(Viewport, ScaleY)
 DEF_PROP_F(Viewport, Rotation)
@@ -84,11 +77,9 @@ DEF_PROP_F(Viewport, Rotation)
 void viewportBindingInit(){
 	VALUE klass = rb_define_class("Viewport", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&ViewportType>);
-
 	disposableBindingInit  <Viewport>(klass);
 	flashableBindingInit   <Viewport>(klass);
 	sceneElementBindingInit<Viewport>(klass);
-
 	_rb_define_method(klass, "initialize", viewportInitialize);
 
 	INIT_PROP_BIND( Viewport, Rect,     "rect"    );

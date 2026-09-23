@@ -21,19 +21,17 @@
 
 #include "sound/audio.h"
 #include "sharedstate.h"
-#include "binding-util.h"
 #include "audioplayback-binding.h"
+#include "binding-util.h"
 
 #define TAG2CSTR(tag) SYMBOL_P(tag) ? rb_id2name(rb_sym2id(tag)) : StringValueCStr(tag)
 
-RB_METHOD(rb_audio_createAudioPlayback) {
+static VALUE rb_audio_createAudioPlayback(int argc, VALUE *argv, VALUE self){
 	char* path;
 	int group = 0;
 	bool predecode = false;
 	rb_get_args(argc, argv, "z|bi", &path, &predecode, &group RB_ARG_END);
-	
     AudioPlayback* pb = shState->audio().createAudioPlayback(path, group, predecode);
-
     return TypedData_Wrap_Struct(audioplayback_klass, &audioplayback_type, pb);
 }
 
@@ -64,7 +62,7 @@ static VALUE rb_audio_setGroupVolume(VALUE self, VALUE groupId, VALUE volume) {
 	return Qnil;
 }
 
-RB_METHOD(rb_audio_stopGroupSounds) {
+static VALUE rb_audio_stopGroupSounds(int argc, VALUE *argv, VALUE self){
 	int groupId;
 	double fadeOutTime = 0.0f;
 	rb_get_args(argc, argv, "i|f", &groupId, &fadeOutTime);
@@ -82,7 +80,7 @@ static VALUE rb_audio_playTagSounds(VALUE self, VALUE tag) {
 	return Qnil;
 }
 
-RB_METHOD(rb_audio_stopTagSounds) {
+static VALUE rb_audio_stopTagSounds(int argc, VALUE *argv, VALUE self){
     VALUE rb_tagName;
     VALUE rb_fadeTime = DBL2NUM(0.0);
     rb_scan_args(argc, argv, "11", &rb_tagName, &rb_fadeTime);
@@ -100,35 +98,27 @@ static VALUE rb_audio_clearCache(VALUE self) {
 	return Qnil;
 }
 
-RB_METHOD(audioReset) {
-	RB_UNUSED_PARAM;
+static VALUE audioReset(VALUE self){
 	shState->audio().reset();
-
 	return Qnil;
 }
 
 void audioBindingInit(){
 	VALUE module = rb_define_module("Audio");
-
 	rb_define_singleton_method(module, "create_sound", RUBY_METHOD_FUNC(rb_audio_createAudioPlayback), -1);
 
 	// returns id of group, returns -1 if group not created
 	rb_define_singleton_method(module, "create_group", RUBY_METHOD_FUNC(rb_audio_createGroup), 0);
 	rb_define_singleton_method(module, "destroy_group", RUBY_METHOD_FUNC(rb_audio_destroyGroup), 1);
-
 	rb_define_singleton_method(module, "master_volume", RUBY_METHOD_FUNC(rb_audio_getMasterVolume), 0);
 	rb_define_singleton_method(module, "master_volume=", RUBY_METHOD_FUNC(rb_audio_setMasterVolume), 1);
-
 	rb_define_singleton_method(module, "get_group_volume", RUBY_METHOD_FUNC(rb_audio_getGroupVolume), 1);
 	rb_define_singleton_method(module, "set_group_volume", RUBY_METHOD_FUNC(rb_audio_setGroupVolume), 2);
 	rb_define_singleton_method(module, "stop_group_sounds", RUBY_METHOD_FUNC(rb_audio_stopGroupSounds), -1);
-
 	rb_define_singleton_method(module, "set_tag_volume", RUBY_METHOD_FUNC(rb_audio_setTagVolume), 2);
 	rb_define_singleton_method(module, "play_tag_sounds", RUBY_METHOD_FUNC(rb_audio_playTagSounds), 1);
 	rb_define_singleton_method(module, "stop_tag_sounds", RUBY_METHOD_FUNC(rb_audio_stopTagSounds), -1);
-
 	rb_define_singleton_method(module, "unload", RUBY_METHOD_FUNC(rb_audio_unload), 1);
 	rb_define_singleton_method(module, "clear_cache", RUBY_METHOD_FUNC(rb_audio_clearCache), 0);
-
-	_rb_define_module_function(module, "__reset__", audioReset);
+	rb_define_singleton_method(module, "__reset__", RUBY_METHOD_FUNC(audioReset), 0);
 }

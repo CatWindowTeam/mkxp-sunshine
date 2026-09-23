@@ -79,28 +79,20 @@
 
 DEF_TYPE(Window);
 
-RB_METHOD(windowInitialize){
+static VALUE windowInitialize(int argc, VALUE *argv, VALUE self){
 	Window *w = viewportElementInitialize<Window>(argc, argv, self);
-
 	setPrivateData(self, w);
-
 	w->initDynAttribs();
-
 	wrapProperty(self, &w->getCursorRect(), "cursor_rect", RectType);
-
 	return self;
 }
 
-RB_METHOD(windowUpdate){
-	RB_UNUSED_PARAM;
+static VALUE windowUpdate(int argc, VALUE *argv, VALUE self){
 	Window *w = getPrivateData<Window>(self);
-
 	w->update();
-
 	#ifdef mkxp_android
 		androidHandleSelectableClick(self, w);
 	#endif
-
 	return Qnil;
 }
 
@@ -129,9 +121,9 @@ void windowBindingInit(){
 
 	disposableBindingInit     <Window>(klass);
 	viewportElementBindingInit<Window>(klass);
-
+	
 	_rb_define_method(klass, "initialize", windowInitialize);
-	_rb_define_method(klass, "update",     windowUpdate);
+	_rb_define_method(klass, "update", windowUpdate);
 	INIT_PROP_BIND( Window, Windowskin,      "windowskin"       );
 	INIT_PROP_BIND( Window, Contents,        "contents"         );
 	INIT_PROP_BIND( Window, Stretch,         "stretch"          );
