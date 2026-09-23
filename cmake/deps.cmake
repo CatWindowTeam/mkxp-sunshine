@@ -35,15 +35,14 @@ find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
-# а нахуя?
-if(ANDROID)
-	# Link sigc++ statically: Gradle's CMake integration only packages .so
-	# files that this CMake project actually builds, so a dynamically
-	# linked sigc++-2.0 resolved via pkg-config from an external prefix
-	# never ends up in the APK, causing a dlopen failure at runtime.
-	set(SIGC2_INCLUDE_DIRS ${SIGC2_STATIC_INCLUDE_DIRS})
-	set(SIGC2_LIBRARY_DIRS ${SIGC2_STATIC_LIBRARY_DIRS})
-	set(SIGC2_LIBRARIES ${SIGC2_STATIC_LIBRARIES})
+# ради баланса вселенной
+if(ANDROID AND NOT TERMUX)
+	find_library(SIGC2_SHARED_LIBRARY NAMES sigc-2.0 PATHS ${SIGC2_LIBRARY_DIRS} NO_DEFAULT_PATH)
+	if(SIGC2_SHARED_LIBRARY)
+		file(COPY ${SIGC2_SHARED_LIBRARY} DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/android-project/app/libs/${ANDROID_ABI}")
+	else()
+		message(WARNING "Could not locate the sigc++-2.0 shared library to bundle into the APK")
+	endif()
 endif()
 
 target_compile_definitions(${APP_TARGET} PRIVATE ${DEFINES})

@@ -1,4 +1,4 @@
-include(${CMAKE_SOURCE_DIR}/cmake/check.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/check.cmake)
 include(cmake/arch_compiler_tweaks.cmake)
 check_option(OPTIONS_DEBUG
 	-g

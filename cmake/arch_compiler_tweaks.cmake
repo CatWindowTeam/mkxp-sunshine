@@ -1,4 +1,4 @@
-include(${CMAKE_SOURCE_DIR}/cmake/check.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/check.cmake)
 # Common arguments on specific CPU arch
 if("${ARCH_COMMON}" STREQUAL "")
 	message(STATUS "ARCH_COMMON empty")
