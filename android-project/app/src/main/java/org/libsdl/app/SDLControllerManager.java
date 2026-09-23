@@ -1,4 +1,4 @@
-package meow.catwindowteam.sunshine;
+package org.libsdl.app;
 
 import java.util.ArrayList;
 import java.util.Collections;

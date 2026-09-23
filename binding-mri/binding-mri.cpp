@@ -549,8 +549,8 @@ static void mriBindingExecute(){
 	RbData *rbData = new RbData();
 	shState->setBindingData(rbData);
 	BacktraceData btData;
-
 	mriBindingInit();
+	rb_gc_enable();
 	runRMXPScripts(btData);
 
 	VALUE exc = rb_errinfo();

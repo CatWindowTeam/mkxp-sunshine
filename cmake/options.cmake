@@ -19,6 +19,9 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+option(API_ONESHOT_EXTENSIONS "Enable API extensions specific to Oneshot mods" ON)
+option(API_ONESHOT_EXTENSIONS_XFCE "Support for wallpaper setter for xfce4, libxfconf required " ON)
+option(API_ONESHOT_EXTENSIONS_KDE "Support for wallpaper setter for KDE, KConfig from KDE Frameworks required" ON)
 
 #code analysis with "include what you use"
 if(CODE_ANAL)

@@ -1,4 +1,4 @@
-package meow.catwindowteam.sunshine;
+package org.libsdl.app;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -27,7 +27,7 @@ import java.util.List;
 
 public class HIDDeviceManager {
     private static final String TAG = "hidapi";
-    private static final String ACTION_USB_PERMISSION = "meow.catwindowteam.sunshine.USB_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "org.libsdl.app.USB_PERMISSION";
 
     private static HIDDeviceManager sManager;
     private static int sManagerRefCount = 0;
@@ -243,6 +243,7 @@ public class HIDDeviceManager {
             0x0e6f, // PDP
             0x0f0d, // Hori
             0x1038, // SteelSeries
+            0x10f5, // Turtle Beach
             0x11c9, // Nacon
             0x1209, // Generic
             0x12ab, // Unknown

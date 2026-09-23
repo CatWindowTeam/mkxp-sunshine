@@ -1,4 +1,4 @@
-package meow.catwindowteam.sunshine;
+package org.libsdl.app;
 
 import android.content.*;
 import android.os.Build;

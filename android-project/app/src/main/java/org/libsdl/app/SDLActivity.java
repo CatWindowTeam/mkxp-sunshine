@@ -1,4 +1,4 @@
-package meow.catwindowteam.sunshine;
+package org.libsdl.app;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -505,8 +505,6 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
             mLayout = new RelativeLayout(this);
             mLayout.addView(mSurface);
-            mLayout.addView(new TouchControlsView(this), new RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
 
             // Get our current screen orientation and pass it down.
             SDLActivity.nativeSetNaturalOrientation(SDLActivity.getNaturalOrientation());
@@ -816,11 +814,11 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                         mBackKeyHandler = new Handler(Looper.getMainLooper());
                     }
 
-                    onNativeKeyDown(KeyEvent.KEYCODE_X);
+                    onNativeKeyDown(KeyEvent.KEYCODE_BACK);
                     mBackKeyHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            onNativeKeyUp(KeyEvent.KEYCODE_X);
+                            onNativeKeyUp(KeyEvent.KEYCODE_BACK);
                         }
                     }, 500);
                 }
@@ -1486,8 +1484,8 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     public static boolean isChromebook() {
         // https://stackoverflow.com/questions/39784415/how-to-detect-programmatically-if-android-app-is-running-in-chrome-book-or-in
         if (getContext() != null) {
-            if (getContext().getPackageManager().hasSystemFeature("meow.chromium.arc")
-                || getContext().getPackageManager().hasSystemFeature("meow.chromium.arc.device_management")) {
+            if (getContext().getPackageManager().hasSystemFeature("org.chromium.arc")
+                || getContext().getPackageManager().hasSystemFeature("org.chromium.arc.device_management")) {
                 return true;
             }
         }
@@ -1631,12 +1629,16 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     }
 
     public static boolean handleKeyEvent(View v, int keyCode, KeyEvent event, InputConnection ic) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            keyCode = KeyEvent.KEYCODE_X;
-        }
         int deviceId = event.getDeviceId();
         int source = event.getSource();
         InputDevice device = InputDevice.getDevice(deviceId);
+
+        if ((event.getFlags() & KeyEvent.FLAG_FALLBACK) != 0) {
+            // If this is a fallback event -- e.g., the mouse is being turned into dpad navigational keys 
+            // just eat it, since that's almost never what we actually want to have happen. This will 
+            // happen with Logitech mice on Amazon Fire TV devices and some Samsung devices.
+            return true; 
+        }
 
         if (source == InputDevice.SOURCE_UNKNOWN) {
             if (device != null) {
