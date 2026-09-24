@@ -216,21 +216,12 @@ int main(int argc, char *argv[]){
 		}
 	#endif
 
-	#ifdef mkxp_android
-			char path[1024];
-			SDL_snprintf(path, 1024, "%sSunshine", SDL_GetUserFolder(SDL_FOLDER_HOME));
-			if(chdir(path) != 0){
-				WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
-				return 0;
-			}
-	#else
-		if(!conf.gameFolder.empty()){
-			if(chdir(conf.gameFolder.c_str()) != 0){
-				WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
-				return 0;
-			}
-		}		
-	#endif
+	if(!conf.gameFolder.empty()){
+		if(chdir(conf.gameFolder.c_str()) != 0){
+			WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
+			return 0;
+		}
+	}		
 
 	//TODO: rewrite this shit
 	#ifndef mkxp_android
