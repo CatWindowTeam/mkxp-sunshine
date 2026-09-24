@@ -24,6 +24,7 @@
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
+#include <SDL3/SDL_filesystem.h>
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_video.h>
 #include <physfs.h>
@@ -215,36 +216,48 @@ int main(int argc, char *argv[]){
 		}
 	#endif
 
-	if (!conf.gameFolder.empty()){
-		if(chdir(conf.gameFolder.c_str()) != 0){
-			WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
-			return 0;
-		}
-	}
-
-	std::string path;
-	if (!conf.gameFolder.empty()) {
-	    if(conf.gameFolder == ".") {
-	        path = std::filesystem::current_path().string();
-	    }else{
-	        path = std::filesystem::absolute(conf.gameFolder).string();
-	    }
-	}else{
-	    path = std::filesystem::current_path().string();
-	}
-
-	#ifdef vita
-		std::string shit = "ux0:/data/Sunshine";
+	#ifdef mkxp_android
+			char path[1024];
+			SDL_snprintf(path, 1024, "%sSunshine", SDL_GetUserFolder(SDL_FOLDER_HOME));
+			if(chdir(path) != 0){
+				WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
+				return 0;
+			}
 	#else
-		std::string shit = SDL_GetUserFolder(SDL_FOLDER_HOME);
+		if(!conf.gameFolder.empty()){
+			if(chdir(conf.gameFolder.c_str()) != 0){
+				WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
+				return 0;
+			}
+		}		
 	#endif
-	std::ofstream out(std::filesystem::path(shit) / "sunshine");
-	if (!out) {
-	    WarnMsg("Failed to write game directory path to temp file, problems with journal app expected!");
-	} else {
-	    out << path;
-	}
 
+	//TODO: rewrite this shit
+	#ifndef mkxp_android
+		std::string path;
+		if(!conf.gameFolder.empty()) {
+	    	if(conf.gameFolder == ".") {
+	        	path = std::filesystem::current_path().string();
+	    	}else{
+	        	path = std::filesystem::absolute(conf.gameFolder).string();
+	    	}
+		}else{
+	    	path = std::filesystem::current_path().string();
+		}
+
+		#ifdef vita
+			std::string shit = "ux0:/data/Sunshine";
+		#else
+			std::string shit = SDL_GetUserFolder(SDL_FOLDER_HOME);
+		#endif
+		std::ofstream out(std::filesystem::path(shit) / "sunshine");
+		if(!out) {
+	    	WarnMsg("Failed to write game directory path to temp file, problems with journal app expected!");
+		}else{
+	    	out << path;
+		}
+	#endif
+	
 	if (TTF_Init() == false){
 		WarnMsg("Error initializing SDL_ttf: %s", SDL_GetError());
 		SDL_Quit();
