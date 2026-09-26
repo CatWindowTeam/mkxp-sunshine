@@ -35,7 +35,7 @@ function(check_option output_var)
             message(STATUS "${option} supported")
             list(APPEND result "${option}")
         else()
-        	message(STATUS "${option} unsupported")
+            message(STATUS "${option} unsupported")
         endif()
     endforeach()
 
@@ -56,7 +56,7 @@ function(check_linker_option output_var)
             message(STATUS "${option} supported")
             list(APPEND result "${option}")
         else()
-			message(STATUS "${option} unsupported")
+	    message(STATUS "${option} unsupported")
         endif()
     endforeach()
 
@@ -105,7 +105,7 @@ check_option(OPTIONS_DEBUG
 	-g
 	-Og)
 
-check_option(OPTIONS_RELEASE 
+check_option(OPTIONS_RELEASE
 	-O3
 	-fno-stack-clash-protection
 	-fno-ident
