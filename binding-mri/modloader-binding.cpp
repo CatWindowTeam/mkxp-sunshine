@@ -39,7 +39,6 @@ static VALUE hooks(int argc, VALUE *argv, VALUE self){
     }
 
     char **list = PHYSFS_enumerateFiles(hook_path.c_str());
-
     if (list == nullptr) {
         return meow(files);
     }
@@ -47,7 +46,6 @@ static VALUE hooks(int argc, VALUE *argv, VALUE self){
     for (char **entry = list; *entry != nullptr; ++entry) {
         std::string name = *entry;
         std::string full_path = hook_path;
-
         if (!full_path.empty() && full_path.back() != '/') {
             full_path += '/';
         }

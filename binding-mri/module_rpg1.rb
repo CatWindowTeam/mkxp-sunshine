@@ -1,5 +1,5 @@
 module Kernel
-  alias_method :original_puts, :puts
+  alias_method :puts
   def puts(*args)
     string = ""
     args.each do |arg|
@@ -115,9 +115,6 @@ module RPG
     end
     def self.fog(filename, hue)
       self.load_bitmap("Graphics/Fogs/", filename, hue)
-    end
-    def self.gameover(filename)
-      self.load_bitmap("Graphics/Gameovers/", filename)
     end
     def self.icon(filename)
       self.load_bitmap("Graphics/Icons/", filename)
@@ -1484,12 +1481,10 @@ module RPG
       @variables = [nil, ""]
       @windowskin_name = ""
       @title_name = ""
-      @gameover_name = ""
       @battle_transition = ""
       @title_bgm = RPG::AudioFile.new
       @battle_bgm = RPG::AudioFile.new
       @battle_end_me = RPG::AudioFile.new
-      @gameover_me = RPG::AudioFile.new
       @cursor_se = RPG::AudioFile.new("", 80)
       @decision_se = RPG::AudioFile.new("", 80)
       @cancel_se = RPG::AudioFile.new("", 80)
@@ -1518,12 +1513,10 @@ module RPG
     attr_accessor :variables
     attr_accessor :windowskin_name
     attr_accessor :title_name
-    attr_accessor :gameover_name
     attr_accessor :battle_transition
     attr_accessor :title_bgm
     attr_accessor :battle_bgm
     attr_accessor :battle_end_me
-    attr_accessor :gameover_me
     attr_accessor :cursor_se
     attr_accessor :decision_se
     attr_accessor :cancel_se

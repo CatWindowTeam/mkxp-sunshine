@@ -19,17 +19,12 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef BINDING_UTIL_H
-#define BINDING_UTIL_H
-
+#pragma once
 #include <ruby.h>
-//костыль ебаный сука
-#undef snprintf
 #undef inline
 #undef close
 
 #include "exception.h"
-
 #include <ruby.h>
 #include <ruby/version.h>
 
@@ -39,14 +34,10 @@ enum RbException {
     PHYSFS,
     SDL,
     MKXP,
-
     ErrnoENOENT,
-
     IOError,
-
     TypeError,
     ArgumentError,
-
     RbExceptionsMax
 };
 
@@ -233,24 +224,18 @@ inline void rb_check_argc(int actual, int expected){
         rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", actual, expected);
 }
 
-#define RB_NA_METHOD(name) \
-    static VALUE name(VALUE self)
-
 #define RB_METHOD(name) \
     static VALUE name(int argc, VALUE *argv, VALUE self)
 
-#define RB_UNUSED_PARAM \
-    { (void) argc; (void) argv; (void) self; }
+#define RB_UNUSED_PARAM {}
 
 #define MARSH_LOAD_FUN(Typ) \
-    RB_METHOD(Typ##Load) \
-    { \
+    RB_METHOD(Typ##Load){ \
         return objectLoad<Typ>(argc, argv, self); \
     }
 
 #define INITCOPY_FUN(Klass) \
-    RB_METHOD(Klass##InitializeCopy) \
-    { \
+    RB_METHOD(Klass##InitializeCopy){ \
         VALUE origObj; \
         rb_get_args(argc, argv, "o", &origObj RB_ARG_END); \
         if (!OBJ_INIT_COPY(self, origObj)) /* When would this fail??*/\
@@ -267,14 +252,10 @@ inline void rb_check_argc(int actual, int expected){
  * because self.disposed? is not checked in this case.
  * Should make this more clear */
 #define DEF_PROP_OBJ_REF(Klass, PropKlass, PropName, prop_iv) \
-    RB_METHOD(Klass##Get##PropName) \
-    { \
-        RB_UNUSED_PARAM; \
+    RB_METHOD(Klass##Get##PropName){ \
         return rb_iv_get(self, prop_iv); \
     } \
-    RB_METHOD(Klass##Set##PropName) \
-    { \
-        RB_UNUSED_PARAM; \
+    RB_METHOD(Klass##Set##PropName){ \
         rb_check_argc(argc, 1); \
         Klass *k = getPrivateData<Klass>(self); \
         VALUE propObj = *argv; \
@@ -290,14 +271,11 @@ inline void rb_check_argc(int actual, int expected){
 
 /* Object property which is copied by value, not reference */
 #define DEF_PROP_OBJ_VAL(Klass, PropKlass, PropName, prop_iv) \
-    RB_METHOD(Klass##Get##PropName) \
-    { \
-        RB_UNUSED_PARAM; \
+    RB_METHOD(Klass##Get##PropName){ \
         checkDisposed<Klass>(self); \
         return rb_iv_get(self, prop_iv); \
     } \
-    RB_METHOD(Klass##Set##PropName) \
-    { \
+    RB_METHOD(Klass##Set##PropName){ \
         rb_check_argc(argc, 1); \
         Klass *k = getPrivateData<Klass>(self); \
         VALUE propObj = *argv; \
@@ -308,16 +286,13 @@ inline void rb_check_argc(int actual, int expected){
     }
 
 #define DEF_PROP(Klass, type, PropName, arg_fun, value_fun) \
-    RB_METHOD(Klass##Get##PropName) \
-    { \
-        RB_UNUSED_PARAM; \
+    RB_METHOD(Klass##Get##PropName){ \
         Klass *k = getPrivateData<Klass>(self); \
         type value = 0; \
         GUARD_EXC( value = k->get##PropName(); ) \
         return value_fun(value); \
     } \
-    RB_METHOD(Klass##Set##PropName) \
-    { \
+    RB_METHOD(Klass##Set##PropName){ \
         rb_check_argc(argc, 1); \
         Klass *k = getPrivateData<Klass>(self); \
         type value; \
@@ -340,6 +315,3 @@ inline void rb_check_argc(int actual, int expected){
     _rb_define_method(klass, prop_name_s, Klass##Get##PropName); \
     _rb_define_method(klass, prop_name_s "=", Klass##Set##PropName); \
 }
-
-
-#endif // BINDING_UTIL_H

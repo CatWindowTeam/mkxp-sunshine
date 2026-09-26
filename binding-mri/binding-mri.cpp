@@ -21,8 +21,6 @@
 
 #include "binding.h"
 #include "binding-util.h"
-#include "ruby/internal/eval.h"
-#include "ruby/internal/memory.h"
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "filesystem.h"
@@ -36,12 +34,13 @@
 #include "meow.h"
 #include "config.h"
 #include "modloader.h"
-
+#include <cstdio>
 #include <ruby/internal/gc.h>
 #include <ruby.h>
 #include <ruby/debug.h>
 #include <ruby/encoding.h>
-#undef inline
+#include "ruby/internal/eval.h"
+#include "ruby/internal/memory.h"
 #include <assert.h>
 #include <string>
 #include <zlib.h>
@@ -102,11 +101,9 @@ void LoggerInit();
 
 RB_METHOD(mriPrint);
 RB_METHOD(mriP);
-RB_METHOD(mkxpDataDirectory);
 RB_METHOD(mkxpPuts);
 RB_METHOD(mkxpRawKeyStates);
 RB_METHOD(mkxpMouseInWindow);
-
 RB_METHOD(mriRgssMain);
 RB_METHOD(mriRgssStop);
 RB_METHOD(_kernelCaller);
@@ -174,7 +171,6 @@ static void mriBindingInit(){
 	SDL_free(script);
 
 	VALUE mod = rb_define_module("MKXP");
-	_rb_define_module_function(mod, "data_directory", mkxpDataDirectory);
 	_rb_define_module_function(mod, "puts", mkxpPuts);
 	_rb_define_module_function(mod, "raw_key_states", mkxpRawKeyStates);
 	_rb_define_module_function(mod, "mouse_in_window", mkxpMouseInWindow);
@@ -183,7 +179,6 @@ static void mriBindingInit(){
 static void printP(int argc, VALUE *argv, const char *convMethod, const char *sep){
 	VALUE dispString = rb_str_buf_new(128);
 	ID conv = rb_intern(convMethod);
-
 	for (int i = 0; i < argc; ++i){
 		VALUE str = rb_funcall2(argv[i], conv, 0, NULL);
 		rb_str_buf_append(dispString, str);
@@ -205,14 +200,6 @@ RB_METHOD(mriP){
 	RB_UNUSED_PARAM;
 	printP(argc, argv, "inspect", "\n");
 	return Qnil;
-}
-
-RB_METHOD(mkxpDataDirectory){
-	RB_UNUSED_PARAM;
-	const std::string &path = shState->config().customDataPath;
-	const char *s = path.empty() ? "." : path.c_str();
-
-	return rb_str_new_cstr(s);
 }
 
 RB_METHOD(mkxpPuts){

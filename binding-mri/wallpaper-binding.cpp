@@ -293,7 +293,7 @@
 					g_error_free(xferror);
 				}
 			#else
-				Debug() << "XFCE4 support disabled in this build!"
+				Debug() << "XFCE4 support disabled in this build!";
 			#endif
 		} else if (desktop == "kde") {
 			#ifdef API_ONESHOT_EXTENSIONS_KDE
@@ -321,7 +321,7 @@
 				    return imageUrl;
 				}
 			#else
-				Debug() << "KDE Support disabled in this build"
+				Debug() << "KDE Support disabled in this build";
 			#endif
 		} else {
 			const char* homeC = SDL_getenv("HOME");
@@ -608,7 +608,7 @@ RB_METHOD(wallpaperReset){
 			remove((std::string(desktop) + "ONESHOT_hint.png").c_str());
 		return Qnil;
 	}
-	#ifdef _WIN32
+	#ifdef windows
 		if (isCached) {
 			int colorId = COLOR_BACKGROUND;
 			HKEY hKey = NULL;
@@ -744,8 +744,10 @@ void wallpaperBindingInit(){
 #ifdef unix_like
 void wallpaperBindingTerminate(){
 	// Clean up.
-	if (desktop == "xfce") {
-		xfconf_shutdown();
-	}
+	#ifdef API_ONESHOT_EXTENSIONS_XFCE
+		if(desktop == "xfce") {
+			xfconf_shutdown();
+		}
+	#endif
 }
 #endif

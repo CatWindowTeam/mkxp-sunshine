@@ -55,7 +55,6 @@ class Game_Temp
   attr_accessor :player_new_direction     # player destination: direction
   attr_accessor :transition_processing    # transition processing flag
   attr_accessor :transition_name          # transition file name
-  attr_accessor :gameover                 # game over flag
   attr_accessor :to_title                 # return to title screen flag
   attr_accessor :last_file_index          # last save file no.
   attr_accessor :debug_top_row            # debug screen: for saving conditions
@@ -119,7 +118,6 @@ class Game_Temp
     @player_new_direction = 0
     @transition_processing = false
     @transition_name = ""
-    @gameover = false
     @to_title = false
     @last_file_index = 0
     @debug_top_row = 0

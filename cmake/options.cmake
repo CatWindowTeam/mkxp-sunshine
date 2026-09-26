@@ -19,6 +19,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+option(RUBY_DONT_SUBST "Add define RUBY_DONT_SUBST" ON)
 option(API_ONESHOT_EXTENSIONS "Enable API extensions specific to Oneshot mods" ON)
 option(API_ONESHOT_EXTENSIONS_XFCE "Support for wallpaper setter for xfce4, libxfconf required " ON)
 option(API_ONESHOT_EXTENSIONS_KDE "Support for wallpaper setter for KDE, KConfig from KDE Frameworks required" ON)
@@ -42,6 +43,10 @@ endif()
 # Use OpenGL ES2
 if(USE_OPENGL_ES2)
 	add_definitions(-DGLES2_HEADER)
+endif()
+
+if(RUBY_DONT_SUBST)
+        add_definitions(-DRUBY_DONT_SUBST)
 endif()
 
 if(DEVBUILD)

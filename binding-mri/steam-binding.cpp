@@ -8,50 +8,39 @@
 #include "debugwriter.h"
 
 RB_METHOD(steamEnabled){
-	RB_UNUSED_PARAM;
-
-#ifdef STEAM
-	return Qtrue;
-#else
-	return Qfalse;
-#endif
+	#ifdef STEAM
+		return Qtrue;
+	#else
+		return Qfalse;
+	#endif
 }
 
 RB_METHOD(steamUnlock){
-	RB_UNUSED_PARAM;
-
-    const char *name;
-	rb_get_args(argc, argv, "z", &name RB_ARG_END);
-
-#ifdef STEAM
-	shState->steam().unlock(name);
-#endif
+	#ifdef STEAM
+		const char *name;
+		rb_get_args(argc, argv, "z", &name RB_ARG_END);
+		shState->steam().unlock(name);
+	#endif
 	return Qnil;
 }
 
 RB_METHOD(steamLock){
-	RB_UNUSED_PARAM;
-
-	const char *name;
-	rb_get_args(argc, argv, "z", &name RB_ARG_END);
-
-#ifdef STEAM
-	shState->steam().lock(name);
-#endif
+	#ifdef STEAM
+		const char *name;
+		rb_get_args(argc, argv, "z", &name RB_ARG_END);
+		shState->steam().lock(name);
+	#endif
 	return Qnil;
 }
 
 RB_METHOD(steamUnlocked){
-	RB_UNUSED_PARAM;
-
-	const char *name;
-	rb_get_args(argc, argv, "z", &name RB_ARG_END);
-
-#ifdef STEAM
-	return shState->steam().isUnlocked(name) ? Qtrue : Qfalse;
-#else
-	return Qfalse;
-#endif
+	#ifdef STEAM
+		const char *name;
+		rb_get_args(argc, argv, "z", &name RB_ARG_END);
+		return shState->steam().isUnlocked(name) ? Qtrue : Qfalse;
+	#else
+		return Qfalse;
+	#endif
 }
 
 void steamBindingInit(){

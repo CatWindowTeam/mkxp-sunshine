@@ -60,7 +60,6 @@ static VALUE a_last(VALUE self){
 
 static VALUE int_times(VALUE self) {
 	long n = NUM2LONG(self);
-
 	if (!rb_block_given_p()) {
 		ID id_to_enum = rb_intern("to_enum");
 		VALUE sym = ID2SYM(rb_intern("times"));
@@ -68,7 +67,6 @@ static VALUE int_times(VALUE self) {
 	}
 
 	if (n <= 0) return self;
-
 	for (long i = 0; i < n; ++i)
 		rb_yield(LONG2NUM(i));
 
@@ -99,7 +97,9 @@ void SunshineBindingInit(){
 	    rb_define_method(rb_cInteger, "times", RUBY_METHOD_FUNC(int_times), 0);
 
 	//detect unsupported enviroment like wayland or PSVita	
-	#ifdef defind(vita) || defind(psp) || defind(ps2) || defind(haiku) || defind(web) || defind(unix_like) || defind(android)
+	#ifdef defind(vita) || defind(psp) || defind(ps2) || \
+	defind(haiku) || defind(web) || defind(unix_like) || defind(android) \
+	defined(TERMUX)
 		rb_const_set(module, rb_intern("UNSUPPORTED_ENVIROMENT"), Qtrue);
 	#else
 		rb_const_set(module, rb_intern("UNSUPPORTED_ENVIROMENT"), Qtrue);

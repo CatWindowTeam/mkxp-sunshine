@@ -1,3 +1,7 @@
+//TODO rewrite this shit
+
+
+
 /*
 ** filesystem-binding.cpp
 **
@@ -73,13 +77,11 @@ RB_METHOD(fileIntRead){
 	}
 
 	VALUE data = rb_str_new(0, length);
-
 	SDL_ReadIO(ops, RSTRING_PTR(data), length);
-
 	return data;
 }
 
-RB_NA_METHOD(fileIntClose){
+static VALUE fileIntClose(VALUE self){
     SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
     if (!ops){
         return Qnil;
@@ -89,15 +91,12 @@ RB_NA_METHOD(fileIntClose){
     setPrivateData(self, nullptr);
     return Qnil;
 }
-RB_NA_METHOD(fileIntGetByte){
+
+static VALUE fileIntGetByte(VALUE self){
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 	unsigned char byte = 0;
 	size_t result = SDL_ReadIO(ops, &byte, 1);
 	return (result == 1) ? INT2NUM(byte) : Qnil;
-}
-
-RB_NA_METHOD(fileIntBinmode){
-	return Qnil;
 }
 
 VALUE load_protect(VALUE marsh_and_port) {
@@ -114,16 +113,12 @@ VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
     VALUE args[2] = { marsh, port };
     int state = 0;
     VALUE result = rb_protect(load_protect, (VALUE)args, &state);
-	
     rb_funcallv(port, rb_intern("close"), 0, NULL);
-	
-    if (state) {
+    if (state){
 		VALUE err = rb_errinfo();
-
 		VALUE klass = rb_obj_class(err);
 		VALUE message = rb_funcall(err, rb_intern("message"), 0);
 		VALUE backtrace = rb_funcall(err, rb_intern("backtrace"), 0);
-
 		rb_p(klass);
 		rb_p(message);
 		rb_p(backtrace);
@@ -133,21 +128,17 @@ VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
 }
 
 RB_METHOD(kernelLoadData){
-	RB_UNUSED_PARAM;
 	const char *filename;
 	rb_get_args(argc, argv, "z", &filename);
 	return kernelLoadDataInt(filename, true);
 }
 
 RB_METHOD(kernelSaveData){
-	RB_UNUSED_PARAM;
-
 	VALUE obj;
 	VALUE filename;
 
 	rb_get_args(argc, argv, "oS", &obj, &filename);
 	VALUE file = rb_file_open_str(filename, "wb");
-
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
 
 	VALUE v[] = { obj, file };
@@ -177,7 +168,6 @@ VALUE customProc(VALUE arg, VALUE proc){
 }
 
 RB_METHOD(_marshalLoad){
-	RB_UNUSED_PARAM;
 	VALUE port, proc = Qnil;
 	rb_scan_args(argc, argv, "01", &port, &proc);
 	VALUE utf8Proc;
@@ -188,20 +178,22 @@ RB_METHOD(_marshalLoad){
 	}
 
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
-
 	VALUE v[] = { port, utf8Proc };
 	return rb_marshal_load(port);
+}
+
+//не удаляйте, Masrhal умирает без этой заглушки!
+static VALUE binMode(VALUE self){
+	return Qnil;
 }
 
 void fileIntBindingInit(){
 	VALUE klass = rb_define_class("FileInt", rb_cIO);
 	rb_define_alloc_func(klass, classAllocate<&FileIntType>);
-    
     rb_define_method(klass, "read", RUBY_METHOD_FUNC(fileIntRead), -1);
     rb_define_method(klass, "getbyte", RUBY_METHOD_FUNC(fileIntGetByte), 0);
-    rb_define_method(klass, "binmode", RUBY_METHOD_FUNC(fileIntBinmode), 0);
     rb_define_method(klass, "close", RUBY_METHOD_FUNC(fileIntClose), 0);
-
+    rb_define_method(klass, "binmode", RUBY_METHOD_FUNC(binMode), 0);
 	rb_define_module_function(rb_mKernel, "load_data", RUBY_METHOD_FUNC(kernelLoadData), -1);
     rb_define_module_function(rb_mKernel, "save_data", RUBY_METHOD_FUNC(kernelSaveData), -1);
 

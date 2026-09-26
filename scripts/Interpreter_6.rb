@@ -105,7 +105,7 @@ class Interpreter
       end
     end
     # Determine game over
-    $game_temp.gameover = $game_party.all_dead?
+#    $game_temp.gameover = $game_party.all_dead?
     # Continue
     return true
   end

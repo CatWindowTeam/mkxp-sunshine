@@ -322,7 +322,7 @@ class Game_Party
           $game_system.se_play($data_system.actor_collapse_se)
         end
         $game_screen.start_flash(Color.new(255,0,0,128), 4)
-        $game_temp.gameover = $game_party.all_dead?
+#        $game_temp.gameover = $game_party.all_dead?
       end
     end
   end

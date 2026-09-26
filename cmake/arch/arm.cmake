@@ -1,9 +1,9 @@
 set(ARCH_COMMON "")
 set(ARCH_RELEASE
 	-momit-leaf-frame-pointer
-	-mlow-precision-recip-sqrt
-	-mlow-precision-sqrt
-	-mlow-precision-div
 	-mearly-ra=all
-	-mbranch-protection=none)
+	-mbranch-protection=none
+	-mno-tpcs-frame
+	-mno-apcs-leaf-frame
+	-msign-return-address=none)
 set(ARCH_DEBUG "")

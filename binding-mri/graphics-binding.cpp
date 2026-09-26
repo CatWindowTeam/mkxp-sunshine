@@ -342,7 +342,6 @@ void graphicsBindingInit(){
 	_rb_define_module_function(module, "transition", graphicsTransition);
 	rb_define_module_function(module, "frame_reset", RUBY_METHOD_FUNC(graphicsFrameReset), 0);
 	_rb_define_module_function(module, "vsync_mode=", graphicsSetVsync);
-	_rb_define_module_function(module, "setVsync", graphicsSetVsync);
 	rb_define_module_function(module, "__reset__", RUBY_METHOD_FUNC(graphicsReset), 0);
 
 	// Variables

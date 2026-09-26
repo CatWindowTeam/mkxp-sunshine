@@ -4,7 +4,7 @@ check_option(OPTIONS_DEBUG
 	-g
 	-Og)
 
-check_option(OPTIONS_RELEASE 
+check_option(OPTIONS_RELEASE
 	-O3
 	-fno-stack-clash-protection
 	-fvtable-verify=none
@@ -17,13 +17,24 @@ check_option(OPTIONS_RELEASE
 	-fno-hardcfr-check-returning-calls
 	-fhardcfr-check-noreturn-calls=never
 	-fhardcfr-skip-leaf
+	-fno-stack-check
 	-ffunction-sections
 	-fdata-sections
 	-fzero-call-used-regs=skip
+	-fzero-init-padding-bits=standard
+	-fdelete-null-pointer-checks
+	-fstrict-aliasing
+	-fno-bounds-safety
 	-fomit-frame-pointer
 	-fno-rtti
 	-ffp-contract=fast
-	-mno-ibt)
+	-mno-ibt
+	-pipe
+	-fvisibility=hidden
+	-mno-speculative-load-hardening
+	-mno-retpoline
+	-fno-stack-protector
+	-fno-sanitize=all)
 
 check_option(OPTIONS_RELEASE_WINDOWS_INCOMPATIBLE
 	-fno-unwind-tables
