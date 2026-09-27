@@ -19,3 +19,5 @@ Added NetBSD support
 Engine configuration subsystem rewrited
 Stacktrace removed
 Boost removed
+Embeds size optimized
+OPTIMIZATION!

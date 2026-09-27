@@ -34,7 +34,6 @@
 extern void initGamepadBinding(VALUE inputModule);
 
 RB_METHOD(inputUpdate){
-	RB_UNUSED_PARAM;
 
 	shState->input().update();
 
@@ -42,7 +41,6 @@ RB_METHOD(inputUpdate){
 }
 
 RB_METHOD(inputSetMouseEnabled){
-	RB_UNUSED_PARAM;
 	bool value;
 	rb_get_args(argc, argv, "b", &value RB_ARG_END);
 	EventThread::mouseEnabled = value;
@@ -50,12 +48,10 @@ RB_METHOD(inputSetMouseEnabled){
 }
 
 RB_METHOD(inputGetMouseEnabled){
-	RB_UNUSED_PARAM;
 	return EventThread::mouseEnabled ? Qtrue : Qfalse;
 }
 
 RB_METHOD(inputSetGamepadEnabled){
-	RB_UNUSED_PARAM;
 	bool value;
 	rb_get_args(argc, argv, "b", &value RB_ARG_END);
 	EventThread::gamepadEnabled = value;
@@ -63,7 +59,6 @@ RB_METHOD(inputSetGamepadEnabled){
 }
 
 RB_METHOD(inputGetGamepadEnabled){
-	RB_UNUSED_PARAM;
 	return EventThread::gamepadEnabled ? Qtrue : Qfalse;
 }
 
@@ -89,68 +84,56 @@ static int getButtonArg(int argc, VALUE *argv){
 }
 
 RB_METHOD(inputPress){
-	RB_UNUSED_PARAM;
 	int num = getButtonArg(argc, argv);
 	return rb_bool_new(shState->input().isPressed(num));
 }
 
 RB_METHOD(inputTrigger){
-	RB_UNUSED_PARAM;
 	int num = getButtonArg(argc, argv);
 	return rb_bool_new(shState->input().isTriggered(num));
 }
 
 RB_METHOD(inputRepeat){
-	RB_UNUSED_PARAM;
 	int num = getButtonArg(argc, argv);
 	return rb_bool_new(shState->input().isRepeated(num));
 }
 
 RB_METHOD(inputDir4){
-	RB_UNUSED_PARAM;
 	return rb_fix_new(shState->input().dir4Value());
 }
 
 RB_METHOD(inputDir8){
-	RB_UNUSED_PARAM;
 	return rb_fix_new(shState->input().dir8Value());
 }
 
 /* Non-standard extensions */
 RB_METHOD(inputMouseX){
-	RB_UNUSED_PARAM;
 	return rb_fix_new(shState->input().mouseX());
 }
 
 RB_METHOD(inputMouseY){
-	RB_UNUSED_PARAM;
 	return rb_fix_new(shState->input().mouseY());
 }
 
 // wheel :3
 RB_METHOD(inputWheelX) {
-	RB_UNUSED_PARAM;
 	return rb_float_new(shState->input().wheelX());
 }
 
 RB_METHOD(inputWheelY) {
-	RB_UNUSED_PARAM;
 	return rb_float_new(shState->input().wheelY());
 }
 
 RB_METHOD(inputWheelFlipped) {
-	RB_UNUSED_PARAM;
 	return rb_bool_new(shState->input().wheelFlipped());
 }
 
 RB_METHOD(inputQuit) {
-	RB_UNUSED_PARAM;
 	return rb_bool_new(shState->input().hasQuit());
 }
 
 // keyboard
 RB_METHOD(getKeyName) {
-	RB_UNUSED_PARAM;
 
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
@@ -162,7 +145,6 @@ RB_METHOD(getKeyName) {
 }
 
 RB_METHOD(keyPress) {
-	RB_UNUSED_PARAM;
 
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
@@ -174,7 +156,6 @@ RB_METHOD(keyPress) {
 }
 
 RB_METHOD(getPressedKey) {
-	RB_UNUSED_PARAM;
 	
 	short pressedKey = 0;
 	for(; pressedKey < SDL_Scancode::SDL_SCANCODE_COUNT && !EventThread::keyStates[pressedKey]; pressedKey++);
@@ -182,7 +163,6 @@ RB_METHOD(getPressedKey) {
 }
 
 RB_METHOD(getKeyFromName) {
-	RB_UNUSED_PARAM;
 
 	const char *name;
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);
@@ -191,7 +171,6 @@ RB_METHOD(getKeyFromName) {
 
 // gamepad buttons
 RB_METHOD(getGamepadButtonName) {
-	RB_UNUSED_PARAM;
 
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
@@ -203,7 +182,6 @@ RB_METHOD(getGamepadButtonName) {
 }
 
 RB_METHOD(gamepadButtonPress) {
-	RB_UNUSED_PARAM;
 
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
@@ -215,7 +193,6 @@ RB_METHOD(gamepadButtonPress) {
 }
 
 RB_METHOD(getPressedGamepadButton) {
-	RB_UNUSED_PARAM;
 
 	short pressedKey = 0;
 	for(; pressedKey < SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT && !EventThread::gcState.buttons[pressedKey]; pressedKey++);
@@ -223,7 +200,6 @@ RB_METHOD(getPressedGamepadButton) {
 }
 
 RB_METHOD(getGamepadButtonFromName) {
-	RB_UNUSED_PARAM;
 
 	const char *name;
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);
@@ -232,7 +208,6 @@ RB_METHOD(getGamepadButtonFromName) {
 
 // gamepad axes
 RB_METHOD(getGamepadAxisName) {
-	RB_UNUSED_PARAM;
 
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
@@ -244,7 +219,6 @@ RB_METHOD(getGamepadAxisName) {
 }
 
 RB_METHOD(getGamepadAxisPressure) {
-	RB_UNUSED_PARAM;
 
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
@@ -256,7 +230,6 @@ RB_METHOD(getGamepadAxisPressure) {
 }
 
 RB_METHOD(getActiveGamepadAxis) {
-	RB_UNUSED_PARAM;
 
 	int deadzone = 16000;
 	rb_get_args(argc, argv, "|i", &deadzone RB_ARG_END);
@@ -267,7 +240,6 @@ RB_METHOD(getActiveGamepadAxis) {
 }
 
 RB_METHOD(getGamepadAxisFromName) {
-	RB_UNUSED_PARAM;
 
 	const char *name;
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);

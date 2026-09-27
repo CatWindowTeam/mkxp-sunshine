@@ -48,7 +48,6 @@ void SendRaw(const char *address, int port, const char *raw){
 }
 
 RB_METHOD(journalSet){
-	RB_UNUSED_PARAM;
 	const char *name;
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);
 	static char buffer[1024];
@@ -61,7 +60,6 @@ RB_METHOD(journalSet){
 }
 
 RB_METHOD(journalLangSet){
-        RB_UNUSED_PARAM;
         const char *name;
         rb_get_args(argc, argv, "z", &name RB_ARG_END);
 	SDL_snprintf(lang, 4, "%s", name);
@@ -69,24 +67,20 @@ RB_METHOD(journalLangSet){
 }
 
 RB_METHOD(journalActive){
-	RB_UNUSED_PARAM;
 	return Qtrue;
 }
 
 #else
 
 RB_METHOD(journalSet){
-	RB_UNUSED_PARAM;
 	return Qnil;
 }
 
 RB_METHOD(journalLangSet){
-        RB_UNUSED_PARAM;
         return Qnil;
 }
 
 RB_METHOD(journalActive){
-	RB_UNUSED_PARAM;
 	return Qtrue;
 }
 

@@ -4,12 +4,10 @@
 
 
 RB_METHOD(nikoPrepare){
-	RB_UNUSED_PARAM;
 	return Qnil;
 }
 
 RB_METHOD(nikoStart){
-	RB_UNUSED_PARAM;
 	return Qnil;
 }
 

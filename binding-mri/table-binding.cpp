@@ -75,7 +75,6 @@ RB_METHOD(tableResize){
 #define TABLE_SIZE(d, D) \
 	RB_METHOD(table##D##Size) \
 	{ \
-		RB_UNUSED_PARAM \
 		Table *t = getPrivateData<Table>(self); \
 		return INT2NUM(t->d##Size()); \
 	}

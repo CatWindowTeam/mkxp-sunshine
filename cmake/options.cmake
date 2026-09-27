@@ -1,3 +1,4 @@
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/check.cmake)
 # Options
 option(STEAM "Build with Steam Support" OFF)
 option(NATIVE "Use native instructions,for local use only" OFF)
@@ -19,15 +20,45 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-option(RUBY_DONT_SUBST "Add define RUBY_DONT_SUBST" ON)
 option(API_ONESHOT_EXTENSIONS "Enable API extensions specific to Oneshot mods" ON)
 option(API_ONESHOT_EXTENSIONS_XFCE "Support for wallpaper setter for xfce4, libxfconf required " ON)
 option(API_ONESHOT_EXTENSIONS_KDE "Support for wallpaper setter for KDE, KConfig from KDE Frameworks required" ON)
 
-#code analysis with "include what you use"
+#code analysis
 if(CODE_ANAL)
-	set(CMAKE_C_COMPILER_LAUNCHER "${CMAKE_SOURCE_DIR}/cmake/code_anal.sh")
-	set(CMAKE_CXX_COMPILER_LAUNCHER "${CMAKE_SOURCE_DIR}/cmake/code_anal.sh")
+	#wrapper
+	#set(CMAKE_C_COMPILER_LAUNCHER "${CMAKE_SOURCE_DIR}/cmake/code_anal.sh")
+	#set(CMAKE_CXX_COMPILER_LAUNCHER "${CMAKE_SOURCE_DIR}/cmake/code_anal.sh")
+	#tools
+	set(CMAKE_CXX_CLANG_TIDY clang-tidy;-checks=performance-*,misc-unused-parameters,bugprone-unused-raii;--quiet)
+	set(CMAKE_CXX_CPPCHECK cppcheck;--enable=performance,portability,unusedFunction;-q;--max-ctu-depth=8)
+	set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE include-what-you-use;-Xiwyu;)
+	check_option(WARNS -Wdouble-promotion
+			-Wduplicate-decl-specifier
+			-Wformat=2
+			-Wformat-security
+			-Wdisabled-optimization
+			-Wunused-macros
+			-Wunsafe-loop-optimizations
+			-Wdisabled-optimization
+			-Winline
+			-Waggressive-loop-optimizations
+			-Wstrict-overflow=2
+			-Wvector-operation-performance
+			-Wpass-failed
+			-Wloop-analysis
+			-Wrange-loop-analysis
+			-Wrange-loop-construct
+			-Wrange-loop-bind-reference
+			-Wlarge-by-value-copy
+			-Wmove
+			-Wunused
+			-Wunreachable-code
+			-Wunreachable-code-aggressive
+			-Wunreachable-code-break
+			-Wunreachable-code-loop-increment
+			-Wunreachable-code-return)
+	add_compile_options(${WARNS})
 endif()
 
 if(STATIC)
@@ -45,9 +76,7 @@ if(USE_OPENGL_ES2)
 	add_definitions(-DGLES2_HEADER)
 endif()
 
-if(RUBY_DONT_SUBST)
-        add_definitions(-DRUBY_DONT_SUBST)
-endif()
+add_definitions(-DRUBY_DONT_SUBST)
 
 if(DEVBUILD)
 	set(VERSION_STRING "${VERSION_STRING}-dev" FORCE)

@@ -27,7 +27,6 @@
 
 template<class C>
 RB_METHOD(sceneElementGetZ){
-	RB_UNUSED_PARAM;
 
 	SceneElement *se = getPrivateData<C>(self);
 
@@ -51,7 +50,6 @@ RB_METHOD(sceneElementSetZ){
 
 template<class C>
 RB_METHOD(sceneElementGetVisible){
-	RB_UNUSED_PARAM;
 
 	SceneElement *se = getPrivateData<C>(self);
 

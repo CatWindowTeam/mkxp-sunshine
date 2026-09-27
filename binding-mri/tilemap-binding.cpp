@@ -89,14 +89,12 @@ static VALUE tilemapGetAutotiles(int argc, VALUE *argv, VALUE self){
 }
 
 static VALUE tilemapUpdate(int argc, VALUE *argv, VALUE self){
-	RB_UNUSED_PARAM;
 	Tilemap *t = getPrivateData<Tilemap>(self);
 	t->update();
 	return Qnil;
 }
 
 static VALUE tilemapGetViewport(int argc, VALUE *argv, VALUE self){
-	RB_UNUSED_PARAM;
 	checkDisposed<Tilemap>(self);
 	return rb_iv_get(self, "viewport");
 }

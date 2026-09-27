@@ -67,7 +67,6 @@ RB_METHOD(bitmapInitialize){
 }
 
 RB_METHOD(bitmapWidth){
-	RB_UNUSED_PARAM;
 
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
@@ -78,7 +77,6 @@ RB_METHOD(bitmapWidth){
 }
 
 RB_METHOD(bitmapHeight){
-	RB_UNUSED_PARAM;
 
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
@@ -89,7 +87,6 @@ RB_METHOD(bitmapHeight){
 }
 
 RB_METHOD(bitmapRect){
-	RB_UNUSED_PARAM;
 
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
@@ -174,7 +171,6 @@ RB_METHOD(bitmapFillRect){
 }
 
 RB_METHOD(bitmapClear){
-	RB_UNUSED_PARAM;
 
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
@@ -353,7 +349,6 @@ RB_METHOD(bitmapClearRect){
 }
 
 RB_METHOD(bitmapBlur){
-	RB_UNUSED_PARAM;
 
 	Bitmap *b = getPrivateData<Bitmap>(self);
 

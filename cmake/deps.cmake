@@ -2,9 +2,7 @@ include(FindPackageHandleStandardArgs)
 find_package(PkgConfig REQUIRED)
 find_package(tsl-robin-map REQUIRED)
 find_package(ZLIB REQUIRED)
-	find_package(Ruby 3.4
-		COMPONENTS Interpreter Development
-		REQUIRED)
+find_package(Ruby 3.3 COMPONENTS Interpreter Development REQUIRED)
 if(NOT TARGET SDL3::SDL3)
 	find_package(SDL3 CONFIG REQUIRED)
 endif()

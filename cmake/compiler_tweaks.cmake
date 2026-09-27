@@ -24,17 +24,13 @@ check_option(OPTIONS_RELEASE
 	-fzero-init-padding-bits=standard
 	-fdelete-null-pointer-checks
 	-fstrict-aliasing
-	-fno-bounds-safety
 	-fomit-frame-pointer
 	-fno-rtti
 	-ffp-contract=fast
 	-mno-ibt
 	-pipe
 	-fvisibility=hidden
-	-mno-speculative-load-hardening
-	-mno-retpoline
-	-fno-stack-protector
-	-fno-sanitize=all)
+	-mno-speculative-load-hardening)
 
 check_option(OPTIONS_RELEASE_WINDOWS_INCOMPATIBLE
 	-fno-unwind-tables

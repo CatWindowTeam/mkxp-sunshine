@@ -80,7 +80,6 @@ DEF_PROP_B(Sprite, PerspectiveMode)
 
 RB_METHOD(SpriteGetSmooth)
 {
-    RB_UNUSED_PARAM;
     Sprite *k = getPrivateData<Sprite>(self);
     bool value = false;
     GUARD_EXC( value = k->smooth; )
@@ -98,7 +97,6 @@ RB_METHOD(SpriteSetSmooth)
 }
 
 RB_METHOD(spriteWidth){
-	RB_UNUSED_PARAM;
 
 	Sprite *s = getPrivateData<Sprite>(self);
 
@@ -109,7 +107,6 @@ RB_METHOD(spriteWidth){
 }
 
 RB_METHOD(spriteHeight){
-	RB_UNUSED_PARAM;
 
 	Sprite *s = getPrivateData<Sprite>(self);
 

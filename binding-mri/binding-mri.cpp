@@ -100,7 +100,6 @@ void PhysFS_binding_init();
 void LoggerInit();
 
 RB_METHOD(mriPrint);
-RB_METHOD(mriP);
 RB_METHOD(mkxpPuts);
 RB_METHOD(mkxpRawKeyStates);
 RB_METHOD(mkxpMouseInWindow);
@@ -156,10 +155,7 @@ static void mriBindingInit(){
 
 	_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
 	_rb_define_module_function(rb_mKernel, "rgss_stop", mriRgssStop);
-	_rb_define_module_function(rb_mKernel, "msgbox",    mriPrint);
-	_rb_define_module_function(rb_mKernel, "msgbox_p",  mriP);
 	_rb_define_module_function(rb_mKernel, "print", mriPrint);
-	_rb_define_module_function(rb_mKernel, "p",     mriP);
 	rb_define_alias(rb_singleton_class(rb_mKernel), "_mkxp_kernel_caller_alias", "caller");
 	_rb_define_module_function(rb_mKernel, "caller", _kernelCaller);
 
@@ -191,19 +187,11 @@ static void printP(int argc, VALUE *argv, const char *convMethod, const char *se
 }
 
 RB_METHOD(mriPrint){
-	RB_UNUSED_PARAM;
 	printP(argc, argv, "to_s", "");
 	return Qnil;
 }
 
-RB_METHOD(mriP){
-	RB_UNUSED_PARAM;
-	printP(argc, argv, "inspect", "\n");
-	return Qnil;
-}
-
 RB_METHOD(mkxpPuts){
-	RB_UNUSED_PARAM;
 	const char *str;
 	rb_get_args(argc, argv, "z", &str RB_ARG_END);
 	Debug() << str;
@@ -211,16 +199,12 @@ RB_METHOD(mkxpPuts){
 }
 
 RB_METHOD(mkxpRawKeyStates){
-	RB_UNUSED_PARAM;
-
 	VALUE str = rb_str_new(0, sizeof(EventThread::keyStates));
 	SDL_memcpy(RSTRING_PTR(str), EventThread::keyStates, sizeof(EventThread::keyStates));
-
 	return str;
 }
 
 RB_METHOD(mkxpMouseInWindow){
-	RB_UNUSED_PARAM;
 	return rb_bool_new(EventThread::mouseState.inWindow);
 }
 
@@ -248,7 +232,6 @@ static VALUE rgssMainCb_wrapper(VALUE data){ return rgssMainCb(data); }
 static VALUE rgssMainRescue_wrapper(VALUE data, VALUE ex){ return rgssMainRescue(data, ex); }
 
 RB_METHOD(mriRgssMain){
-	RB_UNUSED_PARAM;
 	while (true){
 		VALUE exc = Qnil;
 
@@ -270,14 +253,12 @@ RB_METHOD(mriRgssMain){
 }
 
 RB_METHOD(mriRgssStop){
-	RB_UNUSED_PARAM;
 	while (true)
 		shState->graphics().update();
 	return Qnil;
 }
 
 RB_METHOD(_kernelCaller){
-	RB_UNUSED_PARAM;
 
 	VALUE trace = rb_funcall2(rb_mKernel, rb_intern("_mkxp_kernel_caller_alias"), 0, 0);
 

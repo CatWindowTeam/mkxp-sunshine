@@ -227,8 +227,6 @@ inline void rb_check_argc(int actual, int expected){
 #define RB_METHOD(name) \
     static VALUE name(int argc, VALUE *argv, VALUE self)
 
-#define RB_UNUSED_PARAM {}
-
 #define MARSH_LOAD_FUN(Typ) \
     RB_METHOD(Typ##Load){ \
         return objectLoad<Typ>(argc, argv, self); \

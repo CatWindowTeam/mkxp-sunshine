@@ -7,7 +7,6 @@
 #include <SDL3/SDL_stdinc.h>
 
 RB_METHOD(oneshotSetYesNo){
-	RB_UNUSED_PARAM;
 	const char *yes;
 	const char *no;
 	rb_get_args(argc, argv, "zz", &yes, &no RB_ARG_END);
@@ -16,7 +15,6 @@ RB_METHOD(oneshotSetYesNo){
 }
 
 RB_METHOD(oneshotMsgBox){
-	RB_UNUSED_PARAM;
 	int type;
 	VALUE body;
 	VALUE title = Qnil;
@@ -27,7 +25,6 @@ RB_METHOD(oneshotMsgBox){
 }
 
 RB_METHOD(oneshotTextInput){
-	RB_UNUSED_PARAM;
 	VALUE prompt;
 	int char_limit = 100;
 	VALUE font = Qnil;
@@ -38,18 +35,15 @@ RB_METHOD(oneshotTextInput){
 }
 
 RB_METHOD(oneshotResetObscured){
-	RB_UNUSED_PARAM;
 	shState->oneshot().resetObscured();
 	return Qnil;
 }
 
 RB_METHOD(oneshotObscuredCleared){
-	RB_UNUSED_PARAM;
 	return shState->oneshot().obscuredCleared() ? Qtrue : Qfalse;
 }
 
 RB_METHOD(oneshotAllowExit){
-	RB_UNUSED_PARAM;
 	bool allowExit;
 	rb_get_args(argc, argv, "b", &allowExit RB_ARG_END);
 	shState->oneshot().setAllowExit(allowExit);
@@ -57,7 +51,6 @@ RB_METHOD(oneshotAllowExit){
 }
 
 RB_METHOD(oneshotExiting){
-	RB_UNUSED_PARAM;
 	bool exiting;
 	rb_get_args(argc, argv, "b", &exiting RB_ARG_END);
 	shState->oneshot().setExiting(exiting);
@@ -65,7 +58,6 @@ RB_METHOD(oneshotExiting){
 }
 
 RB_METHOD(oneshotShake){
-	RB_UNUSED_PARAM;
 	int absx, absy;
 	SDL_GetWindowPosition(shState->rtData().window, &absx, &absy);
 	int state;
@@ -81,7 +73,6 @@ RB_METHOD(oneshotShake){
 }
 
 RB_METHOD(oneshotCRC32){
-	RB_UNUSED_PARAM;
 	VALUE string;
 	rb_get_args(argc, argv, "S", &string RB_ARG_END);
 	uLong crc = crc32(0L, Z_NULL, 0);

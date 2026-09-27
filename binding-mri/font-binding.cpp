@@ -47,7 +47,6 @@ static void collectStrings(VALUE obj, std::vector<std::string> &out){
 DEF_TYPE(Font);
 
 RB_METHOD(fontDoesExist){
-	RB_UNUSED_PARAM;
 
 	const char *name = 0;
 	VALUE nameObj;
@@ -116,7 +115,6 @@ RB_METHOD(fontInitializeCopy){
 }
 
 RB_METHOD(FontGetName){
-	RB_UNUSED_PARAM;
 
 	return rb_iv_get(self, "name");
 }
@@ -151,12 +149,10 @@ DEF_PROP_B(Font, Outline)
 #define DEF_KLASS_PROP(Klass, type, PropName, param_t_s, value_fun) \
 	RB_METHOD(Klass##Get##PropName) \
 	{ \
-		RB_UNUSED_PARAM; \
 		return value_fun(Klass::get##PropName()); \
 	} \
 	RB_METHOD(Klass##Set##PropName) \
 	{ \
-		RB_UNUSED_PARAM; \
 		type value; \
 		rb_get_args(argc, argv, param_t_s, &value RB_ARG_END); \
 		Klass::set##PropName(value); \
@@ -170,12 +166,10 @@ DEF_KLASS_PROP(Font, bool, DefaultShadow,  "b", rb_bool_new)
 DEF_KLASS_PROP(Font, bool, DefaultOutline, "b", rb_bool_new)
 
 RB_METHOD(FontGetDefaultOutColor){
-	RB_UNUSED_PARAM;
 	return rb_iv_get(self, "default_out_color");
 }
 
 RB_METHOD(FontSetDefaultOutColor){
-	RB_UNUSED_PARAM;
 
 	VALUE colorObj;
 	rb_get_args(argc, argv, "o", &colorObj RB_ARG_END);
@@ -188,13 +182,11 @@ RB_METHOD(FontSetDefaultOutColor){
 }
 
 RB_METHOD(FontGetDefaultName){
-	RB_UNUSED_PARAM;
 
 	return rb_iv_get(self, "default_name");
 }
 
 RB_METHOD(FontSetDefaultName){
-	RB_UNUSED_PARAM;
 
 	rb_check_argc(argc, 1);
 
@@ -208,13 +200,11 @@ RB_METHOD(FontSetDefaultName){
 }
 
 RB_METHOD(FontGetDefaultColor){
-	RB_UNUSED_PARAM;
 	return rb_iv_get(self, "default_color");
 }
 
 
 RB_METHOD(FontSetDefaultColor){
-	RB_UNUSED_PARAM;
 
 	VALUE colorObj;
 	rb_get_args(argc, argv, "o", &colorObj RB_ARG_END);

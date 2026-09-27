@@ -369,7 +369,6 @@ static bool wallpaperFallbackCopy(const std::string &srcPath){
 }
 
 RB_METHOD(wallpaperSet){
-	RB_UNUSED_PARAM;
 	const char *name;
 	int color;
 	rb_get_args(argc, argv, "zi", &name, &color RB_ARG_END);

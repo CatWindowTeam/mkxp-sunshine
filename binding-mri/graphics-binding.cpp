@@ -148,7 +148,6 @@ static VALUE graphicsFrameReset(VALUE self){
 #define DEF_GRA_PROP_I(PropName) \
 	RB_METHOD(graphics##Get##PropName) \
 	{ \
-		RB_UNUSED_PARAM; \
 		return rb_fix_new(shState->graphics().get##PropName()); \
 	} \
 	RB_METHOD(graphics##Set##PropName) \
@@ -162,7 +161,6 @@ static VALUE graphicsFrameReset(VALUE self){
 #define DEF_GRA_PROP_B(PropName) \
 	RB_METHOD(graphics##Get##PropName) \
 	{ \
-		RB_UNUSED_PARAM; \
 		return rb_bool_new(shState->graphics().get##PropName()); \
 	} \
 	RB_METHOD(graphics##Set##PropName) \
