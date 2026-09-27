@@ -34,9 +34,15 @@
 	#include <filesystem>
 #endif
 
-void fileIntFreeInstance(void *inst){
-    SDL_IOStream *ops = static_cast<SDL_IOStream*>(inst);
+static VALUE fileIntClose(VALUE self) {
+    SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
+    if (!ops) {
+        return Qnil;
+    }
+
+    setPrivateData(self, nullptr);
     SDL_CloseIO(ops);
+    return Qnil;
 }
 
 DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
@@ -62,18 +68,18 @@ VALUE fileIntForPath(const char *path, bool rubyExc){
 }
 
 static VALUE fileIntRead(int argc, VALUE *argv, VALUE self){
-	int length = -1;
+	Sint64 length = -1;
 	rb_get_args(argc, argv, "i", &length);
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
-	if (length == -1){
+	if(!ops){
+        	rb_raise(rb_eIOError, "closed stream");
+    	}else if(length == -1){
 		Sint64 cur = SDL_TellIO(ops);
 		Sint64 end = SDL_SeekIO(ops, 0, SDL_IO_SEEK_END);
-		length = static_cast<int>(end - cur);
+		length = end - cur;
 		SDL_SeekIO(ops, cur, SDL_IO_SEEK_SET);
-	}
-
-	if (length == 0){
-		return Qnil;
+	}else if(length == 0){
+		return rb_str_new("", 0);
 	}
 
 	VALUE data = rb_str_new(0, length);
@@ -94,6 +100,9 @@ static VALUE fileIntClose(VALUE self){
 
 static VALUE fileIntGetByte(VALUE self){
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
+	if (!ops) {
+		rb_raise(rb_eIOError, "closed stream");
+    	}
 	unsigned char byte = 0;
 	size_t result = SDL_ReadIO(ops, &byte, 1);
 	return (result == 1) ? INT2NUM(byte) : Qnil;
