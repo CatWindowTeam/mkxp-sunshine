@@ -60,7 +60,7 @@ void steamBindingInit(){
 
 	/* Functions */
 	rb_define_module_function(module, "enabled?", RUBY_METHOD_FUNC(steamEnabled), 0);
-    rb_define_module_function(module, "unlock", RUBY_METHOD_FUNC(steamUnlock), 1);
-	rb_define_module_function(module, "lock", RUBY_METHOD_FUNC(steamLock), 1);
-	rb_define_module_function(module, "unlocked?", RUBY_METHOD_FUNC(steamUnlocked), 1);
+    rb_define_module_function(module, "unlock", RUBY_METHOD_FUNC(steamUnlock), -1);
+	rb_define_module_function(module, "lock", RUBY_METHOD_FUNC(steamLock), -1);
+	rb_define_module_function(module, "unlocked?", RUBY_METHOD_FUNC(steamUnlocked), -1);
 }

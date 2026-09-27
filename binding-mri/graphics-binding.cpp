@@ -313,7 +313,7 @@ void graphicsBindingInit(){
 	rb_define_module_function(module, "window_resized", RUBY_METHOD_FUNC(graphicsWindowResized), 0);
 	rb_define_module_function(module, "viewport_resized", RUBY_METHOD_FUNC(graphicsViewportResized), 0);
 	rb_define_module_function(module, "fov", RUBY_METHOD_FUNC(graphicsGetFOV), 0);
-	rb_define_module_function(module, "fov=", RUBY_METHOD_FUNC(graphicsSetFOV), -1);
+	rb_define_module_function(module, "fov=", RUBY_METHOD_FUNC(graphicsSetFOV), 1);
 
 	// Functions
 	rb_define_module_function(module, "x", RUBY_METHOD_FUNC(graphicsPosX), 0);
@@ -323,7 +323,7 @@ void graphicsBindingInit(){
 	rb_define_module_function(module, "wait", RUBY_METHOD_FUNC(graphicsWait), -1);
 	rb_define_module_function(module, "fadeout", RUBY_METHOD_FUNC(graphicsFadeout), -1);
 	rb_define_module_function(module, "fadein", RUBY_METHOD_FUNC(graphicsFadein), -1);
-	rb_define_module_function(module, "snap_to_bitmap", RUBY_METHOD_FUNC(graphicsSnapToBitmap), -1);
+	rb_define_module_function(module, "snap_to_bitmap", RUBY_METHOD_FUNC(graphicsSnapToBitmap), 0);
 	rb_define_module_function(module, "resize_screen", RUBY_METHOD_FUNC(graphicsResizeScreen), -1);
 	rb_define_module_function(module, "move_screen", RUBY_METHOD_FUNC(graphicsMoveScreen), -1);
 	rb_define_module_function(module, "update", RUBY_METHOD_FUNC(graphicsUpdate), 0);

@@ -330,11 +330,11 @@ void inputBindingInit(){
 	rb_define_module_function(module, "c_axis_from_name", RUBY_METHOD_FUNC(getGamepadAxisFromName), -1);
 	rb_const_set(module, rb_intern("GAMEPAD_AXIS_COUNT"), SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT - 1);
 
-	rb_define_module_function(module, "set_binding", setBinding, 2);
+	rb_define_module_function(module, "set_binding", RUBY_METHOD_FUNC(setBinding), 2);
 	
 	// haptic
-	rb_define_singleton_method(module, "set_led", setLED, 3);
-    rb_define_singleton_method(module, "vibrate", rumble, 3);
+	rb_define_singleton_method(module, "set_led", RUBY_METHOD_FUNC(setLED), 3);
+    rb_define_singleton_method(module, "vibrate", RUBY_METHOD_FUNC(rumble), 3);
 
 	// mouse
 	rb_define_module_function(module, "mouse_x", RUBY_METHOD_FUNC(inputMouseX), 0);

@@ -28,7 +28,7 @@
 #include "disposable-binding.h"
 
 template<class C>
-static VALUE viewportElementGetViewport(VALUE self){
+static VALUE viewportElementGetViewport(int argc, VALUE *argv, VALUE self){
 	checkDisposed<C>(self);
 	return rb_iv_get(self, "viewport");
 }

@@ -130,15 +130,15 @@ DEF_PROP_B(Font, Shadow)
 DEF_PROP_B(Font, Outline)
 
 #define DEF_KLASS_PROP(Klass, type, PropName, param_t_s, value_fun) \
-	static VALUE Klass##Get##PropName(int argc, VALUE *argv, VALUE self){ \
-		return value_fun(Klass::get##PropName()); \
-	} \
-	static VALUE Klass##Set##PropName(int argc, VALUE *argv, VALUE self){ \
-		type value; \
-		rb_get_args(argc, argv, param_t_s, &value RB_ARG_END); \
-		Klass::set##PropName(value); \
-		return value_fun(value); \
-	}
+    static VALUE Klass##Get##PropName(VALUE self) { \
+        return value_fun(Klass::get##PropName()); \
+    } \
+    static VALUE Klass##Set##PropName(int argc, VALUE *argv, VALUE self) { \
+        type value; \
+        rb_get_args(argc, argv, param_t_s, &value RB_ARG_END); \
+        Klass::set##PropName(value); \
+        return value_fun(value); \
+    }
 
 DEF_KLASS_PROP(Font, int,  DefaultSize,    "i", rb_fix_new)
 DEF_KLASS_PROP(Font, bool, DefaultBold,    "b", rb_bool_new)

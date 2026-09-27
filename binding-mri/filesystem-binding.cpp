@@ -23,6 +23,7 @@
 
 #include "binding-util.h"
 #include "filesystem.h"
+#include "debugwriter.h"
 #include "util.h"
 #include "ruby/encoding.h"
 #include "ruby/intern.h"

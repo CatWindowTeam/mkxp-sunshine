@@ -136,18 +136,18 @@ INITCOPY_FUN(Rect)
 
 #define INIT_BIND(Klass) \
 { \
-	klass = rb_define_class(#Klass, rb_cObject); \
-	rb_define_alloc_func(klass, classAllocate<&Klass##Type>); \
-	rb_define_singleton_method(klass, "_load", RUBY_METHOD_FUNC(Klass##Load), -1); \
-	serializableBindingInit<Klass>(klass); \
-	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(Klass##Initialize), -1); \
-	rb_define_method(klass, "initialize_copy", RUBY_METHOD_FUNC(Klass##InitializeCopy), -1); \
-	rb_define_method(klass, "set", RUBY_METHOD_FUNC(Klass##Set), -1); \
-	rb_define_method(klass, "==", RUBY_METHOD_FUNC(Klass##Equal), -1); \
-	rb_define_method(klass, "===", RUBY_METHOD_FUNC(Klass##Equal), -1); \
-	rb_define_method(klass, "eql?", RUBY_METHOD_FUNC(Klass##Equal), -1); \
-	rb_define_method(klass, "to_s", RUBY_METHOD_FUNC(Klass##Stringify), -1); \
-	rb_define_method(klass, "inspect", RUBY_METHOD_FUNC(Klass##Stringify), -1); \
+    klass = rb_define_class(#Klass, rb_cObject); \
+    rb_define_alloc_func(klass, classAllocate<&Klass##Type>); \
+    rb_define_singleton_method(klass, "_load", RUBY_METHOD_FUNC(Klass##Load), -1); \
+    serializableBindingInit<Klass>(klass); \
+    rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(Klass##Initialize), -1); \
+    rb_define_method(klass, "initialize_copy", RUBY_METHOD_FUNC(Klass##InitializeCopy), 1); \
+    rb_define_method(klass, "set", RUBY_METHOD_FUNC(Klass##Set), -1); \
+    rb_define_method(klass, "==", RUBY_METHOD_FUNC(Klass##Equal), -1); \
+    rb_define_method(klass, "===", RUBY_METHOD_FUNC(Klass##Equal), -1); \
+    rb_define_method(klass, "eql?", RUBY_METHOD_FUNC(Klass##Equal), -1); \
+    rb_define_method(klass, "to_s", RUBY_METHOD_FUNC(Klass##Stringify), 0); \
+    rb_define_method(klass, "inspect", RUBY_METHOD_FUNC(Klass##Stringify), 0); \
 }
 
 #define MRB_ATTR_R(Class, attr) mrb_define_method(mrb, klass, #attr, Class##Get_##attr, MRB_ARGS_NONE())
