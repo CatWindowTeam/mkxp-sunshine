@@ -53,9 +53,7 @@ static C *viewportElementInitialize(int argc, VALUE *argv, VALUE self){
 	/* Get parameters */
 	VALUE viewportObj = Qnil;
 	Viewport *viewport = 0;
-
 	rb_get_args(argc, argv, "|o", &viewportObj RB_ARG_END);
-
 	if (!NIL_P(viewportObj)){
 		viewport = getPrivateDataCheck<Viewport>(viewportObj, ViewportType);
 		disposableAddChild(viewportObj, self);
@@ -72,6 +70,6 @@ static C *viewportElementInitialize(int argc, VALUE *argv, VALUE self){
 template<class C>
 void viewportElementBindingInit(VALUE klass){
 	sceneElementBindingInit<C>(klass);
-	rb_define_singleton_method(klass, "viewport", RUBY_METHOD_FUNC(viewportElementGetViewport<C>), 0);
-	_rb_define_method(klass, "viewport=", viewportElementSetViewport<C>);
+	rb_define_singleton_method(klass, "viewport", RUBY_METHOD_FUNC(viewportElementGetViewport<C>), -1);
+	rb_define_method(klass, "viewport=", RUBY_METHOD_FUNC(viewportElementSetViewport<C>), -1);
 }

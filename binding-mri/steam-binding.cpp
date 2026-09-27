@@ -7,7 +7,7 @@
 #include "binding-types.h"
 #include "debugwriter.h"
 
-RB_METHOD(steamEnabled){
+static VALUE steamEnabled(VALUE self){
 	#ifdef STEAM
 		return Qtrue;
 	#else
@@ -15,7 +15,7 @@ RB_METHOD(steamEnabled){
 	#endif
 }
 
-RB_METHOD(steamUnlock){
+static VALUE steamUnlock(int argc, VALUE *argv, VALUE self){
 	#ifdef STEAM
 		const char *name;
 		rb_get_args(argc, argv, "z", &name RB_ARG_END);
@@ -24,7 +24,7 @@ RB_METHOD(steamUnlock){
 	return Qnil;
 }
 
-RB_METHOD(steamLock){
+static VALUE steamLock(int argc, VALUE *argv, VALUE self){
 	#ifdef STEAM
 		const char *name;
 		rb_get_args(argc, argv, "z", &name RB_ARG_END);
@@ -33,7 +33,7 @@ RB_METHOD(steamLock){
 	return Qnil;
 }
 
-RB_METHOD(steamUnlocked){
+static VALUE steamUnlocked(int argc, VALUE *argv, VALUE self){
 	#ifdef STEAM
 		const char *name;
 		rb_get_args(argc, argv, "z", &name RB_ARG_END);
@@ -47,20 +47,20 @@ void steamBindingInit(){
     VALUE module = rb_define_module("Steam");
 
 	/* Constants */
-#ifdef STEAM
-	rb_const_set(module, rb_intern("USER_NAME"), rb_str_new2(shState->steam().userName().c_str()));
-	if (shState->steam().lang().empty())
+	#ifdef STEAM
+		rb_const_set(module, rb_intern("USER_NAME"), rb_str_new2(shState->steam().userName().c_str()));
+		if(shState->steam().lang().empty())
+			rb_const_set(module, rb_intern("LANG"), Qnil);
+		else
+			rb_const_set(module, rb_intern("LANG"), rb_str_new2(shState->steam().lang().c_str()));
+	#else
+		rb_const_set(module, rb_intern("USER_NAME"), Qnil);
 		rb_const_set(module, rb_intern("LANG"), Qnil);
-	else
-		rb_const_set(module, rb_intern("LANG"), rb_str_new2(shState->steam().lang().c_str()));
-#else
-	rb_const_set(module, rb_intern("USER_NAME"), Qnil);
-	rb_const_set(module, rb_intern("LANG"), Qnil);
-#endif
+	#endif
 
 	/* Functions */
-	_rb_define_module_function(module, "enabled?", steamEnabled);
-    _rb_define_module_function(module, "unlock", steamUnlock);
-	_rb_define_module_function(module, "lock", steamLock);
-	_rb_define_module_function(module, "unlocked?", steamUnlocked);
+	rb_define_module_function(module, "enabled?", RUBY_METHOD_FUNC(steamEnabled), 0);
+    rb_define_module_function(module, "unlock", RUBY_METHOD_FUNC(steamUnlock), 1);
+	rb_define_module_function(module, "lock", RUBY_METHOD_FUNC(steamLock), 1);
+	rb_define_module_function(module, "unlocked?", RUBY_METHOD_FUNC(steamUnlocked), 1);
 }

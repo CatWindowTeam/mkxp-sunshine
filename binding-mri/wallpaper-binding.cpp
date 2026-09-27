@@ -736,8 +736,8 @@ void wallpaperBindingInit(){
 	VALUE module = rb_define_module("Wallpaper");
 
 	// Functions
-	_rb_define_module_function(module, "set", wallpaperSet);
-	_rb_define_module_function(module, "reset", wallpaperReset);
+	rb_define_module_function(module, "set", RUBY_METHOD_FUNC(wallpaperSet), -1);
+	rb_define_module_function(module, "reset", RUBY_METHOD_FUNC(wallpaperReset), 0);
 }
 
 #ifdef unix_like

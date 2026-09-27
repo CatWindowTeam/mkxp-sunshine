@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DISPOSABLEBINDING_H
-#define DISPOSABLEBINDING_H
-
+#pragma once
 #include "disposable.h"
 #include "binding-util.h"
 
@@ -30,7 +28,6 @@
  * in RGSS1. */
 inline void disposableAddChild(VALUE disp, VALUE child){
 	VALUE children = rb_iv_get(disp, "children");
-
 	if (NIL_P(children)){
 		children = rb_ary_new();
 		rb_iv_set(disp, "children", children);
@@ -42,21 +39,17 @@ inline void disposableAddChild(VALUE disp, VALUE child){
 
 inline void disposableDisposeChildren(VALUE disp){
 	VALUE children = rb_iv_get(disp, "children");
-
 	if (NIL_P(children))
 		return;
 
 	ID dispFun = rb_intern("_mkxp_dispose_alias");
-
 	for (long i = 0; i < RARRAY_LEN(children); ++i)
 		rb_funcall2(rb_ary_entry(children, i), dispFun, 0, 0);
 }
 
 template<class C>
-RB_METHOD(disposableDispose){
-
+static VALUE disposableDispose(VALUE self){
 	C *d = getPrivateData<C>(self);
-
 	if (!d)
 		return Qnil;
 
@@ -65,17 +58,13 @@ RB_METHOD(disposableDispose){
 		return Qnil;
 
 	disposableDisposeChildren(self);
-
 	d->dispose();
-
 	return Qnil;
 }
 
 template<class C>
-RB_METHOD(disposableIsDisposed){
-
+static VALUE disposableIsDisposed(VALUE self){
 	C *d = getPrivateData<C>(self);
-
 	if (!d)
 		return Qtrue;
 
@@ -84,8 +73,8 @@ RB_METHOD(disposableIsDisposed){
 
 template<class C>
 static void disposableBindingInit(VALUE klass){
-	_rb_define_method(klass, "dispose", disposableDispose<C>);
-	_rb_define_method(klass, "disposed?", disposableIsDisposed<C>);
+	rb_define_method(klass, "dispose", RUBY_METHOD_FUNC(disposableDispose<C>), 0);
+	rb_define_method(klass, "disposed?", RUBY_METHOD_FUNC(disposableIsDisposed<C>), 0);
 
 	/* Make sure we always have access to the original method, even
 	 * if it is overridden by user scripts */
@@ -94,8 +83,6 @@ static void disposableBindingInit(VALUE klass){
 
 template<class C>
 inline void checkDisposed(VALUE self){
-	if (disposableIsDisposed<C>(0, 0, self) == Qtrue)
+	if (disposableIsDisposed<C>(self) == Qtrue)
 		raiseDisposedAccess(self);
 }
-
-#endif // DISPOSABLEBINDING_H

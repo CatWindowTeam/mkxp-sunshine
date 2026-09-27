@@ -1,7 +1,5 @@
 //TODO rewrite this shit
 
-
-
 /*
 ** filesystem-binding.cpp
 **
@@ -39,6 +37,7 @@ void fileIntFreeInstance(void *inst){
     SDL_IOStream *ops = static_cast<SDL_IOStream*>(inst);
     SDL_CloseIO(ops);
 }
+
 DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
 
 VALUE fileIntForPath(const char *path, bool rubyExc){
@@ -61,7 +60,7 @@ VALUE fileIntForPath(const char *path, bool rubyExc){
 	return obj;
 }
 
-RB_METHOD(fileIntRead){
+static VALUE fileIntRead(int argc, VALUE *argv, VALUE self){
 	int length = -1;
 	rb_get_args(argc, argv, "i", &length);
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
@@ -127,13 +126,13 @@ VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
     return result;
 }
 
-RB_METHOD(kernelLoadData){
+static VALUE kernelLoadData(int argc, VALUE *argv, VALUE self){
 	const char *filename;
 	rb_get_args(argc, argv, "z", &filename);
 	return kernelLoadDataInt(filename, true);
 }
 
-RB_METHOD(kernelSaveData){
+static VALUE kernelSaveData(int argc, VALUE *argv, VALUE self){
 	VALUE obj;
 	VALUE filename;
 
@@ -167,7 +166,7 @@ VALUE customProc(VALUE arg, VALUE proc){
 	return obj;
 }
 
-RB_METHOD(_marshalLoad){
+static VALUE _marshalLoad(int argc, VALUE *argv, VALUE self){
 	VALUE port, proc = Qnil;
 	rb_scan_args(argc, argv, "01", &port, &proc);
 	VALUE utf8Proc;

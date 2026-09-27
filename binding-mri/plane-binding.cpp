@@ -27,17 +27,13 @@
 
 DEF_TYPE(Plane);
 
-RB_METHOD(planeInitialize){
+static VALUE planeInitialize(int argc, VALUE *argv, VALUE self){
 	Plane *p = viewportElementInitialize<Plane>(argc, argv, self);
-
 	setPrivateData(self, p);
-
 	p->initDynAttribs();
-
 	wrapProperty(self, &p->getSrcRect(), "src_rect", RectType);
 	wrapProperty(self, &p->getColor(), "color", ColorType);
 	wrapProperty(self, &p->getTone(), "tone", ToneType);
-
 	return self;
 }
 
@@ -45,26 +41,20 @@ DEF_PROP_OBJ_REF(Plane, Bitmap, Bitmap,  "bitmap")
 DEF_PROP_OBJ_VAL(Plane, Rect,   SrcRect, "src_rect")
 DEF_PROP_OBJ_VAL(Plane, Color,  Color,   "color")
 DEF_PROP_OBJ_VAL(Plane, Tone,   Tone,    "tone")
-
 DEF_PROP_I(Plane, OX)
 DEF_PROP_I(Plane, OY)
 DEF_PROP_I(Plane, Opacity)
 DEF_PROP_I(Plane, BlendType)
 DEF_PROP_I(Plane, Shader)
-
 DEF_PROP_F(Plane, ZoomX)
 DEF_PROP_F(Plane, ZoomY)
-
 
 void planeBindingInit(){
 	VALUE klass = rb_define_class("Plane", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&PlaneType>);
-
 	disposableBindingInit<Plane>     (klass);
 	viewportElementBindingInit<Plane>(klass);
-
-	_rb_define_method(klass, "initialize", planeInitialize);
-
+	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(planeInitialize), -1);
 	INIT_PROP_BIND( Plane, Bitmap,    "bitmap"     );
 	INIT_PROP_BIND( Plane, SrcRect,   "src_rect"   );
 	INIT_PROP_BIND( Plane, OX,        "ox"         );

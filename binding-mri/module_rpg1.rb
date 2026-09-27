@@ -1,5 +1,4 @@
 module Kernel
-  alias_method :puts
   def puts(*args)
     string = ""
     args.each do |arg|

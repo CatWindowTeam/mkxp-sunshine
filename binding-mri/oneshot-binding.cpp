@@ -6,7 +6,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_stdinc.h>
 
-RB_METHOD(oneshotSetYesNo){
+static VALUE oneshotSetYesNo(int argc, VALUE *argv, VALUE self){
 	const char *yes;
 	const char *no;
 	rb_get_args(argc, argv, "zz", &yes, &no RB_ARG_END);
@@ -14,7 +14,7 @@ RB_METHOD(oneshotSetYesNo){
 	return Qnil;
 }
 
-RB_METHOD(oneshotMsgBox){
+static VALUE oneshotMsgBox(int argc, VALUE *argv, VALUE self){
 	int type;
 	VALUE body;
 	VALUE title = Qnil;
@@ -24,7 +24,7 @@ RB_METHOD(oneshotMsgBox){
 	return rb_bool_new(shState->oneshot().msgbox(type, bodyStr.c_str(), titleStr.c_str()));
 }
 
-RB_METHOD(oneshotTextInput){
+static VALUE oneshotTextInput(int argc, VALUE *argv, VALUE self){
 	VALUE prompt;
 	int char_limit = 100;
 	VALUE font = Qnil;
@@ -34,30 +34,30 @@ RB_METHOD(oneshotTextInput){
 	return rb_str_new2(shState->oneshot().textinput(promptStr.c_str(), char_limit, fontStr.c_str()).c_str());
 }
 
-RB_METHOD(oneshotResetObscured){
+static VALUE oneshotResetObscured(VALUE self){
 	shState->oneshot().resetObscured();
 	return Qnil;
 }
 
-RB_METHOD(oneshotObscuredCleared){
+static VALUE oneshotObscuredCleared(VALUE self){
 	return shState->oneshot().obscuredCleared() ? Qtrue : Qfalse;
 }
 
-RB_METHOD(oneshotAllowExit){
+static VALUE oneshotAllowExit(int argc, VALUE *argv, VALUE self){
 	bool allowExit;
 	rb_get_args(argc, argv, "b", &allowExit RB_ARG_END);
 	shState->oneshot().setAllowExit(allowExit);
 	return Qnil;
 }
 
-RB_METHOD(oneshotExiting){
+static VALUE oneshotExiting(int argc, VALUE *argv, VALUE self){
 	bool exiting;
 	rb_get_args(argc, argv, "b", &exiting RB_ARG_END);
 	shState->oneshot().setExiting(exiting);
 	return Qnil;
 }
 
-RB_METHOD(oneshotShake){
+static VALUE oneshotShake(VALUE self){
 	int absx, absy;
 	SDL_GetWindowPosition(shState->rtData().window, &absx, &absy);
 	int state;
@@ -72,7 +72,7 @@ RB_METHOD(oneshotShake){
 	return Qnil;
 }
 
-RB_METHOD(oneshotCRC32){
+static VALUE oneshotCRC32(int argc, VALUE *argv, VALUE self){
 	VALUE string;
 	rb_get_args(argc, argv, "S", &string RB_ARG_END);
 	uLong crc = crc32(0L, Z_NULL, 0);
@@ -108,14 +108,14 @@ void oneshotBindingInit(){
 	rb_const_set(msg, rb_intern("ERR"), INT2FIX(Oneshot::MSG_ERR));
 
 	// Functions
-	_rb_define_module_function(module, "set_yes_no", oneshotSetYesNo);
-	_rb_define_module_function(module, "msgbox", oneshotMsgBox);
-	_rb_define_module_function(module, "textinput", oneshotTextInput);
-	_rb_define_module_function(module, "reset_obscured", oneshotResetObscured);
-	_rb_define_module_function(module, "obscured_cleared?", oneshotObscuredCleared);
-	_rb_define_module_function(module, "allow_exit", oneshotAllowExit);
-	_rb_define_module_function(module, "exiting", oneshotExiting);
-	_rb_define_module_function(module, "shake", oneshotShake);
-	_rb_define_module_function(module, "crc32", oneshotCRC32);
+	rb_define_module_function(module, "set_yes_no", RUBY_METHOD_FUNC(oneshotSetYesNo), -1);
+	rb_define_module_function(module, "msgbox", RUBY_METHOD_FUNC(oneshotMsgBox), -1);
+	rb_define_module_function(module, "textinput", RUBY_METHOD_FUNC(oneshotTextInput), -1);
+	rb_define_module_function(module, "reset_obscured", RUBY_METHOD_FUNC(oneshotResetObscured), 0);
+	rb_define_module_function(module, "obscured_cleared?", RUBY_METHOD_FUNC(oneshotObscuredCleared), 0);
+	rb_define_module_function(module, "allow_exit", RUBY_METHOD_FUNC(oneshotAllowExit), -1);
+	rb_define_module_function(module, "exiting", RUBY_METHOD_FUNC(oneshotExiting), -1);
+	rb_define_module_function(module, "shake", RUBY_METHOD_FUNC(oneshotShake), 0);
+	rb_define_module_function(module, "crc32", RUBY_METHOD_FUNC(oneshotCRC32), -1);
 	rb_define_module_function(module, "obscured_updating=", RUBY_METHOD_FUNC(oneshotSetObscuredUpdating), 1);
 }

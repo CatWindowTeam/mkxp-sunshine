@@ -46,29 +46,23 @@ static void collectStrings(VALUE obj, std::vector<std::string> &out){
 
 DEF_TYPE(Font);
 
-RB_METHOD(fontDoesExist){
-
+static VALUE fontDoesExist(int argc, VALUE *argv, VALUE self){
 	const char *name = 0;
 	VALUE nameObj;
-
 	rb_get_args(argc, argv, "o", &nameObj RB_ARG_END);
-
 	if (RB_TYPE_P(nameObj, RUBY_T_STRING))
 		name = rb_string_value_cstr(&nameObj);
 
 	return rb_bool_new(Font::doesExist(name));
 }
 
-RB_METHOD(FontSetName);
+static VALUE FontSetName(int argc, VALUE *argv, VALUE self);
 
-RB_METHOD(fontInitialize){
+static VALUE fontInitialize(int argc, VALUE *argv, VALUE self){
 	VALUE namesObj = Qnil;
 	int size = 0;
-
 	rb_get_args(argc, argv, "|oi", &namesObj, &size RB_ARG_END);
-
 	Font *f;
-
 	if (NIL_P(namesObj)){
 		namesObj = rb_iv_get(rb_obj_class(self), "default_name");
 		f = new Font(0, size);
@@ -76,7 +70,6 @@ RB_METHOD(fontInitialize){
 	else{
 		std::vector<std::string> names;
 		collectStrings(namesObj, names);
-
 		f = new Font(&names, size);
 	}
 
@@ -84,21 +77,17 @@ RB_METHOD(fontInitialize){
 	 * a dup'ed object here in case of an array. Ditto for the setters.
 	 * However the same bug/behavior exists in all RM versions. */
 	rb_iv_set(self, "name", namesObj);
-
 	setPrivateData(self, f);
 
 	/* Wrap property objects */
 	f->initDynAttribs();
-
 	wrapProperty(self, &f->getColor(), "color", ColorType);
-
 	return self;
 }
 
-RB_METHOD(fontInitializeCopy){
+static VALUE fontInitializeCopy(int argc, VALUE *argv, VALUE self){
 	VALUE origObj;
 	rb_get_args(argc, argv, "o", &origObj RB_ARG_END);
-
 	if (!OBJ_INIT_COPY(self, origObj))
 		return self;
 
@@ -108,28 +97,22 @@ RB_METHOD(fontInitializeCopy){
 
 	/* Wrap property objects */
 	f->initDynAttribs();
-
 	wrapProperty(self, &f->getColor(), "color", ColorType);
-
 	return self;
 }
 
-RB_METHOD(FontGetName){
+static VALUE FontGetName(VALUE self){
 
 	return rb_iv_get(self, "name");
 }
 
-RB_METHOD(FontSetName){
+static VALUE FontSetName(int argc, VALUE *argv, VALUE self){
 	Font *f = getPrivateData<Font>(self);
-
 	rb_check_argc(argc, 1);
-
 	std::vector<std::string> namesObj;
 	collectStrings(argv[0], namesObj);
-
 	f->setName(namesObj);
 	rb_iv_set(self, "name", argv[0]);
-
 	return argv[0];
 }
 
@@ -147,12 +130,10 @@ DEF_PROP_B(Font, Shadow)
 DEF_PROP_B(Font, Outline)
 
 #define DEF_KLASS_PROP(Klass, type, PropName, param_t_s, value_fun) \
-	RB_METHOD(Klass##Get##PropName) \
-	{ \
+	static VALUE Klass##Get##PropName(int argc, VALUE *argv, VALUE self){ \
 		return value_fun(Klass::get##PropName()); \
 	} \
-	RB_METHOD(Klass##Set##PropName) \
-	{ \
+	static VALUE Klass##Set##PropName(int argc, VALUE *argv, VALUE self){ \
 		type value; \
 		rb_get_args(argc, argv, param_t_s, &value RB_ARG_END); \
 		Klass::set##PropName(value); \
@@ -165,11 +146,11 @@ DEF_KLASS_PROP(Font, bool, DefaultItalic,  "b", rb_bool_new)
 DEF_KLASS_PROP(Font, bool, DefaultShadow,  "b", rb_bool_new)
 DEF_KLASS_PROP(Font, bool, DefaultOutline, "b", rb_bool_new)
 
-RB_METHOD(FontGetDefaultOutColor){
+static VALUE FontGetDefaultOutColor(VALUE self){
 	return rb_iv_get(self, "default_out_color");
 }
 
-RB_METHOD(FontSetDefaultOutColor){
+static VALUE FontSetDefaultOutColor(int argc, VALUE *argv, VALUE self){
 
 	VALUE colorObj;
 	rb_get_args(argc, argv, "o", &colorObj RB_ARG_END);
@@ -181,12 +162,12 @@ RB_METHOD(FontSetDefaultOutColor){
 	return colorObj;
 }
 
-RB_METHOD(FontGetDefaultName){
+static VALUE FontGetDefaultName(VALUE self){
 
 	return rb_iv_get(self, "default_name");
 }
 
-RB_METHOD(FontSetDefaultName){
+static VALUE FontSetDefaultName(int argc, VALUE *argv, VALUE self){
 
 	rb_check_argc(argc, 1);
 
@@ -199,12 +180,11 @@ RB_METHOD(FontSetDefaultName){
 	return argv[0];
 }
 
-RB_METHOD(FontGetDefaultColor){
+static VALUE FontGetDefaultColor(VALUE self){
 	return rb_iv_get(self, "default_color");
 }
 
-
-RB_METHOD(FontSetDefaultColor){
+static VALUE FontSetDefaultColor(int argc, VALUE *argv, VALUE self){
 
 	VALUE colorObj;
 	rb_get_args(argc, argv, "o", &colorObj RB_ARG_END);
@@ -218,8 +198,8 @@ RB_METHOD(FontSetDefaultColor){
 
 #define INIT_KLASS_PROP_BIND(Klass, PropName, prop_name_s) \
 { \
-	rb_define_class_method(klass, prop_name_s, Klass##Get##PropName); \
-	rb_define_class_method(klass, prop_name_s "=", Klass##Set##PropName); \
+	rb_define_singleton_method(klass, prop_name_s, RUBY_METHOD_FUNC(Klass##Get##PropName), 0); \
+	rb_define_singleton_method(klass, prop_name_s "=", reinterpret_cast<VALUE (*)(int, VALUE *, VALUE)>(Klass##Set##PropName), -1); \
 }
 
 void fontBindingInit(){
@@ -256,19 +236,17 @@ void fontBindingInit(){
 	INIT_KLASS_PROP_BIND(Font, DefaultOutline, "default_outline");
 	INIT_KLASS_PROP_BIND(Font, DefaultOutColor, "default_out_color");
 
-	rb_define_class_method(klass, "exist?", fontDoesExist);
+	rb_define_singleton_method(klass, "exist?", RUBY_METHOD_FUNC(fontDoesExist), -1);
 
-	_rb_define_method(klass, "initialize",      fontInitialize);
-	_rb_define_method(klass, "initialize_copy", fontInitializeCopy);
+	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(fontInitialize), -1);
+	rb_define_method(klass, "initialize_copy", RUBY_METHOD_FUNC(fontInitializeCopy), -1);
 
 	INIT_PROP_BIND(Font, Name, "name");
 	INIT_PROP_BIND(Font, Size, "size");
 	INIT_PROP_BIND(Font, Bold, "bold");
-	INIT_PROP_BIND(Font, Italic, "italic");
 	INIT_PROP_BIND(Font, Color, "color");
-
+	INIT_PROP_BIND(Font, Italic, "italic");
 	INIT_PROP_BIND(Font, Shadow, "shadow");
-
 	INIT_PROP_BIND(Font, Outline, "outline");
 	INIT_PROP_BIND(Font, OutColor, "out_color");
 }

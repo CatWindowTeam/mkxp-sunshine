@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Jonas Kulla <Nyocurio@gmail.com>
 **
-** mkxp is SDL_free software: you can redistribute it and/or modify
+** mkxp is free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 2 of the License, or
 ** (at your option) any later version.
@@ -127,20 +127,6 @@ int rb_get_args(int argc, VALUE *argv, const char *format, ...);
 	#define RB_ARG_END
 #endif
 
-typedef VALUE (*RubyMethod)(int argc, VALUE *argv, VALUE self);
-
-static inline void _rb_define_method(VALUE klass, const char *name, RubyMethod func){
-    rb_define_method(klass, name, RUBY_METHOD_FUNC(func), -1);
-}
-
-static inline void rb_define_class_method(VALUE klass, const char *name, RubyMethod func){
-    rb_define_singleton_method(klass, name, RUBY_METHOD_FUNC(func), -1);
-}
-
-static inline void _rb_define_module_function(VALUE module, const char *name, RubyMethod func){
-    rb_define_module_function(module, name, RUBY_METHOD_FUNC(func), -1);
-}
-
 #define GUARD_EXC(SDL_exp) \
 { try { SDL_exp } catch (const Exception &exc) { raiseRbExc(exc); } }
 
@@ -228,12 +214,12 @@ inline void rb_check_argc(int actual, int expected){
     static VALUE name(int argc, VALUE *argv, VALUE self)
 
 #define MARSH_LOAD_FUN(Typ) \
-    RB_METHOD(Typ##Load){ \
+    static VALUE Typ##Load(int argc, VALUE *argv, VALUE self){ \
         return objectLoad<Typ>(argc, argv, self); \
     }
 
 #define INITCOPY_FUN(Klass) \
-    RB_METHOD(Klass##InitializeCopy){ \
+    static VALUE Klass##InitializeCopy(int argc, VALUE *argv, VALUE self){ \
         VALUE origObj; \
         rb_get_args(argc, argv, "o", &origObj RB_ARG_END); \
         if (!OBJ_INIT_COPY(self, origObj)) /* When would this fail??*/\
@@ -250,10 +236,10 @@ inline void rb_check_argc(int actual, int expected){
  * because self.disposed? is not checked in this case.
  * Should make this more clear */
 #define DEF_PROP_OBJ_REF(Klass, PropKlass, PropName, prop_iv) \
-    RB_METHOD(Klass##Get##PropName){ \
+    static VALUE Klass##Get##PropName(VALUE self){ \
         return rb_iv_get(self, prop_iv); \
     } \
-    RB_METHOD(Klass##Set##PropName){ \
+    static VALUE Klass##Set##PropName(int argc, VALUE *argv, VALUE self){ \
         rb_check_argc(argc, 1); \
         Klass *k = getPrivateData<Klass>(self); \
         VALUE propObj = *argv; \
@@ -269,11 +255,11 @@ inline void rb_check_argc(int actual, int expected){
 
 /* Object property which is copied by value, not reference */
 #define DEF_PROP_OBJ_VAL(Klass, PropKlass, PropName, prop_iv) \
-    RB_METHOD(Klass##Get##PropName){ \
+    static VALUE Klass##Get##PropName(VALUE self){ \
         checkDisposed<Klass>(self); \
         return rb_iv_get(self, prop_iv); \
     } \
-    RB_METHOD(Klass##Set##PropName){ \
+    static VALUE Klass##Set##PropName(int argc, VALUE *argv, VALUE self){ \
         rb_check_argc(argc, 1); \
         Klass *k = getPrivateData<Klass>(self); \
         VALUE propObj = *argv; \
@@ -284,13 +270,13 @@ inline void rb_check_argc(int actual, int expected){
     }
 
 #define DEF_PROP(Klass, type, PropName, arg_fun, value_fun) \
-    RB_METHOD(Klass##Get##PropName){ \
+    static VALUE Klass##Get##PropName(VALUE self){ \
         Klass *k = getPrivateData<Klass>(self); \
         type value = 0; \
         GUARD_EXC( value = k->get##PropName(); ) \
         return value_fun(value); \
     } \
-    RB_METHOD(Klass##Set##PropName){ \
+    static VALUE Klass##Set##PropName(int argc, VALUE *argv, VALUE self){ \
         rb_check_argc(argc, 1); \
         Klass *k = getPrivateData<Klass>(self); \
         type value; \
@@ -310,6 +296,6 @@ inline void rb_check_argc(int actual, int expected){
 
 #define INIT_PROP_BIND(Klass, PropName, prop_name_s) \
 { \
-    _rb_define_method(klass, prop_name_s, Klass##Get##PropName); \
-    _rb_define_method(klass, prop_name_s "=", Klass##Set##PropName); \
+    rb_define_method(klass, prop_name_s, RUBY_METHOD_FUNC(Klass##Get##PropName), 0); \
+    rb_define_method(klass, prop_name_s "=", reinterpret_cast<VALUE (*)(int, VALUE *, VALUE)>(Klass##Set##PropName), -1); \
 }

@@ -83,18 +83,18 @@ static VALUE tilemapInitialize(int argc, VALUE *argv, VALUE self){
 	return self;
 }
 
-static VALUE tilemapGetAutotiles(int argc, VALUE *argv, VALUE self){
+static VALUE tilemapGetAutotiles(VALUE self){
 	checkDisposed<Tilemap>(self);
 	return rb_iv_get(self, "autotiles");
 }
 
-static VALUE tilemapUpdate(int argc, VALUE *argv, VALUE self){
+static VALUE tilemapUpdate(VALUE self){
 	Tilemap *t = getPrivateData<Tilemap>(self);
 	t->update();
 	return Qnil;
 }
 
-static VALUE tilemapGetViewport(int argc, VALUE *argv, VALUE self){
+static VALUE tilemapGetViewport(VALUE self){
 	checkDisposed<Tilemap>(self);
 	return rb_iv_get(self, "viewport");
 }
@@ -103,27 +103,25 @@ DEF_PROP_OBJ_REF(Tilemap, Bitmap,   Tileset,    "tileset")
 DEF_PROP_OBJ_REF(Tilemap, Table,    MapData,    "map_data")
 DEF_PROP_OBJ_REF(Tilemap, Table,    FlashData,  "flash_data")
 DEF_PROP_OBJ_REF(Tilemap, Table,    Priorities, "priorities")
-
 DEF_PROP_B(Tilemap, Visible)
 DEF_PROP_B(Tilemap, BetterWater)
 DEF_PROP_B(Tilemap, Wrapping)
-
 DEF_PROP_I(Tilemap, OX)
 DEF_PROP_I(Tilemap, OY)
 
 void tilemapBindingInit(){
 	VALUE klass = rb_define_class("TilemapAutotiles", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&TilemapAutotilesType>);
-	_rb_define_method(klass, "[]=", tilemapAutotilesSet);
-	_rb_define_method(klass, "[]", tilemapAutotilesGet);
+	rb_define_method(klass, "[]=", RUBY_METHOD_FUNC(tilemapAutotilesSet), -1);
+	rb_define_method(klass, "[]", RUBY_METHOD_FUNC(tilemapAutotilesGet), -1);
 	
 	klass = rb_define_class("Tilemap", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&TilemapType>);
 	disposableBindingInit<Tilemap>(klass);
-	_rb_define_method(klass, "initialize", tilemapInitialize);
-	_rb_define_method(klass, "autotiles", tilemapGetAutotiles);
-	_rb_define_method(klass, "update", tilemapUpdate);
-	_rb_define_method(klass, "viewport", tilemapGetViewport);
+	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(tilemapInitialize), -1);
+	rb_define_method(klass, "autotiles", RUBY_METHOD_FUNC(tilemapGetAutotiles), 0);
+	rb_define_method(klass, "update", RUBY_METHOD_FUNC(tilemapUpdate), 0);
+	rb_define_method(klass, "viewport", RUBY_METHOD_FUNC(tilemapGetViewport), 0);
 	INIT_PROP_BIND( Tilemap, Tileset,     "tileset"      );
 	INIT_PROP_BIND( Tilemap, MapData,     "map_data"     );
 	INIT_PROP_BIND( Tilemap, FlashData,   "flash_data"   );

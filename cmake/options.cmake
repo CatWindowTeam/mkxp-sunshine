@@ -30,9 +30,17 @@ if(CODE_ANAL)
 	#set(CMAKE_C_COMPILER_LAUNCHER "${CMAKE_SOURCE_DIR}/cmake/code_anal.sh")
 	#set(CMAKE_CXX_COMPILER_LAUNCHER "${CMAKE_SOURCE_DIR}/cmake/code_anal.sh")
 	#tools
-	set(CMAKE_CXX_CLANG_TIDY clang-tidy;-checks=performance-*,misc-unused-parameters,bugprone-unused-raii;--quiet)
-	set(CMAKE_CXX_CPPCHECK cppcheck;--enable=performance,portability,unusedFunction;-q;--max-ctu-depth=8)
-	set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE include-what-you-use;-Xiwyu;)
+	set(CMAKE_CXX_CLANG_TIDY clang-tidy;-checks=clang-analyzer-core-*,clang-analyzer-cplusplus-*,clang-analyzer-deadcode.*,clang-analyzer-security.*,bugprone-*,performance-*,misc-unused-parameters,misc-unused-using-decls,modernize-use-nullptr,modernize-use-override,modernize-use-emplace,modernize-make-unique,modernize-make-shared,readability-container-size-empty,readability-redundant-string-cstr,readability-simplify-boolean-expr,readability-use-anyofallof;--quiet)
+	set(CMAKE_CXX_CPPCHECK
+	    cppcheck;
+	    --enable=warning,performance,portability;
+	    --std=c++20;
+	    --inline-suppr;
+	    --suppress=missingIncludeSystem;
+	    --max-ctu-depth=8;
+	    -q
+	)
+	set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE include-what-you-use)
 	check_option(WARNS -Wdouble-promotion
 			-Wduplicate-decl-specifier
 			-Wformat=2
@@ -40,7 +48,6 @@ if(CODE_ANAL)
 			-Wdisabled-optimization
 			-Wunused-macros
 			-Wunsafe-loop-optimizations
-			-Wdisabled-optimization
 			-Winline
 			-Waggressive-loop-optimizations
 			-Wstrict-overflow=2
@@ -59,6 +66,7 @@ if(CODE_ANAL)
 			-Wunreachable-code-loop-increment
 			-Wunreachable-code-return)
 	add_compile_options(${WARNS})
+	set(CMAKE_LINK_WHAT_YOU_USE ON)
 endif()
 
 if(STATIC)

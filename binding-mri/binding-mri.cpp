@@ -99,19 +99,18 @@ void ProfilerInit();
 void PhysFS_binding_init();
 void LoggerInit();
 
-RB_METHOD(mriPrint);
-RB_METHOD(mkxpPuts);
-RB_METHOD(mkxpRawKeyStates);
-RB_METHOD(mkxpMouseInWindow);
-RB_METHOD(mriRgssMain);
-RB_METHOD(mriRgssStop);
-RB_METHOD(_kernelCaller);
+static VALUE mriPrint(int argc, VALUE *argv, VALUE self);
+static VALUE mkxpPuts(int argc, VALUE *argv, VALUE self);
+static VALUE mkxpRawKeyStates(VALUE self);
+static VALUE mkxpMouseInWindow(VALUE self);
+static VALUE mriRgssMain(VALUE self);
+static VALUE mriRgssStop(VALUE self);
+static VALUE _kernelCaller(VALUE self);
 
 // TODO: find the reason why Symbol doesn't have some methods
 VALUE rb_symbol_to_s(VALUE self){
     ID id = SYM2ID(self);
     const char *name = rb_id2name(id);
-
     if (!name)
         return rb_str_new("", 0);
 
@@ -122,7 +121,6 @@ static void mriBindingInit(){
 	rb_define_method(rb_cSymbol, "to_s", RUBY_METHOD_FUNC(rb_symbol_to_s), 0);
 	rb_define_method(rb_cSymbol, "name", RUBY_METHOD_FUNC(rb_symbol_to_s), 0);
 	rb_define_method(rb_cSymbol, "id2name", RUBY_METHOD_FUNC(rb_symbol_to_s), 0);
-
 	tableBindingInit();
 	etcBindingInit();
 	fontBindingInit();
@@ -153,23 +151,42 @@ static void mriBindingInit(){
 	PhysFS_binding_init();
 	LoggerInit();
 
-	_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
-	_rb_define_module_function(rb_mKernel, "rgss_stop", mriRgssStop);
-	_rb_define_module_function(rb_mKernel, "print", mriPrint);
+	rb_define_module_function(rb_mKernel, "rgss_main", RUBY_METHOD_FUNC(mriRgssMain), 0);
+	rb_define_module_function(rb_mKernel, "rgss_stop", RUBY_METHOD_FUNC(mriRgssStop), 0);
+	rb_define_module_function(rb_mKernel, "print", RUBY_METHOD_FUNC(mriPrint), -1);
 	rb_define_alias(rb_singleton_class(rb_mKernel), "_mkxp_kernel_caller_alias", "caller");
-	_rb_define_module_function(rb_mKernel, "caller", _kernelCaller);
-
+	rb_define_module_function(rb_mKernel, "caller", RUBY_METHOD_FUNC(_kernelCaller), 0);
+	
 	char *script = (char*)SDL_malloc(binding_mri_module_rpg1_rb_len + 1);
 	SDL_memcpy(script, binding_mri_module_rpg1_rb, binding_mri_module_rpg1_rb_len);
 	script[binding_mri_module_rpg1_rb_len] = '\0';
 
-	rb_eval_string(script);
+	int state = 0;
+	rb_eval_string_protect(script, &state);
 	SDL_free(script);
+	
+	if (state) {
+	    VALUE exc = rb_errinfo();
+	    if (!NIL_P(exc)) {
+	        VALUE msg = rb_funcall(exc, rb_intern("message"), 0);
+	        Debug() << "Ruby init exception: " << StringValueCStr(msg);
+	        VALUE bt = rb_funcall(exc, rb_intern("backtrace"), 0);
+	        if (RB_TYPE_P(bt, RUBY_T_ARRAY)) {
+	            for (long i = 0; i < RARRAY_LEN(bt); ++i) {
+	                VALUE line = rb_ary_entry(bt, i);
+	
+	                Debug() << "\t" << StringValueCStr(line);
+	            }
+	        }
+	    }
+	    rb_set_errinfo(Qnil);
+	    return;
+	}
 
 	VALUE mod = rb_define_module("MKXP");
-	_rb_define_module_function(mod, "puts", mkxpPuts);
-	_rb_define_module_function(mod, "raw_key_states", mkxpRawKeyStates);
-	_rb_define_module_function(mod, "mouse_in_window", mkxpMouseInWindow);
+	rb_define_module_function(mod, "puts", RUBY_METHOD_FUNC(mkxpPuts), -1);
+	rb_define_module_function(mod, "raw_key_states", RUBY_METHOD_FUNC(mkxpRawKeyStates), 0);
+	rb_define_module_function(mod, "mouse_in_window", RUBY_METHOD_FUNC(mkxpMouseInWindow), 0);
 }
 
 static void printP(int argc, VALUE *argv, const char *convMethod, const char *sep){
@@ -178,33 +195,32 @@ static void printP(int argc, VALUE *argv, const char *convMethod, const char *se
 	for (int i = 0; i < argc; ++i){
 		VALUE str = rb_funcall2(argv[i], conv, 0, NULL);
 		rb_str_buf_append(dispString, str);
-
 		if (i < argc)
 			rb_str_buf_cat2(dispString, sep);
 	}
-
+	
 	shState->eThread().showMessageBox(RSTRING_PTR(dispString));
 }
 
-RB_METHOD(mriPrint){
+static VALUE mriPrint(int argc, VALUE *argv, VALUE self){
 	printP(argc, argv, "to_s", "");
 	return Qnil;
 }
 
-RB_METHOD(mkxpPuts){
+static VALUE mkxpPuts(int argc, VALUE *argv, VALUE self){
 	const char *str;
 	rb_get_args(argc, argv, "z", &str RB_ARG_END);
 	Debug() << str;
 	return Qnil;
 }
 
-RB_METHOD(mkxpRawKeyStates){
+static VALUE mkxpRawKeyStates(VALUE self){
 	VALUE str = rb_str_new(0, sizeof(EventThread::keyStates));
 	SDL_memcpy(RSTRING_PTR(str), EventThread::keyStates, sizeof(EventThread::keyStates));
 	return str;
 }
 
-RB_METHOD(mkxpMouseInWindow){
+static VALUE mkxpMouseInWindow(VALUE self){
 	return rb_bool_new(EventThread::mouseState.inWindow);
 }
 
@@ -216,7 +232,6 @@ static VALUE rgssMainCb(VALUE block){
 static VALUE rgssMainRescue(VALUE arg, VALUE exc){
 	VALUE *excRet = (VALUE*) arg;
 	*excRet = exc;
-
 	return Qnil;
 }
 
@@ -228,17 +243,11 @@ static void processReset(){
 }
 
 static VALUE rgssMainCb_wrapper(VALUE data){ return rgssMainCb(data); }
-
 static VALUE rgssMainRescue_wrapper(VALUE data, VALUE ex){ return rgssMainRescue(data, ex); }
-
-RB_METHOD(mriRgssMain){
+static VALUE mriRgssMain(VALUE self){
 	while (true){
 		VALUE exc = Qnil;
-
-		rb_rescue2(rgssMainCb_wrapper, rb_block_proc(),
-           rgssMainRescue_wrapper, (VALUE)&exc,
-           rb_eException, (VALUE)0);
-
+		rb_rescue2(rgssMainCb_wrapper, rb_block_proc(), rgssMainRescue_wrapper, (VALUE)&exc, rb_eException, (VALUE)0);
 		if (NIL_P(exc))
 			break;
 
@@ -252,21 +261,18 @@ RB_METHOD(mriRgssMain){
 	return Qnil;
 }
 
-RB_METHOD(mriRgssStop){
+static VALUE mriRgssStop(VALUE self){
 	while (true)
 		shState->graphics().update();
 	return Qnil;
 }
 
-RB_METHOD(_kernelCaller){
-
+static VALUE _kernelCaller(VALUE self){
 	VALUE trace = rb_funcall2(rb_mKernel, rb_intern("_mkxp_kernel_caller_alias"), 0, 0);
-
 	if (!RB_TYPE_P(trace, RUBY_T_ARRAY))
 		return trace;
 
 	long len = RARRAY_LEN(trace);
-
 	if (len < 2)
 		return trace;
 
@@ -275,16 +281,13 @@ RB_METHOD(_kernelCaller){
 
 	/* Also remove trace of this helper function */
 	rb_ary_shift(trace);
-
 	len -= 2;
-
 	if (len == 0)
 		return trace;
 
 	/* RMXP does this, not sure if specific or 1.8 related */
 	VALUE args[] = { rb_str_new_cstr(":in `<main>'"), rb_str_new_cstr("") };
 	rb_funcall2(rb_ary_entry(trace, len-1), rb_intern("gsub!"), 2, args);
-
 	return trace;
 }
 
@@ -310,7 +313,6 @@ static VALUE evalString(VALUE string, VALUE filename, int *state){
 
 static void runCustomScript(const std::string &filename){
 	std::string scriptData;
-
 	if (!readFileSDL(filename.c_str(), scriptData)){
 		crash(Exception::SDLError, "Unable to open %s", filename.c_str());
 		return;
@@ -320,7 +322,6 @@ static void runCustomScript(const std::string &filename){
 }
 
 VALUE kernelLoadDataInt(const char *filename, bool rubyExc);
-
 struct BacktraceData{
 	/* Maps: Ruby visible filename, To: Actual script name */
 	tsl::robin_map<std::string, std::string> scriptNames;
@@ -353,29 +354,21 @@ static void runRMXPScripts(BacktraceData &btData){
 	long scriptCount = RARRAY_LEN(scriptArray);
 	std::string decodeBuffer;
 	decodeBuffer.resize(0x1000);
-
 	for (long i = 0; i < scriptCount; ++i){
 		VALUE script = rb_ary_entry(scriptArray, i);
-
 		if (!RB_TYPE_P(script, RUBY_T_ARRAY))
 			continue;
 
 		VALUE scriptName = rb_ary_entry(script, 1);
 		VALUE scriptString = rb_ary_entry(script, 2);
-
 		int result = Z_OK;
 		unsigned long bufferLen;
-
 		while (true){
 			unsigned char *bufferPtr = reinterpret_cast<unsigned char*>(const_cast<char*>(decodeBuffer.c_str()));
 			const unsigned char *sourcePtr = reinterpret_cast<const unsigned char*>(RSTRING_PTR(scriptString));
-
 			bufferLen = decodeBuffer.length();
-
 			result = uncompress(bufferPtr, &bufferLen, sourcePtr, RSTRING_LEN(scriptString));
-
 			bufferPtr[bufferLen] = '\0';
-
 			if (result != Z_BUF_ERROR)
 				break;
 
@@ -397,7 +390,6 @@ static void runRMXPScripts(BacktraceData &btData){
 		}
 	}
 
-
 	VALUE exc = rb_gv_get("$!");
 	if (exc != Qnil)
 		return;
@@ -407,26 +399,19 @@ static void runRMXPScripts(BacktraceData &btData){
 			VALUE script = rb_ary_entry(scriptArray, i);
 			VALUE scriptDecoded = rb_ary_entry(script, 3);
 			VALUE string = newStringUTF8(RSTRING_PTR(scriptDecoded), RSTRING_LEN(scriptDecoded));
-
 			rb_gc_register_address(&string);
-
 			VALUE fname;
 			const char *scriptName = RSTRING_PTR(rb_ary_entry(script, 1));
 			char buf[512];
 			int len;
-
 			len = SDL_snprintf(buf, sizeof(buf), "%03ld:%s", i, scriptName);
-
 			fname = newStringUTF8(buf, len);
 			rb_gc_register_address(&fname);
-
 			btData.scriptNames.emplace(buf, scriptName);
 			int state;
 			evalString(string, fname, &state);
-
 			rb_gc_unregister_address(&fname);
 			rb_gc_unregister_address(&string);
-
 			if (state)
 				break;
 		}
@@ -451,26 +436,21 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	Debug() << StringValueCStr(ds);
 
 	char *s = RSTRING_PTR(bt0);
-
 	char line[16];
 	std::string file(512, '\0');
-
 	char *p = s + SDL_strlen(s);
 	char *e;
-
 	while (p != s)
 		if (*--p == ':')
 			break;
 
 	e = p;
-
 	while (p != s)
 		if (*--p == ':')
 			break;
 
 	/* s         p  e
 	 * SectionXXX:YY: in 'blabla' */
-
 	*e = '\0';
 	strncpy(line, *p ? p+1 : p, sizeof(line));
 	line[sizeof(line)-1] = '\0';
@@ -520,7 +500,6 @@ static void mriBindingExecute(){
 	mriBindingInit();
 	rb_gc_enable();
 	runRMXPScripts(btData);
-
 	VALUE exc = rb_errinfo();
 	if (!NIL_P(exc) && !rb_obj_is_kind_of(exc, rb_eSystemExit))
 		showExc(exc, btData);

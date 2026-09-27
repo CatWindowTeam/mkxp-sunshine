@@ -114,7 +114,6 @@ DEF_PROP_I(Window, Opacity)
 DEF_PROP_I(Window, BackOpacity)
 DEF_PROP_I(Window, ContentsOpacity)
 
-
 void windowBindingInit(){
 	VALUE klass = rb_define_class("Window", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&WindowType>);
@@ -122,8 +121,8 @@ void windowBindingInit(){
 	disposableBindingInit     <Window>(klass);
 	viewportElementBindingInit<Window>(klass);
 	
-	_rb_define_method(klass, "initialize", windowInitialize);
-	_rb_define_method(klass, "update", windowUpdate);
+	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(windowInitialize), -1);
+	rb_define_method(klass, "update", RUBY_METHOD_FUNC(windowUpdate), -1);
 	INIT_PROP_BIND( Window, Windowskin,      "windowskin"       );
 	INIT_PROP_BIND( Window, Contents,        "contents"         );
 	INIT_PROP_BIND( Window, Stretch,         "stretch"          );

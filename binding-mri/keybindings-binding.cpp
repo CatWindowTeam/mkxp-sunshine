@@ -1,16 +1,11 @@
 #include "input.h"
-#include "sharedstate.h"
-#include "binding-util.h"
-
 #include "keybindings-binding.h"
-
 void sourceDesc_free(void* ptr){
     SourceDesc* kb = (SourceDesc*)ptr;
     delete kb;
 }
 
 const rb_data_type_t sourceDesc_type = { "SourceDesc", {0, sourceDesc_free, 0}, 0, 0, RUBY_TYPED_FREE_IMMEDIATELY };
-
 static VALUE sourceDesc_alloc(VALUE klass){
     SourceDesc* ptr = ALLOC(SourceDesc);
     return TypedData_Wrap_Struct(klass, &sourceDesc_type, ptr);
@@ -19,58 +14,46 @@ static VALUE sourceDesc_alloc(VALUE klass){
 // fabrics
 static VALUE rb_source_key(VALUE klass, VALUE scan){
     SourceDesc* s = new SourceDesc();
-
     s->type = Key;
     s->d.scan = static_cast<SDL_Scancode>(NUM2INT(scan));
-
     return TypedData_Wrap_Struct(klass, &sourceDesc_type, s);
 }
 
 static VALUE rb_source_caxis(VALUE klass, VALUE axis, VALUE dir){
     SourceDesc* s = new SourceDesc();
-
     s->type = CAxis;
     s->d.ja.axis = NUM2INT(axis);
     s->d.ja.dir = static_cast<AxisDir>(NUM2INT(dir));
-
     return TypedData_Wrap_Struct(klass, &sourceDesc_type, s);
 }
 
 static VALUE rb_source_cbutton(VALUE klass, VALUE button){
     SourceDesc* s = new SourceDesc();
-
     s->type = CButton;
     s->d.jb = NUM2INT(button);
-
     return TypedData_Wrap_Struct(klass, &sourceDesc_type, s);
 }
 
 static VALUE rb_source_jaxis(VALUE klass, VALUE axis, VALUE dir){
     SourceDesc* s = new SourceDesc();
-
     s->type = JAxis;
     s->d.ja.axis = NUM2INT(axis);
     s->d.ja.dir = static_cast<AxisDir>(NUM2INT(dir));
-
     return TypedData_Wrap_Struct(klass, &sourceDesc_type, s);
 }
 
 static VALUE rb_source_jhat(VALUE klass, VALUE hat, VALUE pos){
     SourceDesc* s = new SourceDesc();
-
     s->type = JHat;
     s->d.jh.hat = NUM2INT(hat);
     s->d.jh.pos = NUM2INT(pos);
-
     return TypedData_Wrap_Struct(klass, &sourceDesc_type, s);
 }
 
 static VALUE rb_source_jbutton(VALUE klass, VALUE button){
     SourceDesc* s = new SourceDesc();
-
     s->type = JButton;
     s->d.jb = NUM2INT(button);
-
     return TypedData_Wrap_Struct(klass, &sourceDesc_type, s);
 }
 
@@ -131,32 +114,26 @@ static VALUE rb_source_pos(VALUE self){
 static VALUE rb_source_marshal_dump(VALUE self){
     SourceDesc* src;
     TypedData_Get_Struct(self, SourceDesc, &sourceDesc_type, src);
-
     VALUE arr = rb_ary_new();
-
     rb_ary_push(arr, INT2NUM(src->type));
 
     switch (src->type){
         case SourceType::Key:
             rb_ary_push(arr, INT2NUM(src->d.scan));
             break;
-
         case SourceType::CButton:
         case SourceType::JButton:
             rb_ary_push(arr, INT2NUM(src->d.jb));
             break;
-
         case SourceType::CAxis:
         case SourceType::JAxis:
             rb_ary_push(arr, INT2NUM(src->d.ja.axis));
             rb_ary_push(arr, INT2NUM(src->d.ja.dir));
             break;
-
         case SourceType::JHat:
             rb_ary_push(arr, INT2NUM(src->d.jh.hat));
             rb_ary_push(arr, INT2NUM(src->d.jh.pos));
             break;
-
         default:
             break;
     }
@@ -204,14 +181,12 @@ static VALUE rb_source_marshal_load(VALUE self, VALUE data){
 void keybindingsBindingInit(){
 	VALUE klass = rb_define_class("KeyBind", rb_cObject);
     rb_define_alloc_func(klass, sourceDesc_alloc);
-    
     rb_define_singleton_method(klass, "key",     RUBY_METHOD_FUNC(rb_source_key), 1);
     rb_define_singleton_method(klass, "caxis",   RUBY_METHOD_FUNC(rb_source_caxis), 2);
     rb_define_singleton_method(klass, "cbutton", RUBY_METHOD_FUNC(rb_source_cbutton), 1);
     rb_define_singleton_method(klass, "jaxis",   RUBY_METHOD_FUNC(rb_source_jaxis), 2);
     rb_define_singleton_method(klass, "jhat",    RUBY_METHOD_FUNC(rb_source_jhat), 2);
     rb_define_singleton_method(klass, "jbutton", RUBY_METHOD_FUNC(rb_source_jbutton), 1);
-
     rb_define_method(klass, "type",     RUBY_METHOD_FUNC(rb_source_type), 0);
     rb_define_method(klass, "scancode", RUBY_METHOD_FUNC(rb_source_scancode), 0);
     rb_define_method(klass, "button",   RUBY_METHOD_FUNC(rb_source_button), 0);
@@ -219,10 +194,8 @@ void keybindingsBindingInit(){
     rb_define_method(klass, "dir",      RUBY_METHOD_FUNC(rb_source_dir), 0);
     rb_define_method(klass, "hat",      RUBY_METHOD_FUNC(rb_source_hat), 0);
     rb_define_method(klass, "pos",      RUBY_METHOD_FUNC(rb_source_pos), 0);
-    
     rb_define_method(klass, "marshal_dump", RUBY_METHOD_FUNC(rb_source_marshal_dump), 0);
     rb_define_method(klass, "marshal_load", RUBY_METHOD_FUNC(rb_source_marshal_load), 1);
-
     rb_const_set(klass, rb_intern("Negative"), INT2FIX(0));
     rb_const_set(klass, rb_intern("Positive"), INT2FIX(1));
 

@@ -19,29 +19,21 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SERIALIZABLEBINDING_H
-#define SERIALIZABLEBINDING_H
-
+#pragma once
 #include "serializable.h"
 #include "binding-util.h"
 #include "exception.h"
 
 template<class C>
-static VALUE serializableDump(int, VALUE *, VALUE self){
+static VALUE serializableDump(VALUE self){
 	Serializable *s = getPrivateData<C>(self);
-
 	int dataSize = s->serialSize();
-
 	VALUE data = rb_str_new(0, dataSize);
-
 	GUARD_EXC( s->serialize(RSTRING_PTR(data)); );
-
 	return data;
 }
 
 template<class C>
 void serializableBindingInit(VALUE klass){
-	_rb_define_method(klass, "_dump", serializableDump<C>);
+	rb_define_method(klass, "_dump", RUBY_METHOD_FUNC(serializableDump<C>), 0);
 }
-
-#endif // SERIALIZABLEBINDING_H

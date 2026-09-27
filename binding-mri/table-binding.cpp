@@ -49,43 +49,39 @@ static void parseArgsTableSizes(int argc, VALUE *argv, int *x, int *y, int *z){
 
 DEF_TYPE(Table);
 
-RB_METHOD(tableInitialize){
+static VALUE tableInitialize(int argc, VALUE *argv, VALUE self){
 	int x, y, z;
-
 	parseArgsTableSizes(argc, argv, &x, &y, &z);
-
 	Table *t = new Table(x, y, z);
-
 	setPrivateData(self, t);
-
 	return self;
 }
 
-RB_METHOD(tableResize){
+static VALUE tableResize(int argc, VALUE *argv, VALUE self){
 	Table *t = getPrivateData<Table>(self);
-
 	int x, y, z;
 	parseArgsTableSizes(argc, argv, &x, &y, &z);
-
 	t->resize(x, y, z);
-
 	return Qnil;
 }
 
-#define TABLE_SIZE(d, D) \
-	RB_METHOD(table##D##Size) \
-	{ \
-		Table *t = getPrivateData<Table>(self); \
-		return INT2NUM(t->d##Size()); \
-	}
-
-TABLE_SIZE(x, X)
-TABLE_SIZE(y, Y)
-TABLE_SIZE(z, Z)
-
-RB_METHOD(tableGetAt){
+static VALUE tableXSize(VALUE self){
 	Table *t = getPrivateData<Table>(self);
+	return INT2NUM(t->xSize());
+}
 
+static VALUE tableYSize(VALUE self){
+	Table *t = getPrivateData<Table>(self);
+	return INT2NUM(t->ySize());
+}
+
+static VALUE tableZSize(VALUE self){
+	Table *t = getPrivateData<Table>(self);
+	return INT2NUM(t->zSize());
+}
+
+static VALUE tableGetAt(int argc, VALUE *argv, VALUE self){
+	Table *t = getPrivateData<Table>(self);
 	int x, y, z;
 	x = y = z = 0;
 
@@ -94,7 +90,6 @@ RB_METHOD(tableGetAt){
 		y = NUM2INT(argv[1]);
 	if (argc > 2)
 		z = NUM2INT(argv[2]);
-
 	if (argc > 3)
 		rb_raise(rb_eArgError, "wrong number of arguments");
 
@@ -105,16 +100,13 @@ RB_METHOD(tableGetAt){
 	}
 
 	short result = t->get(x, y, z);
-
 	return INT2FIX(result); /* short always fits in a Fixnum */
 }
 
-RB_METHOD(tableSetAt){
+static VALUE tableSetAt(int argc, VALUE *argv, VALUE self){
 	Table *t = getPrivateData<Table>(self);
-
 	int x, y, z, value;
 	x = y = z = 0;
-
 	if (argc < 2)
 		rb_raise(rb_eArgError, "wrong number of arguments");
 
@@ -123,25 +115,21 @@ RB_METHOD(tableSetAt){
 	case 2 :
 		x = NUM2INT(argv[0]);
 		value = NUM2INT(argv[1]);
-
 		break;
 	case 3 :
 		x = NUM2INT(argv[0]);
 		y = NUM2INT(argv[1]);
 		value = NUM2INT(argv[2]);
-
 		break;
 	case 4 :
 		x = NUM2INT(argv[0]);
 		y = NUM2INT(argv[1]);
 		z = NUM2INT(argv[2]);
 		value = NUM2INT(argv[3]);
-
 		break;
 	}
 
 	t->set(value, x, y, z);
-
 	return argv[argc - 1];
 }
 
@@ -151,17 +139,15 @@ INITCOPY_FUN(Table)
 void tableBindingInit(){
 	VALUE klass = rb_define_class("Table", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&TableType>);
-
 	serializableBindingInit<Table>(klass);
-
-	rb_define_class_method(klass, "_load", TableLoad);
-
-	_rb_define_method(klass, "initialize", tableInitialize);
-	_rb_define_method(klass, "initialize_copy", TableInitializeCopy);
-	_rb_define_method(klass, "resize", tableResize);
-	_rb_define_method(klass, "xsize", tableXSize);
-	_rb_define_method(klass, "ysize", tableYSize);
-	_rb_define_method(klass, "zsize", tableZSize);
-	_rb_define_method(klass, "[]", tableGetAt);
-	_rb_define_method(klass, "[]=", tableSetAt);
+	
+	rb_define_singleton_method(klass, "_load", RUBY_METHOD_FUNC(TableLoad), -1);
+	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(tableInitialize), -1);
+	rb_define_method(klass, "initialize_copy", RUBY_METHOD_FUNC(TableInitializeCopy), -1);
+	rb_define_method(klass, "resize", RUBY_METHOD_FUNC(tableResize), -1);
+	rb_define_method(klass, "xsize", RUBY_METHOD_FUNC(tableXSize), 0);
+	rb_define_method(klass, "ysize", RUBY_METHOD_FUNC(tableYSize), 0);
+	rb_define_method(klass, "zsize", RUBY_METHOD_FUNC(tableZSize), 0);
+	rb_define_method(klass, "[]", RUBY_METHOD_FUNC(tableGetAt), -1);
+	rb_define_method(klass, "[]=", RUBY_METHOD_FUNC(tableSetAt), -1);
 }

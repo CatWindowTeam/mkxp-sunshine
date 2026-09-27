@@ -19,51 +19,38 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FLASHABLEBINDING_H
-#define FLASHABLEBINDING_H
-
+#pragma once
 #include "flashable.h"
 #include "binding-util.h"
 #include "binding-types.h"
 
 template<class C>
-RB_METHOD(flashableFlash){
+static VALUE flashableFlash(int argc, VALUE *argv, VALUE self){
 	Flashable *f = getPrivateData<C>(self);
-
 	VALUE colorObj;
 	int duration;
-
 	Color *color;
-
 	rb_get_args(argc, argv, "oi", &colorObj, &duration RB_ARG_END);
-
 	if (NIL_P(colorObj)){
 		f->flash(0, duration);
 		return Qnil;
 	}
 
 	color = getPrivateDataCheck<Color>(colorObj, ColorType);
-
 	f->flash(&color->norm, duration);
-
 	return Qnil;
 }
 
 template<class C>
-RB_METHOD(flashableUpdate){
-
+static VALUE flashableUpdate(VALUE self){
 	Flashable *f = getPrivateData<C>(self);
-
 	f->update();
-
 	return Qnil;
 }
 
 template<class C>
 static void flashableBindingInit(VALUE klass){
-	_rb_define_method(klass, "flash", flashableFlash<C>);
-	_rb_define_method(klass, "update", flashableUpdate<C>);
+	rb_define_method(klass, "flash", RUBY_METHOD_FUNC(flashableFlash<C>), -1);
+	rb_define_method(klass, "update", RUBY_METHOD_FUNC(flashableUpdate<C>), 0);
 }
-
-#endif // FLASHABLEBINDING_H
 

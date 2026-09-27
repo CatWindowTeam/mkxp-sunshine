@@ -6,19 +6,16 @@
 
 DEF_TYPE(LightMap);
 
-RB_METHOD(lightmapInitialize){
+static VALUE lightmapInitialize(int argc, VALUE *argv, VALUE self){
 	LightMap *s = viewportElementInitialize<LightMap>(argc, argv, self);
-
 	setPrivateData(self, s);
 
 	/* Wrap property objects */
 	s->initDynAttribs();
-
 	return self;
 }
 
 DEF_PROP_OBJ_REF(LightMap, Bitmap, WallMap, "wallmap")
-
 DEF_PROP_I(LightMap, CameraX)
 DEF_PROP_I(LightMap, CameraY)
 DEF_PROP_I(LightMap, TilemapOffsetX)
@@ -79,12 +76,11 @@ static VALUE setAmbient(VALUE self, VALUE var){
 void lightmapBindingInit(){
 	VALUE klass = rb_define_class("LightMap", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&LightMapType>);
-
 	disposableBindingInit     <LightMap>(klass);
 	flashableBindingInit      <LightMap>(klass);
 	viewportElementBindingInit<LightMap>(klass);
 
-	_rb_define_method(klass, "initialize", lightmapInitialize);
+	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(lightmapInitialize), -1);
 
 	INIT_PROP_BIND( LightMap, WallMap, "wallmap" );
 	INIT_PROP_BIND( LightMap, CameraX, "camera_x" );

@@ -4,7 +4,6 @@
 // TODO: implement that in the engine itself, not bindings.
 VALUE rb_GetGamepadType(VALUE){
     SDL_Gamepad *gamepad = SDL_GetGamepadFromPlayerIndex(0);
-
     if (gamepad == NULL)
         return INT2NUM(SDL_GAMEPAD_TYPE_UNKNOWN);
     
@@ -13,7 +12,6 @@ VALUE rb_GetGamepadType(VALUE){
 
 VALUE rb_GetGamepadID(VALUE){
     SDL_Gamepad *gamepad = SDL_GetGamepadFromPlayerIndex(0);
-
     if (gamepad == NULL)
         return Qnil;
 
@@ -22,7 +20,6 @@ VALUE rb_GetGamepadID(VALUE){
 
 VALUE rb_GetGamepadGUID(VALUE){
     SDL_Gamepad *gamepad = SDL_GetGamepadFromPlayerIndex(0);
-
     if (gamepad == NULL)
         return Qnil;
     
@@ -30,17 +27,17 @@ VALUE rb_GetGamepadGUID(VALUE){
 
     char buffer[33];
     SDL_GUIDToString(guid, buffer, sizeof(buffer));
-
     return rb_str_new_cstr(buffer);
 }
 
 void initGamepadBinding(VALUE inputModule){
     VALUE gamepadModule = rb_define_module_under(inputModule, "GamepadType");
-
+    VALUE gamepadButtonsModule = rb_define_module_under(inputModule, "GamepadButton");
+    VALUE gamepadAxisModule = rb_define_module_under(inputModule, "GamepadAxis");
+    
     rb_define_module_function(gamepadModule, "current_type", RUBY_METHOD_FUNC(rb_GetGamepadType), 0);
     rb_define_module_function(gamepadModule, "current_id", RUBY_METHOD_FUNC(rb_GetGamepadID), 0);
     rb_define_module_function(gamepadModule, "current_guid", RUBY_METHOD_FUNC(rb_GetGamepadGUID), 0);
-
     rb_const_set(gamepadModule, rb_intern("UNKNOWN"), INT2FIX(SDL_GAMEPAD_TYPE_UNKNOWN));
     rb_const_set(gamepadModule, rb_intern("STANDART"), INT2FIX(SDL_GAMEPAD_TYPE_STANDARD));
     rb_const_set(gamepadModule, rb_intern("XBOX360"), INT2FIX(SDL_GAMEPAD_TYPE_XBOX360));
@@ -53,9 +50,6 @@ void initGamepadBinding(VALUE inputModule){
     rb_const_set(gamepadModule, rb_intern("JOYCON_RIGHT"), INT2FIX(SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT));
     rb_const_set(gamepadModule, rb_intern("JOYCON_PAIR"), INT2FIX(SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR));
     rb_const_set(gamepadModule, rb_intern("GAMECUBE"), INT2FIX(SDL_GAMEPAD_TYPE_GAMECUBE));
-
-    VALUE gamepadButtonsModule = rb_define_module_under(inputModule, "GamepadButton");
-    
     rb_const_set(gamepadButtonsModule, rb_intern("INVALID"), INT2FIX(SDL_GAMEPAD_BUTTON_INVALID));
     rb_const_set(gamepadButtonsModule, rb_intern("SOUTH"), INT2FIX(SDL_GAMEPAD_BUTTON_SOUTH));
     rb_const_set(gamepadButtonsModule, rb_intern("EAST"), INT2FIX(SDL_GAMEPAD_BUTTON_EAST));
@@ -82,10 +76,7 @@ void initGamepadBinding(VALUE inputModule){
     rb_const_set(gamepadButtonsModule, rb_intern("MISC3"), INT2FIX(SDL_GAMEPAD_BUTTON_MISC3));
     rb_const_set(gamepadButtonsModule, rb_intern("MISC4"), INT2FIX(SDL_GAMEPAD_BUTTON_MISC4));
     rb_const_set(gamepadButtonsModule, rb_intern("MISC5"), INT2FIX(SDL_GAMEPAD_BUTTON_MISC5));
-    rb_const_set(gamepadButtonsModule, rb_intern("MISC6"), INT2FIX(SDL_GAMEPAD_BUTTON_MISC6));
-
-    VALUE gamepadAxisModule = rb_define_module_under(inputModule, "GamepadAxis");
-    
+    rb_const_set(gamepadButtonsModule, rb_intern("MISC6"), INT2FIX(SDL_GAMEPAD_BUTTON_MISC6));    
     rb_const_set(gamepadAxisModule, rb_intern("INVALID"), INT2FIX(SDL_GAMEPAD_AXIS_INVALID));
     rb_const_set(gamepadAxisModule, rb_intern("LEFTX"), INT2FIX(SDL_GAMEPAD_AXIS_LEFTX));
     rb_const_set(gamepadAxisModule, rb_intern("LEFTY"), INT2FIX(SDL_GAMEPAD_AXIS_LEFTY));

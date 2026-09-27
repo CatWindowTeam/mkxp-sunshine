@@ -37,7 +37,6 @@
 	#include "eventthread.h"
 
 	void androidSetTouchControlsVisible(bool visible);
-
 	static bool androidSceneIs(VALUE sceneVal, const char *name){
 		if (NIL_P(sceneVal))
 			return false;
@@ -86,16 +85,12 @@
 		int menuX = NUM2INT(rb_const_get(sceneClass, rb_intern("MENU_X")));
 		int menuY = NUM2INT(rb_const_get(sceneClass, rb_intern("MENU_Y")));
 		int entryH = NUM2INT(rb_const_get(sceneClass, rb_intern("ENTRY_HEIGHT")));
-
 		int gw = shState->graphics().width();
 		int gh = shState->graphics().height();
-
 		int mx = shState->input().mouseX();
 		int my = shState->input().mouseY();
-
 		int menuLeft = gw - menuX;
 		int menuTop = gh - menuY;
-
 		if (mx < menuLeft || mx >= menuLeft + menuX || my < menuTop)
 			return;
 
@@ -146,12 +141,10 @@ static VALUE graphicsFrameReset(VALUE self){
 }
 
 #define DEF_GRA_PROP_I(PropName) \
-	RB_METHOD(graphics##Get##PropName) \
-	{ \
+	static VALUE graphics##Get##PropName(VALUE self){ \
 		return rb_fix_new(shState->graphics().get##PropName()); \
 	} \
-	RB_METHOD(graphics##Set##PropName) \
-	{ \
+	static VALUE graphics##Set##PropName(int argc, VALUE *argv, VALUE self){ \
 		int value; \
 		rb_get_args(argc, argv, "i", &value RB_ARG_END); \
 		shState->graphics().set##PropName(value); \
@@ -159,12 +152,10 @@ static VALUE graphicsFrameReset(VALUE self){
 	}
 
 #define DEF_GRA_PROP_B(PropName) \
-	RB_METHOD(graphics##Get##PropName) \
-	{ \
+	static VALUE graphics##Get##PropName(VALUE self){ \
 		return rb_bool_new(shState->graphics().get##PropName()); \
 	} \
-	RB_METHOD(graphics##Set##PropName) \
-	{ \
+	static VALUE graphics##Set##PropName(int argc, VALUE *argv, VALUE self){ \
 		bool value; \
 		rb_get_args(argc, argv, "b", &value RB_ARG_END); \
 		shState->graphics().set##PropName(value); \
@@ -217,7 +208,7 @@ static VALUE graphicsFadein(int argc, VALUE *argv, VALUE self){
 
 void bitmapInitProps(Bitmap *b, VALUE self);
 
-static VALUE graphicsSnapToBitmap(int argc, VALUE *argv, VALUE self){
+static VALUE graphicsSnapToBitmap(VALUE self){
 	Bitmap *result = 0;
 	GUARD_EXC( result = shState->graphics().snapToBitmap(); );
 	VALUE obj = wrapObject(result, BitmapType);
@@ -256,11 +247,11 @@ DEF_GRA_PROP_B(Frameskip)
 
 #define INIT_GRA_PROP_BIND(PropName, prop_name_s) \
 { \
-	_rb_define_module_function(module, prop_name_s, graphics##Get##PropName); \
-	_rb_define_module_function(module, prop_name_s "=", graphics##Set##PropName); \
+	rb_define_module_function(module, prop_name_s, RUBY_METHOD_FUNC(graphics##Get##PropName), 0); \
+	rb_define_module_function(module, prop_name_s "=", RUBY_METHOD_FUNC(graphics##Set##PropName), -1); \
 }
 
-static VALUE graphicsWindowMoved(VALUE){
+static VALUE graphicsWindowMoved(VALUE self){
 	RUBY_CONNECTION
 	conn->connection = shState->windowSignals.moved.Connect([conn](int x, int y){
 		shState->rubyDispatcher().invoke([conn, x, y]{
@@ -275,7 +266,7 @@ static VALUE graphicsWindowMoved(VALUE){
 	return TypedData_Wrap_Struct(rb_cRubyConnection, &rubyConnection_type, conn);
 }
 
-static VALUE graphicsWindowResized(VALUE){
+static VALUE graphicsWindowResized(VALUE self){
 	RUBY_CONNECTION
 	conn->connection = shState->windowSignals.resized.Connect([conn](int w, int h){
 		shState->rubyDispatcher().invoke([conn, w, h]{
@@ -290,7 +281,7 @@ static VALUE graphicsWindowResized(VALUE){
 	return TypedData_Wrap_Struct(rb_cRubyConnection, &rubyConnection_type, conn);
 }
 
-static VALUE graphicsViewportResized(VALUE){
+static VALUE graphicsViewportResized(VALUE self){
 	RUBY_CONNECTION
 	conn->connection = shState->graphicsSignals.resized.Connect([conn](int w, int h){
 		//shState->rubyDispatcher().invoke([conn, w, h]{
@@ -322,24 +313,24 @@ void graphicsBindingInit(){
 	rb_define_module_function(module, "window_resized", RUBY_METHOD_FUNC(graphicsWindowResized), 0);
 	rb_define_module_function(module, "viewport_resized", RUBY_METHOD_FUNC(graphicsViewportResized), 0);
 	rb_define_module_function(module, "fov", RUBY_METHOD_FUNC(graphicsGetFOV), 0);
-	rb_define_module_function(module, "fov=", RUBY_METHOD_FUNC(graphicsSetFOV), 1);
+	rb_define_module_function(module, "fov=", RUBY_METHOD_FUNC(graphicsSetFOV), -1);
 
 	// Functions
 	rb_define_module_function(module, "x", RUBY_METHOD_FUNC(graphicsPosX), 0);
 	rb_define_module_function(module, "y", RUBY_METHOD_FUNC(graphicsPosY), 0);
 	rb_define_module_function(module, "width", RUBY_METHOD_FUNC(graphicsWidth), 0);
 	rb_define_module_function(module, "height", RUBY_METHOD_FUNC(graphicsHeight), 0);
-	_rb_define_module_function(module, "wait", graphicsWait);
-	_rb_define_module_function(module, "fadeout", graphicsFadeout);
-	_rb_define_module_function(module, "fadein", graphicsFadein);
-	_rb_define_module_function(module, "snap_to_bitmap", graphicsSnapToBitmap);
-	_rb_define_module_function(module, "resize_screen", graphicsResizeScreen);
-	_rb_define_module_function(module, "move_screen", graphicsMoveScreen);
+	rb_define_module_function(module, "wait", RUBY_METHOD_FUNC(graphicsWait), -1);
+	rb_define_module_function(module, "fadeout", RUBY_METHOD_FUNC(graphicsFadeout), -1);
+	rb_define_module_function(module, "fadein", RUBY_METHOD_FUNC(graphicsFadein), -1);
+	rb_define_module_function(module, "snap_to_bitmap", RUBY_METHOD_FUNC(graphicsSnapToBitmap), -1);
+	rb_define_module_function(module, "resize_screen", RUBY_METHOD_FUNC(graphicsResizeScreen), -1);
+	rb_define_module_function(module, "move_screen", RUBY_METHOD_FUNC(graphicsMoveScreen), -1);
 	rb_define_module_function(module, "update", RUBY_METHOD_FUNC(graphicsUpdate), 0);
 	rb_define_module_function(module, "freeze", RUBY_METHOD_FUNC(graphicsFreeze), 0);
-	_rb_define_module_function(module, "transition", graphicsTransition);
+	rb_define_module_function(module, "transition", RUBY_METHOD_FUNC(graphicsTransition), -1);
 	rb_define_module_function(module, "frame_reset", RUBY_METHOD_FUNC(graphicsFrameReset), 0);
-	_rb_define_module_function(module, "vsync_mode=", graphicsSetVsync);
+	rb_define_module_function(module, "vsync_mode=", RUBY_METHOD_FUNC(graphicsSetVsync), -1);
 	rb_define_module_function(module, "__reset__", RUBY_METHOD_FUNC(graphicsReset), 0);
 
 	// Variables

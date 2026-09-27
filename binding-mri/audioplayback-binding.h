@@ -1,7 +1,5 @@
 #pragma once
-
 #include "sound/audioplayback.h"
-
 #include <ruby.h>
 
 extern void audioplayback_free(void* ptr);

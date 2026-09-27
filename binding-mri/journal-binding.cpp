@@ -47,7 +47,7 @@ void SendRaw(const char *address, int port, const char *raw){
     NET_DestroyStreamSocket(socket);
 }
 
-RB_METHOD(journalSet){
+static VALUE journalSet(int argc, VALUE *argv, VALUE self){
 	const char *name;
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);
 	static char buffer[1024];
@@ -59,31 +59,22 @@ RB_METHOD(journalSet){
 	return Qnil;
 }
 
-RB_METHOD(journalLangSet){
+static VALUE journalLangSet(int argc, VALUE *argv, VALUE self){
         const char *name;
         rb_get_args(argc, argv, "z", &name RB_ARG_END);
 	SDL_snprintf(lang, 4, "%s", name);
         return Qnil;
 }
 
-RB_METHOD(journalActive){
+//TODO: imlement it, PING PONG!
+static VALUE journalActive(VALUE self){
 	return Qtrue;
 }
 
 #else
-
-RB_METHOD(journalSet){
-	return Qnil;
-}
-
-RB_METHOD(journalLangSet){
-        return Qnil;
-}
-
-RB_METHOD(journalActive){
-	return Qtrue;
-}
-
+	static VALUE journalSet(VALUE self){ return Qnil; }
+	static VALUE journalLangSet(VALUE self){ return Qnil; }
+	static VALUE journalActive(VALUE self){ return Qtrue; }
 #endif
 
 void journalBindingInit(){
@@ -95,7 +86,7 @@ void journalBindingInit(){
 		}
 	#endif
 	VALUE module = rb_define_module("Journal");
-	_rb_define_module_function(module, "set", journalSet);
-	_rb_define_module_function(module, "setLang", journalLangSet);
-	_rb_define_module_function(module, "active?", journalActive);
+	rb_define_module_function(module, "set", RUBY_METHOD_FUNC(journalSet), -1);
+	rb_define_module_function(module, "setLang", RUBY_METHOD_FUNC(journalLangSet), -1);
+	rb_define_module_function(module, "active?", RUBY_METHOD_FUNC(journalActive), 0);
 }

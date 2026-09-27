@@ -29,19 +29,16 @@
 
 DEF_TYPE(Sprite);
 
-RB_METHOD(spriteInitialize){
+static VALUE spriteInitialize(int argc, VALUE *argv, VALUE self){
 	Sprite *s = viewportElementInitialize<Sprite>(argc, argv, self);
-
 	setPrivateData(self, s);
 
 	/* Wrap property objects */
 	s->initDynAttribs();
-
 	wrapProperty(self, &s->getSrcRect(), "src_rect", RectType);
 	wrapProperty(self, &s->getColor(), "color", ColorType);
 	wrapProperty(self, &s->getTone(), "tone", ToneType);
 	wrapProperty(self, &s->getModulate(), "modulate", ColorType);
-
 	return self;
 }
 
@@ -64,30 +61,26 @@ DEF_PROP_I(Sprite, WaveLength)
 DEF_PROP_I(Sprite, WaveSpeed)
 DEF_PROP_I(Sprite, Shader)
 DEF_PROP_I(Sprite, PerspectiveZ)
-
 DEF_PROP_F(Sprite, ZoomX)
 DEF_PROP_F(Sprite, ZoomY)
 DEF_PROP_F(Sprite, Angle)
 DEF_PROP_F(Sprite, WavePhase)
 DEF_PROP_F(Sprite, PerspectiveRotationX)
 DEF_PROP_F(Sprite, PerspectiveRotationY)
-
 DEF_PROP_B(Sprite, MirrorX)
 DEF_PROP_B(Sprite, MirrorY)
 DEF_PROP_B(Sprite, Obscured)
 DEF_PROP_B(Sprite, PerspectiveMode)
 
 
-RB_METHOD(SpriteGetSmooth)
-{
+static VALUE SpriteGetSmooth(VALUE self){
     Sprite *k = getPrivateData<Sprite>(self);
     bool value = false;
     GUARD_EXC( value = k->smooth; )
     return rb_bool_new(value);
 }
 
-RB_METHOD(SpriteSetSmooth)
-{
+static VALUE SpriteSetSmooth(int argc, VALUE *argv, VALUE self){
     rb_check_argc(argc, 1);
     Sprite *k = getPrivateData<Sprite>(self);
     bool value;
@@ -96,23 +89,17 @@ RB_METHOD(SpriteSetSmooth)
     return *argv;
 }
 
-RB_METHOD(spriteWidth){
-
+static VALUE spriteWidth(VALUE self){
 	Sprite *s = getPrivateData<Sprite>(self);
-
 	int value = 0;
 	GUARD_EXC( value = s->getWidth(); )
-
 	return INT2NUM(value);
 }
 
-RB_METHOD(spriteHeight){
-
+static VALUE spriteHeight(VALUE self){
 	Sprite *s = getPrivateData<Sprite>(self);
-
 	int value = 0;
 	GUARD_EXC( value = s->getHeight(); )
-
 	return INT2NUM(value);
 }
 
@@ -124,7 +111,7 @@ void spriteBindingInit(){
 	flashableBindingInit      <Sprite>(klass);
 	viewportElementBindingInit<Sprite>(klass);
 
-	_rb_define_method(klass, "initialize", spriteInitialize);
+	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(spriteInitialize), -1);
 
 	INIT_PROP_BIND( Sprite, Bitmap,       "bitmap"        );
 	INIT_PROP_BIND( Sprite, SrcRect,      "src_rect"      );
@@ -151,11 +138,10 @@ void spriteBindingInit(){
 	INIT_PROP_BIND( Sprite, PerspectiveRotationX, "rx");
 	INIT_PROP_BIND( Sprite, PerspectiveRotationY, "ry");
 
-	_rb_define_method(klass, "width", spriteWidth);
-	_rb_define_method(klass, "height", spriteHeight);
+	rb_define_method(klass, "width", RUBY_METHOD_FUNC(spriteWidth), 0);
+	rb_define_method(klass, "height", RUBY_METHOD_FUNC(spriteHeight), 0);
 
 	INIT_PROP_BIND( Sprite, BushOpacity, "bush_opacity" );
-
 	INIT_PROP_BIND( Sprite, WaveAmp,    "wave_amp"    );
 	INIT_PROP_BIND( Sprite, WaveLength, "wave_length" );
 	INIT_PROP_BIND( Sprite, WaveSpeed,  "wave_speed"  );

@@ -26,15 +26,12 @@
 DEF_TYPE(Color);
 DEF_TYPE(Tone);
 DEF_TYPE(Rect);
-
 #define ATTR_RW(Klass, Attr, arg_type, arg_t_s, value_fun) \
-	RB_METHOD(Klass##Get##Attr) \
-	{ \
+	static VALUE Klass##Get##Attr(VALUE self){ \
 		Klass *p = getPrivateData<Klass>(self); \
 		return value_fun(p->get##Attr()); \
 	} \
-	RB_METHOD(Klass##Set##Attr) \
-	{ \
+	static VALUE Klass##Set##Attr(int argc, VALUE *argv, VALUE self){ \
 		Klass *p = getPrivateData<Klass>(self); \
 		arg_type arg; \
 		rb_get_args(argc, argv, arg_t_s, &arg RB_ARG_END); \
@@ -49,20 +46,17 @@ ATTR_DOUBLE_RW(Color, Red)
 ATTR_DOUBLE_RW(Color, Green)
 ATTR_DOUBLE_RW(Color, Blue)
 ATTR_DOUBLE_RW(Color, Alpha)
-
 ATTR_DOUBLE_RW(Tone, Red)
 ATTR_DOUBLE_RW(Tone, Green)
 ATTR_DOUBLE_RW(Tone, Blue)
 ATTR_DOUBLE_RW(Tone, Gray)
-
 ATTR_INT_RW(Rect, X)
 ATTR_INT_RW(Rect, Y)
 ATTR_INT_RW(Rect, Width)
 ATTR_INT_RW(Rect, Height)
 
 #define EQUAL_FUN(Klass) \
-	RB_METHOD(Klass##Equal) \
-	{ \
+	static VALUE Klass##Equal(int argc, VALUE *argv, VALUE self){ \
 		Klass *p = getPrivateData<Klass>(self); \
 		VALUE otherObj; \
 		Klass *other; \
@@ -76,15 +70,11 @@ EQUAL_FUN(Tone)
 EQUAL_FUN(Rect)
 
 #define INIT_FUN(Klass, param_type, param_t_s, last_param_def) \
-	RB_METHOD(Klass##Initialize) \
-	{ \
+	static VALUE Klass##Initialize(int argc, VALUE *argv, VALUE self){ \
 		Klass *k; \
-		if (argc == 0) \
-		{ \
+		if (argc == 0){ \
 			k = new Klass(); \
-		} \
-		else \
-		{ \
+		}else{ \
 			param_type p1, p2, p3, p4 = last_param_def; \
 			rb_get_args(argc, argv, param_t_s, &p1, &p2, &p3, &p4 RB_ARG_END); \
 			k = new Klass(p1, p2, p3, p4); \
@@ -98,17 +88,13 @@ INIT_FUN(Tone, double, "fff|f", 0)
 INIT_FUN(Rect, int, "iiii", 0)
 
 #define SET_FUN(Klass, param_type, param_t_s, last_param_def) \
-	RB_METHOD(Klass##Set) \
-	{ \
+	static VALUE Klass##Set(int argc, VALUE *argv, VALUE self){ \
 		Klass *k = getPrivateData<Klass>(self); \
-		if (argc == 1) \
-		{ \
+		if (argc == 1){ \
 			VALUE otherObj = argv[0]; \
 			Klass *other = getPrivateDataCheck<Klass>(otherObj, Klass##Type); \
 			*k = *other; \
-		} \
-		else \
-		{ \
+		}else{ \
 			param_type p1, p2, p3, p4 = last_param_def; \
 			rb_get_args(argc, argv, param_t_s, &p1, &p2, &p3, &p4 RB_ARG_END); \
 			k->set(p1, p2, p3, p4); \
@@ -120,40 +106,30 @@ SET_FUN(Color, double, "fff|f", 255)
 SET_FUN(Tone, double, "fff|f", 0)
 SET_FUN(Rect, int, "iiii", 0)
 
-RB_METHOD(rectEmpty){
+static VALUE rectEmpty(VALUE self){
 	Rect *r = getPrivateData<Rect>(self);
 	r->empty();
 	return self;
 }
 
-RB_METHOD(ColorStringify){
-
+static VALUE ColorStringify(VALUE self){
 	Color *c = getPrivateData<Color>(self);
-
-	return rb_sprintf("(%f, %f, %f, %f)",
-	                  c->red, c->green, c->blue, c->alpha);
+	return rb_sprintf("(%f, %f, %f, %f)", c->red, c->green, c->blue, c->alpha);
 }
 
-RB_METHOD(ToneStringify){
-
+static VALUE ToneStringify(VALUE self){
 	Tone *t = getPrivateData<Tone>(self);
-
-	return rb_sprintf("(%f, %f, %f, %f)",
-	                  t->red, t->green, t->blue, t->gray);
+	return rb_sprintf("(%f, %f, %f, %f)", t->red, t->green, t->blue, t->gray);
 }
 
-RB_METHOD(RectStringify){
-
+static VALUE RectStringify(VALUE self){
 	Rect *r = getPrivateData<Rect>(self);
-
-	return rb_sprintf("(%d, %d, %d, %d)",
-	                  r->x, r->y, r->width, r->height);
+	return rb_sprintf("(%d, %d, %d, %d)", r->x, r->y, r->width, r->height);
 }
 
 MARSH_LOAD_FUN(Color)
 MARSH_LOAD_FUN(Tone)
 MARSH_LOAD_FUN(Rect)
-
 INITCOPY_FUN(Tone)
 INITCOPY_FUN(Color)
 INITCOPY_FUN(Rect)
@@ -162,49 +138,42 @@ INITCOPY_FUN(Rect)
 { \
 	klass = rb_define_class(#Klass, rb_cObject); \
 	rb_define_alloc_func(klass, classAllocate<&Klass##Type>); \
-	rb_define_class_method(klass, "_load", Klass##Load); \
+	rb_define_singleton_method(klass, "_load", RUBY_METHOD_FUNC(Klass##Load), -1); \
 	serializableBindingInit<Klass>(klass); \
-	_rb_define_method(klass, "initialize", Klass##Initialize); \
-	_rb_define_method(klass, "initialize_copy", Klass##InitializeCopy); \
-	_rb_define_method(klass, "set", Klass##Set); \
-	_rb_define_method(klass, "==", Klass##Equal); \
-	_rb_define_method(klass, "===", Klass##Equal); \
-	_rb_define_method(klass, "eql?", Klass##Equal); \
-	_rb_define_method(klass, "to_s", Klass##Stringify); \
-	_rb_define_method(klass, "inspect", Klass##Stringify); \
+	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(Klass##Initialize), -1); \
+	rb_define_method(klass, "initialize_copy", RUBY_METHOD_FUNC(Klass##InitializeCopy), -1); \
+	rb_define_method(klass, "set", RUBY_METHOD_FUNC(Klass##Set), -1); \
+	rb_define_method(klass, "==", RUBY_METHOD_FUNC(Klass##Equal), -1); \
+	rb_define_method(klass, "===", RUBY_METHOD_FUNC(Klass##Equal), -1); \
+	rb_define_method(klass, "eql?", RUBY_METHOD_FUNC(Klass##Equal), -1); \
+	rb_define_method(klass, "to_s", RUBY_METHOD_FUNC(Klass##Stringify), -1); \
+	rb_define_method(klass, "inspect", RUBY_METHOD_FUNC(Klass##Stringify), -1); \
 }
 
 #define MRB_ATTR_R(Class, attr) mrb_define_method(mrb, klass, #attr, Class##Get_##attr, MRB_ARGS_NONE())
 #define MRB_ATTR_W(Class, attr) mrb_define_method(mrb, klass, #attr "=", Class##Set_##attr, MRB_ARGS_REQ(1))
 #define MRB_ATTR_RW(Class, attr) { MRB_ATTR_R(Class, attr); MRB_ATTR_W(Class, attr); }
-
-#define RB_ATTR_R(Klass, Attr, attr) _rb_define_method(klass, #attr, Klass##Get##Attr)
-#define RB_ATTR_W(Klass, Attr, attr) _rb_define_method(klass, #attr "=", Klass##Set##Attr)
+#define RB_ATTR_R(Klass, Attr, attr) rb_define_method(klass, #attr, RUBY_METHOD_FUNC(Klass##Get##Attr), 0)
+#define RB_ATTR_W(Klass, Attr, attr) rb_define_method(klass, #attr "=", RUBY_METHOD_FUNC(Klass##Set##Attr), -1)
 #define RB_ATTR_RW(Klass, Attr, attr) \
 	{ RB_ATTR_R(Klass, Attr, attr); RB_ATTR_W(Klass, Attr, attr); }
 
 void etcBindingInit(){
 	VALUE klass;
-
 	INIT_BIND(Color);
-
 	RB_ATTR_RW(Color, Red, red);
 	RB_ATTR_RW(Color, Green, green);
 	RB_ATTR_RW(Color, Blue, blue);
 	RB_ATTR_RW(Color, Alpha, alpha);
-
 	INIT_BIND(Tone);
-
 	RB_ATTR_RW(Tone, Red, red);
 	RB_ATTR_RW(Tone, Green, green);
 	RB_ATTR_RW(Tone, Blue, blue);
 	RB_ATTR_RW(Tone, Gray, gray);
-
 	INIT_BIND(Rect);
-
 	RB_ATTR_RW(Rect, X, x);
 	RB_ATTR_RW(Rect, Y, y);
 	RB_ATTR_RW(Rect, Width, width);
 	RB_ATTR_RW(Rect, Height, height);
-	_rb_define_method(klass, "empty", rectEmpty);
+	rb_define_method(klass, "empty", RUBY_METHOD_FUNC(rectEmpty), 0);
 }

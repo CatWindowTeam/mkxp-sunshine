@@ -52,7 +52,6 @@ static VALUE viewportInitialize(int argc, VALUE *argv, VALUE self){
 
 	/* Wrap property objects */
 	v->initDynAttribs();
-
 	wrapProperty(self, &v->getRect(),  "rect",  RectType);
 	wrapProperty(self, &v->getColor(), "color", ColorType);
 	wrapProperty(self, &v->getTone(),  "tone",  ToneType);
@@ -80,7 +79,7 @@ void viewportBindingInit(){
 	disposableBindingInit  <Viewport>(klass);
 	flashableBindingInit   <Viewport>(klass);
 	sceneElementBindingInit<Viewport>(klass);
-	_rb_define_method(klass, "initialize", viewportInitialize);
+	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(viewportInitialize), -1);
 
 	INIT_PROP_BIND( Viewport, Rect,     "rect"    );
 	INIT_PROP_BIND( Viewport, OX,       "ox"      );
@@ -91,4 +90,3 @@ void viewportBindingInit(){
 	INIT_PROP_BIND( Viewport, Color,    "color"   );
 	INIT_PROP_BIND( Viewport, Tone,     "tone"    );
 }
-

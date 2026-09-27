@@ -33,214 +33,186 @@
 
 extern void initGamepadBinding(VALUE inputModule);
 
-RB_METHOD(inputUpdate){
-
+static VALUE inputUpdate(VALUE self){
 	shState->input().update();
-
 	return Qnil;
 }
 
-RB_METHOD(inputSetMouseEnabled){
+static VALUE inputSetMouseEnabled(int argc, VALUE *argv, VALUE self){
 	bool value;
 	rb_get_args(argc, argv, "b", &value RB_ARG_END);
 	EventThread::mouseEnabled = value;
 	return Qnil;
 }
 
-RB_METHOD(inputGetMouseEnabled){
+static VALUE inputGetMouseEnabled(VALUE self){
 	return EventThread::mouseEnabled ? Qtrue : Qfalse;
 }
 
-RB_METHOD(inputSetGamepadEnabled){
+static VALUE inputSetGamepadEnabled(int argc, VALUE *argv, VALUE self){
 	bool value;
 	rb_get_args(argc, argv, "b", &value RB_ARG_END);
 	EventThread::gamepadEnabled = value;
 	return Qnil;
 }
 
-RB_METHOD(inputGetGamepadEnabled){
+static VALUE inputGetGamepadEnabled(VALUE self){
 	return EventThread::gamepadEnabled ? Qtrue : Qfalse;
 }
 
 static int getButtonArg(int argc, VALUE *argv){
 	int num;
-
 	rb_check_argc(argc, 1);
-
 	if (FIXNUM_P(argv[0])){
 		num = FIX2INT(argv[0]);
-	}
-	//else if (SYMBOL_P(argv[0]) && rgssVer >= 3){
-	//	VALUE symHash = getRbData()->buttoncodeHash;
-	//	num = FIX2INT(rb_hash_lookup2(symHash, argv[0], INT2FIX(Input::None)));
-	//}
-	else{
+	}else{
 		// FIXME: RMXP allows only few more types that
 		// don't make sense (symbols in pre 3, floats)
 		num = 0;
 	}
-
+	
 	return num;
 }
 
-RB_METHOD(inputPress){
+static VALUE inputPress(int argc, VALUE *argv, VALUE self){
 	int num = getButtonArg(argc, argv);
 	return rb_bool_new(shState->input().isPressed(num));
 }
 
-RB_METHOD(inputTrigger){
+static VALUE inputTrigger(int argc, VALUE *argv, VALUE self){
 	int num = getButtonArg(argc, argv);
 	return rb_bool_new(shState->input().isTriggered(num));
 }
 
-RB_METHOD(inputRepeat){
+static VALUE inputRepeat(int argc, VALUE *argv, VALUE self){
 	int num = getButtonArg(argc, argv);
 	return rb_bool_new(shState->input().isRepeated(num));
 }
 
-RB_METHOD(inputDir4){
+static VALUE inputDir4(VALUE self){
 	return rb_fix_new(shState->input().dir4Value());
 }
 
-RB_METHOD(inputDir8){
+static VALUE inputDir8(VALUE self){
 	return rb_fix_new(shState->input().dir8Value());
 }
 
 /* Non-standard extensions */
-RB_METHOD(inputMouseX){
+static VALUE inputMouseX(VALUE self){
 	return rb_fix_new(shState->input().mouseX());
 }
 
-RB_METHOD(inputMouseY){
+static VALUE inputMouseY(VALUE self){
 	return rb_fix_new(shState->input().mouseY());
 }
 
 // wheel :3
-RB_METHOD(inputWheelX) {
+static VALUE inputWheelX(VALUE self) {
 	return rb_float_new(shState->input().wheelX());
 }
 
-RB_METHOD(inputWheelY) {
+static VALUE inputWheelY(VALUE self) {
 	return rb_float_new(shState->input().wheelY());
 }
 
-RB_METHOD(inputWheelFlipped) {
+static VALUE inputWheelFlipped(VALUE self) {
 	return rb_bool_new(shState->input().wheelFlipped());
 }
 
-RB_METHOD(inputQuit) {
+static VALUE inputQuit(VALUE self) {
 	return rb_bool_new(shState->input().hasQuit());
 }
 
 // keyboard
-RB_METHOD(getKeyName) {
-
+static VALUE getKeyName(int argc, VALUE *argv, VALUE self) {
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
-
 	if (key >= 0 && key < SDL_Scancode::SDL_SCANCODE_COUNT)
 		return rb_utf8_str_new_cstr(SDL_GetKeyName(SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(key), SDL_KMOD_NONE, false)));
 
 	return rb_utf8_str_new_cstr(SDL_GetKeyName(SDLK_UNKNOWN));
 }
 
-RB_METHOD(keyPress) {
-
+static VALUE keyPress(int argc, VALUE *argv, VALUE self) {
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
-
 	if (key >= 0 && key < SDL_Scancode::SDL_SCANCODE_COUNT)
 		return rb_bool_new(EventThread::keyStates[key]);
 	
 	return rb_bool_new(false);
 }
 
-RB_METHOD(getPressedKey) {
-	
+static VALUE getPressedKey(VALUE self) {
 	short pressedKey = 0;
 	for(; pressedKey < SDL_Scancode::SDL_SCANCODE_COUNT && !EventThread::keyStates[pressedKey]; pressedKey++);
 	return pressedKey == SDL_Scancode::SDL_SCANCODE_COUNT ? Qnil : rb_fix_new(pressedKey);
 }
 
-RB_METHOD(getKeyFromName) {
-
+static VALUE getKeyFromName(int argc, VALUE *argv, VALUE self) {
 	const char *name;
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);
 	return rb_fix_new(SDL_GetScancodeFromName(name));
 }
 
 // gamepad buttons
-RB_METHOD(getGamepadButtonName) {
-
+static VALUE getGamepadButtonName(int argc, VALUE *argv, VALUE self) {
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
-
 	if (key >= 0 && key < SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT)
 		return rb_utf8_str_new_cstr(SDL_GetGamepadStringForButton(static_cast<SDL_GamepadButton>(key)));
 
 	return rb_utf8_str_new_cstr("Invalid");
 }
 
-RB_METHOD(gamepadButtonPress) {
-
+static VALUE gamepadButtonPress(int argc, VALUE *argv, VALUE self) {
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
-
 	if (key >= 0 && key < SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT)
 		return rb_bool_new(EventThread::gcState.buttons[key]);
 	
 	return rb_bool_new(false);
 }
 
-RB_METHOD(getPressedGamepadButton) {
-
+static VALUE getPressedGamepadButton(VALUE self) {
 	short pressedKey = 0;
 	for(; pressedKey < SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT && !EventThread::gcState.buttons[pressedKey]; pressedKey++);
 	return pressedKey == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT ? Qnil : rb_fix_new(pressedKey);
 }
 
-RB_METHOD(getGamepadButtonFromName) {
-
+static VALUE getGamepadButtonFromName(int argc, VALUE *argv, VALUE self) {
 	const char *name;
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);
 	return rb_fix_new(SDL_GetGamepadButtonFromString(name));
 }
 
 // gamepad axes
-RB_METHOD(getGamepadAxisName) {
-
+static VALUE getGamepadAxisName(int argc, VALUE *argv, VALUE self) {
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
-
 	if (key >= 0 && key < SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT)
 		return rb_utf8_str_new_cstr(SDL_GetGamepadStringForAxis(static_cast<SDL_GamepadAxis>(key)));
 
 	return rb_utf8_str_new_cstr("Invalid");
 }
 
-RB_METHOD(getGamepadAxisPressure) {
-
+static VALUE getGamepadAxisPressure(int argc, VALUE *argv, VALUE self) {
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
-
 	if (key >= 0 && key < SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT)
 		return rb_fix_new(EventThread::gcState.axes[key]);
 	
 	return rb_fix_new(0);
 }
 
-RB_METHOD(getActiveGamepadAxis) {
-
+static VALUE getActiveGamepadAxis(int argc, VALUE *argv, VALUE self) {
 	int deadzone = 16000;
 	rb_get_args(argc, argv, "|i", &deadzone RB_ARG_END);
-
 	short pressedKey = 0;
 	for(; pressedKey < SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT && (EventThread::gcState.axes[pressedKey] <= -32768 || std::abs(EventThread::gcState.axes[pressedKey]) < deadzone); pressedKey++);
 	return pressedKey == SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT ? Qnil : rb_fix_new(pressedKey);
 }
 
-RB_METHOD(getGamepadAxisFromName) {
-
+static VALUE getGamepadAxisFromName(int argc, VALUE *argv, VALUE self) {
 	const char *name;
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);
 	return rb_fix_new(SDL_GetGamepadAxisFromString(name));
@@ -248,31 +220,22 @@ RB_METHOD(getGamepadAxisFromName) {
 
 static VALUE setBinding(VALUE self, VALUE rb_arr, VALUE rb_target){
     Check_Type(rb_arr, T_ARRAY);
-
     int target = FIX2INT(rb_target);
-
     long count = RARRAY_LEN(rb_arr);
-
     std::vector<SourceDesc> result;
     result.reserve(count);
 
-    for (size_t i = 0; i < count; ++i)
-    {
+    for (size_t i = 0; i < count; ++i){
         VALUE rb_binding = rb_ary_entry(rb_arr, i);
-
-		//printf("bind\n");
 		if (!rb_typeddata_is_kind_of(rb_binding, &sourceDesc_type))
     		continue;
-		//printf("bind ok\n");
-
+    		
         SourceDesc* src;
         TypedData_Get_Struct(rb_binding, SourceDesc, &sourceDesc_type, src);
-
         result.push_back(*src);
     }
 
 	shState->input().setBinding(result, static_cast<Input::ButtonCode>(target));
-
     return Qnil;
 }
 
@@ -289,7 +252,6 @@ static VALUE setLED(VALUE self, VALUE r, VALUE g, VALUE b) {
 static VALUE rumble(VALUE self, VALUE low_frequency_rumble, VALUE high_frequency_rumble, VALUE duration_ms) {
     Uint16 low_freq = NUM2DBL(low_frequency_rumble) * 65535;
     Uint16 high_freq = NUM2DBL(high_frequency_rumble) * 65535;
-    
     if (gc != nullptr) {
 		printf("low freq: %d, high freq: %d, duration: %d", low_freq, high_freq, NUM2INT(duration_ms));
         if (!SDL_RumbleGamepad(gc, low_freq, high_freq, NUM2INT(duration_ms))) {
@@ -306,30 +268,24 @@ struct{
 }
 static buttonCodes[] = {
 	{ "NONE",        Input::None        },
-
 	{ "DOWN",        Input::Down        },
 	{ "LEFT",        Input::Left        },
 	{ "RIGHT",       Input::Right       },
 	{ "UP",          Input::Up          },
-
 	{ "ACTION",      Input::Action      },
 	{ "CANCEL",      Input::Cancel      },
 	{ "MENU",        Input::Menu        },
 	{ "ITEMS",       Input::Items       },
 	{ "RUN",         Input::Run         },
 	{ "DEACTIVATE",  Input::Deactivate  },
-
 	{ "DEBUGACTION", Input::DebugAction },
-
 	{ "L",           Input::L           },
 	{ "R",           Input::R           },
-
 	{ "F5",          Input::F5          },
 	{ "F6",          Input::F6          },
 	{ "F7",          Input::F7          },
 	{ "F8",          Input::F8          },
 	{ "F9",          Input::F9          },
-
 	{ "MOUSELEFT",   Input::MouseLeft   },
 	{ "MOUSEMIDDLE", Input::MouseMiddle },
 	{ "MOUSERIGHT",  Input::MouseRight  },
@@ -339,40 +295,39 @@ static elementsN(buttonCodes);
 
 void inputBindingInit(){
 	VALUE module = rb_define_module("Input");
-
 	initGamepadBinding(module);
 
 	// mkxp's input
-	_rb_define_module_function(module, "update", inputUpdate);
-	_rb_define_module_function(module, "mouse_enabled=", inputSetMouseEnabled);
-	_rb_define_module_function(module, "mouse_enabled?", inputGetMouseEnabled);
-	_rb_define_module_function(module, "gamepad_enabled=", inputSetGamepadEnabled);
-	_rb_define_module_function(module, "gamepad_enabled?", inputGetGamepadEnabled);
-	_rb_define_module_function(module, "press?", inputPress);
-	_rb_define_module_function(module, "trigger?", inputTrigger);
-	_rb_define_module_function(module, "repeat?", inputRepeat);
-	_rb_define_module_function(module, "dir4", inputDir4);
-	_rb_define_module_function(module, "dir8", inputDir8);
+	rb_define_module_function(module, "update", RUBY_METHOD_FUNC(inputUpdate), 0);
+	rb_define_module_function(module, "mouse_enabled=", RUBY_METHOD_FUNC(inputSetMouseEnabled), -1);
+	rb_define_module_function(module, "mouse_enabled?", RUBY_METHOD_FUNC(inputGetMouseEnabled), 0);
+	rb_define_module_function(module, "gamepad_enabled=", RUBY_METHOD_FUNC(inputSetGamepadEnabled), -1);
+	rb_define_module_function(module, "gamepad_enabled?", RUBY_METHOD_FUNC(inputGetGamepadEnabled), 0);
+	rb_define_module_function(module, "press?", RUBY_METHOD_FUNC(inputPress), -1);
+	rb_define_module_function(module, "trigger?", RUBY_METHOD_FUNC(inputTrigger), -1);
+	rb_define_module_function(module, "repeat?", RUBY_METHOD_FUNC(inputRepeat), -1);
+	rb_define_module_function(module, "dir4", RUBY_METHOD_FUNC(inputDir4), 0);
+	rb_define_module_function(module, "dir8", RUBY_METHOD_FUNC(inputDir8), 0);
 
 	// keyboard keys
-	_rb_define_module_function(module, "key_name", getKeyName);
-	_rb_define_module_function(module, "key_press?", keyPress);
-	_rb_define_module_function(module, "pressed_key", getPressedKey);
-	_rb_define_module_function(module, "key_from_name", getKeyFromName);
+	rb_define_module_function(module, "key_name", RUBY_METHOD_FUNC(getKeyName), -1);
+	rb_define_module_function(module, "key_press?", RUBY_METHOD_FUNC(keyPress), -1);
+	rb_define_module_function(module, "pressed_key", RUBY_METHOD_FUNC(getPressedKey), 0);
+	rb_define_module_function(module, "key_from_name", RUBY_METHOD_FUNC(getKeyFromName), -1);
 	rb_const_set(module, rb_intern("KEYS_COUNT"), SDL_Scancode::SDL_SCANCODE_COUNT - 1);
 
 	// gamepad buttons
-	_rb_define_module_function(module, "c_button_name", getGamepadButtonName);
-	_rb_define_module_function(module, "c_button_press?", gamepadButtonPress);
-	_rb_define_module_function(module, "pressed_c_button", getPressedGamepadButton);
-	_rb_define_module_function(module, "c_button_from_name", getGamepadButtonFromName);
+	rb_define_module_function(module, "c_button_name", RUBY_METHOD_FUNC(getGamepadButtonName), -1);
+	rb_define_module_function(module, "c_button_press?", RUBY_METHOD_FUNC(gamepadButtonPress), -1);
+	rb_define_module_function(module, "pressed_c_button", RUBY_METHOD_FUNC(getPressedGamepadButton), 0);
+	rb_define_module_function(module, "c_button_from_name", RUBY_METHOD_FUNC(getGamepadButtonFromName), -1);
 	rb_const_set(module, rb_intern("GAMEPAD_BUTTONS_COUNT"), SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT - 1);
 
 	// gamepad axes
-	_rb_define_module_function(module, "c_axis_name", getGamepadAxisName);
-	_rb_define_module_function(module, "c_axis_pressure", getGamepadAxisPressure);
-	_rb_define_module_function(module, "active_c_axis", getActiveGamepadAxis);
-	_rb_define_module_function(module, "c_axis_from_name", getGamepadAxisFromName);
+	rb_define_module_function(module, "c_axis_name", RUBY_METHOD_FUNC(getGamepadAxisName), -1);
+	rb_define_module_function(module, "c_axis_pressure", RUBY_METHOD_FUNC(getGamepadAxisPressure), -1);
+	rb_define_module_function(module, "active_c_axis", RUBY_METHOD_FUNC(getActiveGamepadAxis), -1);
+	rb_define_module_function(module, "c_axis_from_name", RUBY_METHOD_FUNC(getGamepadAxisFromName), -1);
 	rb_const_set(module, rb_intern("GAMEPAD_AXIS_COUNT"), SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT - 1);
 
 	rb_define_module_function(module, "set_binding", setBinding, 2);
@@ -382,20 +337,18 @@ void inputBindingInit(){
     rb_define_singleton_method(module, "vibrate", rumble, 3);
 
 	// mouse
-	_rb_define_module_function(module, "mouse_x", inputMouseX);
-	_rb_define_module_function(module, "mouse_y", inputMouseY);
+	rb_define_module_function(module, "mouse_x", RUBY_METHOD_FUNC(inputMouseX), 0);
+	rb_define_module_function(module, "mouse_y", RUBY_METHOD_FUNC(inputMouseY), 0);
 
 	// wheel support :P
-	_rb_define_module_function(module, "wheel_x", inputWheelX);
-	_rb_define_module_function(module, "wheel_y", inputWheelY);
-	_rb_define_module_function(module, "wheel_flipped", inputWheelFlipped);
+	rb_define_module_function(module, "wheel_x", RUBY_METHOD_FUNC(inputWheelX), 0);
+	rb_define_module_function(module, "wheel_y", RUBY_METHOD_FUNC(inputWheelY), 0);
+	rb_define_module_function(module, "wheel_flipped", RUBY_METHOD_FUNC(inputWheelFlipped), 0);
 
-	_rb_define_module_function(module, "quit?", inputQuit);
-
+	rb_define_module_function(module, "quit?", RUBY_METHOD_FUNC(inputQuit), 0);
 	for (size_t i = 0; i < buttonCodesN; ++i){
 		ID sym = rb_intern(buttonCodes[i].str);
 		VALUE val = INT2FIX(buttonCodes[i].val);
-
 		rb_const_set(module, sym, val);
 	}
 }
