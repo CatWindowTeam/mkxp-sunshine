@@ -1,5 +1,3 @@
-//TODO rewrite this shit
-
 /*
 ** filesystem-binding.cpp
 **
@@ -18,7 +16,7 @@
 ** GNU General Public License for more details.
 **
 ** You should have received a copy of the GNU General Public License
-** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
+** along with mkxp.  If not, see <www.gnu.org/licenses/>.
 */
 
 #include "binding-util.h"
@@ -28,7 +26,6 @@
 #include "ruby/encoding.h"
 #include "ruby/intern.h"
 #include <ruby.h>
-
 #include "define.h"
 #ifdef mkxp_android
 	#include <filesystem>
@@ -43,6 +40,13 @@ static VALUE fileIntClose(VALUE self) {
     setPrivateData(self, nullptr);
     SDL_CloseIO(ops);
     return Qnil;
+}
+
+static void fileIntFreeInstance(void *inst){
+	SDL_IOStream *ops = static_cast<SDL_IOStream*>(inst);
+	if (!ops)
+	    return;
+	SDL_CloseIO(ops);
 }
 
 DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
@@ -72,37 +76,28 @@ static VALUE fileIntRead(int argc, VALUE *argv, VALUE self){
 	rb_get_args(argc, argv, "i", &length);
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 	if(!ops){
-        	rb_raise(rb_eIOError, "closed stream");
-    	}else if(length == -1){
+        rb_raise(rb_eIOError, "closed stream");
+    }else if(length == -1){
 		Sint64 cur = SDL_TellIO(ops);
-		Sint64 end = SDL_SeekIO(ops, 0, SDL_IO_SEEK_END);
+		Sint64 end = SDL_GetIOSize(ops);
 		length = end - cur;
 		SDL_SeekIO(ops, cur, SDL_IO_SEEK_SET);
-	}else if(length == 0){
-		return rb_str_new("", 0);
 	}
 
+	if (length == 0)
+		return Qnil;
+
 	VALUE data = rb_str_new(0, length);
-	SDL_ReadIO(ops, RSTRING_PTR(data), length);
+	size_t bytes_read = SDL_ReadIO(ops, RSTRING_PTR(data), (size_t)length);
 	return data;
 }
 
-static VALUE fileIntClose(VALUE self){
-    SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
-    if (!ops){
-        return Qnil;
-    }
-
-    SDL_CloseIO(ops);
-    setPrivateData(self, nullptr);
-    return Qnil;
-}
 
 static VALUE fileIntGetByte(VALUE self){
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 	if (!ops) {
 		rb_raise(rb_eIOError, "closed stream");
-    	}
+    }
 	unsigned char byte = 0;
 	size_t result = SDL_ReadIO(ops, &byte, 1);
 	return (result == 1) ? INT2NUM(byte) : Qnil;
@@ -149,7 +144,6 @@ static VALUE kernelSaveData(int argc, VALUE *argv, VALUE self){
 	rb_get_args(argc, argv, "oS", &obj, &filename);
 	VALUE file = rb_file_open_str(filename, "wb");
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
-
 	VALUE v[] = { obj, file };
 	rb_funcall2(marsh, rb_intern("dump"), ARRAY_SIZE(v), v);
 
@@ -170,12 +164,6 @@ VALUE stringForceUTF8(VALUE arg){
 	return arg;
 }
 
-VALUE customProc(VALUE arg, VALUE proc){
-	VALUE obj = stringForceUTF8(arg);
-	obj = rb_funcall2(proc, rb_intern("call"), 1, &obj);
-	return obj;
-}
-
 static VALUE _marshalLoad(int argc, VALUE *argv, VALUE self){
 	VALUE port, proc = Qnil;
 	rb_scan_args(argc, argv, "01", &port, &proc);
@@ -191,7 +179,6 @@ static VALUE _marshalLoad(int argc, VALUE *argv, VALUE self){
 	return rb_marshal_load(port);
 }
 
-//не удаляйте, Masrhal умирает без этой заглушки!
 static VALUE binMode(VALUE self){
 	return Qnil;
 }
