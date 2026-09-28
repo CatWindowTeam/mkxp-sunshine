@@ -46,6 +46,7 @@ if(VITA)
 	set(PLATFORM_LIBRARIES webp sharpyuv)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_link_options(${APP_TARGET} PRIVATE -municode)
+		list(APPEND DEFINES UNICODE)
     set(PLATFORM_LIBRARIES Secur32 Shlwapi winmm z mingw32)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_custom_command(TARGET ${APP_TARGET} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake"
