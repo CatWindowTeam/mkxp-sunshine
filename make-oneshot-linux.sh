@@ -6,6 +6,12 @@ cd build
 make -j$(nproc)
 cd ..
 
+cd journal/
+cmake . -B build/
+cd build
+make -j$(nproc)
+cd ../../
+
 mkdir -p build/bandle
 mkdir -p build/bandle
 mkdir -p build/bandle/Data
@@ -18,6 +24,7 @@ mkdir -p libs
 ldd build/oneshot | ruby libraries.rb
 cp libs/* build/bandle
 cp build/oneshot build/bandle
+cp journal/build/_______ build/bandle
 
 cp -r ../SunshineAssets/* build/bandle
 cp sunshine.conf build/bandle
