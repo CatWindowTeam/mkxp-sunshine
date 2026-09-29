@@ -1,20 +1,29 @@
 #!/bin/bash
 BUILD_DIR=build
+
 set -euo pipefail
 ROOTDIR=$(cd $(dirname $0) && pwd)
 
 BUILD_ROOT_DIR=$ROOTDIR/$BUILD_DIR
-BUNDLING_DIR=$BUILD_ROOT_DIR/bundle # fix this typo, please
+BUNDLING_DIR=$BUILD_ROOT_DIR/bundle
 SCRIPTS_ROOT_DIR=$ROOTDIR/scripts
 BUNDLE_OUT=$BUILD_ROOT_DIR/OneshotSunshine_Windows.zip
+
+JOURNAL_BUILD_ROOT_DIR=$ROOTDIR/journal/$BUILD_DIR
 
 main() {
   # just in case if previous build failed
   rm -rf "$BUNDLING_DIR"
 
+  # deleting cmake caches
+  rm -rf "$BUILD_ROOT_DIR"
+  rm -rf "$JOURNAL_BUILD_ROOT_DIR"
+
   # building
   cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release
   cmake --build $BUILD_DIR
+
+  make_journal
 
   mkdir -p "$BUNDLING_DIR"
 
@@ -26,14 +35,18 @@ main() {
 }
 
 make_root_dir() {
+  cd "$ROOTDIR"
   mkdir -p "$BUNDLING_DIR/root"
 
   cp -r ../SunshineAssets/* "$BUNDLING_DIR/root/"
 
   ruby ./rpgscript.rb "$SCRIPTS_ROOT_DIR" "$BUNDLING_DIR/root"
   
-  copy_libraries
+  copy_libraries "$BUILD_ROOT_DIR/oneshot"
+  copy_libraries "$JOURNAL_BUILD_ROOT_DIR/_______"
+
   cp "$BUILD_ROOT_DIR/oneshot" "$BUNDLING_DIR/root/"
+  cp "$JOURNAL_BUILD_ROOT_DIR/_______" "$BUNDLING_DIR/root/"
   cp ./sunshine.conf "$BUNDLING_DIR/root/"
 }
 
@@ -44,14 +57,22 @@ make_zip() {
 
 copy_libraries() {
   mkdir -p "$BUNDLING_DIR/root"
-  ldd "$BUILD_ROOT_DIR/oneshot" | ruby ./libraries.rb "$(realpath "$BUNDLING_DIR/root")/"
+  ldd $1 | ruby ./libraries.rb "$(realpath "$BUNDLING_DIR/root")/"
 }
 
 cleanup() {
   rm -rf "$BUNDLING_DIR"
 }
 
+make_journal() {
+  cd "$ROOTDIR/journal"
+
+  cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release
+  cmake --build $BUILD_DIR
+}
+
 steam() {
+  cd "$ROOTDIR"
   echo not implemented yet.
   exit -1
 
