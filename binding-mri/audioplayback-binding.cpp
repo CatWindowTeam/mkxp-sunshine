@@ -8,7 +8,6 @@ void audioplayback_free(void* ptr){
 }
 
 const rb_data_type_t audioplayback_type = { "AudioPlayback", {0, audioplayback_free, 0}, 0, 0, RUBY_TYPED_FREE_IMMEDIATELY };
-
 VALUE audioplayback_klass;
 
 #define PLAYBACK \
@@ -25,7 +24,6 @@ static VALUE rb_playbackPlay(int argc, VALUE *argv, VALUE self) {
         case 1:{
             int loops;
             rb_get_args(argc, argv, "i", &loops RB_ARG_END);
-
             pb->play(loops);
             break;
         }
@@ -45,7 +43,6 @@ static VALUE rb_playbackPlay(int argc, VALUE *argv, VALUE self) {
 static VALUE rb_playbackStop(VALUE self) {
     PLAYBACK
     pb->stop();
-
     return Qnil;
 }
 
@@ -173,8 +170,7 @@ static VALUE rb_playbackGetPosition(VALUE self){
 
 static VALUE rb_playbackFadeIn(int argc, VALUE *argv, VALUE self) {
     PLAYBACK
-    switch (argc)
-    {
+    switch (argc){
         case 1:{
             double time;
             rb_get_args(argc, argv, "f", &time RB_ARG_END);
@@ -195,7 +191,6 @@ static VALUE rb_playbackFadeIn(int argc, VALUE *argv, VALUE self) {
             double volume;
             double pitch = 1.0f;
             rb_get_args(argc, argv, "fif|f", &time, &loops, &volume, &pitch RB_ARG_END);
-
             pb->fadeIn(time, loops, volume, loops);
             break;
         }
@@ -221,18 +216,18 @@ void audioPlaybackBindingInit(){
     rb_define_method(audioplayback_klass, "add_tag", RUBY_METHOD_FUNC(rb_playbackAddTag), -1);
     rb_define_method(audioplayback_klass, "remove_tag", RUBY_METHOD_FUNC(rb_playbackRemoveTag), -1);
     rb_define_method(audioplayback_klass, "clear_tags", RUBY_METHOD_FUNC(rb_playbackClearTags), 0);
-    rb_define_method(audioplayback_klass, "group=", RUBY_METHOD_FUNC(rb_playbackSetGroup), -1);
+    rb_define_method(audioplayback_klass, "group=", RUBY_METHOD_FUNC(rb_playbackSetGroup), 1);
     rb_define_method(audioplayback_klass, "group", RUBY_METHOD_FUNC(rb_playbackGetGroup), 0);
 	rb_define_method(audioplayback_klass, "path", RUBY_METHOD_FUNC(rb_audio_getPath), 0);
-    rb_define_method(audioplayback_klass, "loops=", RUBY_METHOD_FUNC(rb_playbackSetLoops), -1);
+    rb_define_method(audioplayback_klass, "loops=", RUBY_METHOD_FUNC(rb_playbackSetLoops), 1);
     rb_define_method(audioplayback_klass, "loops", RUBY_METHOD_FUNC(rb_playbackGetLoops), 0);
-    rb_define_method(audioplayback_klass, "volume=", RUBY_METHOD_FUNC(rb_playbackSetVolume), -1);
+    rb_define_method(audioplayback_klass, "volume=", RUBY_METHOD_FUNC(rb_playbackSetVolume), 1);
     rb_define_method(audioplayback_klass, "volume", RUBY_METHOD_FUNC(rb_playbackGetVolume), 0);
-    rb_define_method(audioplayback_klass, "pitch=", RUBY_METHOD_FUNC(rb_playbackSetPitch), -1);
+    rb_define_method(audioplayback_klass, "pitch=", RUBY_METHOD_FUNC(rb_playbackSetPitch), 1);
     rb_define_method(audioplayback_klass, "pitch", RUBY_METHOD_FUNC(rb_playbackGetPitch), 0);
-    rb_define_method(audioplayback_klass, "start_frame=", RUBY_METHOD_FUNC(rb_playbackSetStartSample), -1);
+    rb_define_method(audioplayback_klass, "start_frame=", RUBY_METHOD_FUNC(rb_playbackSetStartSample), 1);
     rb_define_method(audioplayback_klass, "start_frame", RUBY_METHOD_FUNC(rb_playbackGetStartSample), 0);
-    rb_define_method(audioplayback_klass, "max_frame=", RUBY_METHOD_FUNC(rb_playbackSetMaxSample), -1);
+    rb_define_method(audioplayback_klass, "max_frame=", RUBY_METHOD_FUNC(rb_playbackSetMaxSample), 1);
     rb_define_method(audioplayback_klass, "max_frame", RUBY_METHOD_FUNC(rb_playbackGetMaxSample), 0);
     rb_define_method(audioplayback_klass, "position=", RUBY_METHOD_FUNC(rb_playbackSetPosition), 1);
     rb_define_method(audioplayback_klass, "position", RUBY_METHOD_FUNC(rb_playbackGetPosition), 0);

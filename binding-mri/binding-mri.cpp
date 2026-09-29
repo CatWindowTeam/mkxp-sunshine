@@ -41,7 +41,6 @@
 #include <ruby/encoding.h>
 #include "ruby/internal/eval.h"
 #include "ruby/internal/memory.h"
-#include <assert.h>
 #include <string>
 #include <zlib.h>
 #include <inttypes.h>
@@ -54,6 +53,11 @@ static void mriBindingExecute();
 static void mriBindingTerminate();
 static void mriBindingReset();
 static void mriBindingGc();
+
+struct BacktraceData{
+	/* Maps: Ruby visible filename, To: Actual script name */
+	tsl::robin_map<std::string, std::string> scriptNames;
+};
 
 ScriptBinding scriptBindingImpl = {
 	mriBindingExecute,
@@ -322,10 +326,6 @@ static void runCustomScript(const std::string &filename){
 }
 
 VALUE kernelLoadDataInt(const char *filename, bool rubyExc);
-struct BacktraceData{
-	/* Maps: Ruby visible filename, To: Actual script name */
-	tsl::robin_map<std::string, std::string> scriptNames;
-};
 
 static void runRMXPScripts(BacktraceData &btData){
 	const std::string &scriptPack = conf.game.scripts;
@@ -354,28 +354,28 @@ static void runRMXPScripts(BacktraceData &btData){
 	long scriptCount = RARRAY_LEN(scriptArray);
 	std::string decodeBuffer;
 	decodeBuffer.resize(0x1000);
-	for (long i = 0; i < scriptCount; ++i){
+	for(long i = 0; i < scriptCount; ++i){
 		VALUE script = rb_ary_entry(scriptArray, i);
-		if (!RB_TYPE_P(script, RUBY_T_ARRAY))
+		if(!RB_TYPE_P(script, RUBY_T_ARRAY))
 			continue;
 
 		VALUE scriptName = rb_ary_entry(script, 1);
 		VALUE scriptString = rb_ary_entry(script, 2);
 		int result = Z_OK;
 		unsigned long bufferLen;
-		while (true){
+		while(true){
 			unsigned char *bufferPtr = reinterpret_cast<unsigned char*>(const_cast<char*>(decodeBuffer.c_str()));
 			const unsigned char *sourcePtr = reinterpret_cast<const unsigned char*>(RSTRING_PTR(scriptString));
 			bufferLen = decodeBuffer.length();
 			result = uncompress(bufferPtr, &bufferLen, sourcePtr, RSTRING_LEN(scriptString));
 			bufferPtr[bufferLen] = '\0';
-			if (result != Z_BUF_ERROR)
+			if(result != Z_BUF_ERROR)
 				break;
 
 			decodeBuffer.resize(decodeBuffer.size()*2);
 		}
 
-		if (result != Z_OK){
+		if(result != Z_OK){
 			ErrorMsg("Error decoding script %ld: '%s'\n", i, RSTRING_PTR(scriptName));
 			break;
 		}
@@ -384,18 +384,18 @@ static void runRMXPScripts(BacktraceData &btData){
 
 	//Execute preloaded scripts
 	if(modloader_is_enabled){
-		for (tsl::robin_set<std::string>::iterator i = preloadScripts.begin();
+		for(tsl::robin_set<std::string>::iterator i = preloadScripts.begin();
 			i != preloadScripts.end(); ++i){
 			    runCustomScript(*i);
 		}
 	}
 
 	VALUE exc = rb_gv_get("$!");
-	if (exc != Qnil)
+	if(exc != Qnil)
 		return;
 
-	while (true){
-		for (long i = 0; i < scriptCount; ++i){
+	while(true){
+		for(long i = 0; i < scriptCount; ++i){
 			VALUE script = rb_ary_entry(scriptArray, i);
 			VALUE scriptDecoded = rb_ary_entry(script, 3);
 			VALUE string = newStringUTF8(RSTRING_PTR(scriptDecoded), RSTRING_LEN(scriptDecoded));
@@ -452,7 +452,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	/* s         p  e
 	 * SectionXXX:YY: in 'blabla' */
 	*e = '\0';
-	strncpy(line, *p ? p+1 : p, sizeof(line));
+	SDL_strlcpy(line, *p ? p+1 : p, sizeof(line));
 	line[sizeof(line)-1] = '\0';
 	*e = ':';
 	e = p;
@@ -461,13 +461,13 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	 * SectionXXX:YY: in 'blabla' */
 
 	*e = '\0';
-	strncpy(&file[0], s, file.size());
+	SDL_strlcpy(&file[0], s, file.size());
 	*e = ':';
 
 	/* Shrink to fit */
 	file.resize(SDL_strlen(file.c_str()));
 	auto scriptIt = btData.scriptNames.find(file);
-	if (scriptIt != btData.scriptNames.end())
+	if(scriptIt != btData.scriptNames.end())
 		file = scriptIt->second;
 
 	SDL_snprintf(crash_message, sizeof(crash_message), "Script '%s' line %s: %s occured.%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
@@ -508,14 +508,14 @@ static void mriBindingExecute(){
 }
 
 static void mriBindingTerminate(){
-	rb_raise(rb_eSystemExit, " ");
 	#ifdef unix_like
 		wallpaperBindingTerminate();
 	#endif
+	rb_raise(rb_eSystemExit, "");
 }
 
 static void mriBindingReset(){
-	rb_raise(getRbData()->exc[Reset], " ");
+	rb_raise(getRbData()->exc[Reset], "");
 }
 
 static VALUE call_compact(VALUE unused){
@@ -523,11 +523,10 @@ static VALUE call_compact(VALUE unused){
 }
 
 static void mriBindingGc(){
-	rb_gc();
 	int state = 0;
 	rb_protect(call_compact, Qnil, &state);
 	if(state){
-		Debug() << "Heap compaction failed!";
+		rb_gc();
 		rb_set_errinfo(Qnil);
 	}
 }

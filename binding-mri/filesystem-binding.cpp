@@ -27,7 +27,6 @@
 #include <ruby.h>
 #include <ruby/intern.h>
 #include <ruby/encoding.h>
-
 #ifdef mkxp_android
 	#include <filesystem>
 #endif
@@ -87,7 +86,7 @@ static VALUE fileIntRead(int argc, VALUE *argv, VALUE self){
 		Sint64 cur = SDL_TellIO(ops);
 		Sint64 end = SDL_GetIOSize(ops);
 		length = end - cur;
-		SDL_SeekIO(ops, cur, SDL_IO_SEEK_SET);
+//		SDL_SeekIO(ops, cur, SDL_IO_SEEK_SET);
 	}
 
 	if (length == 0)
@@ -157,30 +156,9 @@ static VALUE kernelSaveData(int argc, VALUE *argv, VALUE self){
 	return Qnil;
 }
 
-VALUE stringForceUTF8(VALUE arg){
-	if (RB_TYPE_P(arg, RUBY_T_STRING)) {
-		/* If current encoding is ASCII-8BIT (binary), associate UTF-8 so
-		   subsequent Ruby-level handling treats it as UTF-8. This preserves
-		   the original logic while using newer C-API helpers. */
-		int enc_idx = rb_enc_get_index(arg);
-		if (enc_idx == rb_ascii8bit_encindex()) {
-			rb_enc_associate_index(arg, rb_utf8_encindex());
-		}
-	}
-	return arg;
-}
-
 static VALUE _marshalLoad(int argc, VALUE *argv, VALUE self){
 	VALUE port, proc = Qnil;
 	rb_scan_args(argc, argv, "01", &port, &proc);
-
-	VALUE utf8Proc;
-	if (NIL_P(proc)) {
-	    utf8Proc = rb_proc_new(RUBY_METHOD_FUNC(stringForceUTF8), Qnil);
-	} else {
-	    utf8Proc = proc;
-	}
-
 	return rb_marshal_load(port);
 }
 
@@ -198,9 +176,6 @@ void fileIntBindingInit(){
 	rb_define_module_function(rb_mKernel, "load_data", RUBY_METHOD_FUNC(kernelLoadData), -1);
     rb_define_module_function(rb_mKernel, "save_data", RUBY_METHOD_FUNC(kernelSaveData), -1);
 
-	/* We overload the built-in 'Marshal::load()' function to silently
-	 * insert our utf8proc that ensures all read strings will be
-	 * UTF-8 encoded */
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
 	rb_define_alias(rb_singleton_class(marsh), "_mkxp_load_alias", "load");
 	rb_define_module_function(marsh, "load", RUBY_METHOD_FUNC(_marshalLoad), -1);

@@ -30,9 +30,8 @@
 static void collectStrings(VALUE obj, std::vector<std::string> &out){
 	if (RB_TYPE_P(obj, RUBY_T_STRING)){
 		out.push_back(RSTRING_PTR(obj));
-	}
-	else if (RB_TYPE_P(obj, RUBY_T_ARRAY)){
-		for (long i = 0; i < RARRAY_LEN(obj); ++i){
+	}else if (RB_TYPE_P(obj, RUBY_T_ARRAY)){
+		for(long i = 0; i < RARRAY_LEN(obj); ++i){
 			VALUE str = rb_ary_entry(obj, i);
 
 			/* Non-string objects are tolerated (ignored) */
@@ -63,11 +62,10 @@ static VALUE fontInitialize(int argc, VALUE *argv, VALUE self){
 	int size = 0;
 	rb_get_args(argc, argv, "|oi", &namesObj, &size RB_ARG_END);
 	Font *f;
-	if (NIL_P(namesObj)){
+	if(NIL_P(namesObj)){
 		namesObj = rb_iv_get(rb_obj_class(self), "default_name");
 		f = new Font(0, size);
-	}
-	else{
+	}else{
 		std::vector<std::string> names;
 		collectStrings(namesObj, names);
 		f = new Font(&names, size);
@@ -102,7 +100,6 @@ static VALUE fontInitializeCopy(int argc, VALUE *argv, VALUE self){
 }
 
 static VALUE FontGetName(VALUE self){
-
 	return rb_iv_get(self, "name");
 }
 
@@ -121,9 +118,7 @@ static void checkDisposed(VALUE) {}
 
 DEF_PROP_OBJ_VAL(Font, Color, Color,    "color")
 DEF_PROP_OBJ_VAL(Font, Color, OutColor, "out_color")
-
 DEF_PROP_I(Font, Size)
-
 DEF_PROP_B(Font, Bold)
 DEF_PROP_B(Font, Italic)
 DEF_PROP_B(Font, Shadow)
@@ -151,32 +146,23 @@ static VALUE FontGetDefaultOutColor(VALUE self){
 }
 
 static VALUE FontSetDefaultOutColor(int argc, VALUE *argv, VALUE self){
-
 	VALUE colorObj;
 	rb_get_args(argc, argv, "o", &colorObj RB_ARG_END);
-
 	Color *c = getPrivateDataCheck<Color>(colorObj, ColorType);
-
 	Font::setDefaultOutColor(*c);
-
 	return colorObj;
 }
 
 static VALUE FontGetDefaultName(VALUE self){
-
 	return rb_iv_get(self, "default_name");
 }
 
 static VALUE FontSetDefaultName(int argc, VALUE *argv, VALUE self){
-
 	rb_check_argc(argc, 1);
-
 	std::vector<std::string> namesObj;
 	collectStrings(argv[0], namesObj);
-
 	Font::setDefaultName(namesObj, shState->fontState());
 	rb_iv_set(self, "default_name", argv[0]);
-
 	return argv[0];
 }
 
@@ -185,14 +171,10 @@ static VALUE FontGetDefaultColor(VALUE self){
 }
 
 static VALUE FontSetDefaultColor(int argc, VALUE *argv, VALUE self){
-
 	VALUE colorObj;
 	rb_get_args(argc, argv, "o", &colorObj RB_ARG_END);
-
 	Color *c = getPrivateDataCheck<Color>(colorObj, ColorType);
-
 	Font::setDefaultColor(*c);
-
 	return colorObj;
 }
 
@@ -212,19 +194,15 @@ void fontBindingInit(){
 	/* Initialize default names */
 	const std::vector<std::string> &defNames = Font::getInitialDefaultNames();
 	VALUE defNamesObj;
-
 	if (defNames.size() == 1){
 		defNamesObj = rb_str_new_cstr(defNames[0].c_str());
-	}
-	else{
+	}else{
 		defNamesObj = rb_ary_new2(defNames.size());
-
-		for (size_t i = 0; i < defNames.size(); ++i)
+		for(size_t i = 0; i < defNames.size(); ++i)
 			rb_ary_push(defNamesObj, rb_str_new_cstr(defNames[i].c_str()));
 	}
 
 	rb_iv_set(klass, "default_name", defNamesObj);
-
 	wrapProperty(klass, &Font::getDefaultOutColor(), "default_out_color", ColorType);
 
 	INIT_KLASS_PROP_BIND(Font, DefaultName, "default_name");
@@ -237,7 +215,6 @@ void fontBindingInit(){
 	INIT_KLASS_PROP_BIND(Font, DefaultOutColor, "default_out_color");
 
 	rb_define_singleton_method(klass, "exist?", RUBY_METHOD_FUNC(fontDoesExist), -1);
-
 	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(fontInitialize), -1);
 	rb_define_method(klass, "initialize_copy", RUBY_METHOD_FUNC(fontInitializeCopy), -1);
 

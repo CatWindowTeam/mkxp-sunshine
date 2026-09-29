@@ -21,6 +21,7 @@ find_program(XXD_EXE
 
 # PSVita shit #1
 option(VITA "Build for Playstation Vita" OFF)
+option(STATIC "static build" ON)
 if(VITA)
     if(NOT DEFINED VITASDK_PATH OR VITASDK_PATH STREQUAL "")
         if(DEFINED ENV{VITASDK})
@@ -103,7 +104,13 @@ find_package(SDL3_net CONFIG REQUIRED)
 if(VITA)
 	set(PLATFORM_LIBRARIES webp sharpyuv pthread)
 endif()
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image-static SDL3_net::SDL3_net-static SDL3::SDL3-static ${PLATFORM_LIBRARIES})
+
+if(STATIC)
+	target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image-static SDL3_net::SDL3_net-static SDL3::SDL3-static ${PLATFORM_LIBRARIES})
+else()
+	target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image SDL3_net::SDL3_net SDL3::SDL3 ${PLATFORM_LIBRARIES})
+endif()
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_link_options(${PROJECT_NAME} PRIVATE -mwindows -municode)
 	list(APPEND DEFINES UNICODE)

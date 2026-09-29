@@ -28,7 +28,7 @@
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_gamepad.h>
-#include <cstdio>
+#include "debugwriter.h"
 #include <vector>
 
 extern void initGamepadBinding(VALUE inputModule);
@@ -242,7 +242,7 @@ static VALUE setBinding(VALUE self, VALUE rb_arr, VALUE rb_target){
 static VALUE setLED(VALUE self, VALUE r, VALUE g, VALUE b) {
     if (gc != nullptr) {
         if (!SDL_SetGamepadLED(gc, NUM2INT(r), NUM2INT(g), NUM2INT(b))) {
-			printf("failed to set gamepad led for gamepad %s: %s\n", SDL_GetGamepadName(gc), SDL_GetError());
+			Debug() << "failed to set gamepad led for gamepad " << SDL_GetGamepadName(gc) << ": " << SDL_GetError();
 		}
     }
 
@@ -253,9 +253,8 @@ static VALUE rumble(VALUE self, VALUE low_frequency_rumble, VALUE high_frequency
     Uint16 low_freq = NUM2DBL(low_frequency_rumble) * 65535;
     Uint16 high_freq = NUM2DBL(high_frequency_rumble) * 65535;
     if (gc != nullptr) {
-		printf("low freq: %d, high freq: %d, duration: %d", low_freq, high_freq, NUM2INT(duration_ms));
         if (!SDL_RumbleGamepad(gc, low_freq, high_freq, NUM2INT(duration_ms))) {
-			printf("failed to rumble gamepad %s: %s\n", SDL_GetGamepadName(gc), SDL_GetError());
+			Debug() << "failed to rumble gamepad " << SDL_GetGamepadName(gc) << ": " << SDL_GetError();
 		}
     }
 
@@ -329,7 +328,6 @@ void inputBindingInit(){
 	rb_define_module_function(module, "active_c_axis", RUBY_METHOD_FUNC(getActiveGamepadAxis), -1);
 	rb_define_module_function(module, "c_axis_from_name", RUBY_METHOD_FUNC(getGamepadAxisFromName), -1);
 	rb_const_set(module, rb_intern("GAMEPAD_AXIS_COUNT"), SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT - 1);
-
 	rb_define_module_function(module, "set_binding", RUBY_METHOD_FUNC(setBinding), 2);
 	
 	// haptic
@@ -344,7 +342,6 @@ void inputBindingInit(){
 	rb_define_module_function(module, "wheel_x", RUBY_METHOD_FUNC(inputWheelX), 0);
 	rb_define_module_function(module, "wheel_y", RUBY_METHOD_FUNC(inputWheelY), 0);
 	rb_define_module_function(module, "wheel_flipped", RUBY_METHOD_FUNC(inputWheelFlipped), 0);
-
 	rb_define_module_function(module, "quit?", RUBY_METHOD_FUNC(inputQuit), 0);
 	for (size_t i = 0; i < buttonCodesN; ++i){
 		ID sym = rb_intern(buttonCodes[i].str);

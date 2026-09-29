@@ -368,7 +368,7 @@ static bool wallpaperFallbackCopy(const std::string &srcPath){
 	return true;
 }
 
-RB_METHOD(wallpaperSet){
+static VALUE wallpaperSet(int argc, VALUE *argv, VALUE self){
 	const char *name;
 	int color;
 	rb_get_args(argc, argv, "zi", &name, &color RB_ARG_END);
@@ -395,7 +395,7 @@ RB_METHOD(wallpaperSet){
 	#ifdef _WIN32
 		path = shState->config().gameFolder + "\\Wallpaper\\" + name + ".bmp";
 		#ifndef NDEBUG
-			Debug() << "[wallpaperSet] Setting wallpaper to " << path;
+			Debug() << "Setting wallpaper to " << path;
 		#endif
 		// Crapify the slashes
 		size_t index = 0;
@@ -471,7 +471,7 @@ RB_METHOD(wallpaperSet){
 		}
 		path = "/Wallpaper/" + nameFix + ".png";
 		#ifndef NDEBUG
-			Debug() << "[wallpaperSet] Setting wallpaper to " << path;
+			Debug() << "Setting wallpaper to " << path;
 		#endif
 
 		#ifdef __APPLE__
@@ -596,7 +596,7 @@ RB_METHOD(wallpaperSet){
 	return Qnil;
 }
 
-RB_METHOD(wallpaperReset){
+static VALUE wallpaperReset(VALUE self){
 	const std::string &wallpaperMode = shState->config().wallpaperMode;
 	if (wallpaperMode == "disabled")
 		return Qnil;
@@ -723,7 +723,7 @@ RB_METHOD(wallpaperReset){
 			} else {
 				if (remove(fallbackPath.c_str()) != 0) {
 					#ifndef NDEBUG
-						Debug() << "[wallpaperReset] Failed to delete:" << fallbackPath;
+						Debug() << "Failed to delete:" << fallbackPath;
 					#endif
 				}
 			}

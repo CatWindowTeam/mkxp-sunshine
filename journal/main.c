@@ -118,9 +118,11 @@ static int network_thread(void*){
                 trim_crlf_inplace(buffer);
                 if (buffer[0] != '\0'){
 		    		if(SDL_strcmp(buffer, "PING") == 0){
-						if(!NET_WriteToStreamSocket(streamsocket, "PONG", 4)){
-                     		SDL_Log("Failed to send PONG, error: %s", SDL_GetError());
-                    	}
+		    		    if(!NET_WriteToStreamSocket(streamsocket, "PONG", 4)){
+		    		        SDL_Log("Failed to send PONG, error: %s", SDL_GetError());
+		    		    }else if(NET_WaitUntilStreamSocketDrained(streamsocket, 5000) < 0){
+		    		        SDL_Log("Failed to send PONG completely, error: %s", SDL_GetError());
+		    		    }
 		    		}else{
                     	if(SDL_snprintf(image, sizeof(image), "%s", buffer) >= 0){
                         	is_changed = true;

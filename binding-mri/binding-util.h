@@ -210,9 +210,6 @@ inline void rb_check_argc(int actual, int expected){
         rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", actual, expected);
 }
 
-#define RB_METHOD(name) \
-    static VALUE name(int argc, VALUE *argv, VALUE self)
-
 #define MARSH_LOAD_FUN(Typ) \
     static VALUE Typ##Load(int argc, VALUE *argv, VALUE self){ \
         return objectLoad<Typ>(argc, argv, self); \
