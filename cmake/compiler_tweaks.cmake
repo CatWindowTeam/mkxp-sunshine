@@ -28,8 +28,6 @@ check_option(OPTIONS_RELEASE
 	-fno-rtti
 	-ffp-contract=fast
 	-mno-ibt
-	-pipe
-	-fvisibility=hidden
 	-mno-speculative-load-hardening)
 
 check_option(OPTIONS_RELEASE_WINDOWS_INCOMPATIBLE
@@ -50,7 +48,6 @@ check_linker_option(OPTIONS_LINKER_RELEASE
 add_link_options("$<$<CONFIG:Release>:${OPTIONS_LINKER_RELEASE}>")
 
 target_compile_options(${APP_TARGET} PRIVATE
-    -Wno-unused-parameter
     -Wno-tautological-pointer-compare
     "$<$<CONFIG:Debug>:${OPTIONS_DEBUG}>"
     "$<$<CONFIG:Debug>:${ARCH_DEBUG_OPTIONS}>"

@@ -9,11 +9,7 @@ function(vita_prepare)
         	endif()
     	endif()
     	include("${VITASDK_PATH}/share/vita.cmake" REQUIRED)
-
-    	set(VITA_APP_NAME "Oneshot: Sunshine")
-    	set(VITA_TITLEID "OSS936174")
-    	set(VITA_VERSION "00.13")
-
+    	
     	# SDL3_mixer CMake helper modules
     	list(PREPEND CMAKE_MODULE_PATH "${VITASDK_PATH}/SDL_mixer/cmake")
     	if(NOT EXISTS "${VITASDK_PATH}/SDL_mixer/cmake/PkgConfigHelper.cmake")
@@ -36,9 +32,9 @@ function(vita_finish)
 		    VERBATIM
 		)
 		vita_create_self(${PROJECT_NAME}.self ${PROJECT_NAME} STRIPPED NOASLR)
-		vita_create_vpk(${PROJECT_NAME}.vpk ${VITA_TITLEID} ${PROJECT_NAME}.self
-		  VERSION ${VITA_VERSION}
-		  NAME ${VITA_APP_NAME}
+		vita_create_vpk(${PROJECT_NAME}.vpk "OSS936174" ${PROJECT_NAME}.self
+		  VERSION "00.13"
+		  NAME "Oneshot: Sunshine"
 		  FILE ${CMAKE_CURRENT_SOURCE_DIR}/sce_sys/icon0.png sce_sys/icon0.png
 		  FILE ${CMAKE_CURRENT_SOURCE_DIR}/sce_sys/livearea/contents/bg.png sce_sys/livearea/contents/bg.png
 		  FILE ${CMAKE_CURRENT_SOURCE_DIR}/sce_sys/livearea/contents/startup.png sce_sys/livearea/contents/startup.png
