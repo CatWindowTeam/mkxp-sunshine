@@ -234,7 +234,7 @@ void audioPlaybackBindingInit(){
     rb_define_method(audioplayback_klass, "start_frame", RUBY_METHOD_FUNC(rb_playbackGetStartSample), 0);
     rb_define_method(audioplayback_klass, "max_frame=", RUBY_METHOD_FUNC(rb_playbackSetMaxSample), -1);
     rb_define_method(audioplayback_klass, "max_frame", RUBY_METHOD_FUNC(rb_playbackGetMaxSample), 0);
-    rb_define_method(audioplayback_klass, "position=", RUBY_METHOD_FUNC(rb_playbackSetPosition), -1);
+    rb_define_method(audioplayback_klass, "position=", RUBY_METHOD_FUNC(rb_playbackSetPosition), 1);
     rb_define_method(audioplayback_klass, "position", RUBY_METHOD_FUNC(rb_playbackGetPosition), 0);
     rb_define_method(audioplayback_klass, "fade_in", RUBY_METHOD_FUNC(rb_playbackFadeIn), -1);
     rb_define_method(audioplayback_klass, "fade_out", RUBY_METHOD_FUNC(rb_playbackFadeOut), 1);

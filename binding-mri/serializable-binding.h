@@ -35,5 +35,5 @@ static VALUE serializableDump(VALUE self){
 
 template<class C>
 void serializableBindingInit(VALUE klass){
-	rb_define_method(klass, "_dump", RUBY_METHOD_FUNC(serializableDump<C>), 0);
+	rb_define_method(klass, "_dump", RUBY_METHOD_FUNC(serializableDump<C>), 1);
 }

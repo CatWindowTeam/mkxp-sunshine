@@ -76,7 +76,6 @@ begin
     end
     debug.bitmap.clear
     debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{sprites.length}")
-	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{MKXP.data_directory}")
 	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "Ruby #{RUBY_VERSION}")
 	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "SDL #{Sunshine::SDLVersion_major}.#{Sunshine::SDLVersion_minor}.#{Sunshine::SDLVersion_micro}")
 	debug.bitmap.draw_text(Rect.new(0, 0, rand(0..Graphics.width), rand(0..Graphics.height)), "#{Graphics.frame_count}")
