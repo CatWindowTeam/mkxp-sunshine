@@ -23,10 +23,11 @@
 #include "filesystem.h"
 #include "debugwriter.h"
 #include "util.h"
-#include "ruby/encoding.h"
-#include "ruby/intern.h"
-#include <ruby.h>
 #include "define.h"
+#include <ruby.h>
+#include <ruby/intern.h>
+#include <ruby/encoding.h>
+
 #ifdef mkxp_android
 	#include <filesystem>
 #endif
@@ -73,7 +74,12 @@ VALUE fileIntForPath(const char *path, bool rubyExc){
 
 static VALUE fileIntRead(int argc, VALUE *argv, VALUE self){
 	Sint64 length = -1;
-	rb_get_args(argc, argv, "i", &length);
+
+	int len = -1;
+	rb_get_args(argc, argv, "i", &len);
+	if (len != -1)
+		length = static_cast<Sint64>(len);
+
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 	if(!ops){
         rb_raise(rb_eIOError, "closed stream");
@@ -87,7 +93,7 @@ static VALUE fileIntRead(int argc, VALUE *argv, VALUE self){
 	if (length == 0)
 		return Qnil;
 
-	VALUE data = rb_str_new(0, length);
+	VALUE data = rb_str_new(0, (long)length);
 	size_t bytes_read = SDL_ReadIO(ops, RSTRING_PTR(data), (size_t)length);
 	return data;
 }
@@ -167,6 +173,7 @@ VALUE stringForceUTF8(VALUE arg){
 static VALUE _marshalLoad(int argc, VALUE *argv, VALUE self){
 	VALUE port, proc = Qnil;
 	rb_scan_args(argc, argv, "01", &port, &proc);
+
 	VALUE utf8Proc;
 	if (NIL_P(proc)) {
 	    utf8Proc = rb_proc_new(RUBY_METHOD_FUNC(stringForceUTF8), Qnil);
@@ -174,8 +181,6 @@ static VALUE _marshalLoad(int argc, VALUE *argv, VALUE self){
 	    utf8Proc = proc;
 	}
 
-	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
-	VALUE v[] = { port, utf8Proc };
 	return rb_marshal_load(port);
 }
 

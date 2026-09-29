@@ -15,7 +15,7 @@ find_program(XXD_EXE
   DOC "Location of the xxd executable"
   HINTS
     ENV PATH
-    /usr/bin /usr/local/bin .
+    /usr/bin /usr/local/bin . ..
 )
 
 
@@ -103,8 +103,12 @@ find_package(SDL3_net CONFIG REQUIRED)
 if(VITA)
 	set(PLATFORM_LIBRARIES webp sharpyuv pthread)
 endif()
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image-static SDL3_net::SDL3_net-static SDL3::SDL3-static ${PLATFORM_LIBRARIES})
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_link_options(${PROJECT_NAME} PRIVATE -mwindows -municode)
+	list(APPEND DEFINES UNICODE)
+endif()
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 
 check_option(OPTIONS_RELEASE
 	-O3

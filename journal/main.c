@@ -6,6 +6,7 @@
 #include <SDL3/SDL_thread.h>
 #include <SDL3/SDL_hints.h>
 #include <SDL3/SDL_platform_defines.h>
+#include <SDL3/SDL_main.h>
 #include "icon.png.xxd"
 #include "default.png.xxd"
 #include <stdio.h>
