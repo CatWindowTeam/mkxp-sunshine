@@ -104,7 +104,8 @@ if(VITA)
 	set(PLATFORM_LIBRARIES webp sharpyuv pthread)
 endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image SDL3_net::SDL3_net SDL3::SDL3 ${PLATFORM_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image-static SDL3_net::SDL3_net-static SDL3::SDL3-static ${PLATFORM_LIBRARIES})
+
 check_option(OPTIONS_RELEASE
 	-O3
 	-fno-stack-clash-protection
