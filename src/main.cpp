@@ -28,15 +28,16 @@
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_video.h>
 #include <physfs.h>
-#include <stdio.h>
-
+#include <cstdio>
 #ifdef _MSC_VER
 	#include <direct.h>
-	#define _chdir chdir
+	#define chdir _chdir
 #else
 	#include <unistd.h>
 #endif
-
+#ifdef windows
+        #include <windows.h>
+#endif
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -62,10 +63,6 @@
 	#ifdef ps2
 		SDL_PS2_SKIP_IOP_RESET();
 	#endif
-#endif
-
-#ifdef _WIN32
-	#include <windows.h>
 #endif
 
 #ifdef STEAM
@@ -144,7 +141,7 @@ int rgssThreadFun(void *userdata){
 	return 0;
 }
 
-static void setupWindowIcon(const Config &conf, SDL_Window *win){
+static void setupWindowIcon(SDL_Window *win){
 	SDL_IOStream *iconSrc;
 	iconSrc = SDL_IOFromConstMem(assets_icon_png, assets_icon_png_len);
 	SDL_Surface *iconImg = IMG_Load_IO(iconSrc, true);
@@ -167,17 +164,12 @@ int main(int argc, char *argv[]){
 	#elif windows
 		SDL_SetHint("SDL_HINT_WINDOWS_RAW_KEYBOARD", "1");
 		SDL_SetHint("SDL_HINT_WINDOWS_RAW_KEYBOARD_EXCLUDE_HOTKEYS", "1");
-	#elif vita
-		SDL_SetHint(SDL_HINT_VITA_PVR_OPENGL, "0");
-		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
 	#elif ps2
 		SDL_SetHint("SDL_HINT_PS2_GS_MODE", "NTSC");
 	#elif mkxp_android
 		SDL_SetHint(SDL_HINT_ANDROID_ALLOW_PERSISTENT_FOLDER_ACCESS, "1");
 		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "1");
 		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "1");
-	#elif vita
-		SDL_SetHint(SDL_HINT_VITA_RESOLUTION, "1080");
 	#endif
 
 	/* initialize SDL first */
@@ -189,6 +181,7 @@ int main(int argc, char *argv[]){
 	#ifdef STEAM
 		if (!STEAMSHIM_init()){
 			WarnMsg("Could not initialize Steamworks API");
+			SDL_Quit();
 			return 1;
 		}
 	#endif
@@ -221,7 +214,7 @@ int main(int argc, char *argv[]){
 			WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
 			return 0;
 		}
-	}		
+	}
 
 	//TODO: rewrite this shit
 	#ifndef mkxp_android
@@ -278,7 +271,7 @@ int main(int argc, char *argv[]){
 	/* OSX and Windows have their own native ways of
 	 * dealing with icons; don't interfere with them */
 	#ifdef unix_like
-		setupWindowIcon(conf, win);
+		setupWindowIcon(win);
 	#else
 		(void) setupWindowIcon;
 	#endif
@@ -370,9 +363,9 @@ int main(int argc, char *argv[]){
 	MIX_Quit();
 	TTF_Quit();
 	SDL_Quit();
-
-#ifdef STEAM
-	STEAMSHIM_deinit();
-#endif
+	#ifdef STEAM
+		STEAMSHIM_deinit();
+	#endif
+	PHYSFS_deinit();
 	return 0;
 }
