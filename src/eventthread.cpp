@@ -20,7 +20,6 @@
 */
 
 #include "eventthread.h"
-
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_joystick.h>
@@ -32,14 +31,12 @@
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_video.h>
-
 #include "sharedstate.h"
 #include "graphics.h"
 #include "debugwriter.h"
 #include "oneshot.h"
 #include "meow.h"
 #include "config.h"
-
 #include <cstdio>
 #include <map>
 #include <iostream>
@@ -61,10 +58,8 @@ enum{
 	REQUEST_MESSAGEBOX,
 	REQUEST_SETCURSORVISIBLE,
 	REQUEST_VSYNC,
-
 	UPDATE_FPS,
 	UPDATE_SCREEN_RECT,
-
 	EVENT_COUNT
 };
 
@@ -121,28 +116,23 @@ void EventThread::process(RGSSThreadData &rtData){
 
   	for(int i = 0; i < count; i++) {
     	SDL_Gamepad* gamepd = SDL_OpenGamepad(ids[i]);
-
     	if (gc == nullptr) {
       		gc = gamepd;
       		jId = ids[i];
 		}
 
 		Debug() << "Gamepad connected: " << SDL_GetGamepadName(gc);
-
-    		if (i > 0) {
-      			SDL_CloseGamepad(gamepd);
-    		}
+    	if (i > 0) {
+      		SDL_CloseGamepad(gamepd);
+    	}
   	}
 
 	char buffer[128];
-
 	char pendingTitle[128];
-
 	bool resetting = false;
-
+	
 	int winW, winH;
 	int i;
-
 	int id;
 	std::map<int, SDL_Gamepad*>::iterator gcit;
 

@@ -103,7 +103,6 @@ DEF_PROP_OBJ_VAL(Window, Rect,   CursorRect, "cursor_rect")
 DEF_PROP_B(Window, Stretch)
 DEF_PROP_B(Window, Active)
 DEF_PROP_B(Window, Pause)
-
 DEF_PROP_I(Window, X)
 DEF_PROP_I(Window, Y)
 DEF_PROP_I(Window, Width)

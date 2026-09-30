@@ -470,8 +470,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	if(scriptIt != btData.scriptNames.end())
 		file = scriptIt->second;
 
-	SDL_snprintf(crash_message, sizeof(crash_message), "Script '%s' line %s: %s occured.%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
-    show_crash_screen = true;
+	ErrorMsg("Script '%s' line %s: %s occured.%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
 }
 
 static void mriBindingExecute(){
@@ -498,7 +497,6 @@ static void mriBindingExecute(){
 	shState->setBindingData(rbData);
 	BacktraceData btData;
 	mriBindingInit();
-	rb_gc_enable();
 	runRMXPScripts(btData);
 	VALUE exc = rb_errinfo();
 	if (!NIL_P(exc) && !rb_obj_is_kind_of(exc, rb_eSystemExit))

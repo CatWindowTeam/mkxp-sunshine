@@ -72,7 +72,6 @@ DEF_PROP_B(Sprite, MirrorY)
 DEF_PROP_B(Sprite, Obscured)
 DEF_PROP_B(Sprite, PerspectiveMode)
 
-
 static VALUE SpriteGetSmooth(int argc, VALUE *argv, VALUE self){
     Sprite *k = getPrivateData<Sprite>(self);
     bool value = false;
