@@ -71,9 +71,9 @@ public:
 	//Dirty flag for obscured texture
 	bool obscuredDirty;
 
-#ifdef unix_like
-	std::string desktopEnv;
-#endif
+	#ifdef unix_like
+		std::string desktopEnv;
+	#endif
 
 private:
 	OneshotPrivate *p;

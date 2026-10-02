@@ -1,4 +1,10 @@
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/check.cmake)
+
+#load profile
+if(NOT "${CPU_OPT_PROFILE}" STREQUAL "")
+	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/arch/${CPU_OPT_PROFILE}.cmake)
+endif()
+
 # Common arguments on specific CPU arch
 if("${ARCH_COMMON}" STREQUAL "")
 	message(STATUS "ARCH_COMMON empty")

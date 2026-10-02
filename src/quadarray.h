@@ -19,16 +19,13 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef QUADARRAY_H
-#define QUADARRAY_H
-
+#pragma once
 #include "vertex.h"
 #include "gl-util.h"
 #include "gl-meta.h"
 #include "sharedstate.h"
 #include "global-ibo.h"
 #include "shader.h"
-
 #include <vector>
 #include <stdint.h>
 
@@ -42,10 +39,7 @@ struct QuadArray{
 	size_t quadCount;
 	GLsizeiptr vboSize;
 
-	QuadArray()
-	    : quadCount(0),
-	      vboSize(-1)
-	{
+	QuadArray() : quadCount(0), vboSize(-1){
 		vbo = VBO::gen();
 
 		GLMeta::vaoFillInVertexData<VertexType>(vao);
@@ -74,18 +68,14 @@ struct QuadArray{
 	 * and previous to the first 'draw()' call. */
 	void commit(){
 		VBO::bind(vbo);
-
 		GLsizeiptr size = vertices.size() * sizeof(VertexType);
-
 		if (size > vboSize){
 			/* New data exceeds already allocated size.
 			 * Reallocate VBO. */
 			VBO::uploadData(size, dataPtr(vertices), GL_DYNAMIC_DRAW);
 			vboSize = size;
-
 			shState->ensureQuadIBO(quadCount);
-		}
-		else{
+		}else{
 			/* New data fits in allocated size */
 			VBO::uploadSubData(0, size, dataPtr(vertices));
 		}
@@ -98,7 +88,6 @@ struct QuadArray{
 
 		const char *_offset = (const char*) 0 + offset * 6 * sizeof(index_t);
 		gl.DrawElements(GL_TRIANGLES, count * 6, _GL_INDEX_TYPE, _offset);
-
 		GLMeta::vaoUnbind(vao);
 	}
 
@@ -106,12 +95,10 @@ struct QuadArray{
 		draw(0, quadCount);
 	}
 
-	size_t count() const noexcept {
+	size_t count() const {
 		return quadCount;
 	}
 };
 
 typedef QuadArray<Vertex> ColorQuadArray;
 typedef QuadArray<SVertex> SimpleQuadArray;
-
-#endif // QUADARRAY_H

@@ -109,7 +109,6 @@ public:
 
 	struct Caps{
 		int maxTexSize;
-
 		Caps();
 
 	} caps;

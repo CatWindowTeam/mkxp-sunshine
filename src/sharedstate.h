@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SHAREDSTATE_H
-#define SHAREDSTATE_H
-
+#pragma once
 #include "signals/signal.h"
 #include "signals/rubydispatcher.h"
 #include "signals/maindispatcher.h"
@@ -46,7 +44,7 @@ class Audio;
 class Oneshot;
 class Sunshine;
 #ifdef STEAM
-class Steam;
+	class Steam;
 #endif
 class GLState;
 class TexPool;
@@ -79,34 +77,25 @@ struct SharedState{
 	// other shit idk
 	void *bindingData() const;
 	void setBindingData(void *data);
-
 	SDL_Window *sdlWindow() const;
-
 	Scene *screen() const;
 	void setScreen(Scene &screen);
-
 	FileSystem &fileSystem() const;
-
 	EventThread &eThread() const;
 	RGSSThreadData &rtData() const;
 	Config &config() const;
-
 	Graphics &graphics() const;
 	Input &input() const;
 	Audio &audio() const;
-
 	Oneshot &oneshot() const;
 	Sunshine &sunshine() const;
-#ifdef STEAM
-	Steam &steam() const;
-#endif
+	#ifdef STEAM
+		Steam &steam() const;
+	#endif
 
 	GLState &_glState() const;
-
 	ShaderSet &shaders() const;
-
 	TexPool &texPool() const;
-
 	SharedFontState &fontState() const;
 	Font &defaultFont() const;
 
@@ -134,9 +123,7 @@ struct SharedState{
 	 * requests the binding to terminate. In this case, this
 	 * function will most likely not return */
 	void checkShutdown();
-
 	void checkReset();
-
 	static SharedState *instance;
 
 	/* This function will throw an Exception instance
@@ -147,8 +134,5 @@ struct SharedState{
 private:
 	SharedState(RGSSThreadData *threadData);
 	~SharedState();
-
 	SharedStatePrivate *p;
 };
-
-#endif // SHAREDSTATE_H

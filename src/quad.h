@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef QUAD_H
-#define QUAD_H
-
+#pragma once
 #include "vertex.h"
 #include "gl-util.h"
 #include "gl-meta.h"
@@ -57,7 +55,6 @@ struct Quad{
 	static int setTexPosRect(V *vert, const FloatRect &tex, const FloatRect &pos){
 		setPosRect(vert, pos);
 		setTexRect(vert, tex);
-
 		return 1;
 	}
 
@@ -123,5 +120,3 @@ struct Quad{
 		GLMeta::vaoUnbind(vao);
 	}
 };
-
-#endif // QUAD_H

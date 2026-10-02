@@ -224,7 +224,7 @@ int main(int argc, char *argv[]){
 	    	out << path;
 		}
 	#endif
-	
+
 	if (TTF_Init() == false){
 		WarnMsg("Error initializing SDL_ttf: %s", SDL_GetError());
 		SDL_Quit();
@@ -237,16 +237,16 @@ int main(int argc, char *argv[]){
 		SDL_Quit();
 		return 1;
 	}
-	
+
 	SDL_Window *win;
 	Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);	
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	#ifndef NDEBUG
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 	#endif
 
 	win = SDL_CreateWindow(conf.windowTitle.c_str(), conf.defScreenW, conf.defScreenH, winFlags);
-	if (!win){
+	if(!win){
 		WarnMsg("%s", SDL_GetError());
 		MIX_Quit();
 		TTF_Quit();
@@ -255,7 +255,7 @@ int main(int argc, char *argv[]){
 	}
 	if (conf.fullscreen)
 		SDL_SetWindowFullscreen(win, true);
-	
+
 	/* OSX and Windows have their own native ways of
 	 * dealing with icons; don't interfere with them */
 	#ifdef unix_like
@@ -351,6 +351,5 @@ int main(int argc, char *argv[]){
 	#ifdef STEAM
 		STEAMSHIM_deinit();
 	#endif
-	PHYSFS_deinit();
 	return 0;
 }

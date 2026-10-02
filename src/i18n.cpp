@@ -2,7 +2,6 @@
 	Really hacked-together naiive implementation of gettext
 */
 #include "i18n.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL3/SDL_stdinc.h>
@@ -11,10 +10,8 @@ char** strdict = 0;
 unsigned int nStr = 0;
 
 const int MAX_LANGUAGES = 20;
-
 const int LANGCODE_SIZE = 16;
 const int LANGFONT_SIZE = 128;
-
 char* currentLocale = 0;
 
 struct LanguageFontAndSize {
@@ -28,7 +25,7 @@ LanguageFontAndSize** languageMetadata = 0;
 const char* findtext(unsigned int msgid, const char* fallback) {
 	if (msgid >= nStr) {
 		return fallback;
-	} else {
+	}else{
 		return strdict[msgid];
 	}
 }
@@ -42,7 +39,6 @@ void unloadLocale() {
 	strdict = 0;
 	nStr = 0;
 }
-
 
 void unloadLanguageMetadata() {
 	if (languageMetadata) {
@@ -67,22 +63,17 @@ void loadLanguageMetadata() {
 		unloadLanguageMetadata();
 	}
 
-	// char line[256];
 	char line[1024];
-
 	languageMetadata = (LanguageFontAndSize**) SDL_calloc(MAX_LANGUAGES, sizeof(LanguageFontAndSize*));
 	FILE* fontsFile = fopen("Languages/internal/language_fonts.ini", "r");
 	if (fontsFile) {
-
 		int languageMetadataIndex = 0;
-
 		while (fgets(line, 1024, fontsFile)) {
 			char* indexOfEquals = SDL_strchr(line, '=');
 			if (indexOfEquals) {
 				// splitting the string in place here
 				indexOfEquals[0] = 0;
 				char* indexOfFontName = indexOfEquals + 1;
-				
 				// remove new line from end of font name
 				char* indexOfNewLine = SDL_strchr(indexOfFontName, '\n');
 				if (indexOfNewLine) {

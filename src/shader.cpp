@@ -24,10 +24,8 @@
 #include "glstate.h"
 #include "exception.h"
 #include "debugwriter.h"
-
 #include <assert.h>
 #include <string.h>
-
 #include "common.h.xxd"
 #include "sprite.frag.xxd"
 #include "worldMachine.frag.xxd"
@@ -75,7 +73,7 @@ static void printShaderLog(GLuint shader){
 	std::string SDL_log(logLength, '\0');
 	gl.GetShaderInfoLog(shader, SDL_log.size(), 0, &SDL_log[0]);
 
-	Debug() << "Shader SDL_log:\n" << SDL_log;
+	Debug() << "GL Shader: " << SDL_log;
 }
 
 static void printProgramLog(GLuint program){
@@ -85,13 +83,12 @@ static void printProgramLog(GLuint program){
 	std::string SDL_log(logLength, '\0');
 	gl.GetProgramInfoLog(program, SDL_log.size(), 0, &SDL_log[0]);
 
-	Debug() << "Program SDL_log:\n" << SDL_log;
+	Debug() << "GL Program: " << SDL_log;
 }
 
 Shader::Shader(){
 	vertShader = gl.CreateShader(GL_VERTEX_SHADER);
 	fragShader = gl.CreateShader(GL_FRAGMENT_SHADER);
-
 	program = gl.CreateProgram();
 }
 
@@ -144,13 +141,10 @@ static void setupShaderSource(GLuint shader, GLenum type, const unsigned char *b
 
 void Shader::init(const unsigned char *vert, int vertSize, const unsigned char *frag, int fragSize, const char *vertName, const char *fragName, const char *programName) {
 	GLint success;
-	
 	/* Compile vertex shader */
 	setupShaderSource(vertShader, GL_VERTEX_SHADER, vert, vertSize);
 	gl.CompileShader(vertShader);
-
 	gl.GetShaderiv(vertShader, GL_COMPILE_STATUS, &success);
-
 	if (!success){
 		printShaderLog(vertShader);
 		ErrorMsg(Exception::ShaderError, "GLSL: An error occured while compiling vertex shader '%s' in program '%s'", vertName, programName);
@@ -164,7 +158,7 @@ void Shader::init(const unsigned char *vert, int vertSize, const unsigned char *
 
 	if (!success){
 		printShaderLog(fragShader);
-		ErrorMsg(Exception::ShaderError, "GLSL: An error occured while compiling fragment shader '%s' in program '%s'", fragName, programName);
+		ErrorMsg("GLSL: An error occured while compiling fragment shader '%s' in program '%s'", fragName, programName);
 	}
 
 	/* Link shader program */
@@ -178,10 +172,9 @@ void Shader::init(const unsigned char *vert, int vertSize, const unsigned char *
 	gl.LinkProgram(program);
 
 	gl.GetProgramiv(program, GL_LINK_STATUS, &success);
-
 	if (!success){
 		printProgramLog(program);
-		ErrorMsg(Exception::ShaderError, "GLSL: An error occured while linking program '%s' (vertex '%s', fragment '%s')", programName, vertName, fragName);
+		ErrorMsg("GLSL: An error occured while linking program '%s' (vertex '%s', fragment '%s')", programName, vertName, fragName);
 	}
 }
 
@@ -201,7 +194,6 @@ void Shader::setVec4Uniform(GLint location, const Vec4 &vec) {
 
 void Shader::setTexUniform(GLint location, unsigned unitIndex, TEX::ID texture) {
 	GLenum texUnit = GL_TEXTURE0 + unitIndex;
-	
 	gl.ActiveTexture(texUnit);
 	gl.BindTexture(GL_TEXTURE_2D, texture.gl);
 	gl.Uniform1i(location, unitIndex);
@@ -228,7 +220,6 @@ void ShaderBase::init(){
 	GET_U(texSizeInv);
 	GET_U(translation);
 	GET_U(uTime);
-
 	projMat.u_mat = gl.GetUniformLocation(program, "projMat");
 }
 
@@ -237,8 +228,7 @@ void ShaderBase::applyViewportProj(){
 	projMat.set(Vec2i(vp.w, vp.h));
 }
 
-void ShaderBase::applyPerspectiveProj()
-{
+void ShaderBase::applyPerspectiveProj(){
 	const IntRect &vp = glState.viewport.get();
     const float width  = (float)vp.w;
     const float height = (float)vp.h;
@@ -279,9 +269,7 @@ void ShaderBase::setTime(float value){
 
 FlatColorShader::FlatColorShader(){
 	INIT_SHADER(minimal, flatColor, FlatColorShader);
-
 	ShaderBase::init();
-
 	GET_U(color);
 }
 
@@ -292,9 +280,7 @@ void FlatColorShader::setColor(const Vec4 &value){
 
 SimpleShader::SimpleShader(){
 	INIT_SHADER(simple, simple, SimpleShader);
-
 	ShaderBase::init();
-
 	GET_U(texOffsetX);
 }
 
@@ -307,14 +293,12 @@ DynamicLightShader::DynamicLightShader(){
 	INIT_SHADER(simple, dynamicLight, DynamicLightShader);
 
 	ShaderBase::init();
-	
 	GET_U(wallMapTexture);
 	GET_U(wallMapResolution);
 	GET_U(cameraPosition);
 	GET_U(tileMapOffset);
 	GET_U(lightSourcesCount);
 	GET_U(ambientLight);
-	
 	u_lightSources = gl.GetUniformLocation(program, "lightSources[0]");
 	u_lightSourcesColors = gl.GetUniformLocation(program, "lightSourcesColors[0]");
 }
@@ -366,8 +350,7 @@ void DynamicLightShader::setLightSources(const std::vector<LightSource> sources)
 				source.color.alpha / 255.0
 			);
 			count++;
-		}
-		else {
+		}else{
 			Debug() << "The limit of light sources has been reached! (" << sources.size() << "/ 64, clamped" << sources.size() - count << ")";
 			break;
 		}
@@ -382,23 +365,19 @@ void DynamicLightShader::setAmbient(float power){
 
 SimpleColorShader::SimpleColorShader(){
 	INIT_SHADER(simpleColor, simpleColor, SimpleColorShader);
-
 	ShaderBase::init();
 }
 
 
 SimpleAlphaShader::SimpleAlphaShader(){
 	INIT_SHADER(simpleColor, simpleAlpha, SimpleAlphaShader);
-
 	ShaderBase::init();
 }
 
 
 SimpleSpriteShader::SimpleSpriteShader(){
 	INIT_SHADER(sprite, simple, SimpleSpriteShader);
-
 	ShaderBase::init();
-
 	GET_U(spriteMat);
 }
 
@@ -409,9 +388,7 @@ void SimpleSpriteShader::setSpriteMat(const float value[16]){
 
 AlphaSpriteShader::AlphaSpriteShader(){
 	INIT_SHADER(sprite, simpleAlphaUni, AlphaSpriteShader);
-
 	ShaderBase::init();
-
 	GET_U(spriteMat);
 	GET_U(alpha);
 }
@@ -427,9 +404,7 @@ void AlphaSpriteShader::setAlpha(float value){
 
 TransShader::TransShader(){
 	INIT_SHADER(simple, trans, TransShader);
-
 	ShaderBase::init();
-
 	GET_U(currentScene);
 	GET_U(frozenScene);
 	GET_U(transMap);
@@ -460,9 +435,7 @@ void TransShader::setVague(float value){
 
 SimpleTransShader::SimpleTransShader(){
 	INIT_SHADER(simple, transSimple, SimpleTransShader);
-
 	ShaderBase::init();
-
 	GET_U(currentScene);
 	GET_U(frozenScene);
 	GET_U(prog);
@@ -534,7 +507,6 @@ WMShader::WMShader(){
 WaterShader::WaterShader(){
 	INIT_SHADER(simple, water, WaterShader);
 	SpriteShaderBase::SpriteShaderInit();
-	
 	GET_U(noiseTexture);
 }
 
@@ -549,9 +521,7 @@ CRTShader::CRTShader(){
 
 PlaneShader::PlaneShader(){
 	INIT_SHADER(simple, plane, PlaneShader);
-
 	ShaderBase::init();
-
 	GET_U(tone);
 	GET_U(color);
 	GET_U(flash);
@@ -576,9 +546,7 @@ void PlaneShader::setOpacity(float value){
 
 GrayShader::GrayShader(){
 	INIT_SHADER(simple, gray, GrayShader);
-
 	ShaderBase::init();
-
 	GET_U(gray);
 }
 
@@ -588,9 +556,7 @@ void GrayShader::setGray(float value){
 
 TilemapShader::TilemapShader(){
 	INIT_SHADER(tilemap, simple, TilemapShader);
-
 	ShaderBase::init();
-
 	GET_U(aniIndex);
 }
 
@@ -600,9 +566,7 @@ void TilemapShader::setAniIndex(int value){
 
 TilemapWaterShader::TilemapWaterShader(){
 	INIT_SHADER(tilemap, tilemapWater, TilemapWaterShader);
-
 	ShaderBase::init();
-
 	GET_U(aniIndex);
 	GET_U(offset);
 	GET_U(noiseTexture);
@@ -622,9 +586,7 @@ void TilemapWaterShader::setNoiseTexture(TEX::ID texture){
 
 FlashMapShader::FlashMapShader(){
 	INIT_SHADER(simpleColor, flashMap, FlashMapShader);
-
 	ShaderBase::init();
-
 	GET_U(alpha);
 }
 
@@ -634,9 +596,7 @@ void FlashMapShader::setAlpha(float value){
 
 HueShader::HueShader(){
 	INIT_SHADER(simple, hue, HueShader);
-
 	ShaderBase::init();
-
 	GET_U(hueAdjust);
 }
 
@@ -646,9 +606,7 @@ void HueShader::setHueAdjust(float value){
 
 SimpleMatrixShader::SimpleMatrixShader(){
 	INIT_SHADER(simpleMatrix, simpleAlpha, SimpleMatrixShader);
-
 	ShaderBase::init();
-
 	GET_U(matrix);
 }
 
@@ -658,21 +616,17 @@ void SimpleMatrixShader::setMatrix(const float value[16]){
 
 BlurShader::HPass::HPass(){
 	INIT_SHADER(blurH, blur, BlurShader::HPass);
-
 	ShaderBase::init();
 }
 
 BlurShader::VPass::VPass(){
 	INIT_SHADER(blurV, blur, BlurShader::VPass);
-
 	ShaderBase::init();
 }
 
 BltShader::BltShader(){
 	INIT_SHADER(simple, bitmapBlit, BltShader);
-
 	ShaderBase::init();
-
 	GET_U(source);
 	GET_U(destination);
 	GET_U(subRect);
@@ -697,9 +651,7 @@ void BltShader::setOpacity(float value){
 
 ObscuredShader::ObscuredShader(){
 	INIT_SHADER(simple, obscured, ObscuredShader);
-
 	ShaderBase::init();
-
 	GET_U(obscured);
 }
 

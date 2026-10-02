@@ -20,7 +20,6 @@
 */
 
 #include "filesystem.h"
-#include "rgssad.h"
 #include "font.h"
 #include "util.h"
 #include "exception.h"
@@ -168,12 +167,10 @@ static size_t SDL_RWopsRead(void *userdata, void *ptr, size_t size, SDL_IOStatus
 
 static size_t SDL_RWopsWrite(void *userdata, const void *ptr, size_t size, SDL_IOStatus *status){
 	PHYSFS_File *f = sdlPHYS(userdata);
-
 	if (!f)
 		return 0;
 
 	PHYSFS_sint64 result = PHYSFS_writeBytes(f, ptr, size);
-
 	if (result == -1)
 		*status = SDL_IOStatus::SDL_IO_STATUS_ERROR;
 
@@ -243,10 +240,7 @@ struct FileSystemPrivate{
 FileSystem::FileSystem(bool allowSymlinks){
 	p = new FileSystemPrivate;
 	p->havePathCache = false;
-	PHYSFS_registerArchiver(&RGSS1_Archiver);
-	PHYSFS_registerArchiver(&RGSS2_Archiver);
-	PHYSFS_registerArchiver(&RGSS3_Archiver);
-	if (allowSymlinks)
+	if(allowSymlinks)
 		PHYSFS_permitSymbolicLinks(1);
 }
 

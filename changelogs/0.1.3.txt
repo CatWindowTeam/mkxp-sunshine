@@ -21,3 +21,4 @@ Stacktrace removed
 Boost removed
 Embeds size optimized
 OPTIMIZATION!
+RGSSAS archives support removed

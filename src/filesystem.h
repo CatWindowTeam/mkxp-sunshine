@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FILESYSTEM_H
-#define FILESYSTEM_H
-
+#pragma once
 #include <SDL3/SDL_iostream.h>
 
 struct FileSystemPrivate;
@@ -57,7 +55,6 @@ public:
 
 	/* Circumvents extension supplementing */
 	void openReadRaw(SDL_IOStream* &ops, const char *filename);
-	                 //bool freeOnClose = false);
 
 	/* Does not perform extension supplementing */
 	bool exists(const char *filename);
@@ -68,4 +65,3 @@ private:
 
 extern const Uint32 SDL_RWOPS_PHYSFS;
 
-#endif // FILESYSTEM_H

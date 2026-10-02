@@ -114,7 +114,6 @@ void crash(Exception::Type type, const char *fmt, ...){
 // Here we prepare information that we display on crash screen and write in crashdump later
 static std::vector<std::string> prepare_crash_info(){
 	std::vector<std::string> c;
-	c.reserve(logs.size() + 25);
 	c.emplace_back("If you're sure that the problem is not with");
 	c.emplace_back("your device, nor with your modifications, nor your ham-fisted setup, please");
 	c.emplace_back("report the bug to the developers");
@@ -122,11 +121,8 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back(std::string{"MSG: "} + crash_message);
 	c.emplace_back(std::string{"COMPILER: "} + COMPILER_NAME + std::string{" "} + COMPILER_VER);
 	c.emplace_back("");
-	c.emplace_back("");
 	c.emplace_back("[LOGS]");
 	c.insert(c.end(), logs.begin(), logs.end());
-	c.emplace_back("[LOGS END]");
-	c.emplace_back("");
 	c.emplace_back("");
 	c.emplace_back(std::string{"Audio driver: "} + SDL_GetCurrentAudioDriver());
 	c.emplace_back(std::string{"Video Driver: "} + SDL_GetCurrentVideoDriver());
@@ -203,7 +199,7 @@ void crash_screen(SDL_Window* win){
 	    				for(const auto& l : cd){
 							file << l << '\n';
 						}
-						shit = "[SAVED!]";
+						shit = "[SAVED]";
 					}else if(e.key.scancode == SDL_SCANCODE_Q){
 						quit = true;
 					}else if(e.key.scancode == SDL_SCANCODE_E){
@@ -218,7 +214,7 @@ void crash_screen(SDL_Window* win){
 	    	SDL_RenderTexture(ren, tex, NULL, &dst);
 			SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 			SDL_SetRenderScale(ren, 2.0f, 2.0f);
-	    	SDL_RenderDebugText(ren, 5, 5, "World machine crashed! :(");
+	    	SDL_RenderDebugText(ren, 5, 5, "World machine crashed :(");
 			SDL_SetRenderScale(ren, 1.5f, 1.5f);
 			SDL_RenderDebugText(ren, 5, 20, shit);
 			SDL_SetRenderScale(ren, 1.0f, 1.0f);
@@ -243,7 +239,7 @@ void ErrorMsg(const char *fmt, ...) {
     va_start(args, fmt);
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-    Debug() << "[ERR] " << crash_message;
+    Debug() << "[E] " << crash_message;
     show_crash_screen = true;
 }
 
@@ -252,7 +248,7 @@ void ErrorMsg(Exception::Type t, const char *fmt, ...) {
     va_start(args, fmt);
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-    Debug() << "[ERR] " << crash_message;
+    Debug() << "[E] " << crash_message;
     show_crash_screen = true;
 }
 
@@ -270,7 +266,7 @@ void WarnMsg(const char *fmt, ...) {
 
     SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
     va_end(args);
-    Debug() << "[WARN] " << buf;
+    Debug() << "[W] " << buf;
     #ifndef ps2
     	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", buf, NULL);
     #endif

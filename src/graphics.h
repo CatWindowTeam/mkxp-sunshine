@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef GRAPHICS_H
-#define GRAPHICS_H
-
+#pragma once
 #include "util.h"
 #include "gl-util.h"
 
@@ -55,9 +53,7 @@ public:
 	int height() const;
 	void resizeScreen(int width, int height, bool emitSignal = true);
 	void moveScreen(int x, int y);
-
 	void reset();
-
 	void setVsync(int value);
 
 	/* Non-standard extension */
@@ -74,7 +70,6 @@ public:
 	 * is set. Observes reset flag on top of shutdown
 	 * if "checkReset" */
 	void repaintWait(const AtomicFlag &exitCond, bool checkReset = true);
-
 	const TEX::ID &obscuredTex() const;
 
 private:
@@ -89,5 +84,3 @@ private:
 
 	GraphicsPrivate *p;
 };
-
-#endif // GRAPHICS_H

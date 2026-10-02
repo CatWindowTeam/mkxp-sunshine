@@ -6,7 +6,6 @@
 #include "config.h"
 #include "define.h"
 #include "config.h" 
-
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -207,8 +206,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	#else
 		p->gamePath = path;
 	#endif
-	Debug() << "[oneshot] Game path    :" << p->gamePath;
-	Debug() << "[oneshot] Docs path    :" << p->docsPath;
+	Debug() << "Game path: " << p->gamePath;
+	Debug() << "Docs path: " << p->docsPath;
 
 	#ifdef unix_like
 		char const *xdg_current_desktop = SDL_getenv("XDG_CURRENT_DESKTOP");
@@ -244,7 +243,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 				desktopEnv = "hyperland";
 			}
 		}
-		Debug() << "[oneshot] Desktop env  :" << desktopEnv;
+		Debug() << "Desktop env: " << desktopEnv;
 	#endif
 
 }
@@ -342,9 +341,9 @@ bool Oneshot::msgbox(int type, const char *body, const char *title){
 	data.colorScheme = 0;
 	data.title = title;
 	data.message = body;
-#ifdef windows
-	DWORD sound;
-#endif
+	#ifdef windows
+		DWORD sound;
+	#endif
 
 	// Set type
 	switch (type){
@@ -386,21 +385,19 @@ bool Oneshot::msgbox(int type, const char *body, const char *title){
 	}
 
 	// Show messagebox
-#ifdef windows
-	PlaySoundW(MAKEINTRESOURCEW(sound), NULL, SND_ALIAS_ID | SND_ASYNC);
-#endif
+	#ifdef windows
+		qPlaySoundW(MAKEINTRESOURCEW(sound), NULL, SND_ALIAS_ID | SND_ASYNC);
+	#endif
 	int button;
 
-#ifdef apple
-	int *btn = &button;
-
-	// Message boxes and UI changes must be performed from the main thread on macOS Mojave and above.
-	// This block ensures the message box will show from the main thread.
-	dispatch_sync(dispatch_get_main_queue(), { SDL_ShowMessageBox(&data, btn); });
-#else
-	SDL_ShowMessageBox(&data, &button);
-#endif
-
+	#ifdef apple
+		int *btn = &button;
+		// Message boxes and UI changes must be performed from the main thread on macOS Mojave and above.
+		// This block ensures the message box will show from the main thread.
+		dispatch_sync(dispatch_get_main_queue(), { SDL_ShowMessageBox(&data, btn); });
+	#else
+		SDL_ShowMessageBox(&data, &button);
+	#endif
 	return button ? true : false;
 }
 
@@ -435,7 +432,6 @@ std::string Oneshot::textinput(const char *prompt, int char_limit, const char *f
 
 	// Disable text input
 	SDL_StopTextInput(this->p->window);
-
 	return threadData.inputText;
 }
 
@@ -473,12 +469,12 @@ void Oneshot::updateObscured(int winX, int winY){
 	int num_displays;
 	SDL_DisplayID *displays = SDL_GetDisplays(&num_displays);
 	if (!displays)
-		Debug() << "SDL_GetDisplays failed (oneshot.cpp)";
+		Debug() << "SDL_GetDisplays failed";
 	// Update obscured map and texture for window portion offscreen
 	for (int i = 0, max = num_displays; i < max; ++i){
 		SDL_Rect bounds;
 		if (!SDL_GetDisplayBounds(displays[i], &bounds))
-			Debug() << "SDL_GetDisplayBounds failed (oneshot.cpp)";
+			Debug() << "SDL_GetDisplayBounds failed";
 
 		// Get intersection of window and the screen
 		SDL_Rect intersect;

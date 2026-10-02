@@ -107,7 +107,6 @@ struct PingPong{
 
 	void clearBuffers(){
 		glState.clearColor.pushSet(Vec4(0, 0, 0, 1));
-
 		for (int i = 0; i < 2; ++i){
 			FBO::bind(rt[i].fbo);
 			FBO::clear();
@@ -124,11 +123,8 @@ private:
 
 class ScreenScene : public Scene{
 public:
-	ScreenScene(int width, int height)
-	    : pp(width, height)
-	{
+	ScreenScene(int width, int height) : pp(width, height){
 		updateReso(width, height);
-
 		brightEffect = false;
 		brightnessQuad.setColor(Vec4());
 	}
@@ -138,21 +134,15 @@ public:
 		const int h = geometry.rect.h;
 
 		shState->graphicsSignals.prepareDraw();
-
 		pp.startRender();
-
 		glState.viewport.set(IntRect(0, 0, w, h));
-
 		FBO::clear();
-
 		Scene::composite();
-
 		if (brightEffect){
 			SimpleColorShader &shader = shState->shaders().simpleColor;
 			shader.bind();
 			shader.applyViewportProj();
 			shader.setTranslation(Vec2i());
-
 			brightnessQuad.draw();
 		}
 	}
@@ -165,7 +155,6 @@ public:
 		const bool toneGrayEffect = t.w != 0;
 		const bool colorEffect    = c.w > 0;
 		const bool flashEffect    = f.w > 0;
-
 		if (toneGrayEffect){
 			pp.swapRender();
 
@@ -202,7 +191,6 @@ public:
 		FlatColorShader &shader = shState->shaders().flatColor;
 		shader.bind();
 		shader.applyViewportProj();
-
 		if (toneRGBEffect){
 			/* First split up additive / substractive components */
 			Vec4 add, sub;
@@ -223,18 +211,15 @@ public:
 
 			/* Then apply them using hardware blending */
 			gl.BlendFuncSeparate(GL_ONE, GL_ONE, GL_ZERO, GL_ONE);
-
 			if (add.xyzNotNull()){
 				gl.BlendEquation(GL_FUNC_ADD);
 				shader.setColor(add);
-
 				screenQuad.draw();
 			}
 
 			if (sub.xyzNotNull()){
 				gl.BlendEquation(GL_FUNC_REVERSE_SUBTRACT);
 				shader.setColor(sub);
-
 				screenQuad.draw();
 			}
 		}
@@ -259,7 +244,6 @@ public:
 
 	void setBrightness(float norm){
 		brightnessQuad.setColor(Vec4(0, 0, 0, 1.0f - norm));
-
 		brightEffect = norm < 1.0f;
 	}
 
@@ -480,7 +464,6 @@ struct GraphicsPrivate{
 		TEX::setRepeat(false);
 		TEX::setSmooth(false);
 		gl.TexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, scRes.x, scRes.y, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
-
 		scPos = rtData->ethread->getWindowPosition();
 	}
 
@@ -499,7 +482,6 @@ struct GraphicsPrivate{
 	/* Enforces fixed aspect ratio, if desired */
 	void recalculateScreenSize(RGSSThreadData *rtData){
 		scSize = winSize;
-
 		if (!conf.fixedAspectRatio){
 			scOffset = Vec2i(0, 0);
 			return;
@@ -537,7 +519,6 @@ struct GraphicsPrivate{
 	void shutdown(){
 		threadData->rqTermAck.set();
 		shState->texPool().disable();
-
 		scriptBinding->terminate();
 	}
 
@@ -545,9 +526,7 @@ struct GraphicsPrivate{
 		fpsLimiter.delay();
 		FBO::unbind();
 		SDL_GL_SwapWindow(threadData->window);
-
 		++frameCount;
-
 		threadData->ethread->notifyFrame();
 	}
 
@@ -604,11 +583,9 @@ Graphics::Graphics(RGSSThreadData *data){
 	if (conf.syncToRefreshrate){
 		p->frameRate = data->refreshRate;
 		p->fpsLimiter.disabled = true;
-	}
-	else if (conf.fixedFramerate > 0){
+	}else if (conf.fixedFramerate > 0){
 		p->fpsLimiter.setDesiredFPS(conf.fixedFramerate);
-	}
-	else if (conf.fixedFramerate < 0){
+	}else if (conf.fixedFramerate < 0){
 		p->fpsLimiter.disabled = true;
 	}
 }
@@ -623,7 +600,6 @@ void Graphics::update(bool limitFps){
 
 	p->checkShutDownReset();
 	p->checkSyncLock();
-
 	if (p->frozen)
 		return;
 
@@ -634,7 +610,6 @@ void Graphics::update(bool limitFps){
 				p->fpsLimiter.delay();
 				++p->frameCount;
 				p->threadData->ethread->notifyFrame();
-
 				return;
 			}else{
 				/* Just reset frame adjust counter */
@@ -663,7 +638,6 @@ void Graphics::freeze(){
 
 void Graphics::transition(unsigned int duration, const char *filename, int vague){
 	p->checkSyncLock();
-
 	if (!p->frozen)
 		return;
 
@@ -686,7 +660,6 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 	 * we can use a simplified shader */
 	TransShader &transShader = shState->shaders().trans;
 	SimpleTransShader &simpleShader = shState->shaders().simpleTrans;
-
 	if (transMap){
 		TransShader &shader = transShader;
 		shader.bind();
@@ -757,14 +730,11 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 		GLMeta::blitSource(transBuffer);
 		p->metaBlitBufferFlippedScaled();
 		GLMeta::blitEnd();
-
 		p->swapGLBuffer();
 	}
 
 	glState.blend.pop();
-
 	delete transMap;
-
 	p->frozen = false;
 }
 
@@ -780,7 +750,6 @@ DEF_ATTR_SIMPLE(Graphics, FrameCount, int, p->frameCount)
 
 void Graphics::setFrameRate(int value){
 	p->frameRate = clamp(value, 10, 120);
-
 	if (conf.syncToRefreshrate)
 		return;
 
@@ -805,19 +774,15 @@ void Graphics::fadeout(unsigned int duration){
 
 	for (int i = duration-1; i > -1; --i){
 		setBrightness(diff + (curr / duration) * i);
-
 		if (p->frozen){
 			GLMeta::blitBeginScreen(p->scSize);
 			GLMeta::blitSource(p->frozenScene);
 
 			FBO::clear();
 			p->metaBlitBufferFlippedScaled();
-
 			GLMeta::blitEnd();
-
 			p->swapGLBuffer();
-		}
-		else{
+		}else{
 			update();
 		}
 	}
@@ -838,12 +803,9 @@ void Graphics::fadein(unsigned int duration){
 
 			FBO::clear();
 			p->metaBlitBufferFlippedScaled();
-
 			GLMeta::blitEnd();
-
 			p->swapGLBuffer();
-		}
-		else{
+		}else{
 			update();
 		}
 	}
@@ -856,7 +818,6 @@ Bitmap *Graphics::snapToBitmap(){
 
 	/* Taint entire bitmap */
 	bitmap->taintArea(IntRect(0, 0, width(), height()));
-
 	return bitmap;
 }
 
@@ -878,12 +839,10 @@ int Graphics::height() const{
 
 void Graphics::moveScreen(int x, int y){
 	Vec2i pos(x, y);
-
 	if (p->scPos == pos)
 		return;
 
 	p->scPos = pos;
-
 	shState->eThread().requestWindowMove(x, y);
 }
 
@@ -915,7 +874,6 @@ void Graphics::resizeScreen(int width, int height, bool emitSignal){
 	TEX::setSmooth(false);
 	gl.TexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, p->scRes.x, p->scRes.y, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
 	shState->oneshot().updateObscuredSize(size.x, size.y);
-	
 	if (emitSignal)
 		shState->graphicsSignals.resized.Emit(width, height);
 }
@@ -924,7 +882,6 @@ DEF_ATTR_RD_SIMPLE(Graphics, Brightness, int, p->brightness)
 
 void Graphics::setBrightness(int value){
 	value = clamp(value, 0, 255);
-
 	if (p->brightness == value)
 		return;
 
@@ -1003,7 +960,6 @@ void Graphics::repaintWait(const AtomicFlag &exitCond, bool checkReset){
 
 	while (!exitCond){
 		shState->checkShutdown();
-
 		if (checkReset)
 			shState->checkReset();
 

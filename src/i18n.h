@@ -1,6 +1,4 @@
-#ifndef I18N_H
-#define I18N_H
-
+#pragma once
 #include "trstr.h"
 
 void unloadLocale();
@@ -11,5 +9,3 @@ void loadLanguageMetadata();
 void unloadLanguageMetadata();
 int getFontSize();
 char* getFontName();
-
-#endif /* end of include guard: I18N_H */

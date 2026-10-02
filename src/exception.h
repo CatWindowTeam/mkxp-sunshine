@@ -46,10 +46,8 @@ struct Exception{
 	Exception(Type type, const char *format, ...) : type(type){
 		va_list ap;
 		va_start(ap, format);
-		
 		msg.resize(512);
 		SDL_vsnprintf(&msg[0], msg.size(), format, ap);
-
 		va_end(ap);
 	}
 };

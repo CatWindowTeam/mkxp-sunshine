@@ -2,13 +2,11 @@
 #include "debugwriter.h"
 #include "meow.h"
 #include "config.h"
-
 #include <filesystem>
 #include <string>
 #include <vector>
 #include <system_error>
 #include <physfs.h>
-
 #include <SDL3/SDL_thread.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
@@ -25,7 +23,7 @@ static bool stop_render = false;
 const static std::size_t N = 46;
 
 static void modloader_add_to_log(const std::string data){
-	Debug() << "[MODLOADER] " << data;
+	Debug() << "[MOD] " << data;
 	modloader_logs.emplace_back(data);
 }
 
@@ -69,10 +67,8 @@ static int renderer_thread(void* data){
 
 void ModLoader(Config conf, SDL_Window* win){
     if (!fs::exists(conf.Modloader.ModsDirPath) || !fs::is_directory(conf.Modloader.ModsDirPath)) {
-        Debug() << "[MODLOADER] Mods directory not found, skipping...";
         return;
-    }else if (fs::is_empty(conf.Modloader.ModsDirPath)) {
-        Debug() << "[MODLOADER] Mods directory is empty, skipping...";
+    }else if (fs::is_empty(conf.Modloader.ModsDirPath)){
         return;
     }
     SDL_Thread* render_thread_pointer = NULL;

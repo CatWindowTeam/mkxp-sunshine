@@ -38,23 +38,17 @@ mv OneShot.app/Contents/MacOS/OneShot OneShot.app/Contents/Resources/OneShot
 cp -r dist/_______.app _______.app
 
 # Set version number
-echo "-> Set version number..."
 rm -f OneShot.app/Contents/Info.plist
 rm -f _______.app/Contents/Info.plist
 m4 patches/mac/Info.plist.in -DONESHOTMACVERSION=$mac_version > OneShot.app/Contents/Info.plist
 m4 patches/mac/JournalInfo.plist.in -DONESHOTMACVERSION=$mac_version > _______.app/Contents/Info.plist
 
 # Compile scripts
-echo "-> Compile xScripts.rxdata..."
 ruby rpgscript.rb ./scripts "$ONESHOT_PATH"
 cp "$ONESHOT_PATH/Data/xScripts.rxdata" .
-
-echo "-> Install OneShot apps to Steam directory..."
 cp -rf "./OneShot.app" "$ONESHOT_PATH"
 cp -rf "./_______.app" "$ONESHOT_PATH"
 
-# Cleanup
-echo "-> Cleanup files..."
 # make clean
 rm -rf journal/unix/__pycache__
 rm -rf build
