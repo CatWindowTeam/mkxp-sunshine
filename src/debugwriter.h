@@ -26,8 +26,6 @@
 #include "define.h"
 #ifdef mkxp_android
 	#include <android/log.h>
-#elif web
-	#include <emscripten/console.h>
 #endif
 
 class Debug{
@@ -57,8 +55,6 @@ public:
 			#else
 				__android_log_write(ANDROID_LOG_INFO, "sunshine", buf.str().c_str());
 			#endif
-		#elif web
-			emscripten_console_log(buf.str().c_str());
 		#else
 			std::cout << buf.view() << '\n';
 		#endif

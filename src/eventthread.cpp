@@ -90,30 +90,23 @@ void EventThread::process(RGSSThreadData &rtData){
 	SDL_Event event;
 	SDL_Window *win = rtData.window;
 	UnidirMessage<Vec2i> &windowSizeMsg = rtData.windowSizeMsg;
-
 	fullscreen = conf.fullscreen;
-
 	fps.lastFrame = SDL_GetPerformanceCounter();
 	fps.displayCounter = 0;
 	fps.acc = 0;
 	fps.accDiv = 0;
-
+	fps.frequency = SDL_GetPerformanceFrequency();
 	bool displayingFPS = false;
 	bool cursorInWindow = false;
 	/* Will be updated eventually */
 	SDL_Rect gameScreen = { 0, 0, 0, 0 };
-
 	/* SDL doesn't send an initial FOCUS_GAINED event */
 	bool windowFocused = true;
-
 	bool terminate = false;
-
 	std::map<int, SDL_Gamepad*> gamepads;
-
 	int count = 0;
   	int jId = 0;
   	SDL_JoystickID *ids = SDL_GetGamepads(&count);
-
   	for(int i = 0; i < count; i++) {
     	SDL_Gamepad* gamepd = SDL_OpenGamepad(ids[i]);
     	if (gc == nullptr) {
@@ -126,19 +119,15 @@ void EventThread::process(RGSSThreadData &rtData){
       		SDL_CloseGamepad(gamepd);
     	}
   	}
-
 	char buffer[128];
 	char pendingTitle[128];
 	bool resetting = false;
-	
 	int winW, winH;
 	int i;
 	int id;
 	std::map<int, SDL_Gamepad*>::iterator gcit;
-
 	SDL_GetWindowSize(win, &winW, &winH);
 	SDL_GetWindowPosition(win, &rtData.ethread->winX, &rtData.ethread->winY);
-
 	while (true) {
 		// TODO: fix main dispatcher segfault
 		//if (shState != nullptr)
@@ -566,28 +555,26 @@ void EventThread::notifyFrame(){
 
 	uint64_t current = SDL_GetPerformanceCounter();
 	uint64_t diff = current - fps.lastFrame;
+	if (diff == 0)
+	    return;
+	    
 	fps.lastFrame = current;
-
 	if (fps.immInitFlag){
 		fps.immInitFlag.clear();
 		fps.immFiniFlag.set();
-
 		return;
 	}
 
-	static uint64_t freq = SDL_GetPerformanceFrequency();
-
-	double currFPS = (double) freq / diff;
+	double currFPS = (double) fps.frequency / diff;
 	fps.acc += currFPS;
 	++fps.accDiv;
 
 	fps.displayCounter += diff;
-	if (fps.displayCounter < freq && !fps.immFiniFlag)
+	if (fps.displayCounter < fps.frequency && !fps.immFiniFlag)
 		return;
 
 	fps.displayCounter = 0;
 	fps.immFiniFlag.clear();
-
 	int32_t avgFPS = fps.accDiv;
 	fps.acc = fps.accDiv = 0;
 
@@ -667,7 +654,6 @@ void SyncPoint::Util::lock(){
 
 void SyncPoint::Util::unlock(bool multi){
 	locked.clear();
-
 	if (multi)
 		SDL_BroadcastCondition(cond);
 	else
@@ -676,7 +662,6 @@ void SyncPoint::Util::unlock(bool multi){
 
 void SyncPoint::Util::waitForUnlock(){
 	SDL_LockMutex(mut);
-
 	while (locked)
 		SDL_WaitCondition(cond, mut);
 

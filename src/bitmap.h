@@ -95,7 +95,7 @@ public:
 
 	/* Sets initial reference without copying by value,
 	 * use at construction */
-	void setInitFont(Font *value) noexcept;
+	void setInitFont(Font *value);
 
 	/* <internal> */
 	TEXFBO &getGLTypes();
@@ -104,10 +104,10 @@ public:
 
 	/* Binds the backing texture and sets the correct
 	 * texture size uniform in shader */
-	void bindTex(ShaderBase &shader) noexcept;
+	void bindTex(ShaderBase &shader);
 
 	/* Adds 'rect' to tainted area */
-	void taintArea(const IntRect &rect) noexcept;
+	void taintArea(const IntRect &rect);
 
 	Signal<void> modified;
 

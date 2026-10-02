@@ -78,10 +78,8 @@ public:
 	static JoyState joyState;
 	static MouseState mouseState;
 	static TouchState touchState;
-
 	static bool mouseEnabled;
 	static bool gamepadEnabled;
-
 	static bool allocUserEvents();
 
 	#ifdef mkxp_android
@@ -102,14 +100,10 @@ public:
 	void requestWindowResize(int width, int height);
 	void requestShowCursor(bool mode);
 	void requestVsync(int interval);
-	
 	void requestTerminate();
-
 	Vec2i getWindowPosition() const;
-
 	bool getFullscreen() const;
 	bool getShowCursor() const;
-
 	void showMessageBox(const char *body, int flags = 0);
 
 	/* RGSS thread calls this once per frame */
@@ -139,6 +133,7 @@ private:
 		AtomicFlag immFiniFlag;
 		double acc;
 		uint32_t accDiv;
+		uint64_t frequency;
 	} fps;
 };
 

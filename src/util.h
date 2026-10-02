@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef UTIL_H
-#define UTIL_H
-
+#pragma once
 #include <stdio.h>
 #include <string>
 #include <algorithm>
@@ -41,7 +39,6 @@ struct PairHash{
 static inline int wrapRange(int value, int min, int max){
 	if (value >= min && value <= max)
 		return value;
-
 	while (value < min)
 		value += (max - min);
 
@@ -52,10 +49,8 @@ template<typename T>
 static inline T clamp(T value, T min, T max){
 	if (value < min)
 		return min;
-
 	if (value > max)
 		return max;
-
 	return value;
 }
 
@@ -71,7 +66,6 @@ static inline int findNextPow2(int start){
  * appends them to 'out'. Returns false on failure */
 inline bool readFile(const char *path, std::string &out){
 	FILE *f = fopen(path, "rb");
-
 	if (!f)
 		return false;
 
@@ -114,7 +108,6 @@ inline C *dataPtr(std::vector<C> &v){
 }
 
 #define ARRAY_SIZE(obj) (sizeof(obj) / sizeof((obj)[0]))
-
 #define elementsN(obj) const size_t obj##N = ARRAY_SIZE(obj)
 
 #define DECL_ATTR_DETAILED(name, type, keyword1, keyword2) \
@@ -150,5 +143,3 @@ inline C *dataPtr(std::vector<C> &v){
 
 #define DEF_ATTR_SIMPLE_STATIC(klass, name, type, location) \
 	DEF_ATTR_SIMPLE_DETAILED(klass, name, type, location, )
-
-#endif // UTIL_H

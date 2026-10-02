@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef GLUTIL_H
-#define GLUTIL_H
-
+#pragma once
 #include "gl-fun.h"
 #include "etc-internal.h"
 
@@ -33,17 +31,14 @@ struct ID \
 	explicit ID(GLuint gl = 0)  \
 	    : gl(gl)  \
 	{}  \
-	ID &operator=(const ID &o)  \
-	{  \
+	ID &operator=(const ID &o){  \
 		gl = o.gl;  \
 		return *this; \
 	}  \
-	bool operator==(const ID &o) const  \
-	{  \
+	bool operator==(const ID &o) const{  \
 		return gl == o.gl;  \
 	}  \
-	bool operator!=(const ID &o) const \
-	{ \
+	bool operator!=(const ID &o) const{ \
 		return !(*this == o); \
 	} \
 };
@@ -55,7 +50,6 @@ namespace TEX{
 	inline ID gen(){
 		ID id;
 		gl.GenTextures(1, &id.gl);
-
 		return id;
 	}
 
@@ -110,7 +104,6 @@ namespace FBO{
 	inline ID gen(){
 		ID id;
 		gl.GenFramebuffers(1, &id.gl);
-
 		return id;
 	}
 
@@ -142,7 +135,6 @@ struct GenericBO{
 	static inline ID gen(){
 		ID id;
 		gl.GenBuffers(1, &id.gl);
-
 		return id;
 	}
 
@@ -225,11 +217,3 @@ struct TEXFBO{
 		obj.width = obj.height = 0;
 	}
 };
-
-#define GL_CHECK() { \
-    GLenum e = gl.GetError(); \
-    if (e != GL_NO_ERROR) \
-        Debug() << __FILE__ << ":" << __LINE__ "->" << e); \
-}
-
-#endif // GLUTIL_H

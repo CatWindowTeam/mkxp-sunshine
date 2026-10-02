@@ -72,9 +72,7 @@ static IntRect normalizedRect(const IntRect &rect){
 
 struct BitmapPrivate{
 	Bitmap *self;
-
 	TEXFBO gl;
-
 	Font *font;
 
 	/* "Mega surfaces" are a hack to allow Tilesets to be used
@@ -132,7 +130,6 @@ struct BitmapPrivate{
 
 		pixman_region16_t m_reg;
 		pixman_region_init_rect(&m_reg, rect.x, rect.y, rect.w, rect.h);
-
 		pixman_region_subtract(&tainted, &m_reg, &tainted);
 		pixman_region_fini(&m_reg);
 	}
@@ -206,10 +203,7 @@ struct BitmapPrivate{
 
 struct BitmapOpenHandler : FileSystem::OpenHandler{
 	SDL_Surface *surf;
-
-	BitmapOpenHandler()
-	    : surf(0)
-	{}
+	BitmapOpenHandler() : surf(0){}
 
 	bool tryRead(SDL_IOStream* &ops, const char *ext){
 		surf = IMG_LoadTyped_IO(ops, 1, ext);
@@ -231,15 +225,13 @@ Bitmap::Bitmap(const char *filename){
 		p = new BitmapPrivate(this);
 		p->megaSurface = imgSurf;
 		SDL_SetSurfaceBlendMode(p->megaSurface, SDL_BLENDMODE_NONE);
-	}
-	else{
+	}else{
 		/* Regular surface */
 		TEXFBO tex;
 
 		try{
 			tex = shState->texPool().request(imgSurf->w, imgSurf->h);
-		}
-		catch (const Exception &e){
+		}catch (const Exception &e){
 			SDL_DestroySurface(imgSurf);
 			throw e;
 		}
@@ -268,8 +260,7 @@ Bitmap::Bitmap(SDL_IOStream *src){
 		TEXFBO tex;
 		try{
 			tex = shState->texPool().request(imgSurf->w, imgSurf->h);
-		}
-		catch (const Exception &e){
+		}catch (const Exception &e){
 			SDL_DestroySurface(imgSurf);
 			throw e;
 		}
@@ -288,20 +279,15 @@ Bitmap::Bitmap(int width, int height){
 		ErrorMsg(Exception::RGSSError, "failed to create bitmap"); 
 
 	TEXFBO tex = shState->texPool().request(width, height);
-
 	p = new BitmapPrivate(this);
 	p->gl = tex;
-
 	clear();
 }
 
 Bitmap::Bitmap(const Bitmap &other){
 	other.ensureNonMega();
-
 	p = new BitmapPrivate(this);
-
 	p->gl = shState->texPool().request(other.width(), other.height());
-
 	blt(0, 0, other, rect());
 }
 
@@ -311,7 +297,6 @@ Bitmap::~Bitmap(){
 
 int Bitmap::width() const{
 	guardDisposed();
-
 	if (p->megaSurface)
 		return p->megaSurface->w;
 
@@ -329,7 +314,6 @@ int Bitmap::height() const{
 
 IntRect Bitmap::rect() const{
 	guardDisposed();
-
 	return IntRect(0, 0, width(), height());
 }
 
@@ -355,21 +339,16 @@ void Bitmap::blt(int x, int y, const Bitmap &source, IntRect rect, int opacity){
 
 void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const IntRect &sourceRect, int opacity) {
 	guardDisposed();
-
 	GUARD_MEGA;
-
 	if (source.isDisposed())
 		return;
 
 	opacity = clamp(opacity, 0, 255);
-
 	if (opacity == 0)
 		return;
 
 	SDL_Surface *srcSurf = source.megaSurface();
-
 	if (srcSurf && shState->config().subImageFix){
-	
 		// Blit from software surface, for broken GL drivers
 		Vec2i gpTexSize;
 		shState->ensureTexSize(sourceRect.w, sourceRect.h, gpTexSize);
@@ -392,13 +371,10 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 
 		p->blitQuad(quad);
 		p->popViewport();
-
 		p->addTaintedArea(destRect);
 		p->onModified();
-
 		return;
-	}
-	else if (srcSurf){
+	}else if (srcSurf){
 		// Blit from software surface
 		// Don't do transparent blits for now
 		if (opacity < 255)
@@ -408,7 +384,6 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 		SDL_Rect dstRect = destRect;
 		SDL_Rect btmRect = { 0, 0, width(), height() };
 		SDL_Rect bltRect;
-
 		if (SDL_GetRectIntersection(&btmRect, &dstRect, &bltRect) != true)
 			return;
 
@@ -420,14 +395,12 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 		SDL_BlitSurfaceScaled(srcSurf, &srcRect, blitTemp, NULL, SDL_ScaleMode::SDL_SCALEMODE_NEAREST);
 
 		TEX::bind(p->gl.tex);
-
 		if (bltRect.w == dstRect.w && bltRect.h == dstRect.h){
 			// Dest rectangle lies within bounding box
 			TEX::uploadSubImage(destRect.x, destRect.y,
 			                    destRect.w, destRect.h,
 			                    blitTemp->pixels, GL_RGBA);
-		}
-		else{
+		}else{
 			// Clipped blit
 			GLMeta::subRectImageUpload(blitTemp->w, bltRect.x - dstRect.x, bltRect.y - dstRect.y,
 			                           bltRect.x, bltRect.y, bltRect.w, bltRect.h, blitTemp, GL_RGBA);
@@ -435,7 +408,6 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 		}
 
 		SDL_DestroySurface(blitTemp);
-
 		p->onModified();
 		return;
 	}
@@ -446,8 +418,7 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 		GLMeta::blitSource(source.p->gl);
 		GLMeta::blitRectangle(sourceRect, destRect);
 		GLMeta::blitEnd();
-	}
-	else{
+	}else{
 		/* Fragment pipeline */
 		float normOpacity = (float) opacity / 255.0f;
 
@@ -476,9 +447,7 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 		source.p->bindTexture(shader);
 		p->bindFBO();
 		p->pushSetViewport(shader);
-
 		p->blitQuad(quad);
-
 		p->popViewport();
 	}
 
@@ -492,11 +461,8 @@ void Bitmap::fillRect(int x, int y, int width, int height, const Vec4 &color) {
 
 void Bitmap::fillRect(const IntRect &rect, const Vec4 &color){
 	guardDisposed();
-
 	GUARD_MEGA;
-
 	p->fillRect(rect, color);
-
 	if (color.w == 0)
 		/* Clear op */
 		p->substractTaintedArea(rect);
@@ -513,7 +479,6 @@ void Bitmap::gradientFillRect(int x, int y, int width, int height, const Vec4 &c
 
 void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec4 &color2, bool vertical) {
 	guardDisposed();
-
 	GUARD_MEGA;
 
 	SimpleColorShader &shader = shState->shaders().simpleColor;
@@ -535,16 +500,11 @@ void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec
 	}
 
 	quad.setPosRect(rect);
-
 	p->bindFBO();
 	p->pushSetViewport(shader);
-
 	p->blitQuad(quad);
-
 	p->popViewport();
-
 	p->addTaintedArea(rect);
-
 	p->onModified();
 }
 
@@ -554,7 +514,6 @@ void Bitmap::gradientFillRect(int x, int y, int width, int height, const Vec4 &c
 
 void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec4 &color2, const Vec4 &color3, const Vec4 &color4) {
 	guardDisposed();
-
 	GUARD_MEGA;
 
 	SimpleColorShader &shader = shState->shaders().simpleColor;
@@ -572,13 +531,9 @@ void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec
 
 	p->bindFBO();
 	p->pushSetViewport(shader);
-
 	p->blitQuad(quad);
-
 	p->popViewport();
-
 	p->addTaintedArea(rect);
-
 	p->onModified();
 }
 
@@ -589,17 +544,13 @@ void Bitmap::clearRect(int x, int y, int width, int height){
 
 void Bitmap::clearRect(const IntRect &rect){
 	guardDisposed();
-
 	GUARD_MEGA;
-
 	p->fillRect(rect, Vec4());
-
 	p->onModified();
 }
 
 void Bitmap::blur(){
 	guardDisposed();
-
 	GUARD_MEGA;
 
 	Quad &quad = shState->gpQuad();
@@ -643,7 +594,6 @@ void Bitmap::blur(){
 
 void Bitmap::radialBlur(int angle, int divisions){
 	guardDisposed();
-
 	GUARD_MEGA;
 
 	angle     = clamp<int>(angle, 0, 359);
@@ -736,46 +686,32 @@ void Bitmap::radialBlur(int angle, int divisions){
 
 void Bitmap::clear(){
 	guardDisposed();
-
 	GUARD_MEGA;
-
 	p->bindFBO();
-
 	glState.clearColor.pushSet(Vec4());
-
 	FBO::clear();
-
 	glState.clearColor.pop();
-
 	p->clearTaintedArea();
-
 	p->onModified();
 }
 
 static uint32_t &getPixelAt(SDL_Surface *surf, SDL_PixelFormatDetails *form, int x, int y){
 	size_t offset = x * form->bytes_per_pixel + y * surf->pitch;
 	uint8_t *bytes = (uint8_t*) surf->pixels + offset;
-
 	return *((uint32_t*) bytes);
 }
 
 Color Bitmap::getPixel(int x, int y) const{
 	guardDisposed();
-
 	GUARD_MEGA;
-
 	if (x < 0 || y < 0 || x >= width() || y >= height())
 		return Vec4();
 
 	if (!p->surface){
 		p->allocSurface();
-
 		FBO::bind(p->gl.fbo);
-
 		glState.viewport.pushSet(IntRect(0, 0, width(), height()));
-
 		gl.ReadPixels(0, 0, width(), height(), GL_RGBA, GL_UNSIGNED_BYTE, p->surface->pixels);
-
 		glState.viewport.pop();
 	}
 
@@ -789,7 +725,6 @@ Color Bitmap::getPixel(int x, int y) const{
 
 void Bitmap::setPixel(int x, int y, const Color &color){
 	guardDisposed();
-
 	GUARD_MEGA;
 
     if (x < 0 || y < 0 || x >= width() || y >= height()) {
@@ -814,7 +749,6 @@ void Bitmap::setPixel(int x, int y, const Color &color){
 
 	if (p->surface){
 		uint32_t &surfPixel = getPixelAt(p->surface, p->format, x, y);
-		//  pixel = SDL_MapSurfaceRGBA(surface, r, g, b, a);
 		surfPixel = SDL_MapSurfaceRGBA(p->surface, pixel[0], pixel[1], pixel[2], pixel[3]);
 	}
 
@@ -823,14 +757,11 @@ void Bitmap::setPixel(int x, int y, const Color &color){
 
 void Bitmap::hueChange(int hue){
 	guardDisposed();
-
 	GUARD_MEGA;
-
 	if ((hue % 360) == 0)
 		return;
 
 	TEXFBO newTex = shState->texPool().request(width(), height());
-
 	FloatRect texRect(rect());
 
 	Quad &quad = shState->gpQuad();
@@ -845,16 +776,11 @@ void Bitmap::hueChange(int hue){
 	FBO::bind(newTex.fbo);
 	p->pushSetViewport(shader);
 	p->bindTexture(shader);
-
 	p->blitQuad(quad);
-
 	p->popViewport();
-
 	TEX::unbind();
-
 	shState->texPool().release(p->gl);
 	p->gl = newTex;
-
 	p->onModified();
 }
 
@@ -958,7 +884,6 @@ static void applyShadow(SDL_Surface *&in, const SDL_PixelFormatDetails* fm, cons
 
 void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 	guardDisposed();
-
 	GUARD_MEGA;
 
 	std::string fixed = fixupString(str);
@@ -1037,7 +962,6 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 		alignX = rect.x;
 
 	int alignY = rect.y + (rect.h - rawTxtSurfH) / 2;
-
 	float squeeze = (float) rect.w / txtSurf->w;
 
 	if (squeeze > 1)
@@ -1048,8 +972,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 	Vec2i gpTexSize;
 	shState->ensureTexSize(txtSurf->w, txtSurf->h, gpTexSize);
 
-	bool fastBlit = false; //!p->touchesTaintedArea(posRect) && txtAlpha == 1.0f;
-
+	bool fastBlit = false;
 	if (fastBlit){
 		if (squeeze == 1.0f && !shState->config().subImageFix){
 			/* Even faster: upload directly to bitmap texture.
@@ -1075,7 +998,6 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 			if (SDL_GetRectIntersection(&btmRect, &txtRect, &inters)){
 				bool subImage = false;
 				int subSrcX = 0, subSrcY = 0;
-
 				if (inters.w != txtRect.w || inters.h != txtRect.h){
 					/* Clip the text surface */
 					subSrcX = inters.x - txtRect.x;
@@ -1089,7 +1011,6 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 				}
 
 				TEX::bind(p->gl.tex);
-
 				if (!subImage){
 					TEX::uploadSubImage(posRect.x, posRect.y, posRect.w, posRect.h, txtSurf->pixels, GL_RGBA);
 				}else{
@@ -1097,25 +1018,20 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 					GLMeta::subRectImageEnd();
 				}
 			}
-		}
-		else{
+		}else{
 			/* Squeezing involved: need to use intermediary TexFBO */
 			TEXFBO &gpTF = shState->gpTexFBO(txtSurf->w, txtSurf->h);
-
 			TEX::bind(gpTF.tex);
 			TEX::uploadSubImage(0, 0, txtSurf->w, txtSurf->h, txtSurf->pixels, GL_RGBA);
-
 			GLMeta::blitBegin(p->gl);
 			GLMeta::blitSource(gpTF);
 			GLMeta::blitRectangle(IntRect(0, 0, txtSurf->w, txtSurf->h), posRect, true);
 			GLMeta::blitEnd();
 		}
-	}
-	else{
+	}else{
 		/* Aquire a partial copy of the destination
 		 * buffer we're about to render to */
 		TEXFBO &gpTex2 = shState->gpTexFBO(posRect.w, posRect.h);
-
 		GLMeta::blitBegin(gpTex2);
 		GLMeta::blitSource(p->gl);
 		GLMeta::blitRectangle(posRect, Vec2i());
@@ -1133,8 +1049,6 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 
 		shState->bindTex();
 		TEX::uploadSubImage(0, 0, txtSurf->w, txtSurf->h, txtSurf->pixels, GL_RGBA);
-		//TODO: настройка в зависимости от oneshot.conf
-		//?А нвдо ли?
 		TEX::setSmooth(true);
 
 		Quad &quad = shState->gpQuad();
@@ -1143,15 +1057,12 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 
 		p->bindFBO();
 		p->pushSetViewport(shader);
-
 		p->blitQuad(quad);
-
 		p->popViewport();
 	}
 
 	SDL_DestroySurface(txtSurf);
 	p->addTaintedArea(posRect);
-
 	p->onModified();
 }
 
@@ -1159,22 +1070,18 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 static uint16_t utf8_to_ucs2(const char *_input, const char **end_ptr){
 	const unsigned char *input = reinterpret_cast<const unsigned char*>(_input);
 	*end_ptr = _input;
-
 	if (input[0] == 0)
 		return -1;
 
 	if (input[0] < 0x80){
 		*end_ptr = _input + 1;
-
 		return input[0];
 	}
 
 	if ((input[0] & 0xE0) == 0xE0){
 		if (input[1] == 0 || input[2] == 0)
 			return -1;
-
 		*end_ptr = _input + 3;
-
 		return (input[0] & 0x0F)<<12 |
 		       (input[1] & 0x3F)<<6  |
 		       (input[2] & 0x3F);
@@ -1183,9 +1090,7 @@ static uint16_t utf8_to_ucs2(const char *_input, const char **end_ptr){
 	if ((input[0] & 0xC0) == 0xC0){
 		if (input[1] == 0)
 			return -1;
-
 		*end_ptr = _input + 2;
-
 		return (input[0] & 0x1F)<<6  |
 		       (input[1] & 0x3F);
 	}
@@ -1193,13 +1098,11 @@ static uint16_t utf8_to_ucs2(const char *_input, const char **end_ptr){
 	return -1;
 }
 
+//TODO: replace with https://wiki.libsdl.org/SDL3_ttf/TTF_GetStringSize
 IntRect Bitmap::textSize(const char *str){
 	guardDisposed();
-
 	GUARD_MEGA;
-
 	TTF_Font *font = p->font->getSdlFont();
-
 	std::string fixed = fixupString(str);
 	str = fixed.c_str();
 
@@ -1207,7 +1110,6 @@ IntRect Bitmap::textSize(const char *str){
 	TTF_Text* text = TTF_CreateText(NULL, font, str, SDL_strlen(str));
 	int w, h;
 	TTF_GetTextSize(text, &w, &h);
-
 	TTF_DestroyText(text);
 
 	/* If str is one character long, *endPtr == 0 */
@@ -1228,7 +1130,7 @@ void Bitmap::setFont(Font &value) {
 	*p->font = value;
 }
 
-void Bitmap::setInitFont(Font *value) noexcept {
+void Bitmap::setInitFont(Font *value) {
 	p->font = value;
 }
 
@@ -1247,11 +1149,11 @@ void Bitmap::ensureNonMega() const{
 	GUARD_MEGA;
 }
 
-void Bitmap::bindTex(ShaderBase &shader) noexcept {
+void Bitmap::bindTex(ShaderBase &shader) {
 	p->bindTexture(shader);
 }
 
-void Bitmap::taintArea(const IntRect &rect) noexcept {
+void Bitmap::taintArea(const IntRect &rect) {
 	p->addTaintedArea(rect);
 }
 
@@ -1260,6 +1162,5 @@ void Bitmap::releaseResources(){
 		SDL_DestroySurface(p->megaSurface);
 	else
 		shState->texPool().release(p->gl);
-
 	delete p;
 }

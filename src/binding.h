@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef BINDING_H
-#define BINDING_H
-
+#pragma once
 struct ScriptBinding{
 	/* Starts the part where the binding takes over,
 	 * loading the compressed scripts and executing them.
@@ -45,5 +43,3 @@ struct ScriptBinding{
 
 /* VTable defined in the binding source */
 extern ScriptBinding *scriptBinding;
-
-#endif // BINDING_H
