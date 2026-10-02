@@ -45,11 +45,8 @@
 
 // added global rotation and global scale, modified updateMatrix(), using SDL funcs instead of math.h
 
-#ifndef TRANSFORM_H
-#define TRANSFORM_H
-
+#pragma once
 #include "etc-internal.h"
-
 #include <SDL3/SDL_stdinc.h>
 
 class Transform{
@@ -209,8 +206,7 @@ private:
     		matrix[13] = ty;
 			matrix[14] = -1;
 			matrix[15] = 1;
-		}
-		else {
+		}else{
     		if (perspectiveRotation.x >= 360 || perspectiveRotation.x < -360)
     		    perspectiveRotation.x = (float)SDL_fmod(perspectiveRotation.x, 360);
 				
@@ -326,8 +322,5 @@ private:
 	Vec2 globalScale;
 
 	float matrix[16];
-
 	bool dirty;
 };
-
-#endif // TRANSFORM_H

@@ -19,9 +19,6 @@ begin
   # Load persistent data
   Persistent.load
 
-  print Journal.active?
-  Journal.set "c1"
-
   # Prepare for transition
   Graphics.freeze
   # Make scene object (title screen)

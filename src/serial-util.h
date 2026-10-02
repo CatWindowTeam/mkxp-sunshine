@@ -19,33 +19,26 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SERIALUTIL_H
-#define SERIALUTIL_H
-
+#pragma once
 #include <stdint.h>
 #include <string.h>
-
 #include <SDL3/SDL_endian.h>
 
 #if SDL_BYTEORDER != SDL_LIL_ENDIAN
-#error "Non little endian systems not supported"
+	#error "Non little endian systems not supported"
 #endif
 
 static inline int32_t readInt32(const char **dataP){
 	int32_t result;
-
 	SDL_memcpy(&result, *dataP, 4);
 	*dataP += 4;
-
 	return result;
 }
 
 static inline double readDouble(const char **dataP){
 	double result;
-
 	SDL_memcpy(&result, *dataP, 8);
 	*dataP += 8;
-
 	return result;
 }
 
@@ -58,5 +51,3 @@ static inline void writeDouble(char **dataP, double value){
 	SDL_memcpy(*dataP, &value, 8);
 	*dataP += 8;
 }
-
-#endif // SERIALUTIL_H

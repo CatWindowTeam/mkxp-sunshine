@@ -24,7 +24,6 @@
 #include "exception.h"
 #include "util.h"
 #include <stdarg.h>
-#include <SDL3/SDL_assert.h>
 #include <SDL3/SDL_stdinc.h>
 #include <string>
 

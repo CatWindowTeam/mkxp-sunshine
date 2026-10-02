@@ -39,6 +39,7 @@
 #include <ruby.h>
 #include <ruby/debug.h>
 #include <ruby/encoding.h>
+#include <ruby/version.h>
 #include "ruby/internal/eval.h"
 #include "ruby/internal/memory.h"
 #include <string>
@@ -57,6 +58,15 @@ static void mriBindingGc();
 struct BacktraceData{
 	/* Maps: Ruby visible filename, To: Actual script name */
 	tsl::robin_map<std::string, std::string> scriptNames;
+};
+
+
+char *ruby_argv[] = {
+    "oneshot",
+    "--yjit",
+    "-e",
+    "",
+    nullptr,
 };
 
 ScriptBinding scriptBindingImpl = {
@@ -483,6 +493,7 @@ static void mriBindingExecute(){
 	RUBY_INIT_STACK;
 	ruby_init();
 	ruby_init_loadpath();
+	ruby_options(4, ruby_argv);
 	rb_enc_set_default_external(rb_enc_from_encoding(rb_utf8_encoding()));
 	if (!conf.rubyLoadpaths.empty()){
 		/* Setup custom load paths */

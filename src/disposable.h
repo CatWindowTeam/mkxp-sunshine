@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DISPOSABLE_H
-#define DISPOSABLE_H
-
+#pragma once
 #include "intrulist.h"
 #include "exception.h"
 #include "sharedstate.h"
@@ -29,15 +27,13 @@
 #include "meow.h"
 #include "signals/signal.h"
 
-#include <assert.h>
-
 class Disposable{
 public:
 	Disposable() : disposed(false), link(this){
 		shState->graphics().addDisposable(this);
 	}
 
-	virtual ~Disposable() noexcept {
+	virtual ~Disposable() {
 		shState->graphics().remDisposable(this);
 	}
 
@@ -50,7 +46,7 @@ public:
 		wasDisposed();
 	}
 
-	bool isDisposed() const noexcept {
+	bool isDisposed() const {
 		return disposed;
 	}
 
@@ -65,9 +61,7 @@ protected:
 private:
 	virtual void releaseResources() = 0;
 	virtual const char *klassName() const = 0;
-
 	friend class Graphics;
-
 	bool disposed;
 	IntruListLink<Disposable> link;
 };
@@ -76,11 +70,7 @@ template<class C>
 inline bool nullOrDisposed(const C *d){
 	if (!d)
 		return true;
-
 	if (d->isDisposed())
 		return true;
-
 	return false;
 }
-
-#endif // DISPOSABLE_H

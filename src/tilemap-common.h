@@ -1,3 +1,5 @@
+//TODO: check this bullshit optimization
+
 /*
 ** tilemap-common.h
 **
@@ -19,9 +21,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TILEMAPCOMMON_H
-#define TILEMAPCOMMON_H
-
+#pragma once
 #include "table.h"
 #include "gl-util.h"
 #include "gl-meta.h"
@@ -33,7 +33,6 @@
 #include "quad.h"
 #include "etc-internal.h"
 #include "signals/signal.h"
-
 #include <stdint.h>
 #include <assert.h>
 #include <vector>
@@ -103,7 +102,6 @@ struct FlashMap{
 		vao.vbo = VBO::gen();
 		vao.ibo = shState->globalIBO().ibo;
 		GLMeta::vaoFillInVertexData<CVertex>(vao);
-
 		GLMeta::vaoInit(vao);
 	}
 
@@ -124,7 +122,6 @@ struct FlashMap{
 		data = value;
 		dataCon.Disconnect();
 		dirty = true;
-
 		if (!data)
 			return;
 
@@ -146,23 +143,18 @@ struct FlashMap{
 
 	void draw(float alpha, const Vec2i &trans){
 		const size_t count = quadCount();
-
 		if (count == 0)
 			return;
 
 		GLMeta::vaoBind(vao);
 		glState.blendMode.pushSet(BlendAddition);
-
 		FlashMapShader &shader = shState->shaders().flashMap;
 		shader.bind();
 		shader.applyViewportProj();
 		shader.setAlpha(alpha);
 		shader.setTranslation(trans);
-
 		gl.DrawElements(GL_TRIANGLES, count * 6, _GL_INDEX_TYPE, 0);
-
 		glState.blendMode.pop();
-
 		GLMeta::vaoUnbind(vao);
 	}
 
@@ -182,26 +174,21 @@ private:
 			return false;
 
 		const float max = 0xF;
-
 		float b = ((packed & 0x000F) >> 0) / max;
 		float g = ((packed & 0x00F0) >> 4) / max;
 		float r = ((packed & 0x0F00) >> 8) / max;
-
 		out = Vec4(r, g, b, 1);
-
 		return true;
 	}
 
 	void rebuildBuffer(){
 		vertices.clear();
-
 		if (!data)
 			return;
 
 		for (int x = 0; x < viewp.w; ++x)
 			for (int y = 0; y < viewp.h; ++y){
 				Vec4 color;
-
 				if (!sampleFlashColor(color, x+viewp.x, y+viewp.y))
 					continue;
 
@@ -210,7 +197,6 @@ private:
 				CVertex v[4];
 				Quad::setPosRect(v, posRect);
 				Quad::setColor(v, color);
-
 				for (size_t i = 0; i < 4; ++i)
 					vertices.push_back(v[i]);
 			}
@@ -219,14 +205,12 @@ private:
 			return;
 
 		VBO::bind(vao.vbo);
-
 		if (quadCount() > allocQuads){
 			allocQuads = quadCount();
 			VBO::allocEmpty(sizeof(CVertex) * vertices.size());
 		}
 
 		VBO::uploadSubData(0, sizeof(CVertex) * vertices.size(), dataPtr(vertices));
-
 		VBO::unbind();
 
 		/* Ensure global IBO size */
@@ -244,5 +228,3 @@ private:
 	size_t allocQuads;
 	std::vector<CVertex> vertices;
 };
-
-#endif // TILEMAPCOMMON_H

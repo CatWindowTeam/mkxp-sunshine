@@ -78,7 +78,6 @@ public:
 	static JoyState joyState;
 	static MouseState mouseState;
 	static TouchState touchState;
-
 	static bool mouseEnabled;
 	static bool gamepadEnabled;
 	static bool allocUserEvents();
@@ -132,6 +131,7 @@ private:
 		AtomicFlag immFiniFlag;
 		double acc;
 		uint32_t accDiv;
+		uint64_t frequency;
 	} fps;
 };
 

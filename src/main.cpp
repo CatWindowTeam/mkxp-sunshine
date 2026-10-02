@@ -36,7 +36,7 @@
 	#include <unistd.h>
 #endif
 #ifdef windows
-        #include <windows.h>
+	#include <windows.h>
 #endif
 #include <string>
 #include <iostream>
@@ -81,25 +81,10 @@ static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
 	rtData->rqTermAck.set();
 }
 
-int rgssThreadFun(void *userdata){
+static int rgssThreadFun(void *userdata){
 	RGSSThreadData *threadData = static_cast<RGSSThreadData*>(userdata);
 	SDL_Window *win = threadData->window;
-	SDL_GLContext glCtx;
-
-	/* Setup GL context */
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	//https://wiki.libsdl.org/SDL3/README-android
-	#ifdef mkxp_android
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
-	#endif
-
-	#ifndef NDEBUG
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-	#endif
-
-	glCtx = SDL_GL_CreateContext(win);
+	SDL_GLContext glCtx = SDL_GL_CreateContext(win);
 	if (!glCtx){
 		rgssThreadError(threadData, "Failed to create OpenGL context");
 		return 0;
@@ -144,10 +129,8 @@ static void setupWindowIcon(SDL_Window *win){
 	SDL_IOStream *iconSrc;
 	iconSrc = SDL_IOFromConstMem(assets_icon_png, assets_icon_png_len);
 	SDL_Surface *iconImg = IMG_Load_IO(iconSrc, true);
-	if (iconImg){
-		SDL_SetWindowIcon(win, iconImg);
-		SDL_DestroySurface(iconImg);
-	}
+	SDL_SetWindowIcon(win, iconImg);
+	SDL_DestroySurface(iconImg);
 }
 
 int main(int argc, char *argv[]){
@@ -163,12 +146,13 @@ int main(int argc, char *argv[]){
 	#elif windows
 		SDL_SetHint("SDL_HINT_WINDOWS_RAW_KEYBOARD", "1");
 		SDL_SetHint("SDL_HINT_WINDOWS_RAW_KEYBOARD_EXCLUDE_HOTKEYS", "1");
-	#elif ps2
-		SDL_SetHint("SDL_HINT_PS2_GS_MODE", "NTSC");
 	#elif mkxp_android
 		SDL_SetHint(SDL_HINT_ANDROID_ALLOW_PERSISTENT_FOLDER_ACCESS, "1");
 		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "1");
 		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "1");
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
 	#endif
 
 	/* initialize SDL first */
@@ -253,9 +237,13 @@ int main(int argc, char *argv[]){
 		SDL_Quit();
 		return 1;
 	}
-
+	
 	SDL_Window *win;
 	Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);	
+	#ifndef NDEBUG
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+	#endif
 
 	win = SDL_CreateWindow(conf.windowTitle.c_str(), conf.defScreenW, conf.defScreenH, winFlags);
 	if (!win){
@@ -265,7 +253,8 @@ int main(int argc, char *argv[]){
 		SDL_Quit();
 		return 1;
 	}
-	if (conf.fullscreen){ SDL_SetWindowFullscreen(win, true); }
+	if (conf.fullscreen)
+		SDL_SetWindowFullscreen(win, true);
 	
 	/* OSX and Windows have their own native ways of
 	 * dealing with icons; don't interfere with them */
@@ -282,8 +271,8 @@ int main(int argc, char *argv[]){
 
 	MIX_Mixer* mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
 	if (!mixer){
-		SDL_DestroyWindow(win);
 		WarnMsg("Error creating Mixer Device, check your system audio configuration");
+		SDL_DestroyWindow(win);
 		MIX_Quit();
 		TTF_Quit();
 		SDL_Quit();
@@ -294,9 +283,8 @@ int main(int argc, char *argv[]){
 	float refreshRate = 60.0f;
 	SDL_DisplayID displayID = SDL_GetDisplayForWindow(win);
 	const SDL_DisplayMode *mode = SDL_GetCurrentDisplayMode(displayID);
-	if(mode != nullptr && mode->refresh_rate > 0.0f) {
+	if(mode != nullptr && mode->refresh_rate > 0.0f)
 	    refreshRate = mode->refresh_rate;
-	}
 
 	RGSSThreadData rtData(&eventThread, win, mixer, refreshRate);	
 	#ifndef STEAM
@@ -327,7 +315,7 @@ int main(int argc, char *argv[]){
 	rtData.rqTerm.set();
 
 	/* Wait for RGSS thread response */
-	for (int i = 0; i < 1000; ++i){
+	for(int i = 0; i < 1000; ++i){
 		/* We can stop waiting when the request was ack'd */
 		if (rtData.rqTermAck){
 			Debug() << "RGSS thread ack'd request after " << i*10 << "ms";
@@ -350,7 +338,6 @@ int main(int argc, char *argv[]){
 
 	/* Clean up any remainin events */
 	eventThread.cleanup();
-
 	unloadLocale();
 	unloadLanguageMetadata();
 	if(show_crash_screen){
@@ -358,7 +345,6 @@ int main(int argc, char *argv[]){
 	}
 	MIX_DestroyMixer(mixer);
 	SDL_DestroyWindow(win);
-
 	MIX_Quit();
 	TTF_Quit();
 	SDL_Quit();
