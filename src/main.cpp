@@ -119,7 +119,6 @@ int rgssThreadFun(void *userdata){
 	gl.ClearColor(0, 0, 0, 1);
 	gl.Clear(GL_COLOR_BUFFER_BIT);
 	SDL_GL_SwapWindow(win);
-
 	#ifndef NDEBUG
 		GLDebugLogger dLogger;
 	#endif
@@ -331,7 +330,7 @@ int main(int argc, char *argv[]){
 	for (int i = 0; i < 1000; ++i){
 		/* We can stop waiting when the request was ack'd */
 		if (rtData.rqTermAck){
-			Debug() << "[main] RGSS thread ack'd request after " << i*10 << "ms";
+			Debug() << "RGSS thread ack'd request after " << i*10 << "ms";
 			break;
 		}
 		/* Give RGSS thread some time to respond */
