@@ -114,7 +114,6 @@ public:
 
 private:
 	static bool eventFilter(void *, SDL_Event*);
-
 	void resetInputStates();
 	void setFullscreen(SDL_Window *, bool mode);
 	void updateCursorState(bool inWindow, const SDL_Rect &screen);
@@ -124,7 +123,6 @@ private:
 	bool fullscreen;
 	bool showCursor;
 	AtomicFlag msgBoxDone;
-
 	struct{
 		uint64_t lastFrame;
 		uint64_t displayCounter;
@@ -153,10 +151,8 @@ struct UnidirMessage{
 	/* Done from the sending side */
 	void post(const T &value){
 		SDL_LockMutex(mutex);
-
 		changed.set();
 		current = value;
-
 		SDL_UnlockMutex(mutex);
 	}
 
@@ -166,12 +162,9 @@ struct UnidirMessage{
 			return false;
 
 		SDL_LockMutex(mutex);
-
 		out = current;
 		changed.clear();
-
 		SDL_UnlockMutex(mutex);
-
 		return true;
 	}
 
@@ -225,25 +218,18 @@ struct RGSSThreadData{
 	/* In response, RGSS thread sets this to confirm
 	 * that it received the request and isn't stuck */
 	AtomicFlag rqTermAck;
-
 	/* Set when F12 is pressed */
 	AtomicFlag rqReset;
-
 	/* Set when F12 is released */
 	AtomicFlag rqResetFinish;
-
 	/* True if we're currently exiting */
 	AtomicFlag exiting;
-
 	/* True if exiting is allowed */
 	AtomicFlag allowExit;
-
 	/* Set when attempting to exit and allowExit is false */
 	AtomicFlag triedExit;
-
 	/* True if accepting text input */
 	AtomicFlag acceptingTextInput;
-
 	EventThread *ethread;
 	UnidirMessage<Vec2i> windowSizeMsg;
 	UnidirMessage<BDescVec> bindingUpdateMsg;

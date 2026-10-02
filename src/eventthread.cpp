@@ -173,47 +173,36 @@ void EventThread::process(RGSSThreadData &rtData){
 			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED :
 				winW = event.window.data1;
 				winH = event.window.data2;
-
 				windowSizeMsg.post(Vec2i(winW, winH));
 				if (shState != nullptr)
 					shState->windowSignals.resized.Emit(event.window.data1, event.window.data2);
 				resetInputStates();
 				break;
-
 			case SDL_EVENT_WINDOW_MOUSE_ENTER :
 				cursorInWindow = true;
 				mouseState.inWindow = true;
 				updateCursorState(cursorInWindow && windowFocused, gameScreen);
-
 				break;
-
 			case SDL_EVENT_WINDOW_MOUSE_LEAVE :
 				cursorInWindow = false;
 				mouseState.inWindow = false;
 				updateCursorState(cursorInWindow && windowFocused, gameScreen);
-
 				break;
-
 			case SDL_EVENT_WINDOW_CLOSE_REQUESTED :
 				if (rtData.allowExit) {
 					terminate = true;
 				} else {
 					rtData.triedExit.set();
 				}
-
 				break;
-
 			case SDL_EVENT_WINDOW_FOCUS_GAINED :
 				windowFocused = true;
 				updateCursorState(cursorInWindow && windowFocused, gameScreen);
-
 				break;
-
 			case SDL_EVENT_WINDOW_FOCUS_LOST :
 				windowFocused = false;
 				updateCursorState(cursorInWindow && windowFocused, gameScreen);
 				resetInputStates();
-
 				break;
 		#ifdef __APPLE__
 			case SDL_EVENT_WINDOW_MOVED:
@@ -240,13 +229,10 @@ void EventThread::process(RGSSThreadData &rtData){
 			} else {
 				rtData.triedExit.set();
 			}
-
 			break;
-
 		case SDL_EVENT_TEXT_INPUT:
 			if (rtData.inputText.length() < (size_t)(rtData.inputTextLimit)) rtData.inputText += event.text.text;
 			break;
-
 		case SDL_EVENT_KEY_DOWN :
 			if (event.key.scancode == SDL_SCANCODE_F2){
 				if (!displayingFPS){
@@ -260,7 +246,6 @@ void EventThread::process(RGSSThreadData &rtData){
 						SDL_strlcpy(pendingTitle, conf.windowTitle.c_str(), sizeof(pendingTitle));
 						break;
 					}
-
 					SDL_SetWindowTitle(win, conf.windowTitle.c_str());
 				}
 				break;
@@ -278,70 +263,55 @@ void EventThread::process(RGSSThreadData &rtData){
 				rtData.rqReset.set();
 				break;
 			}
-
 			if (rtData.acceptingTextInput) {
 				if (event.key.key == SDLK_BACKSPACE && rtData.inputText.length() > 0)
 					rtData.inputText.pop_back();
 				else if (event.key.key == SDLK_RETURN)
 					rtData.acceptingTextInput.clear();
-
 				break;
 			}
-
 			keyStates[event.key.scancode] = true;
 			break;
-
 		case SDL_EVENT_KEY_UP :
 			if (event.key.scancode == SDL_SCANCODE_F12){
 				if (!conf.debugMode)
 					break;
-
 				resetting = false;
 				rtData.rqResetFinish.set();
 				break;
 			}
-
 			keyStates[event.key.scancode] = false;
 			break;
-
 		case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 			gcState.buttons[event.gbutton.button] = true;
 			break;
-
 		case SDL_EVENT_GAMEPAD_BUTTON_UP:
 			gcState.buttons[event.gbutton.button] = false;
 			break;
-
 		case SDL_EVENT_GAMEPAD_AXIS_MOTION:
 			gcState.axes[event.gaxis.axis] = event.gaxis.value;
 			break;
-
 		case SDL_EVENT_GAMEPAD_ADDED:
 			gc = SDL_OpenGamepad(event.gdevice.which);
 			id = SDL_GetJoystickID(SDL_GetGamepadJoystick(gc));
 			gamepads[id] = gc;
 			break;
-
 		case SDL_EVENT_GAMEPAD_REMOVED:
 			gcit = gamepads.find(event.gdevice.which);
 			SDL_CloseGamepad(gcit->second);
 			gamepads.erase(gcit);
 			break;
-
 		case SDL_EVENT_MOUSE_BUTTON_DOWN :
 			mouseState.buttons[event.button.button] = true;
 			break;
-
 		case SDL_EVENT_MOUSE_BUTTON_UP :
 			mouseState.buttons[event.button.button] = false;
 			break;
-
 		case SDL_EVENT_MOUSE_MOTION :
 			mouseState.x = event.motion.x;
 			mouseState.y = event.motion.y;
 			updateCursorState(cursorInWindow, gameScreen);
 			break;
-
 		// more mouse support for sunshine :3c
 		case SDL_EVENT_MOUSE_WHEEL:
 			{
@@ -353,22 +323,18 @@ void EventThread::process(RGSSThreadData &rtData){
 				mouseState.wheelY += event.wheel.y;
 			}
 			break;
-
 		case SDL_EVENT_FINGER_DOWN :
 			i = event.tfinger.fingerID;
 			touchState.fingers[i].down = true;
-
 		case SDL_EVENT_FINGER_MOTION :
 			i = event.tfinger.fingerID;
 			touchState.fingers[i].x = event.tfinger.x * winW;
 			touchState.fingers[i].y = event.tfinger.y * winH;
 			break;
-
 		case SDL_EVENT_FINGER_UP :
 			i = event.tfinger.fingerID;
 			SDL_memset(&touchState.fingers[i], 0, sizeof(touchState.fingers[0]));
 			break;
-
 		default :
 			/* Handle user events */
 			switch(event.type - usrIdStart){
@@ -382,8 +348,7 @@ void EventThread::process(RGSSThreadData &rtData){
 				break;
 
 			case REQUEST_WINRESIZE :
-				if (fullscreen)
-				{
+				if (fullscreen){
 					int winW;
 					int winH;
 					SDL_GetWindowSize(win, &winW, &winH);
@@ -402,12 +367,10 @@ void EventThread::process(RGSSThreadData &rtData){
 				SDL_free(event.user.data1);
 				msgBoxDone.set();
 				break;
-
 			case REQUEST_SETCURSORVISIBLE :
 				showCursor = event.user.code;
 				updateCursorState(cursorInWindow, gameScreen);
 				break;
-
 			case UPDATE_FPS :
 				if (!fps.sendUpdates)
 					break;
@@ -423,14 +386,12 @@ void EventThread::process(RGSSThreadData &rtData){
 
 				SDL_SetWindowTitle(win, buffer);
 				break;
-
 			case UPDATE_SCREEN_RECT :
 				gameScreen.x = event.user.windowID;
 				gameScreen.y = event.user.code;
 				gameScreen.w = reinterpret_cast<intptr_t>(event.user.data1);
 				gameScreen.h = reinterpret_cast<intptr_t>(event.user.data2);
 				updateCursorState(cursorInWindow, gameScreen);
-
 				break;
 			}
 		}
@@ -441,14 +402,12 @@ void EventThread::process(RGSSThreadData &rtData){
 
 	/* Just in case */
 	rtData.syncPoint.resumeThreads();
-
 	for (gcit = gamepads.begin(); gcit != gamepads.end(); ++gcit)
 		SDL_CloseGamepad(gcit->second);
 }
 
 void EventThread::cleanup(){
 	SDL_Event event;
-
 	while (SDL_PollEvent(&event))
 		if ((event.type - usrIdStart) == REQUEST_MESSAGEBOX)
 			SDL_free(event.user.data1);
