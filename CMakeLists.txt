@@ -46,11 +46,6 @@ if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/deps.cmake)
-pkg_check_modules(GIO REQUIRED IMPORTED_TARGET gio-2.0)
-
-target_link_libraries(oneshot PRIVATE
-    PkgConfig::GIO
-)
 add_subdirectory(scripts)
 vita_finish()
 message(STATUS "")

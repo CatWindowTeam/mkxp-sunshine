@@ -33,6 +33,10 @@ function(detect_de_pkgs)
     	    set(API_ONESHOT_EXTENSIONS_KDE OFF)
     	endif()
     endif()
+    pkg_check_modules(GIO REQUIRED IMPORTED_TARGET gio-2.0)
+    target_link_libraries(${APP_TARGET} PRIVATE
+        PkgConfig::GIO
+    )
 endfunction()
 
 set(UNIX_SYSTEMS
