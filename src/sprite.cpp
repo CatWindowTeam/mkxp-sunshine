@@ -26,11 +26,9 @@
 #include "etc-internal.h"
 #include "util.h"
 #include "signals/signal.h"
-#include "gl-util.h"
 #include "quad.h"
 #include "transform.h"
 #include "shader.h"
-#include "glstate.h"
 #include "quadarray.h"
 #include "sunshine.h"
 #include <math.h>
@@ -583,7 +581,7 @@ void Sprite::draw(){
 				base = &shader;
 			
 				if (shState->sunshine().noiseBitmap())
-					shader.setNoiseTexture(shState->sunshine().noiseBitmap()->getGLTypes().tex);
+					shader.setNoiseTexture(shState->sunshine().noiseBitmap()->getRenderTarget().tex);
 			
 				break;
 			}
@@ -644,23 +642,21 @@ void Sprite::draw(){
 	if(p->trans.getPerspectiveMode())
 		base->applyPerspectiveProj();
 
-	glState.blendMode.pushSet(p->blendType);
+	shState->render().pushBlendMode(p->blendType);
 
 	p->bitmap->bindTex(*base);
 	
-	if (smooth){
-		//TEX::generateMipMaps();
-		TEX::setSmooth(true);
-	}
+	if (smooth)
+		shState->render().setTextureSmooth(p->bitmap->getRenderTarget().tex, true);
 
 	if (p->wave.active)
 		p->wave.qArray.draw();
 	else
 		p->quad.draw();
 
-	glState.blendMode.pop();
+	shState->render().popBlendMode();
 	if (smooth)
-		TEX::setSmooth(false);
+		shState->render().setTextureSmooth(p->bitmap->getRenderTarget().tex, false);
 }
 
 void Sprite::onGeometryChange(const Scene::Geometry &geo){

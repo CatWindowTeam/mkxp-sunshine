@@ -22,7 +22,6 @@
 #include "texpool.h"
 #include "exception.h"
 #include "sharedstate.h"
-#include "glstate.h"
 #include "meow.h"
 #include "util.h"
 #include <list>
@@ -38,8 +37,8 @@ static uint32_t byteCount(Size &s){
 }
 
 struct CacheNode{
-	TEXFBO obj;
-	std::list<TEXFBO>::iterator prioIter;
+	RenderTarget obj;
+	std::list<RenderTarget>::iterator prioIter;
 
 	bool operator==(const CacheNode &o) const{
 		return obj == o.obj;
@@ -53,7 +52,7 @@ struct TexPoolPrivate{
 	tsl::robin_map<Size, CNodeList, PairHash> poolHash;
 
 	/* Contains all cached TexFBOs, sorted by release time */
-	std::list<TEXFBO> priorityQueue;
+	std::list<RenderTarget> priorityQueue;
 
 	/* Maximal allowed cache memory */
 	const uint32_t maxMemSize;
@@ -80,11 +79,11 @@ TexPool::TexPool(uint32_t maxMemSize){
 }
 
 TexPool::~TexPool(){
-	std::list<TEXFBO>::iterator iter;
+	std::list<RenderTarget>::iterator iter;
 
 	for (iter = p->priorityQueue.begin(); iter != p->priorityQueue.end(); ++iter) {
-		TEXFBO obj = *iter;
-		TEXFBO::fini(obj);
+		RenderTarget obj = *iter;
+		shState->render().destroyRenderTarget(obj);
 		--p->objCount;
 	}
 
@@ -93,7 +92,7 @@ TexPool::~TexPool(){
 	delete p;
 }
 
-TEXFBO TexPool::request(int width, int height){
+RenderTarget TexPool::request(int width, int height){
 	CacheNode cnode;
 	Size size(width, height);
 	/* See if we can statisfy request from cache */
@@ -111,28 +110,26 @@ TEXFBO TexPool::request(int width, int height){
 		return cnode.obj;
 	}
 
-	int maxSize = glState.caps.maxTexSize;
+	int maxSize = shState->render().maxTextureSize();
 	if (width > maxSize || height > maxSize){
 		crash(Exception::MKXPError, "Texture dimensions [%d, %d] exceed hardware capabilities", width, height);
 	}
 
 	/* Nope, create it instead */
-	TEXFBO::init(cnode.obj);
-	TEXFBO::allocEmpty(cnode.obj, width, height);
-	TEXFBO::linkFBO(cnode.obj);
+	cnode.obj = shState->render().createRenderTarget(width, height);
 
 	return cnode.obj;
 }
 
-void TexPool::release(TEXFBO &obj){
-	if (obj.tex == TEX::ID(0) || obj.fbo == FBO::ID(0)){
-		TEXFBO::fini(obj);
+void TexPool::release(RenderTarget &obj){
+	if (!obj.tex.valid() || !obj.fbo.valid()){
+		shState->render().destroyRenderTarget(obj);
 		return;
 	}
 
 	if (p->disabled){
 		/* If we're disabled, delete without caching */
-		TEXFBO::fini(obj);
+		shState->render().destroyRenderTarget(obj);
 		return;
 	}
 
@@ -159,7 +156,7 @@ void TexPool::release(TEXFBO &obj){
 
 		p->priorityQueue.pop_back();
 
-		TEXFBO::fini(last.obj);
+		shState->render().destroyRenderTarget(last.obj);
 
 		newMemSize -= byteCount(removedSize);
 		--p->objCount;

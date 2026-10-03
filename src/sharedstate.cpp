@@ -21,6 +21,7 @@
 
 #include "sharedstate.h"
 #include "util.h"
+#include <memory>
 #include "filesystem.h"
 #include "graphics.h"
 #include "input.h"
@@ -29,12 +30,11 @@
 #ifdef STEAM
 	#include "steam.h"
 #endif
-#include "glstate.h"
+#include "render/irender.h"
 #include "shader.h"
 #include "texpool.h"
 #include "font.h"
 #include "eventthread.h"
-#include "gl-util.h"
 #include "global-ibo.h"
 #include "quad.h"
 #include "binding.h"
@@ -63,6 +63,8 @@ struct SharedStatePrivate{
 	RGSSThreadData &rtData;
 	Config &config;
 
+	std::unique_ptr<IRender> render;
+
 	TexPool texPool;
 
 	Graphics graphics;
@@ -75,20 +77,18 @@ struct SharedStatePrivate{
 		Steam steam;
 	#endif
 
-	GLState _glState;
-
 	ShaderSet shaders;
 
 	SharedFontState fontState;
 	Font *defaultFont;
 
-	TEX::ID globalTex;
+	TexHandle globalTex;
 	int globalTexW, globalTexH;
 	bool globalTexDirty;
 
-	TEXFBO gpTexFBO;
+	RenderTarget gpTexFBO;
 
-	TEXFBO atlasTex;
+	RenderTarget atlasTex;
 
 	Quad gpQuad;
 
@@ -103,12 +103,12 @@ struct SharedStatePrivate{
 	      eThread(*threadData->ethread),
 	      rtData(*threadData),
 	      config(conf),
-	      graphics(threadData),
+	      render(createRender(conf)),
+	      graphics(threadData, *render),
 	      input(*threadData),
 	      audio(*threadData),
 	      oneshot(*threadData),
 	      sunshine(),
-	      _glState(conf),
 	      fontState(conf),
 	      stampCounter(0)
 	{
@@ -126,23 +126,16 @@ struct SharedStatePrivate{
 		globalTexW = 128;
 		globalTexH = 64;
 
-		globalTex = TEX::gen();
-		TEX::bind(globalTex);
-		TEX::setRepeat(false);
-		TEX::setSmooth(false);
-		TEX::allocEmpty(globalTexW, globalTexH);
+		globalTex = render->createTexture(globalTexW, globalTexH);
 		globalTexDirty = false;
 
-		TEXFBO::init(gpTexFBO);
-		/* Reuse starting values */
-		TEXFBO::allocEmpty(gpTexFBO, globalTexW, globalTexH);
-		TEXFBO::linkFBO(gpTexFBO);
+		gpTexFBO = render->createRenderTarget(globalTexW, globalTexH);
 	}
 
 	~SharedStatePrivate(){
-		TEX::del(globalTex);
-		TEXFBO::fini(gpTexFBO);
-		TEXFBO::fini(atlasTex);
+		render->destroyTexture(globalTex);
+		render->destroyRenderTarget(gpTexFBO);
+		render->destroyRenderTarget(atlasTex);
 	}
 };
 
@@ -210,7 +203,10 @@ GSATT(Sunshine&, sunshine)
 #ifdef STEAM
 	GSATT(Steam&, steam)
 #endif
-GSATT(GLState&, _glState)
+IRender &SharedState::render() const{
+	return *p->render;
+}
+
 GSATT(ShaderSet&, shaders)
 GSATT(TexPool&, texPool)
 GSATT(Quad&, gpQuad)
@@ -228,13 +224,14 @@ GlobalIBO &SharedState::globalIBO(){
 	return *_globalIBO;
 }
 
-void SharedState::bindTex(){
-	TEX::bind(p->globalTex);
-
+TexHandle SharedState::bindTex(){
 	if (p->globalTexDirty){
-		TEX::allocEmpty(p->globalTexW, p->globalTexH);
+		p->render->resizeTexture(p->globalTex, p->globalTexW, p->globalTexH);
 		p->globalTexDirty = false;
 	}
+
+	p->render->bindTexture(p->globalTex);
+	return p->globalTex;
 }
 
 void SharedState::ensureTexSize(int minW, int minH, Vec2i &currentSizeOut){
@@ -251,7 +248,7 @@ void SharedState::ensureTexSize(int minW, int minH, Vec2i &currentSizeOut){
 	currentSizeOut = Vec2i(p->globalTexW, p->globalTexH);
 }
 
-TEXFBO &SharedState::gpTexFBO(int minW, int minH){
+RenderTarget &SharedState::gpTexFBO(int minW, int minH){
 	bool needResize = false;
 
 	if (minW > p->gpTexFBO.width){
@@ -265,34 +262,31 @@ TEXFBO &SharedState::gpTexFBO(int minW, int minH){
 	}
 
 	if (needResize){
-		TEX::bind(p->gpTexFBO.tex);
-		TEX::allocEmpty(p->gpTexFBO.width, p->gpTexFBO.height);
+		p->render->resizeRenderTarget(p->gpTexFBO, p->gpTexFBO.width, p->gpTexFBO.height);
 	}
 
 	return p->gpTexFBO;
 }
 
-void SharedState::requestAtlasTex(int w, int h, TEXFBO &out){
-	TEXFBO tex;
+void SharedState::requestAtlasTex(int w, int h, RenderTarget &out){
+	RenderTarget tex;
 
 	if (w == p->atlasTex.width && h == p->atlasTex.height){
 		tex = p->atlasTex;
-		p->atlasTex = TEXFBO();
+		p->atlasTex = RenderTarget();
 	}else{
-		TEXFBO::init(tex);
-		TEXFBO::allocEmpty(tex, w, h);
-		TEXFBO::linkFBO(tex);
+		tex = p->render->createRenderTarget(w, h);
 	}
 
 	out = tex;
 }
 
-void SharedState::releaseAtlasTex(TEXFBO &tex){
+void SharedState::releaseAtlasTex(RenderTarget &tex){
 	/* No point in caching an invalid object */
-	if (tex.tex == TEX::ID(0))
+	if (!tex.tex.valid())
 		return;
 
-	TEXFBO::fini(p->atlasTex);
+	p->render->destroyRenderTarget(p->atlasTex);
 
 	p->atlasTex = tex;
 }

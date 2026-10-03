@@ -5,10 +5,8 @@
 #include "etc-internal.h"
 #include "util.h"
 #include "signals/signal.h"
-#include "gl-util.h"
 #include "quad.h"
 #include "shader.h"
-#include "glstate.h"
 #include "quadarray.h"
 #include "config.h"
 #include "sunshine.h"
@@ -219,7 +217,7 @@ void LightMap::draw(){
 
 	if (p->wallMap)
 	{
-		shader.setWallMapTexture(p->wallMap->getGLTypes().tex);
+		shader.setWallMapTexture(p->wallMap->getRenderTarget().tex);
 		shader.setWallMapResolution(p->wallMap->width(), p->wallMap->height());
 	}
 	shader.setCameraPosition(p->cameraX, p->cameraY);
@@ -235,13 +233,13 @@ void LightMap::draw(){
 	std::chrono::duration<float> elapsed = currentTime - startTime;
 	shader.setTime(elapsed.count());
 
-	glState.blendMode.pushSet(BlendMultiply);
+	shState->render().pushBlendMode(BlendMultiply);
 
 	p->bitmap->bindTex(shader);
 
 	p->quad.draw();
 
-	glState.blendMode.pop();
+	shState->render().popBlendMode();
 }
 
 void LightMap::onGeometryChange(const Scene::Geometry &geo){

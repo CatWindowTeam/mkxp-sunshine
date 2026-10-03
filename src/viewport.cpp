@@ -25,7 +25,6 @@
 #include "etc.h"
 #include "util.h"
 #include "quad.h"
-#include "glstate.h"
 #include "graphics.h"
 #include "signals/signal.h"
 
@@ -218,8 +217,8 @@ void Viewport::composite(){
 		return;
 
 	/* Setup scissor */
-	glState.scissorTest.pushSet(true);
-	glState.scissorBox.pushSet(p->rect->toIntRect());
+	shState->render().pushScissorTest(true);
+	shState->render().pushScissorBox(p->rect->toIntRect());
 
 	Scene::composite();
 
@@ -229,8 +228,8 @@ void Viewport::composite(){
 		scene->requestViewportRender
 		        (p->color->norm, flashColor, p->tone->norm);
 
-	glState.scissorBox.pop();
-	glState.scissorTest.pop();
+	shState->render().popScissorBox();
+	shState->render().popScissorTest();
 }
 
 /* SceneElement */

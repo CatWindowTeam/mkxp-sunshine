@@ -23,6 +23,7 @@
 #define SHADER_H
 
 #include "etc-internal.h"
+#include "render/irender.h"
 #include "gl-util.h"
 #include "glstate.h"
 
@@ -45,7 +46,7 @@ protected:
 	void initFromFile(const char *vertFile, const char *fragFile, const char *programName);
 
 	static void setVec4Uniform(GLint location, const Vec4 &vec);
-	static void setTexUniform(GLint location, unsigned unitIndex, TEX::ID texture);
+	static void setTexUniform(GLint location, unsigned unitIndex, TexHandle texture);
 
 	GLuint vertShader, fragShader;
 	GLuint program;
@@ -109,7 +110,7 @@ class DynamicLightShader : public ShaderBase{
 public:
 	DynamicLightShader();
 
-	void setWallMapTexture(TEX::ID texture);
+	void setWallMapTexture(TexHandle texture);
 	void setWallMapResolution(int x, int y);
 	void setCameraPosition(int x, int y);
 	void setTileMapOffset(int x, int y);
@@ -156,9 +157,9 @@ class TransShader : public ShaderBase{
 public:
 	TransShader();
 
-	void setCurrentScene(TEX::ID tex);
-	void setFrozenScene(TEX::ID tex);
-	void setTransMap(TEX::ID tex);
+	void setCurrentScene(TexHandle tex);
+	void setFrozenScene(TexHandle tex);
+	void setTransMap(TexHandle tex);
 	void setProg(float value);
 	void setVague(float value);
 
@@ -170,8 +171,8 @@ class SimpleTransShader : public ShaderBase{
 public:
 	SimpleTransShader();
 
-	void setCurrentScene(TEX::ID tex);
-	void setFrozenScene(TEX::ID tex);
+	void setCurrentScene(TexHandle tex);
+	void setFrozenScene(TexHandle tex);
 	void setProg(float value);
 
 private:
@@ -208,7 +209,7 @@ class WaterShader : public SpriteShaderBase{
 public:
 	WaterShader();
 
-	void setNoiseTexture(TEX::ID texture);
+	void setNoiseTexture(TexHandle texture);
 
 private:
 	GLint u_noiseTexture;
@@ -225,7 +226,7 @@ public:
 
 	void setAniIndex(int value);
 	void setOffset(const Vec2i &value);
-	void setNoiseTexture(TEX::ID texture);
+	void setNoiseTexture(TexHandle texture);
 
 private:
 	GLint u_aniIndex, u_offset, u_noiseTexture;
@@ -326,7 +327,7 @@ public:
 	BltShader();
 
 	void setSource();
-	void setDestination(const TEX::ID value);
+	void setDestination(const TexHandle value);
 	void setDestCoorF(const Vec2 &value);
 	void setSubRect(const FloatRect &value);
 	void setOpacity(float value);
@@ -340,7 +341,7 @@ class ObscuredShader : public ShaderBase{
 public:
 	ObscuredShader();
 
-	void setObscured(const TEX::ID value);
+	void setObscured(const TexHandle value);
 
 private:
 	GLint u_obscured;

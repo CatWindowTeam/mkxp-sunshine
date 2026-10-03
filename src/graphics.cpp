@@ -25,10 +25,8 @@
 
 #include "graphics.h"
 #include "util.h"
-#include "gl-util.h"
 #include "sharedstate.h"
 #include "config.h"
-#include "glstate.h"
 #include "shader.h"
 #include "scene.h"
 #include "quad.h"
@@ -60,30 +58,30 @@
 #define DEF_FRAMERATE (60)
 
 struct PingPong{
-	TEXFBO rt[2];
+	IRender &render;
+	RenderTarget rt[2];
 	uint8_t srcInd, dstInd;
 	int screenW, screenH;
 
-	PingPong(int screenW, int screenH) : srcInd(0), dstInd(1), screenW(screenW), screenH(screenH){
+	PingPong(IRender &render, int screenW, int screenH) : render(render), srcInd(0), dstInd(1), screenW(screenW), screenH(screenH){
 		for (int i = 0; i < 2; ++i){
-			TEXFBO::init(rt[i]);
-			TEXFBO::allocEmpty(rt[i], screenW, screenH);
-			TEXFBO::linkFBO(rt[i]);
-			gl.ClearColor(0, 0, 0, 1);
-			FBO::clear();
+			rt[i] = render.createRenderTarget(screenW, screenH);
+			render.pushClearColor(Vec4(0, 0, 0, 1));
+			render.clear();
+			render.popClearColor();
 		}
 	}
 
 	~PingPong(){
 		for (int i = 0; i < 2; ++i)
-			TEXFBO::fini(rt[i]);
+			render.destroyRenderTarget(rt[i]);
 	}
 
-	TEXFBO &backBuffer(){
+	RenderTarget &backBuffer(){
 		return rt[srcInd];
 	}
 
-	TEXFBO &frontBuffer(){
+	RenderTarget &frontBuffer(){
 		return rt[dstInd];
 	}
 
@@ -92,7 +90,7 @@ struct PingPong{
 		screenW = width;
 		screenH = height;
 		for (int i = 0; i < 2; ++i)
-			TEXFBO::allocEmpty(rt[i], width, height);
+			render.resizeRenderTarget(rt[i], width, height);
 	}
 
 	void startRender(){
@@ -106,24 +104,24 @@ struct PingPong{
 	}
 
 	void clearBuffers(){
-		glState.clearColor.pushSet(Vec4(0, 0, 0, 1));
+		render.pushClearColor(Vec4(0, 0, 0, 1));
 		for (int i = 0; i < 2; ++i){
-			FBO::bind(rt[i].fbo);
-			FBO::clear();
+			render.bindRenderTarget(rt[i]);
+			render.clear();
 		}
 
-		glState.clearColor.pop();
+		render.popClearColor();
 	}
 
 private:
 	void bind(){
-		FBO::bind(rt[dstInd].fbo);
+		render.bindRenderTarget(rt[dstInd]);
 	}
 };
 
 class ScreenScene : public Scene{
 public:
-	ScreenScene(int width, int height) : pp(width, height){
+	ScreenScene(IRender &render, int width, int height) : render(render), pp(render, width, height){
 		updateReso(width, height);
 		brightEffect = false;
 		brightnessQuad.setColor(Vec4());
@@ -135,8 +133,8 @@ public:
 
 		shState->graphicsSignals.prepareDraw();
 		pp.startRender();
-		glState.viewport.set(IntRect(0, 0, w, h));
-		FBO::clear();
+		render.setViewport(IntRect(0, 0, w, h));
+		render.clear();
 		Scene::composite();
 		if (brightEffect){
 			SimpleColorShader &shader = shState->shaders().simpleColor;
@@ -148,7 +146,7 @@ public:
 	}
 
 	void requestViewportRender(const Vec4 &c, const Vec4 &f, const Vec4 &t){
-		const IntRect &viewpRect = glState.scissorBox.get();
+		const IntRect &viewpRect = render.scissorBox();
 		const IntRect &screenRect = geometry.rect;
 
 		const bool toneRGBEffect  = t.xyzNotNull();
@@ -162,14 +160,14 @@ public:
 				/* Scissor test _does_ affect FBO blit operations,
 				 * and since we're inside the draw cycle, it will
 				 * be turned on, so turn it off temporarily */
-				glState.scissorTest.pushSet(false);
+				render.pushScissorTest(false);
 
-				GLMeta::blitBegin(pp.frontBuffer());
-				GLMeta::blitSource(pp.backBuffer());
-				GLMeta::blitRectangle(geometry.rect, Vec2i());
-				GLMeta::blitEnd();
+				render.beginBlit(pp.frontBuffer());
+				render.blitSource(pp.backBuffer());
+				render.blitRect(geometry.rect, Vec2i());
+				render.endBlit();
 
-				glState.scissorTest.pop();
+				render.popScissorTest();
 			}
 
 			GrayShader &shader = shState->shaders().gray;
@@ -178,11 +176,11 @@ public:
 			shader.applyViewportProj();
 			shader.setTexSize(screenRect.size());
 
-			TEX::bind(pp.backBuffer().tex);
+			render.bindTexture(pp.backBuffer().tex);
 
-			glState.blend.pushSet(false);
+			render.pushBlend(false);
 			screenQuad.draw();
-			glState.blend.pop();
+			render.popBlend();
 		}
 
 		if (!toneRGBEffect && !colorEffect && !flashEffect)
@@ -210,24 +208,21 @@ public:
 				sub.z = -t.z;
 
 			/* Then apply them using hardware blending */
-			gl.BlendFuncSeparate(GL_ONE, GL_ONE, GL_ZERO, GL_ONE);
 			if (add.xyzNotNull()){
-				gl.BlendEquation(GL_FUNC_ADD);
+				render.setBlendOverride(BlendOverride::ToneAdd);
 				shader.setColor(add);
 				screenQuad.draw();
 			}
 
 			if (sub.xyzNotNull()){
-				gl.BlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+				render.setBlendOverride(BlendOverride::ToneSubtract);
 				shader.setColor(sub);
 				screenQuad.draw();
 			}
 		}
 
-		if (colorEffect || flashEffect){
-			gl.BlendEquation(GL_FUNC_ADD);
-			gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
-		}
+		if (colorEffect || flashEffect)
+			render.setBlendOverride(BlendOverride::Overlay);
 
 		if (colorEffect){
 			shader.setColor(c);
@@ -239,7 +234,7 @@ public:
 			screenQuad.draw();
 		}
 
-		glState.blendMode.refresh();
+		render.refreshBlendMode();
 	}
 
 	void setBrightness(float norm){
@@ -267,6 +262,7 @@ public:
 	}
 
 private:
+	IRender &render;
 	PingPong pp;
 	Quad screenQuad;
 
@@ -395,6 +391,8 @@ private:
 };
 
 struct GraphicsPrivate{
+	IRender &render;
+
 	/* Screen resolution, ie. the resolution at which
 	 * RGSS renders at (settable with Graphics.resize_screen).
 	 * Can only be changed from within RGSS */
@@ -415,7 +413,6 @@ struct GraphicsPrivate{
 
 	ScreenScene screen;
 	RGSSThreadData *threadData;
-	SDL_GLContext glCtx;
 
 	unsigned int frameRate;
 	unsigned int frameCount;
@@ -425,22 +422,22 @@ struct GraphicsPrivate{
 	FPSLimiter fpsLimiter;
 
 	bool frozen;
-	TEXFBO frozenScene;
+	RenderTarget frozenScene;
 	Quad screenQuad;
 
 	/* Global list of all live Disposables
 	 * (disposed on reset) */
 	IntruList<Disposable> dispList;
 
-	TEX::ID obscuredTex;
+	TexHandle obscuredTex;
 
-	GraphicsPrivate(RGSSThreadData *rtData)
-	    : scRes(conf.defScreenW, conf.defScreenH),
+	GraphicsPrivate(RGSSThreadData *rtData, IRender &render)
+	    : render(render),
+	      scRes(conf.defScreenW, conf.defScreenH),
 	      scSize(scRes),
 	      winSize(conf.defScreenW, conf.defScreenH),
-	      screen(scRes.x, scRes.y),
+	      screen(render, scRes.x, scRes.y),
 	      threadData(rtData),
-	      glCtx(SDL_GL_GetCurrentContext()),
 	      frameRate(DEF_FRAMERATE),
 	      frameCount(0),
 	      brightness(255),
@@ -450,25 +447,19 @@ struct GraphicsPrivate{
 		recalculateScreenSize(rtData);
 		updateScreenResoRatio(rtData);
 
-		TEXFBO::init(frozenScene);
-		TEXFBO::allocEmpty(frozenScene, scRes.x, scRes.y);
-		TEXFBO::linkFBO(frozenScene);
+		frozenScene = render.createRenderTarget(scRes.x, scRes.y);
 
 		FloatRect screenRect(0, 0, scRes.x, scRes.y);
 		screenQuad.setTexPosRect(screenRect, screenRect);
 
 		fpsLimiter.resetFrameAdjust();
 
-		obscuredTex = TEX::gen();
-		TEX::bind(obscuredTex);
-		TEX::setRepeat(false);
-		TEX::setSmooth(false);
-		gl.TexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, scRes.x, scRes.y, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
+		obscuredTex = render.createTexture(scRes.x, scRes.y, PixelFormat::Luminance);
 		scPos = rtData->ethread->getWindowPosition();
 	}
 
 	~GraphicsPrivate(){
-		TEXFBO::fini(frozenScene);
+		render.destroyRenderTarget(frozenScene);
 	}
 
 	void updateScreenResoRatio(RGSSThreadData *rtData){
@@ -502,7 +493,7 @@ struct GraphicsPrivate{
 	void checkResize(){
 		if (threadData->windowSizeMsg.poll(winSize)){
 			/* some GL drivers change the viewport on window resize */
-			glState.viewport.refresh();
+			render.refreshViewport();
 			recalculateScreenSize(threadData);
 			updateScreenResoRatio(threadData);
 
@@ -524,40 +515,39 @@ struct GraphicsPrivate{
 
 	void swapGLBuffer(){
 		fpsLimiter.delay();
-		FBO::unbind();
-		SDL_GL_SwapWindow(threadData->window);
+		render.bindScreenTarget();
+		render.swapWindow(threadData->window);
 		++frameCount;
 		threadData->ethread->notifyFrame();
 	}
 
-	void compositeToBuffer(TEXFBO &buffer){
+	void compositeToBuffer(RenderTarget &buffer){
 		screen.composite();
 
-		GLMeta::blitBegin(buffer);
-		GLMeta::blitSource(screen.getPP().frontBuffer());
-		GLMeta::blitRectangle(IntRect(0, 0, scRes.x, scRes.y), Vec2i());
-		GLMeta::blitEnd();
+		render.beginBlit(buffer);
+		render.blitSource(screen.getPP().frontBuffer());
+		render.blitRect(IntRect(0, 0, scRes.x, scRes.y), Vec2i());
+		render.endBlit();
 	}
 
 	void metaBlitBufferFlippedScaled(){
-		GLMeta::blitRectangle(IntRect(0, 0, scRes.x, scRes.y), IntRect(scOffset.x, scSize.y+scOffset.y, scSize.x, -scSize.y), conf.smoothScaling);
+		render.blitRect(IntRect(0, 0, scRes.x, scRes.y), IntRect(scOffset.x, scSize.y+scOffset.y, scSize.x, -scSize.y), conf.smoothScaling);
 	}
 
 	void redrawScreen(){
 		if (shState->oneshot().obscuredDirty){
-			TEX::bind(obscuredTex);
-			TEX::uploadSubImage(0, 0, scRes.x, scRes.y, shState->oneshot().obscuredMap().data(), GL_LUMINANCE);
+			render.uploadTextureRect(obscuredTex, 0, 0, scRes.x, scRes.y, shState->oneshot().obscuredMap().data(), PixelFormat::Luminance);
 			shState->oneshot().obscuredDirty = false;
 		}
 		screen.composite();
 
-		GLMeta::blitBeginScreen(winSize);
-		GLMeta::blitSource(screen.getPP().frontBuffer());
+		render.beginBlitScreen(winSize);
+		render.blitSource(screen.getPP().frontBuffer());
 
-		FBO::clear();
+		render.clear();
 		metaBlitBufferFlippedScaled();
 
-		GLMeta::blitEnd();
+		render.endBlit();
 
 		swapGLBuffer();
 	}
@@ -569,16 +559,16 @@ struct GraphicsPrivate{
 		/* Releasing the GL context before sleeping and making it
 		 * current again on wakeup seems to avoid the context loss
 		 * when the app moves into the background on Android */
-		SDL_GL_MakeCurrent(threadData->window, 0);
+		render.suspendContext(threadData->window);
 		threadData->syncPoint.waitMainSync();
-		SDL_GL_MakeCurrent(threadData->window, glCtx);
+		render.resumeContext(threadData->window);
 
 		fpsLimiter.resetFrameAdjust();
 	}
 };
 
-Graphics::Graphics(RGSSThreadData *data){
-	p = new GraphicsPrivate(data);
+Graphics::Graphics(RGSSThreadData *data, IRender &render){
+	p = new GraphicsPrivate(data, render);
 
 	if (conf.syncToRefreshrate){
 		p->frameRate = data->refreshRate;
@@ -653,8 +643,8 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 	 * composition step. Since the backbuffer is unused during
 	 * the transition, we can reuse it as the target buffer for
 	 * the final rendered image. */
-	TEXFBO &currentScene = p->screen.getPP().frontBuffer();
-	TEXFBO &transBuffer  = p->screen.getPP().backBuffer();
+	RenderTarget &currentScene = p->screen.getPP().frontBuffer();
+	RenderTarget &transBuffer  = p->screen.getPP().backBuffer();
 
 	/* If no transition bitmap is provided,
 	 * we can use a simplified shader */
@@ -666,7 +656,7 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 		shader.applyViewportProj();
 		shader.setFrozenScene(p->frozenScene.tex);
 		shader.setCurrentScene(currentScene.tex);
-		shader.setTransMap(transMap->getGLTypes().tex);
+		shader.setTransMap(transMap->getRenderTarget().tex);
 		shader.setVague(vague / 256.0f);
 		shader.setTexSize(p->scRes);
 	}else{
@@ -678,7 +668,7 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 		shader.setTexSize(p->scRes);
 	}
 
-	glState.blend.pushSet(false);
+	p->render.pushBlend(false);
 
 	for (int i = 0; i < duration; ++i){
 		shState->input().update();
@@ -687,12 +677,12 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 		 * a possible longjmp, so we manually test for
 		 * shutdown/reset here */
 		if (p->threadData->rqTerm){
-			glState.blend.pop();
+			p->render.popBlend();
 			delete transMap;
 			p->shutdown();
 			return;
 		}if (p->threadData->rqReset){
-			glState.blend.pop();
+			p->render.popBlend();
 			delete transMap;
 			scriptBinding->reset();
 			return;
@@ -715,24 +705,24 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 
 		/* Draw the composed frame to a buffer first
 		 * (we need this because we're skipping PingPong) */
-		FBO::bind(transBuffer.fbo);
-		FBO::clear();
+		p->render.bindRenderTarget(transBuffer);
+		p->render.clear();
 		p->screenQuad.draw();
 
 		p->checkResize();
 
 		/* Then blit it flipped and scaled to the screen */
-		FBO::unbind();
-		FBO::clear();
+		p->render.bindScreenTarget();
+		p->render.clear();
 
-		GLMeta::blitBeginScreen(Vec2i(p->winSize));
-		GLMeta::blitSource(transBuffer);
+		p->render.beginBlitScreen(Vec2i(p->winSize));
+		p->render.blitSource(transBuffer);
 		p->metaBlitBufferFlippedScaled();
-		GLMeta::blitEnd();
+		p->render.endBlit();
 		p->swapGLBuffer();
 	}
 
-	glState.blend.pop();
+	p->render.popBlend();
 	delete transMap;
 	p->frozen = false;
 }
@@ -766,7 +756,7 @@ void Graphics::wait(unsigned int duration){
 }
 
 void Graphics::fadeout(unsigned int duration){
-	FBO::unbind();
+	p->render.bindScreenTarget();
 
 	float curr = p->brightness;
 	float diff = 255.0f - curr;
@@ -774,12 +764,12 @@ void Graphics::fadeout(unsigned int duration){
 	for (int i = duration-1; i > -1; --i){
 		setBrightness(diff + (curr / duration) * i);
 		if (p->frozen){
-			GLMeta::blitBeginScreen(p->scSize);
-			GLMeta::blitSource(p->frozenScene);
+			p->render.beginBlitScreen(p->scSize);
+			p->render.blitSource(p->frozenScene);
 
-			FBO::clear();
+			p->render.clear();
 			p->metaBlitBufferFlippedScaled();
-			GLMeta::blitEnd();
+			p->render.endBlit();
 			p->swapGLBuffer();
 		}else{
 			update();
@@ -788,7 +778,7 @@ void Graphics::fadeout(unsigned int duration){
 }
 
 void Graphics::fadein(unsigned int duration){
-	FBO::unbind();
+	p->render.bindScreenTarget();
 
 	float curr = p->brightness;
 	float diff = 255.0f - curr;
@@ -797,12 +787,12 @@ void Graphics::fadein(unsigned int duration){
 		setBrightness(curr + (diff / duration) * i);
 
 		if (p->frozen){
-			GLMeta::blitBeginScreen(p->scSize);
-			GLMeta::blitSource(p->frozenScene);
+			p->render.beginBlitScreen(p->scSize);
+			p->render.blitSource(p->frozenScene);
 
-			FBO::clear();
+			p->render.clear();
 			p->metaBlitBufferFlippedScaled();
-			GLMeta::blitEnd();
+			p->render.endBlit();
 			p->swapGLBuffer();
 		}else{
 			update();
@@ -813,7 +803,7 @@ void Graphics::fadein(unsigned int duration){
 Bitmap *Graphics::snapToBitmap(){
 	Bitmap *bitmap = new Bitmap(width(), height());
 
-	p->compositeToBuffer(bitmap->getGLTypes());
+	p->compositeToBuffer(bitmap->getRenderTarget());
 
 	/* Taint entire bitmap */
 	bitmap->taintArea(IntRect(0, 0, width(), height()));
@@ -858,20 +848,16 @@ void Graphics::resizeScreen(int width, int height, bool emitSignal){
 
 	p->screen.setResolution(width, height);
 
-	TEXFBO::allocEmpty(p->frozenScene, width, height);
+	p->render.resizeRenderTarget(p->frozenScene, width, height);
 
 	FloatRect screenRect(0, 0, width, height);
 	p->screenQuad.setTexPosRect(screenRect, screenRect);
 
-	glState.scissorBox.set(IntRect(0, 0, width, height));
+	p->render.setScissorBox(IntRect(0, 0, width, height));
 	shState->eThread().requestWindowResize(width, height);
 
-	TEX::del(p->obscuredTex);
-	p->obscuredTex = TEX::gen();
-	TEX::bind(p->obscuredTex);
-	TEX::setRepeat(false);
-	TEX::setSmooth(false);
-	gl.TexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, p->scRes.x, p->scRes.y, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
+	p->render.destroyTexture(p->obscuredTex);
+	p->obscuredTex = p->render.createTexture(p->scRes.x, p->scRes.y, PixelFormat::Luminance);
 	shState->oneshot().updateObscuredSize(size.x, size.y);
 	if (emitSignal)
 		shState->graphicsSignals.resized.Emit(width, height);
@@ -953,24 +939,24 @@ void Graphics::repaintWait(const AtomicFlag &exitCond, bool checkReset){
 		return;
 
 	/* Repaint the screen with the last good frame we drew */
-	TEXFBO &lastFrame = p->screen.getPP().frontBuffer();
-	GLMeta::blitBeginScreen(p->winSize);
-	GLMeta::blitSource(lastFrame);
+	RenderTarget &lastFrame = p->screen.getPP().frontBuffer();
+	p->render.beginBlitScreen(p->winSize);
+	p->render.blitSource(lastFrame);
 
 	while (!exitCond){
 		shState->checkShutdown();
 		if (checkReset)
 			shState->checkReset();
 
-		FBO::clear();
+		p->render.clear();
 		p->metaBlitBufferFlippedScaled();
-		SDL_GL_SwapWindow(p->threadData->window);
+		p->render.swapWindow(p->threadData->window);
 		p->fpsLimiter.delay();
 
 		p->threadData->ethread->notifyFrame();
 	}
 
-	GLMeta::blitEnd();
+	p->render.endBlit();
 }
 
 void Graphics::addDisposable(Disposable *d){
@@ -981,6 +967,6 @@ void Graphics::remDisposable(Disposable *d){
 	p->dispList.remove(d->link);
 }
 
-const TEX::ID &Graphics::obscuredTex() const{
+TexHandle Graphics::obscuredTex() const{
 	return p->obscuredTex;
 }

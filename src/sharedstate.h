@@ -20,18 +20,17 @@
 */
 
 #pragma once
+#include "render/irender.h"
 #include "signals/signal.h"
 #include "signals/rubydispatcher.h"
 #include "signals/maindispatcher.h"
 
 #define shState SharedState::instance
-#define glState shState->_glState()
 
 struct SharedStatePrivate;
 struct RGSSThreadData;
 struct GlobalIBO;
 struct SDL_Window;
-struct TEXFBO;
 struct Quad;
 struct ShaderSet;
 
@@ -46,7 +45,6 @@ class Sunshine;
 #ifdef STEAM
 	class Steam;
 #endif
-class GLState;
 class TexPool;
 class Font;
 class SharedFontState;
@@ -93,7 +91,7 @@ struct SharedState{
 		Steam &steam() const;
 	#endif
 
-	GLState &_glState() const;
+	IRender &render() const;
 	ShaderSet &shaders() const;
 	TexPool &texPool() const;
 	SharedFontState &fontState() const;
@@ -107,17 +105,17 @@ struct SharedState{
 	GlobalIBO &globalIBO();
 
 	/* Global general purpose texture */
-	void bindTex();
+	TexHandle bindTex();
 	void ensureTexSize(int minW, int minH, Vec2i &currentSizeOut);
 
-	TEXFBO &gpTexFBO(int minW, int minH);
+	RenderTarget &gpTexFBO(int minW, int minH);
 
 	Quad &gpQuad() const;
 
 	/* Basically just a simple "TexPool"
 	 * replacement for Tilemap atlas use */
-	void requestAtlasTex(int w, int h, TEXFBO &out);
-	void releaseAtlasTex(TEXFBO &tex);
+	void requestAtlasTex(int w, int h, RenderTarget &out);
+	void releaseAtlasTex(RenderTarget &tex);
 
 	/* Checks EventThread's shutdown request flag and if set,
 	 * requests the binding to terminate. In this case, this

@@ -223,7 +223,7 @@ struct TilemapPrivate {
 
 	/* Tile atlas */
 	struct {
-		TEXFBO gl;
+		RenderTarget gl;
 
 		Vec2i size;
 
@@ -422,7 +422,7 @@ struct TilemapPrivate {
 		int tsH = tileset->height();
 		atlas.efTilesetH = tsH - (tsH % 32);
 
-		atlas.size = TileAtlas::minSize(atlas.efTilesetH, glState.caps.maxTexSize);
+		atlas.size = TileAtlas::minSize(atlas.efTilesetH, shState->render().maxTextureSize());
 
 		if (atlas.size.x < 0)
 			throw Exception(Exception::MKXPError, "Cannot allocate big enough texture for tileset atlas");
@@ -497,16 +497,18 @@ struct TilemapPrivate {
 		TileAtlas::BlitVec blits = TileAtlas::calcBlits(atlas.efTilesetH, atlas.size);
 
 		/* Clear atlas */
-		FBO::bind(atlas.gl.fbo);
-		glState.clearColor.pushSet(Vec4());
-		glState.scissorTest.pushSet(false);
+		IRender &render = shState->render();
 
-		FBO::clear();
+		render.bindRenderTarget(atlas.gl);
+		render.pushClearColor(Vec4());
+		render.pushScissorTest(false);
 
-		glState.scissorTest.pop();
-		glState.clearColor.pop();
+		render.clear();
 
-		GLMeta::blitBegin(atlas.gl);
+		render.popScissorTest();
+		render.popClearColor();
+
+		render.beginBlit(atlas.gl);
 
 		/* Blit autotiles */
 		for (size_t i = 0; i < atlas.usableATs.size(); ++i){
@@ -516,20 +518,20 @@ struct TilemapPrivate {
 			int blitW = std::min(autotile->width(), atAreaW);
 			int blitH = std::min(autotile->height(), atAreaH);
 
-			GLMeta::blitSource(autotile->getGLTypes());
+			render.blitSource(autotile->getRenderTarget());
 
 			if (blitW <= autotileW && tiles.animated){
 				/* Static autotile */
 				for (int j = 0; j < 4; ++j)
-					GLMeta::blitRectangle(IntRect(0, 0, blitW, blitH), Vec2i(autotileW*j, atInd*autotileH));
+					render.blitRect(IntRect(0, 0, blitW, blitH), Vec2i(autotileW*j, atInd*autotileH));
 			}
 			else{
 				/* Animated autotile */
-				GLMeta::blitRectangle(IntRect(0, 0, blitW, blitH), Vec2i(0, atInd*autotileH));
+				render.blitRect(IntRect(0, 0, blitW, blitH), Vec2i(0, atInd*autotileH));
 			}
 		}
 
-		GLMeta::blitEnd();
+		render.endBlit();
 
 		/* Blit tileset */
 		if (tileset->megaSurface()){
@@ -538,9 +540,9 @@ struct TilemapPrivate {
 
 			if (shState->config().subImageFix){
 				/* Implementation for broken GL drivers */
-				FBO::bind(atlas.gl.fbo);
-				glState.blend.pushSet(false);
-				glState.viewport.pushSet(IntRect(0, 0, atlas.size.x, atlas.size.y));
+				render.bindRenderTarget(atlas.gl);
+				render.pushBlend(false);
+				render.pushViewport(IntRect(0, 0, atlas.size.x, atlas.size.y));
 
 				SimpleShader &shader = shState->shaders().simple;
 				shader.bind();
@@ -554,8 +556,8 @@ struct TilemapPrivate {
 
 					Vec2i texSize;
 					shState->ensureTexSize(tsLaneW, blitOp.h, texSize);
-					shState->bindTex();
-					GLMeta::subRectImageUpload(tsSurf->w, blitOp.src.x, blitOp.src.y, 0, 0, tsLaneW, blitOp.h, tsSurf, GL_RGBA);
+					TexHandle globalTex = shState->bindTex();
+					render.uploadTextureRect(globalTex, 0, 0, tsLaneW, blitOp.h, tsSurf, blitOp.src.x, blitOp.src.y);
 
 					shader.setTexSize(texSize);
 					quad.setTexRect(FloatRect(0, 0, tsLaneW, blitOp.h));
@@ -564,36 +566,31 @@ struct TilemapPrivate {
 					quad.draw();
 				}
 
-				GLMeta::subRectImageEnd();
-				glState.viewport.pop();
-				glState.blend.pop();
+				render.popViewport();
+				render.popBlend();
 			}
 			else{
 				/* Clean implementation */
-				TEX::bind(atlas.gl.tex);
-
 				for (size_t i = 0; i < blits.size(); ++i){
 					const TileAtlas::Blit &blitOp = blits[i];
 
-					GLMeta::subRectImageUpload(tsSurf->w, blitOp.src.x, blitOp.src.y, blitOp.dst.x, blitOp.dst.y, tsLaneW, blitOp.h, tsSurf, GL_RGBA);
+					render.uploadTextureRect(atlas.gl.tex, blitOp.dst.x, blitOp.dst.y, tsLaneW, blitOp.h, tsSurf, blitOp.src.x, blitOp.src.y);
 				}
-
-				GLMeta::subRectImageEnd();
 			}
 
 		}
 		else{
 			/* Regular tileset */
-			GLMeta::blitBegin(atlas.gl);
-			GLMeta::blitSource(tileset->getGLTypes());
+			render.beginBlit(atlas.gl);
+			render.blitSource(tileset->getRenderTarget());
 
 			for (size_t i = 0; i < blits.size(); ++i){
 				const TileAtlas::Blit &blitOp = blits[i];
 
-				GLMeta::blitRectangle(IntRect(blitOp.src.x, blitOp.src.y, tsLaneW, blitOp.h), blitOp.dst);
+				render.blitRect(IntRect(blitOp.src.x, blitOp.src.y, tsLaneW, blitOp.h), blitOp.dst);
 			}
 
-			GLMeta::blitEnd();
+			render.endBlit();
 		}
 	}
 
@@ -758,7 +755,7 @@ struct TilemapPrivate {
 			tilemapShader.setTime(elapsed.count());
 
 			if (shState->sunshine().noiseBitmap())
-				tilemapShader.setNoiseTexture(shState->sunshine().noiseBitmap()->getGLTypes().tex);
+				tilemapShader.setNoiseTexture(shState->sunshine().noiseBitmap()->getRenderTarget().tex);
 			
 			shaderVar = &tilemapShader;
 		}
@@ -778,7 +775,7 @@ struct TilemapPrivate {
 	}
 
 	void bindAtlas(ShaderBase &shader){
-		TEX::bind(atlas.gl.tex);
+		shState->render().bindTexture(atlas.gl.tex);
 		shader.setTexSize(atlas.size);
 	}
 

@@ -21,7 +21,7 @@
 
 #pragma once
 #include "util.h"
-#include "gl-util.h"
+#include "render/irender.h"
 
 class Scene;
 class Bitmap;
@@ -70,10 +70,10 @@ public:
 	 * is set. Observes reset flag on top of shutdown
 	 * if "checkReset" */
 	void repaintWait(const AtomicFlag &exitCond, bool checkReset = true);
-	const TEX::ID &obscuredTex() const;
+	TexHandle obscuredTex() const;
 
 private:
-	Graphics(RGSSThreadData *data);
+	Graphics(RGSSThreadData *data, IRender &render);
 	~Graphics();
 
 	void addDisposable(Disposable *);

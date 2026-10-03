@@ -28,11 +28,9 @@
 #include "etc-internal.h"
 #include "tilequad.h"
 
-#include "gl-util.h"
 #include "quad.h"
 #include "quadarray.h"
 #include "texpool.h"
-#include "glstate.h"
 
 #include "signals/signal.h"
 
@@ -184,7 +182,7 @@ struct WindowPrivate {
 	ColorQuadArray baseQuadArray;
 
 	/* Used when opacity < 255 */
-	TEXFBO baseTex;
+	RenderTarget baseTex;
 	bool useBaseTex;
 
 	QuadChunk backgroundVert;
@@ -379,14 +377,15 @@ struct WindowPrivate {
 	}
 
 	void redrawBaseTex(){
-		/* Discard old buffer */
-		TEX::bind(baseTex.tex);
-		TEX::allocEmpty(baseTex.width, baseTex.height);
-		TEX::unbind();
+		IRender &render = shState->render();
 
-		FBO::bind(baseTex.fbo);
-		glState.viewport.pushSet(IntRect(0, 0, baseTex.width, baseTex.height));
-		glState.clearColor.pushSet(Vec4());
+		/* Discard old buffer */
+		render.resizeRenderTarget(baseTex, baseTex.width, baseTex.height);
+		render.unbindTexture();
+
+		render.bindRenderTarget(baseTex);
+		render.pushViewport(IntRect(0, 0, baseTex.width, baseTex.height));
+		render.pushClearColor(Vec4());
 
 		SimpleAlphaShader &shader = shState->shaders().simpleAlpha;
 		shader.bind();
@@ -394,29 +393,29 @@ struct WindowPrivate {
 		shader.setTranslation(Vec2i());
 
 		/* Clear texture */
-		FBO::clear();
+		render.clear();
 
 		/* Repaint base */
 		windowskin->bindTex(shader);
-		TEX::setSmooth(true);
+		render.setTextureSmooth(windowskin->getRenderTarget().tex, true);
 
 		/* We need to blit the background without blending,
 		 * because we want to retain its correct alpha value.
 		 * Otherwise it would be mutliplied by the backgrounds 0 alpha */
-		glState.blend.pushSet(false);
+		render.pushBlend(false);
 
 		baseQuadArray.draw(0, backgroundVert.count);
 
 		/* Now draw the rest (ie. the frame) with blending */
-		glState.blend.pop();
-		glState.blendMode.pushSet(BlendNormal);
+		render.popBlend();
+		render.pushBlendMode(BlendNormal);
 
 		baseQuadArray.draw(backgroundVert.count, baseQuadArray.count()-backgroundVert.count);
 
-		glState.clearColor.pop();
-		glState.blendMode.pop();
-		glState.viewport.pop();
-		TEX::setSmooth(false);
+		render.popClearColor();
+		render.popBlendMode();
+		render.popViewport();
+		render.setTextureSmooth(windowskin->getRenderTarget().tex, false);
 	}
 
 	void buildControlsVert(){
@@ -516,13 +515,13 @@ struct WindowPrivate {
 
 		if (useBaseTex){
 			shader.setTexSize(Vec2i(baseTex.width, baseTex.height));
-			TEX::bind(baseTex.tex);
+			shState->render().bindTexture(baseTex.tex);
 			baseTexQuad.draw();
 		}else{
 			windowskin->bindTex(shader);
-			TEX::setSmooth(true);
+			shState->render().setTextureSmooth(windowskin->getRenderTarget().tex, true);
 			baseQuadArray.draw();
-			TEX::setSmooth(false);
+			shState->render().setTextureSmooth(windowskin->getRenderTarget().tex, false);
 		}
 	}
 
@@ -545,9 +544,11 @@ struct WindowPrivate {
 		const IntRect windowRect(efPos, size);
 		const IntRect contentsRect(efPos + Vec2i(16), size - Vec2i(32));
 
-		glState.scissorTest.pushSet(true);
-		glState.scissorBox.push();
-		glState.scissorBox.setIntersect(windowRect);
+		IRender &render = shState->render();
+
+		render.pushScissorTest(true);
+		render.saveScissorBox();
+		render.intersectScissorBox(windowRect);
 
 		SimpleAlphaShader &shader = shState->shaders().simpleAlpha;
 		shader.bind();
@@ -558,21 +559,21 @@ struct WindowPrivate {
 
 			/* Draw arrows / cursors */
 			windowskin->bindTex(shader);
-			TEX::setSmooth(true);
+			render.setTextureSmooth(windowskin->getRenderTarget().tex, true);
 			controlsQuadArray.draw(0, controlsQuadCount);
-			TEX::setSmooth(false);
+			render.setTextureSmooth(windowskin->getRenderTarget().tex, false);
 		}
 
 		if (!nullOrDisposed(contents)){
 			/* Draw contents bitmap */
-			glState.scissorBox.setIntersect(contentsRect);
+			render.intersectScissorBox(contentsRect);
 			shader.setTranslation(efPos + (Vec2i(16) - contentsOffset));
 			contents->bindTex(shader);
 			contentsQuad.draw();
 		}
 
-		glState.scissorBox.pop();
-		glState.scissorTest.pop();
+		render.popScissorBox();
+		render.popScissorTest();
 	}
 
 	void updateControls(){

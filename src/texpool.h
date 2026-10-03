@@ -22,7 +22,7 @@
 #ifndef TEXPOOL_H
 #define TEXPOOL_H
 
-#include "gl-util.h"
+#include "render/irender.h"
 
 struct TexPoolPrivate;
 
@@ -31,8 +31,8 @@ public:
 	TexPool(uint32_t maxMemSize = 20000000 /* 20 MB */);
 	~TexPool();
 
-	TEXFBO request(int width, int height);
-	void release(TEXFBO &obj);
+	RenderTarget request(int width, int height);
+	void release(RenderTarget &obj);
 
 	void disable();
 

@@ -27,7 +27,6 @@
 #include "gl-meta.h"
 #include "sharedstate.h"
 #include "global-ibo.h"
-#include "glstate.h"
 #include "shader.h"
 #include "vertex.h"
 #include "quad.h"
@@ -147,14 +146,14 @@ struct FlashMap{
 			return;
 
 		GLMeta::vaoBind(vao);
-		glState.blendMode.pushSet(BlendAddition);
+		shState->render().pushBlendMode(BlendAddition);
 		FlashMapShader &shader = shState->shaders().flashMap;
 		shader.bind();
 		shader.applyViewportProj();
 		shader.setAlpha(alpha);
 		shader.setTranslation(trans);
 		gl.DrawElements(GL_TRIANGLES, count * 6, _GL_INDEX_TYPE, 0);
-		glState.blendMode.pop();
+		shState->render().popBlendMode();
 		GLMeta::vaoUnbind(vao);
 	}
 

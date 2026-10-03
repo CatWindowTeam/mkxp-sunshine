@@ -28,7 +28,7 @@
 
 class Font;
 class ShaderBase;
-struct TEXFBO;
+struct RenderTarget;
 struct SDL_Surface;
 
 struct BitmapPrivate;
@@ -95,7 +95,7 @@ public:
 	void setInitFont(Font *value);
 
 	/* <internal> */
-	TEXFBO &getGLTypes();
+	RenderTarget &getRenderTarget();
 	SDL_Surface *megaSurface() const;
 	void ensureNonMega() const;
 

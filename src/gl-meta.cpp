@@ -21,34 +21,8 @@
 
 #include "gl-meta.h"
 #include "gl-fun.h"
-#include "sharedstate.h"
-#include "glstate.h"
-#include "quad.h"
 
 namespace GLMeta{
-
-void subRectImageUpload(GLint srcW, GLint srcX, GLint srcY, GLint dstX, GLint dstY, GLsizei dstW, GLsizei dstH, SDL_Surface *src, GLenum format){
-	if (gl.unpack_subimage){
-		gl.PixelStorei(GL_UNPACK_ROW_LENGTH, srcW);
-		gl.PixelStorei(GL_UNPACK_SKIP_PIXELS, srcX);
-		gl.PixelStorei(GL_UNPACK_SKIP_ROWS, srcY);
-		TEX::uploadSubImage(dstX, dstY, dstW, dstH, src->pixels, format);
-	}else{
-		SDL_Surface* tmp = SDL_CreateSurface(dstW, dstH, src->format);
-		SDL_Rect srcRect = { srcX, srcY, dstW, dstH };
-		SDL_BlitSurface(src, &srcRect, tmp, 0);
-		TEX::uploadSubImage(dstX, dstY, dstW, dstH, tmp->pixels, format);
-		SDL_DestroySurface(tmp);
-	}
-}
-
-void subRectImageEnd(){
-	if (gl.unpack_subimage){
-		gl.PixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-		gl.PixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-		gl.PixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-	}
-}
 
 #define HAVE_NATIVE_VAO false //gl.GenVertexArrays
 
@@ -99,68 +73,6 @@ void vaoUnbind(VAO &vao){
 		VBO::unbind();
 		IBO::unbind();
 	}
-}
-
-#define HAVE_NATIVE_BLIT false //gl.BlitFramebuffer
-
-static void _blitBegin(FBO::ID fbo, const Vec2i &size){
-	if (HAVE_NATIVE_BLIT){
-		gl.BindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo.gl);
-	}else{
-		FBO::bind(fbo);
-		glState.viewport.pushSet(IntRect(0, 0, size.x, size.y));
-
-		SimpleShader &shader = shState->shaders().simple;
-		shader.bind();
-		shader.applyViewportProj();
-		shader.setTranslation(Vec2i());
-	}
-}
-
-void blitBegin(TEXFBO &target){
-	_blitBegin(target.fbo, Vec2i(target.width, target.height));
-}
-
-void blitBeginScreen(const Vec2i &size){
-	_blitBegin(FBO::ID(0), size);
-}
-
-void blitSource(TEXFBO &source){
-	if (HAVE_NATIVE_BLIT){
-		gl.BindFramebuffer(GL_READ_FRAMEBUFFER, source.fbo.gl);
-	}else{
-		SimpleShader &shader = shState->shaders().simple;
-		shader.setTexSize(Vec2i(source.width, source.height));
-		TEX::bind(source.tex);
-	}
-}
-
-void blitRectangle(const IntRect &src, const Vec2i &dstPos){
-	blitRectangle(src, IntRect(dstPos.x, dstPos.y, src.w, src.h), false);
-}
-
-void blitRectangle(const IntRect &src, const IntRect &dst, bool smooth){
-	if (HAVE_NATIVE_BLIT){
-		gl.BlitFramebuffer(src.x, src.y, src.x+src.w, src.y+src.h,
-		                   dst.x, dst.y, dst.x+dst.w, dst.y+dst.h,
-		                   GL_COLOR_BUFFER_BIT, smooth ? GL_LINEAR : GL_NEAREST);
-	}else{
-		if (smooth)
-			TEX::setSmooth(true);
-
-		glState.blend.pushSet(false);
-		Quad &quad = shState->gpQuad();
-		quad.setTexPosRect(src, dst);
-		quad.draw();
-		glState.blend.pop();
-		if (smooth)
-			TEX::setSmooth(false);
-	}
-}
-
-void blitEnd(){
-	if (!HAVE_NATIVE_BLIT)
-		glState.viewport.pop();
 }
 
 }

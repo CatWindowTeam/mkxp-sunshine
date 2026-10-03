@@ -27,13 +27,11 @@
 #include "etc-internal.h"
 #include "util.h"
 
-#include "gl-util.h"
 #include "quad.h"
 #include "quadarray.h"
 #include "transform.h"
 #include "etc-internal.h"
 #include "shader.h"
-#include "glstate.h"
 #include "sunshine.h"
 
 #include "signals/signal.h"
@@ -309,7 +307,7 @@ void Plane::draw(){
 			defaultSpriteShaderInit(shader);
 				
 			if (shState->sunshine().noiseBitmap())
-				shader.setNoiseTexture(shState->sunshine().noiseBitmap()->getGLTypes().tex);
+				shader.setNoiseTexture(shState->sunshine().noiseBitmap()->getRenderTarget().tex);
 
 			base = &shader;
 
@@ -359,19 +357,21 @@ void Plane::draw(){
 	base->setTime(elapsed.count());
 	base->setTranslation(Vec2i());
 
-	glState.blendMode.pushSet(p->blendType);
+	IRender &render = shState->render();
+
+	render.pushBlendMode(p->blendType);
 
 	p->bitmap->bindTex(*base);
 
-	if (gl.npot_repeat)
-		TEX::setRepeat(true);
+	if (render.repeatNpotSupported())
+		render.setTextureRepeat(p->bitmap->getRenderTarget().tex, true);
 
 	p->qArray.draw();
 
-	if (gl.npot_repeat)
-		TEX::setRepeat(false);
+	if (render.repeatNpotSupported())
+		render.setTextureRepeat(p->bitmap->getRenderTarget().tex, false);
 
-	glState.blendMode.pop();
+	render.popBlendMode();
 }
 
 void Plane::onGeometryChange(const Scene::Geometry &geo){

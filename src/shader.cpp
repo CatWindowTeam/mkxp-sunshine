@@ -21,7 +21,7 @@
 
 #include "shader.h"
 #include "sharedstate.h"
-#include "glstate.h"
+#include "render/gl/glrender.h"
 #include "exception.h"
 #include "debugwriter.h"
 #include <assert.h>
@@ -192,10 +192,10 @@ void Shader::setVec4Uniform(GLint location, const Vec4 &vec) {
 	gl.Uniform4f(location, vec.x, vec.y, vec.z, vec.w);
 }
 
-void Shader::setTexUniform(GLint location, unsigned unitIndex, TEX::ID texture) {
+void Shader::setTexUniform(GLint location, unsigned unitIndex, TexHandle texture) {
 	GLenum texUnit = GL_TEXTURE0 + unitIndex;
 	gl.ActiveTexture(texUnit);
-	gl.BindTexture(GL_TEXTURE_2D, texture.gl);
+	gl.BindTexture(GL_TEXTURE_2D, texture.id);
 	gl.Uniform1i(location, unitIndex);
 	gl.ActiveTexture(GL_TEXTURE0);
 }
@@ -303,7 +303,7 @@ DynamicLightShader::DynamicLightShader(){
 	u_lightSourcesColors = gl.GetUniformLocation(program, "lightSourcesColors[0]");
 }
 
-void DynamicLightShader::setWallMapTexture(TEX::ID texture){
+void DynamicLightShader::setWallMapTexture(TexHandle texture){
 	setTexUniform(u_wallMapTexture, 1, texture);
 }
 
@@ -412,15 +412,15 @@ TransShader::TransShader(){
 	GET_U(vague);
 }
 
-void TransShader::setCurrentScene(TEX::ID tex){
+void TransShader::setCurrentScene(TexHandle tex){
 	setTexUniform(u_currentScene, 1, tex);
 }
 
-void TransShader::setFrozenScene(TEX::ID tex){
+void TransShader::setFrozenScene(TexHandle tex){
 	setTexUniform(u_frozenScene, 2, tex);
 }
 
-void TransShader::setTransMap(TEX::ID tex){
+void TransShader::setTransMap(TexHandle tex){
 	setTexUniform(u_transMap, 3, tex);
 }
 
@@ -441,11 +441,11 @@ SimpleTransShader::SimpleTransShader(){
 	GET_U(prog);
 }
 
-void SimpleTransShader::setCurrentScene(TEX::ID tex){
+void SimpleTransShader::setCurrentScene(TexHandle tex){
 	setTexUniform(u_currentScene, 1, tex);
 }
 
-void SimpleTransShader::setFrozenScene(TEX::ID tex){
+void SimpleTransShader::setFrozenScene(TexHandle tex){
 	setTexUniform(u_frozenScene, 2, tex);
 }
 
@@ -510,7 +510,7 @@ WaterShader::WaterShader(){
 	GET_U(noiseTexture);
 }
 
-void WaterShader::setNoiseTexture(TEX::ID texture){
+void WaterShader::setNoiseTexture(TexHandle texture){
 	setTexUniform(u_noiseTexture, 1, texture);
 }
 
@@ -580,7 +580,7 @@ void TilemapWaterShader::setOffset(const Vec2i &value){
 	gl.Uniform2f(u_offset, value.x, value.y);
 }
 
-void TilemapWaterShader::setNoiseTexture(TEX::ID texture){
+void TilemapWaterShader::setNoiseTexture(TexHandle texture){
 	setTexUniform(u_noiseTexture, 1, texture);
 }
 
@@ -637,7 +637,7 @@ void BltShader::setSource(){
 	gl.Uniform1i(u_source, 0);
 }
 
-void BltShader::setDestination(const TEX::ID value){
+void BltShader::setDestination(const TexHandle value){
 	setTexUniform(u_destination, 1, value);
 }
 
@@ -655,6 +655,6 @@ ObscuredShader::ObscuredShader(){
 	GET_U(obscured);
 }
 
-void ObscuredShader::setObscured(const TEX::ID value){
+void ObscuredShader::setObscured(const TexHandle value){
 	setTexUniform(u_obscured, 1, value);
 }

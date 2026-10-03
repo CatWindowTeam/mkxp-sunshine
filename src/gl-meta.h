@@ -26,15 +26,7 @@
 #include "gl-util.h"
 #include "vertex.h"
 
-#include <SDL3/SDL_surface.h>
-
 namespace GLMeta{
-
-/* EXT_unpack_subimage */
-void subRectImageUpload(GLint srcW, GLint srcX, GLint srcY,
-                        GLint dstX, GLint dstY, GLsizei dstW, GLsizei dstH,
-                        SDL_Surface *src, GLenum format);
-void subRectImageEnd();
 
 /* ARB_vertex_array_object */
 struct VAO{
@@ -60,15 +52,6 @@ void vaoInit(VAO &vao, bool keepBound = false);
 void vaoFini(VAO &vao);
 void vaoBind(VAO &vao);
 void vaoUnbind(VAO &vao);
-
-/* EXT_framebuffer_blit */
-void blitBegin(TEXFBO &target);
-void blitBeginScreen(const Vec2i &size);
-void blitSource(TEXFBO &source);
-void blitRectangle(const IntRect &src, const Vec2i &dstPos);
-void blitRectangle(const IntRect &src, const IntRect &dst,
-                   bool smooth = false);
-void blitEnd();
 
 }
 
