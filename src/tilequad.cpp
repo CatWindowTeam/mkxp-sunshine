@@ -21,7 +21,6 @@
 
 #include "tilequad.h"
 
-#include "gl-util.h"
 #include "quad.h"
 
 namespace TileQuads{

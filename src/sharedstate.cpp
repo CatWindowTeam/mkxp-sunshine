@@ -31,7 +31,6 @@
 	#include "steam.h"
 #endif
 #include "render/irender.h"
-#include "shader.h"
 #include "texpool.h"
 #include "font.h"
 #include "eventthread.h"
@@ -75,8 +74,6 @@ struct SharedStatePrivate{
 		Steam steam;
 	#endif
 
-	ShaderSet shaders;
-
 	SharedFontState fontState;
 	Font *defaultFont;
 
@@ -110,10 +107,6 @@ struct SharedStatePrivate{
 	      fontState(conf),
 	      stampCounter(0)
 	{
-		/* Shaders have been compiled in ShaderSet's constructor */
-		if (gl.ReleaseShaderCompiler)
-			gl.ReleaseShaderCompiler();
-
 		fileSystem.addPath(".");
 
 		if (config.pathCache)
@@ -197,7 +190,6 @@ IRender &SharedState::render() const{
 	return *p->render;
 }
 
-GSATT(ShaderSet&, shaders)
 GSATT(TexPool&, texPool)
 GSATT(Quad&, gpQuad)
 GSATT(SharedFontState&, fontState)

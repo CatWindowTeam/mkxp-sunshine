@@ -2,6 +2,8 @@
 #include "render/irender.h"
 #include "glstate.h"
 #include "gl-meta.h"
+#include "shader.h"
+#include <memory>
 #include <vector>
 #include "sharedstate.h"
 
@@ -70,6 +72,36 @@ public:
 	void ensureQuadIndices(size_t quadCount);
 	void drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCount);
 
+	void useEffect(ShaderType effect);
+	void useBlurPass(int pass);
+	void applyViewportProj();
+	void applyPerspectiveProj();
+	void setTexSize(const Vec2i &size);
+	void setTranslation(const Vec2i &value);
+	void setTime(float value);
+	void setEffectTexture(EffectTexture slot, TexHandle tex);
+	void setSpriteMat(const float value[16]);
+	void setMatrix(const float value[16]);
+	void setTone(const Vec4 &value);
+	void setColor(const Vec4 &value);
+	void setFlash(const Vec4 &value);
+	void setModulate(const Vec4 &value);
+	void setOpacity(float value);
+	void setBushDepth(float value);
+	void setBushOpacity(float value);
+	void setGray(float value);
+	void setHueAdjust(float value);
+	void setAniIndex(int value);
+	void setOffset(const Vec2i &value);
+	void setSubRect(const FloatRect &value);
+	void setProg(float value);
+	void setVague(float value);
+	void setWallMapResolution(int x, int y);
+	void setCameraPosition(int x, int y);
+	void setTileMapOffset(int x, int y);
+	void setLightSources(const std::vector<LightSource> &sources);
+	void setAmbient(float value);
+
 	void beginBlit(const RenderTarget &target);
 	void beginBlitScreen(const Vec2i &size);
 	void blitSource(const RenderTarget &source);
@@ -95,6 +127,13 @@ private:
 	std::vector<uint32_t> freeGeometries;
 	IBO::ID quadIbo;
 	std::vector<uint16_t> quadIndices;
+
+	std::unique_ptr<ShaderSet> shaders;
+	ShaderBase *effectBases[SHADER_COUNT];
+	ShaderType currentEffect;
+	ShaderBase *current;
+
+	SpriteShaderBase &spriteBase();
 };
 
-#define glState static_cast<GLRender&>(shState->render()).state()
+#define glState static_cast<GLRender&>(activeRender()).state()

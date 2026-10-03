@@ -45,11 +45,11 @@
 #include <filesystem>
 #include <exception>
 #include <chrono>
+#include <memory>
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "debugwriter.h"
 #include "exception.h"
-#include "gl-fun.h"
 #include "i18n.h"
 #include "sunshine.h"
 #include "modloader.h"
@@ -59,7 +59,6 @@
 #include "icon.png.xxd"
 
 #ifndef NDEBUG
-	#include "gl-debug.h"
 	#ifdef ps2
 		SDL_PS2_SKIP_IOP_RESET();
 	#endif
@@ -84,35 +83,18 @@ static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
 static int rgssThreadFun(void *userdata){
 	RGSSThreadData *threadData = static_cast<RGSSThreadData*>(userdata);
 	SDL_Window *win = threadData->window;
-	SDL_GLContext glCtx = SDL_GL_CreateContext(win);
-	if (!glCtx){
-		rgssThreadError(threadData, "Failed to create OpenGL context");
-		return 0;
-	}
-
+	std::unique_ptr<IRenderContext> renderContext;
 	try{
-		initGLFunctions();
+		renderContext.reset(createRenderContext(win));
 	}catch(const Exception &exc){
 		rgssThreadError(threadData, exc.msg);
-		SDL_GL_DestroyContext(glCtx);
 		return 0;
 	}
-
-	if (!conf.enableBlitting)
-		gl.BlitFramebuffer = 0;
-
-	gl.ClearColor(0, 0, 0, 1);
-	gl.Clear(GL_COLOR_BUFFER_BIT);
-	SDL_GL_SwapWindow(win);
-	#ifndef NDEBUG
-		GLDebugLogger dLogger;
-	#endif
 
 	try{
 		SharedState::initInstance(threadData);
 	}catch (const Exception &exc){
 		rgssThreadError(threadData, exc.msg);
-		SDL_GL_DestroyContext(glCtx);
 		return 0;
 	}
 
@@ -121,7 +103,6 @@ static int rgssThreadFun(void *userdata){
 	threadData->rqTermAck.set();
 	threadData->ethread->requestTerminate();
 	SharedState::finiInstance();
-	SDL_GL_DestroyContext(glCtx);
 	return 0;
 }
 
@@ -150,9 +131,6 @@ int main(int argc, char *argv[]){
 		SDL_SetHint(SDL_HINT_ANDROID_ALLOW_PERSISTENT_FOLDER_ACCESS, "1");
 		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "1");
 		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "1");
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
 	#endif
 
 	/* initialize SDL first */
@@ -239,11 +217,8 @@ int main(int argc, char *argv[]){
 	}
 
 	SDL_Window *win;
-	Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	#ifndef NDEBUG
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-	#endif
+	Uint64 winFlags = renderWindowFlags() | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+	setupRenderWindowAttributes();
 
 	win = SDL_CreateWindow(conf.windowTitle.c_str(), conf.defScreenW, conf.defScreenH, winFlags);
 	if(!win){

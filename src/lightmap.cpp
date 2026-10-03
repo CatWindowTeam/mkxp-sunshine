@@ -6,7 +6,6 @@
 #include "util.h"
 #include "signals/signal.h"
 #include "quad.h"
-#include "shader.h"
 #include "quadarray.h"
 #include "config.h"
 #include "sunshine.h"
@@ -211,35 +210,35 @@ void LightMap::draw(){
 	if (emptyFlashFlag)
 		return;
 
-	DynamicLightShader &shader = shState->shaders().dynamicLight;
-	shader.bind();
-	shader.applyViewportProj();
+	IRender &render = shState->render();
+	render.useEffect(SHADER_dynamicLight);
+	render.applyViewportProj();
 
 	if (p->wallMap)
 	{
-		shader.setWallMapTexture(p->wallMap->getRenderTarget().tex);
-		shader.setWallMapResolution(p->wallMap->width(), p->wallMap->height());
+		render.setEffectTexture(EffectTexture::WallMap, p->wallMap->getRenderTarget().tex);
+		render.setWallMapResolution(p->wallMap->width(), p->wallMap->height());
 	}
-	shader.setCameraPosition(p->cameraX, p->cameraY);
-	shader.setTileMapOffset(p->tilemapOffsetX, p->tilemapOffsetY);
+	render.setCameraPosition(p->cameraX, p->cameraY);
+	render.setTileMapOffset(p->tilemapOffsetX, p->tilemapOffsetY);
 
 	p->gpuBuffer.clear();
 	p->gpuBuffer.insert(p->gpuBuffer.end(), p->staticLightSources.begin(), p->staticLightSources.end());
 	p->gpuBuffer.insert(p->gpuBuffer.end(), p->dynamicLightSources.begin(), p->dynamicLightSources.end());
-	shader.setLightSources(p->gpuBuffer);
-	shader.setAmbient(p->ambient);
+	render.setLightSources(p->gpuBuffer);
+	render.setAmbient(p->ambient);
 
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<float> elapsed = currentTime - startTime;
-	shader.setTime(elapsed.count());
+	render.setTime(elapsed.count());
 
-	shState->render().pushBlendMode(BlendMultiply);
+	render.pushBlendMode(BlendMultiply);
 
-	p->bitmap->bindTex(shader);
+	p->bitmap->bindTex();
 
 	p->quad.draw();
 
-	shState->render().popBlendMode();
+	render.popBlendMode();
 }
 
 void LightMap::onGeometryChange(const Scene::Geometry &geo){

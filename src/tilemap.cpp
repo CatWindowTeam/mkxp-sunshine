@@ -27,7 +27,6 @@
 #include "signals/signal.h"
 #include "sharedstate.h"
 #include "config.h"
-#include "glstate.h"
 #include "etc-internal.h"
 #include "quad.h"
 #include "vertex.h"
@@ -533,10 +532,9 @@ struct TilemapPrivate {
 				render.pushBlend(false);
 				render.pushViewport(IntRect(0, 0, atlas.size.x, atlas.size.y));
 
-				SimpleShader &shader = shState->shaders().simple;
-				shader.bind();
-				shader.applyViewportProj();
-				shader.setTranslation(Vec2i());
+				render.useEffect(SHADER_simple);
+				render.applyViewportProj();
+				render.setTranslation(Vec2i());
 
 				Quad &quad = shState->gpQuad();
 
@@ -548,7 +546,7 @@ struct TilemapPrivate {
 					TexHandle globalTex = shState->bindTex();
 					render.uploadTextureRect(globalTex, 0, 0, tsLaneW, blitOp.h, tsSurf, blitOp.src.x, blitOp.src.y);
 
-					shader.setTexSize(texSize);
+					render.setTexSize(texSize);
 					quad.setTexRect(FloatRect(0, 0, tsLaneW, blitOp.h));
 					quad.setPosRect(FloatRect(blitOp.dst.x, blitOp.dst.y, tsLaneW, blitOp.h));
 
@@ -727,43 +725,38 @@ struct TilemapPrivate {
 		render.ensureQuadIndices(quadCount);
 	}
 
-	void bindShader(ShaderBase *&shaderVar){
+	void bindShader(){
+		IRender &render = shState->render();
+
 		if (tiles.animated && betterWater){ // it is advisable to check for water in some way ッ
-			TilemapWaterShader &tilemapShader = shState->shaders().tilemapWater;
-			tilemapShader.bind();
+			render.useEffect(SHADER_tilemapWater);
 
 			if (tiles.animated)
-				tilemapShader.setAniIndex(tiles.frameIdx);
+				render.setAniIndex(tiles.frameIdx);
 			
-			tilemapShader.setOffset(viewpPos);
+			render.setOffset(viewpPos);
 
 			auto currentTime = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<float> elapsed = currentTime - startTime;
-			tilemapShader.setTime(elapsed.count());
+			render.setTime(elapsed.count());
 
 			if (shState->sunshine().noiseBitmap())
-				tilemapShader.setNoiseTexture(shState->sunshine().noiseBitmap()->getRenderTarget().tex);
-			
-			shaderVar = &tilemapShader;
+				render.setEffectTexture(EffectTexture::Noise, shState->sunshine().noiseBitmap()->getRenderTarget().tex);
 		}
 		else if(tiles.animated){
-			TilemapShader &tilemapShader = shState->shaders().tilemap;
-			tilemapShader.bind();
-			tilemapShader.setAniIndex(tiles.frameIdx);
-
-			shaderVar = &tilemapShader;
+			render.useEffect(SHADER_tilemap);
+			render.setAniIndex(tiles.frameIdx);
 		}
 		else{
-			shaderVar = &shState->shaders().simple;
-			shaderVar->bind();
+			render.useEffect(SHADER_simple);
 		}
 
-		shaderVar->applyViewportProj();
+		render.applyViewportProj();
 	}
 
-	void bindAtlas(ShaderBase &shader){
+	void bindAtlas(){
 		shState->render().bindTexture(atlas.gl.tex);
-		shader.setTexSize(atlas.size);
+		shState->render().setTexSize(atlas.size);
 	}
 
 	void updateActiveElements(std::vector<int> &zlayerInd){
@@ -930,12 +923,10 @@ void GroundLayer::draw(){
 	if (p->groundVert.size() == 0)
 		return;
 
-	ShaderBase *shader;
+	p->bindShader();
+	p->bindAtlas();
 
-	p->bindShader(shader);
-	p->bindAtlas(*shader);
-
-	shader->setTranslation(p->dispPos);
+	shState->render().setTranslation(p->dispPos);
 	drawInt();
 
 	p->flashMap.draw(flashAlpha[p->flashAlphaIdx] / 255.f, p->dispPos);
@@ -972,12 +963,10 @@ void ZLayer::draw(){
 	if (batchedFlag)
 		return;
 
-	ShaderBase *shader;
+	p->bindShader();
+	p->bindAtlas();
 
-	p->bindShader(shader);
-	p->bindAtlas(*shader);
-
-	shader->setTranslation(p->dispPos);
+	shState->render().setTranslation(p->dispPos);
 	drawInt();
 }
 

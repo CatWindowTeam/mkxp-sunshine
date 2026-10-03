@@ -2,6 +2,10 @@
 #include "gl-fun.h"
 #include "gl-util.h"
 #include "config.h"
+#include "exception.h"
+#ifndef NDEBUG
+#include "gl-debug.h"
+#endif
 #include "quad.h"
 #include "vertex.h"
 #include "shader.h"
@@ -82,9 +86,40 @@ GLRender::GLRender(const Config &conf)
 	activeInstance = this;
 	quadIbo = IBO::gen();
 	ensureQuadIndices(1);
+
+	shaders.reset(new ShaderSet);
+	effectBases[SHADER_flatColor]    = &shaders->flatColor;
+	effectBases[SHADER_simple]       = &shaders->simple;
+	effectBases[SHADER_simpleColor]  = &shaders->simpleColor;
+	effectBases[SHADER_simpleAlpha]  = &shaders->simpleAlpha;
+	effectBases[SHADER_simpleSprite] = &shaders->simpleSprite;
+	effectBases[SHADER_alphaSprite]  = &shaders->alphaSprite;
+	effectBases[SHADER_sprite]       = &shaders->sprite;
+	effectBases[SHADER_worldMachine] = &shaders->worldMachine;
+	effectBases[SHADER_water]        = &shaders->water;
+	effectBases[SHADER_crt]          = &shaders->crt;
+	effectBases[SHADER_tilemapWater] = &shaders->tilemapWater;
+	effectBases[SHADER_plane]        = &shaders->plane;
+	effectBases[SHADER_gray]         = &shaders->gray;
+	effectBases[SHADER_tilemap]      = &shaders->tilemap;
+	effectBases[SHADER_flashMap]     = &shaders->flashMap;
+	effectBases[SHADER_trans]        = &shaders->trans;
+	effectBases[SHADER_simpleTrans]  = &shaders->simpleTrans;
+	effectBases[SHADER_hue]          = &shaders->hue;
+	effectBases[SHADER_blt]          = &shaders->blt;
+	effectBases[SHADER_simpleMatrix] = &shaders->simpleMatrix;
+	effectBases[SHADER_blur]         = &shaders->blur.pass1;
+	effectBases[SHADER_obscured]     = &shaders->obscured;
+	effectBases[SHADER_dynamicLight] = &shaders->dynamicLight;
+	currentEffect = SHADER_simple;
+	current = effectBases[SHADER_simple];
+
+	if (gl.ReleaseShaderCompiler)
+		gl.ReleaseShaderCompiler();
 }
 
 GLRender::~GLRender(){
+	shaders.reset();
 	IBO::del(quadIbo);
 	activeInstance = 0;
 }
@@ -384,10 +419,228 @@ void GLRender::beginBlitTo(FboHandle fbo, const Vec2i &size){
 	FBO::bind(glFbo(fbo));
 	glStateObj.viewport.pushSet(IntRect(0, 0, size.x, size.y));
 
-	SimpleShader &shader = shState->shaders().simple;
-	shader.bind();
-	shader.applyViewportProj();
-	shader.setTranslation(Vec2i());
+	useEffect(SHADER_simple);
+	applyViewportProj();
+	setTranslation(Vec2i());
+}
+
+SpriteShaderBase &GLRender::spriteBase(){
+	return *static_cast<SpriteShaderBase*>(current);
+}
+
+void GLRender::useEffect(ShaderType effect){
+	currentEffect = effect;
+	current = effectBases[effect];
+	current->bind();
+
+	if (effect == SHADER_blt)
+		shaders->blt.setSource();
+}
+
+void GLRender::useBlurPass(int pass){
+	currentEffect = SHADER_blur;
+	current = pass == 0 ? static_cast<ShaderBase*>(&shaders->blur.pass1) : static_cast<ShaderBase*>(&shaders->blur.pass2);
+	current->bind();
+}
+
+void GLRender::applyViewportProj(){
+	current->applyViewportProj();
+}
+
+void GLRender::applyPerspectiveProj(){
+	current->applyPerspectiveProj();
+}
+
+void GLRender::setTexSize(const Vec2i &size){
+	current->setTexSize(size);
+}
+
+void GLRender::setTranslation(const Vec2i &value){
+	current->setTranslation(value);
+}
+
+void GLRender::setTime(float value){
+	current->setTime(value);
+}
+
+void GLRender::setEffectTexture(EffectTexture slot, TexHandle tex){
+	switch (currentEffect){
+	case SHADER_water :
+		shaders->water.setNoiseTexture(tex);
+		break;
+
+	case SHADER_tilemapWater :
+		shaders->tilemapWater.setNoiseTexture(tex);
+		break;
+
+	case SHADER_obscured :
+		shaders->obscured.setObscured(tex);
+		break;
+
+	case SHADER_blt :
+		shaders->blt.setDestination(tex);
+		break;
+
+	case SHADER_dynamicLight :
+		shaders->dynamicLight.setWallMapTexture(tex);
+		break;
+
+	case SHADER_trans :
+		if (slot == EffectTexture::Current)
+			shaders->trans.setCurrentScene(tex);
+		else if (slot == EffectTexture::Frozen)
+			shaders->trans.setFrozenScene(tex);
+		else
+			shaders->trans.setTransMap(tex);
+		break;
+
+	case SHADER_simpleTrans :
+		if (slot == EffectTexture::Current)
+			shaders->simpleTrans.setCurrentScene(tex);
+		else
+			shaders->simpleTrans.setFrozenScene(tex);
+		break;
+
+	default :
+		break;
+	}
+}
+
+void GLRender::setSpriteMat(const float value[16]){
+	switch (currentEffect){
+	case SHADER_simpleSprite :
+		shaders->simpleSprite.setSpriteMat(value);
+		break;
+
+	case SHADER_alphaSprite :
+		shaders->alphaSprite.setSpriteMat(value);
+		break;
+
+	default :
+		spriteBase().setSpriteMat(value);
+		break;
+	}
+}
+
+void GLRender::setMatrix(const float value[16]){
+	shaders->simpleMatrix.setMatrix(value);
+}
+
+void GLRender::setTone(const Vec4 &value){
+	if (currentEffect == SHADER_plane)
+		shaders->plane.setTone(value);
+	else
+		spriteBase().setTone(value);
+}
+
+void GLRender::setColor(const Vec4 &value){
+	switch (currentEffect){
+	case SHADER_flatColor :
+		shaders->flatColor.setColor(value);
+		break;
+
+	case SHADER_plane :
+		shaders->plane.setColor(value);
+		break;
+
+	default :
+		spriteBase().setColor(value);
+		break;
+	}
+}
+
+void GLRender::setFlash(const Vec4 &value){
+	shaders->plane.setFlash(value);
+}
+
+void GLRender::setModulate(const Vec4 &value){
+	spriteBase().setModulate(value);
+}
+
+void GLRender::setOpacity(float value){
+	switch (currentEffect){
+	case SHADER_alphaSprite :
+		shaders->alphaSprite.setAlpha(value);
+		break;
+
+	case SHADER_flashMap :
+		shaders->flashMap.setAlpha(value);
+		break;
+
+	case SHADER_plane :
+		shaders->plane.setOpacity(value);
+		break;
+
+	case SHADER_blt :
+		shaders->blt.setOpacity(value);
+		break;
+
+	default :
+		spriteBase().setOpacity(value);
+		break;
+	}
+}
+
+void GLRender::setBushDepth(float value){
+	spriteBase().setBushDepth(value);
+}
+
+void GLRender::setBushOpacity(float value){
+	spriteBase().setBushOpacity(value);
+}
+
+void GLRender::setGray(float value){
+	shaders->gray.setGray(value);
+}
+
+void GLRender::setHueAdjust(float value){
+	shaders->hue.setHueAdjust(value);
+}
+
+void GLRender::setAniIndex(int value){
+	if (currentEffect == SHADER_tilemapWater)
+		shaders->tilemapWater.setAniIndex(value);
+	else
+		shaders->tilemap.setAniIndex(value);
+}
+
+void GLRender::setOffset(const Vec2i &value){
+	shaders->tilemapWater.setOffset(value);
+}
+
+void GLRender::setSubRect(const FloatRect &value){
+	shaders->blt.setSubRect(value);
+}
+
+void GLRender::setProg(float value){
+	if (currentEffect == SHADER_trans)
+		shaders->trans.setProg(value);
+	else
+		shaders->simpleTrans.setProg(value);
+}
+
+void GLRender::setVague(float value){
+	shaders->trans.setVague(value);
+}
+
+void GLRender::setWallMapResolution(int x, int y){
+	shaders->dynamicLight.setWallMapResolution(x, y);
+}
+
+void GLRender::setCameraPosition(int x, int y){
+	shaders->dynamicLight.setCameraPosition(x, y);
+}
+
+void GLRender::setTileMapOffset(int x, int y){
+	shaders->dynamicLight.setTileMapOffset(x, y);
+}
+
+void GLRender::setLightSources(const std::vector<LightSource> &sources){
+	shaders->dynamicLight.setLightSources(sources);
+}
+
+void GLRender::setAmbient(float value){
+	shaders->dynamicLight.setAmbient(value);
 }
 
 void GLRender::beginBlit(const RenderTarget &target){
@@ -399,8 +652,7 @@ void GLRender::beginBlitScreen(const Vec2i &size){
 }
 
 void GLRender::blitSource(const RenderTarget &source){
-	SimpleShader &shader = shState->shaders().simple;
-	shader.setTexSize(Vec2i(source.width, source.height));
+	setTexSize(Vec2i(source.width, source.height));
 	TEX::bind(glTex(source.tex));
 }
 
@@ -436,6 +688,67 @@ void GLRender::suspendContext(SDL_Window *window){
 
 void GLRender::resumeContext(SDL_Window *window){
 	SDL_GL_MakeCurrent(window, static_cast<SDL_GLContext>(context));
+}
+
+class GLRenderContext : public IRenderContext{
+public:
+	GLRenderContext(SDL_Window *window)
+	    : context(SDL_GL_CreateContext(window))
+	{
+		if (!context)
+			throw Exception(Exception::MKXPError, "Failed to create OpenGL context");
+
+		try{
+			initGLFunctions();
+		}catch(...){
+			SDL_GL_DestroyContext(context);
+			throw;
+		}
+
+		if (!conf.enableBlitting)
+			gl.BlitFramebuffer = 0;
+
+		gl.ClearColor(0, 0, 0, 1);
+		gl.Clear(GL_COLOR_BUFFER_BIT);
+		SDL_GL_SwapWindow(window);
+
+		#ifndef NDEBUG
+			debugLogger.reset(new GLDebugLogger);
+		#endif
+	}
+
+	~GLRenderContext(){
+		#ifndef NDEBUG
+			debugLogger.reset();
+		#endif
+		SDL_GL_DestroyContext(context);
+	}
+
+private:
+	SDL_GLContext context;
+	#ifndef NDEBUG
+		std::unique_ptr<GLDebugLogger> debugLogger;
+	#endif
+};
+
+uint64_t renderWindowFlags(){
+	return SDL_WINDOW_OPENGL;
+}
+
+void setupRenderWindowAttributes(){
+	#if mkxp_android
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+	#endif
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	#ifndef NDEBUG
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+	#endif
+}
+
+IRenderContext *createRenderContext(SDL_Window *window){
+	return new GLRenderContext(window);
 }
 
 IRender *createRender(const Config &conf){

@@ -24,7 +24,6 @@
 #pragma once
 #include "table.h"
 #include "sharedstate.h"
-#include "shader.h"
 #include "vertex.h"
 #include "quad.h"
 #include "etc-internal.h"
@@ -139,11 +138,10 @@ struct FlashMap{
 			return;
 
 		shState->render().pushBlendMode(BlendAddition);
-		FlashMapShader &shader = shState->shaders().flashMap;
-		shader.bind();
-		shader.applyViewportProj();
-		shader.setAlpha(alpha);
-		shader.setTranslation(trans);
+		shState->render().useEffect(SHADER_flashMap);
+		shState->render().applyViewportProj();
+		shState->render().setOpacity(alpha);
+		shState->render().setTranslation(trans);
 		shState->render().drawQuads(geom, 0, count);
 		shState->render().popBlendMode();
 	}

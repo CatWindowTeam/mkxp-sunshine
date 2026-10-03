@@ -4,7 +4,6 @@
 #include "disposable.h"
 #include "viewport.h"
 #include "util.h"
-#include "shader.h"
 
 class Bitmap;
 

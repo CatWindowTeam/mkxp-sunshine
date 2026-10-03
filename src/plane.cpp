@@ -31,7 +31,6 @@
 #include "quadarray.h"
 #include "transform.h"
 #include "etc-internal.h"
-#include "shader.h"
 #include "sunshine.h"
 
 #include "signals/signal.h"
@@ -106,7 +105,7 @@ struct PlanePrivate{
 		if (nullOrDisposed(bitmap))
 			return;
 
-		if (gl.npot_repeat && srcRect->toIntRect() == bitmap->rect()){
+		if (shState->render().repeatNpotSupported() && srcRect->toIntRect() == bitmap->rect()){
 			FloatRect srcRect;
 			srcRect.x = (sceneGeo.orig.x + ox) / zoomX;
 			srcRect.y = (sceneGeo.orig.y + oy) / zoomY;
@@ -269,8 +268,7 @@ void Plane::draw(){
 	if (!p->opacity)
 		return;
 
-	ShaderBase *base;
-
+	IRender &render = shState->render();
 
 	bool renderEffect = p->color->hasEffect()    ||
 	                    p->tone->hasEffect();
@@ -279,73 +277,48 @@ void Plane::draw(){
 	{
 	case ShaderType::SHADER_plane:
 		{
-			PlaneShader &shader = shState->shaders().plane;
-
-			shader.bind();
-			shader.applyViewportProj();
-			shader.setTone(p->tone->norm);
-			shader.setColor(p->color->norm);
-			shader.setFlash(Vec4());
-			shader.setOpacity(p->opacity.norm);
-
-			base = &shader;
+			render.useEffect(SHADER_plane);
+			render.applyViewportProj();
+			render.setTone(p->tone->norm);
+			render.setColor(p->color->norm);
+			render.setFlash(Vec4());
+			render.setOpacity(p->opacity.norm);
 			break;
 		}
 	case ShaderType::SHADER_obscured:
 		{
-			ObscuredShader &shader = shState->shaders().obscured;
-			shader.bind();
-			shader.applyViewportProj();
-			shader.setObscured(shState->graphics().obscuredTex());
-			base = &shader;
+			render.useEffect(SHADER_obscured);
+			render.applyViewportProj();
+			render.setEffectTexture(EffectTexture::Obscured, shState->graphics().obscuredTex());
 			break;
 		}
 	case ShaderType::SHADER_water:
 		{
-			WaterShader &shader = shState->shaders().water;
-
-			defaultSpriteShaderInit(shader);
+			defaultSpriteShaderInit(SHADER_water);
 				
 			if (shState->sunshine().noiseBitmap())
-				shader.setNoiseTexture(shState->sunshine().noiseBitmap()->getRenderTarget().tex);
-
-			base = &shader;
+				render.setEffectTexture(EffectTexture::Noise, shState->sunshine().noiseBitmap()->getRenderTarget().tex);
 
 			break;
 		}
 	case ShaderType::SHADER_worldMachine:
 		{
-			WMShader &shader = shState->shaders().worldMachine;
-
-			defaultSpriteShaderInit(shader);
-
-			base = &shader;
-
+			defaultSpriteShaderInit(SHADER_worldMachine);
 			break;
 		}
 	default:
 		{
 			if (renderEffect){
-				SpriteShader &shader = shState->shaders().sprite;
-
-				defaultSpriteShaderInit(shader);
-
-				base = &shader;
+				defaultSpriteShaderInit(SHADER_sprite);
 			}
 			else if (p->opacity != 255){
-				AlphaSpriteShader &shader = shState->shaders().alphaSprite;
-				shader.bind();
-			
-				shader.setAlpha(p->opacity.norm);
-				shader.applyViewportProj();
-				base = &shader;
+				render.useEffect(SHADER_alphaSprite);
+				render.setOpacity(p->opacity.norm);
+				render.applyViewportProj();
 			}
 			else{
-				SimpleSpriteShader &shader = shState->shaders().simpleSprite;
-				shader.bind();
-			
-				shader.applyViewportProj();
-				base = &shader;
+				render.useEffect(SHADER_simpleSprite);
+				render.applyViewportProj();
 			}
 
 			break;
@@ -354,14 +327,12 @@ void Plane::draw(){
 	
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<float> elapsed = currentTime - startTime;
-	base->setTime(elapsed.count());
-	base->setTranslation(Vec2i());
-
-	IRender &render = shState->render();
+	render.setTime(elapsed.count());
+	render.setTranslation(Vec2i());
 
 	render.pushBlendMode(p->blendType);
 
-	p->bitmap->bindTex(*base);
+	p->bitmap->bindTex();
 
 	if (render.repeatNpotSupported())
 		render.setTextureRepeat(p->bitmap->getRenderTarget().tex, true);
@@ -375,7 +346,7 @@ void Plane::draw(){
 }
 
 void Plane::onGeometryChange(const Scene::Geometry &geo){
-	if (gl.npot_repeat)
+	if (shState->render().repeatNpotSupported())
 		Quad::setPosRect(&p->qArray.vertices[0], FloatRect(geo.rect));
 
 	p->sceneGeo = geo;
@@ -387,15 +358,17 @@ void Plane::releaseResources(){
 	delete p;
 }
 
-void Plane::defaultSpriteShaderInit(SpriteShaderBase &shader){
-	shader.bind();
-	
-	shader.applyViewportProj();
+void Plane::defaultSpriteShaderInit(ShaderType effect){
+	IRender &render = shState->render();
 
-	shader.setTone(p->tone->norm);
-	shader.setOpacity(p->opacity.norm);
-	shader.setBushOpacity(1.0f);
+	render.useEffect(effect);
 
-	shader.setColor(p->color->norm);
-	shader.setModulate(Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	render.applyViewportProj();
+
+	render.setTone(p->tone->norm);
+	render.setOpacity(p->opacity.norm);
+	render.setBushOpacity(1.0f);
+
+	render.setColor(p->color->norm);
+	render.setModulate(Vec4(1.0f, 1.0f, 1.0f, 1.0f));
 }

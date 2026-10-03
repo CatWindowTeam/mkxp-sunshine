@@ -29,7 +29,6 @@
 #include "tilequad.h"
 
 #include "quad.h"
-#include "shader.h"
 #include "quadarray.h"
 #include "texpool.h"
 
@@ -388,16 +387,15 @@ struct WindowPrivate {
 		render.pushViewport(IntRect(0, 0, baseTex.width, baseTex.height));
 		render.pushClearColor(Vec4());
 
-		SimpleAlphaShader &shader = shState->shaders().simpleAlpha;
-		shader.bind();
-		shader.applyViewportProj();
-		shader.setTranslation(Vec2i());
+		render.useEffect(SHADER_simpleAlpha);
+		render.applyViewportProj();
+		render.setTranslation(Vec2i());
 
 		/* Clear texture */
 		render.clear();
 
 		/* Repaint base */
-		windowskin->bindTex(shader);
+		windowskin->bindTex();
 		render.setTextureSmooth(windowskin->getRenderTarget().tex, true);
 
 		/* We need to blit the background without blending,
@@ -509,20 +507,21 @@ struct WindowPrivate {
 		if (size == Vec2i(0, 0))
 			return;
 
-		SimpleAlphaShader &shader = shState->shaders().simpleAlpha;
-		shader.bind();
-		shader.applyViewportProj();
-		shader.setTranslation(position + sceneOffset);
+		IRender &render = shState->render();
+
+		render.useEffect(SHADER_simpleAlpha);
+		render.applyViewportProj();
+		render.setTranslation(position + sceneOffset);
 
 		if (useBaseTex){
-			shader.setTexSize(Vec2i(baseTex.width, baseTex.height));
-			shState->render().bindTexture(baseTex.tex);
+			render.setTexSize(Vec2i(baseTex.width, baseTex.height));
+			render.bindTexture(baseTex.tex);
 			baseTexQuad.draw();
 		}else{
-			windowskin->bindTex(shader);
-			shState->render().setTextureSmooth(windowskin->getRenderTarget().tex, true);
+			windowskin->bindTex();
+			render.setTextureSmooth(windowskin->getRenderTarget().tex, true);
 			baseQuadArray.draw();
-			shState->render().setTextureSmooth(windowskin->getRenderTarget().tex, false);
+			render.setTextureSmooth(windowskin->getRenderTarget().tex, false);
 		}
 	}
 
@@ -551,15 +550,14 @@ struct WindowPrivate {
 		render.saveScissorBox();
 		render.intersectScissorBox(windowRect);
 
-		SimpleAlphaShader &shader = shState->shaders().simpleAlpha;
-		shader.bind();
-		shader.applyViewportProj();
+		render.useEffect(SHADER_simpleAlpha);
+		render.applyViewportProj();
 
 		if (!nullOrDisposed(windowskin)){
-			shader.setTranslation(efPos);
+			render.setTranslation(efPos);
 
 			/* Draw arrows / cursors */
-			windowskin->bindTex(shader);
+			windowskin->bindTex();
 			render.setTextureSmooth(windowskin->getRenderTarget().tex, true);
 			controlsQuadArray.draw(0, controlsQuadCount);
 			render.setTextureSmooth(windowskin->getRenderTarget().tex, false);
@@ -568,8 +566,8 @@ struct WindowPrivate {
 		if (!nullOrDisposed(contents)){
 			/* Draw contents bitmap */
 			render.intersectScissorBox(contentsRect);
-			shader.setTranslation(efPos + (Vec2i(16) - contentsOffset));
-			contents->bindTex(shader);
+			render.setTranslation(efPos + (Vec2i(16) - contentsOffset));
+			contents->bindTex();
 			contentsQuad.draw();
 		}
 

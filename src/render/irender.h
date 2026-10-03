@@ -1,6 +1,8 @@
 #pragma once
 #include "etc.h"
+#include "render/effects.h"
 #include <stdint.h>
+#include <vector>
 
 struct SDL_Surface;
 struct SDL_Window;
@@ -128,6 +130,36 @@ public:
 	virtual void ensureQuadIndices(size_t quadCount) = 0;
 	virtual void drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCount) = 0;
 
+	virtual void useEffect(ShaderType effect) = 0;
+	virtual void useBlurPass(int pass) = 0;
+	virtual void applyViewportProj() = 0;
+	virtual void applyPerspectiveProj() = 0;
+	virtual void setTexSize(const Vec2i &size) = 0;
+	virtual void setTranslation(const Vec2i &value) = 0;
+	virtual void setTime(float value) = 0;
+	virtual void setEffectTexture(EffectTexture slot, TexHandle tex) = 0;
+	virtual void setSpriteMat(const float value[16]) = 0;
+	virtual void setMatrix(const float value[16]) = 0;
+	virtual void setTone(const Vec4 &value) = 0;
+	virtual void setColor(const Vec4 &value) = 0;
+	virtual void setFlash(const Vec4 &value) = 0;
+	virtual void setModulate(const Vec4 &value) = 0;
+	virtual void setOpacity(float value) = 0;
+	virtual void setBushDepth(float value) = 0;
+	virtual void setBushOpacity(float value) = 0;
+	virtual void setGray(float value) = 0;
+	virtual void setHueAdjust(float value) = 0;
+	virtual void setAniIndex(int value) = 0;
+	virtual void setOffset(const Vec2i &value) = 0;
+	virtual void setSubRect(const FloatRect &value) = 0;
+	virtual void setProg(float value) = 0;
+	virtual void setVague(float value) = 0;
+	virtual void setWallMapResolution(int x, int y) = 0;
+	virtual void setCameraPosition(int x, int y) = 0;
+	virtual void setTileMapOffset(int x, int y) = 0;
+	virtual void setLightSources(const std::vector<LightSource> &sources) = 0;
+	virtual void setAmbient(float value) = 0;
+
 	virtual void beginBlit(const RenderTarget &target) = 0;
 	virtual void beginBlitScreen(const Vec2i &size) = 0;
 	virtual void blitSource(const RenderTarget &source) = 0;
@@ -139,6 +171,15 @@ public:
 	virtual void suspendContext(SDL_Window *window) = 0;
 	virtual void resumeContext(SDL_Window *window) = 0;
 };
+
+class IRenderContext{
+public:
+	virtual ~IRenderContext() {}
+};
+
+uint64_t renderWindowFlags();
+void setupRenderWindowAttributes();
+IRenderContext *createRenderContext(SDL_Window *window);
 
 IRender *createRender(const Config &conf);
 IRender &activeRender();

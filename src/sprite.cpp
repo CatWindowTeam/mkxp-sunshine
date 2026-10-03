@@ -28,7 +28,6 @@
 #include "signals/signal.h"
 #include "quad.h"
 #include "transform.h"
-#include "shader.h"
 #include "quadarray.h"
 #include "sunshine.h"
 #include <math.h>
@@ -542,7 +541,7 @@ void Sprite::draw(){
 	if (emptyFlashFlag)
 		return;
 
-	ShaderBase *base;
+	IRender &render = shState->render();
 
 	bool renderEffect = p->color->hasEffect()    ||
 	                    p->tone->hasEffect()     ||
@@ -551,83 +550,53 @@ void Sprite::draw(){
 	                    p->bushDepth != 0;
 
 	if (p->obscured || p->shader == ShaderType::SHADER_obscured){
-		ObscuredShader &shader = shState->shaders().obscured;
-		shader.bind();
-		shader.setObscured(shState->graphics().obscuredTex());
-		base = &shader;
+		render.useEffect(SHADER_obscured);
+		render.setEffectTexture(EffectTexture::Obscured, shState->graphics().obscuredTex());
 	}
 	else{
 		switch (p->shader)
 		{
 		case ShaderType::SHADER_plane:
 			{
-				PlaneShader &shader = shState->shaders().plane;
-			
-				shader.bind();
-				shader.setTone(p->tone->norm);
-				shader.setColor(p->color->norm);
-				shader.setFlash(Vec4());
-				shader.setOpacity(p->opacity.norm);
-				
-				base = &shader;
+				render.useEffect(SHADER_plane);
+				render.setTone(p->tone->norm);
+				render.setColor(p->color->norm);
+				render.setFlash(Vec4());
+				render.setOpacity(p->opacity.norm);
 				break;
 			}
 		case ShaderType::SHADER_water:
 			{
-				WaterShader &shader = shState->shaders().water;
+				defaultSpriteShaderInit(SHADER_water);
 
-				defaultSpriteShaderInit(shader);
-
-				base = &shader;
-			
 				if (shState->sunshine().noiseBitmap())
-					shader.setNoiseTexture(shState->sunshine().noiseBitmap()->getRenderTarget().tex);
-			
+					render.setEffectTexture(EffectTexture::Noise, shState->sunshine().noiseBitmap()->getRenderTarget().tex);
+
 				break;
 			}
 		case ShaderType::SHADER_crt:
 			{
-				CRTShader &shader = shState->shaders().crt;
-
-				defaultSpriteShaderInit(shader);
-
-				base = &shader;
-
+				defaultSpriteShaderInit(SHADER_crt);
 				break;
 			}
 		case ShaderType::SHADER_worldMachine:
 			{
-				WMShader &shader = shState->shaders().worldMachine;
-
-				defaultSpriteShaderInit(shader);
-
-				base = &shader;
-
+				defaultSpriteShaderInit(SHADER_worldMachine);
 				break;
 			}
 		default:
 			{
 				if (renderEffect){
-					SpriteShader &shader = shState->shaders().sprite;
-
-					defaultSpriteShaderInit(shader);
-
-					base = &shader;
+					defaultSpriteShaderInit(SHADER_sprite);
 				}
 				else if (p->opacity != 255){
-					AlphaSpriteShader &shader = shState->shaders().alphaSprite;
-					shader.bind();
-				
-					shader.setSpriteMat(p->trans.getMatrix());
-					shader.setAlpha(p->opacity.norm);
-					base = &shader;
+					render.useEffect(SHADER_alphaSprite);
+					render.setSpriteMat(p->trans.getMatrix());
+					render.setOpacity(p->opacity.norm);
 				}
 				else{
-					SimpleSpriteShader &shader = shState->shaders().simpleSprite;
-					shader.bind();
-				
-					shader.setSpriteMat(p->trans.getMatrix());
-					base = &shader;
+					render.useEffect(SHADER_simpleSprite);
+					render.setSpriteMat(p->trans.getMatrix());
 				}
 
 				break;
@@ -636,27 +605,27 @@ void Sprite::draw(){
 	}
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<float> elapsed = currentTime - startTime;
-	base->setTime(elapsed.count());
+	render.setTime(elapsed.count());
 
-	base->applyViewportProj();
+	render.applyViewportProj();
 	if(p->trans.getPerspectiveMode())
-		base->applyPerspectiveProj();
+		render.applyPerspectiveProj();
 
-	shState->render().pushBlendMode(p->blendType);
+	render.pushBlendMode(p->blendType);
 
-	p->bitmap->bindTex(*base);
+	p->bitmap->bindTex();
 	
 	if (smooth)
-		shState->render().setTextureSmooth(p->bitmap->getRenderTarget().tex, true);
+		render.setTextureSmooth(p->bitmap->getRenderTarget().tex, true);
 
 	if (p->wave.active)
 		p->wave.qArray.draw();
 	else
 		p->quad.draw();
 
-	shState->render().popBlendMode();
+	render.popBlendMode();
 	if (smooth)
-		shState->render().setTextureSmooth(p->bitmap->getRenderTarget().tex, false);
+		render.setTextureSmooth(p->bitmap->getRenderTarget().tex, false);
 }
 
 void Sprite::onGeometryChange(const Scene::Geometry &geo){
@@ -683,20 +652,22 @@ void Sprite::releaseResources(){
 	delete p;
 }
 
-void Sprite::defaultSpriteShaderInit(SpriteShaderBase &shader){
-	shader.bind();
-	shader.setSpriteMat(p->trans.getMatrix());
+void Sprite::defaultSpriteShaderInit(ShaderType effect){
+	IRender &render = shState->render();
 
-	shader.setTone(p->tone->norm);
-	shader.setOpacity(p->opacity.norm);
-	shader.setBushDepth(p->efBushDepth);
-	shader.setBushOpacity(p->bushOpacity.norm);
+	render.useEffect(effect);
+	render.setSpriteMat(p->trans.getMatrix());
+
+	render.setTone(p->tone->norm);
+	render.setOpacity(p->opacity.norm);
+	render.setBushDepth(p->efBushDepth);
+	render.setBushOpacity(p->bushOpacity.norm);
 
 	/* When both flashing and effective color are set,
 	 * the one with higher alpha will be blended */
 	const Vec4 *blend = (flashing && flashColor.w > p->color->norm.w) ?
 		                 &flashColor : &p->color->norm;
 
-	shader.setColor(*blend);
-	shader.setModulate(p->modulate->norm);
+	render.setColor(*blend);
+	render.setModulate(p->modulate->norm);
 }

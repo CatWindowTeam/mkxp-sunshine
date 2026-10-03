@@ -31,7 +31,6 @@ struct SharedStatePrivate;
 struct RGSSThreadData;
 struct SDL_Window;
 struct Quad;
-struct ShaderSet;
 
 class Scene;
 class FileSystem;
@@ -90,7 +89,6 @@ struct SharedState{
 	#endif
 
 	IRender &render() const;
-	ShaderSet &shaders() const;
 	TexPool &texPool() const;
 	SharedFontState &fontState() const;
 	Font &defaultFont() const;

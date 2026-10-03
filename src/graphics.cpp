@@ -27,7 +27,6 @@
 #include "util.h"
 #include "sharedstate.h"
 #include "config.h"
-#include "shader.h"
 #include "scene.h"
 #include "quad.h"
 #include "eventthread.h"
@@ -137,10 +136,9 @@ public:
 		render.clear();
 		Scene::composite();
 		if (brightEffect){
-			SimpleColorShader &shader = shState->shaders().simpleColor;
-			shader.bind();
-			shader.applyViewportProj();
-			shader.setTranslation(Vec2i());
+			render.useEffect(SHADER_simpleColor);
+			render.applyViewportProj();
+			render.setTranslation(Vec2i());
 			brightnessQuad.draw();
 		}
 	}
@@ -170,11 +168,10 @@ public:
 				render.popScissorTest();
 			}
 
-			GrayShader &shader = shState->shaders().gray;
-			shader.bind();
-			shader.setGray(t.w);
-			shader.applyViewportProj();
-			shader.setTexSize(screenRect.size());
+			render.useEffect(SHADER_gray);
+			render.setGray(t.w);
+			render.applyViewportProj();
+			render.setTexSize(screenRect.size());
 
 			render.bindTexture(pp.backBuffer().tex);
 
@@ -186,9 +183,8 @@ public:
 		if (!toneRGBEffect && !colorEffect && !flashEffect)
 			return;
 
-		FlatColorShader &shader = shState->shaders().flatColor;
-		shader.bind();
-		shader.applyViewportProj();
+		render.useEffect(SHADER_flatColor);
+		render.applyViewportProj();
 		if (toneRGBEffect){
 			/* First split up additive / substractive components */
 			Vec4 add, sub;
@@ -210,13 +206,13 @@ public:
 			/* Then apply them using hardware blending */
 			if (add.xyzNotNull()){
 				render.setBlendOverride(BlendOverride::ToneAdd);
-				shader.setColor(add);
+				render.setColor(add);
 				screenQuad.draw();
 			}
 
 			if (sub.xyzNotNull()){
 				render.setBlendOverride(BlendOverride::ToneSubtract);
-				shader.setColor(sub);
+				render.setColor(sub);
 				screenQuad.draw();
 			}
 		}
@@ -225,12 +221,12 @@ public:
 			render.setBlendOverride(BlendOverride::Overlay);
 
 		if (colorEffect){
-			shader.setColor(c);
+			render.setColor(c);
 			screenQuad.draw();
 		}
 
 		if (flashEffect){
-			shader.setColor(f);
+			render.setColor(f);
 			screenQuad.draw();
 		}
 
@@ -648,24 +644,20 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 
 	/* If no transition bitmap is provided,
 	 * we can use a simplified shader */
-	TransShader &transShader = shState->shaders().trans;
-	SimpleTransShader &simpleShader = shState->shaders().simpleTrans;
 	if (transMap){
-		TransShader &shader = transShader;
-		shader.bind();
-		shader.applyViewportProj();
-		shader.setFrozenScene(p->frozenScene.tex);
-		shader.setCurrentScene(currentScene.tex);
-		shader.setTransMap(transMap->getRenderTarget().tex);
-		shader.setVague(vague / 256.0f);
-		shader.setTexSize(p->scRes);
+		p->render.useEffect(SHADER_trans);
+		p->render.applyViewportProj();
+		p->render.setEffectTexture(EffectTexture::Frozen, p->frozenScene.tex);
+		p->render.setEffectTexture(EffectTexture::Current, currentScene.tex);
+		p->render.setEffectTexture(EffectTexture::TransMap, transMap->getRenderTarget().tex);
+		p->render.setVague(vague / 256.0f);
+		p->render.setTexSize(p->scRes);
 	}else{
-		SimpleTransShader &shader = simpleShader;
-		shader.bind();
-		shader.applyViewportProj();
-		shader.setFrozenScene(p->frozenScene.tex);
-		shader.setCurrentScene(currentScene.tex);
-		shader.setTexSize(p->scRes);
+		p->render.useEffect(SHADER_simpleTrans);
+		p->render.applyViewportProj();
+		p->render.setEffectTexture(EffectTexture::Frozen, p->frozenScene.tex);
+		p->render.setEffectTexture(EffectTexture::Current, currentScene.tex);
+		p->render.setTexSize(p->scRes);
 	}
 
 	p->render.pushBlend(false);
@@ -692,13 +684,8 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 
 		const float prog = i * (1.0f / duration);
 
-		if (transMap){
-			transShader.bind();
-			transShader.setProg(prog);
-		}else{
-			simpleShader.bind();
-			simpleShader.setProg(prog);
-		}
+		p->render.useEffect(transMap ? SHADER_trans : SHADER_simpleTrans);
+		p->render.setProg(prog);
 
 		if(p->threadData->exiting)
 			SDL_SetWindowOpacity(p->threadData->window, 1.0f - prog);

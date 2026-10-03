@@ -35,7 +35,6 @@
 #include "meow.h"
 #include "sharedstate.h"
 #include "texpool.h"
-#include "shader.h"
 #include "filesystem.h"
 #include "font.h"
 #include "eventthread.h"
@@ -136,16 +135,16 @@ struct BitmapPrivate{
 		return result != PIXMAN_REGION_OUT;
 	}
 
-	void bindTexture(ShaderBase &shader){
+	void bindTexture(){
 		render.bindTexture(gl.tex);
-		shader.setTexSize(Vec2i(gl.width, gl.height));
+		render.setTexSize(Vec2i(gl.width, gl.height));
 	}
 
 	void bindFBO(){ render.bindRenderTarget(gl); }
 
-	void pushSetViewport(ShaderBase &shader) const{
+	void pushSetViewport() const{
 		render.pushViewport(IntRect(0, 0, gl.width, gl.height));
-		shader.applyViewportProj();
+		render.applyViewportProj();
 	}
 
 	void popViewport() const{
@@ -344,12 +343,11 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 
 		p->render.uploadTextureRect(globalTex, 0, 0, sourceRect.w, sourceRect.h, srcSurf, sourceRect.x, sourceRect.y);
 
-		SimpleShader &shader = shState->shaders().simple;
-		shader.bind();
-		shader.setTranslation(Vec2i());
-		shader.setTexSize(gpTexSize);
+		p->render.useEffect(SHADER_simple);
+		p->render.setTranslation(Vec2i());
+		p->render.setTexSize(gpTexSize);
 
-		p->pushSetViewport(shader);
+		p->pushSetViewport();
 		p->bindFBO();
 
 		Quad &quad = shState->gpQuad();
@@ -419,19 +417,18 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 		                     ((float) source.width() / sourceRect.w) * ((float) destRect.w / gpTex.width),
 		                     ((float) source.height() / sourceRect.h) * ((float) destRect.h / gpTex.height));
 
-		BltShader &shader = shState->shaders().blt;
-		shader.bind();
-		shader.setDestination(gpTex.tex);
-		shader.setSubRect(bltSubRect);
-		shader.setOpacity(normOpacity);
+		p->render.useEffect(SHADER_blt);
+		p->render.setEffectTexture(EffectTexture::Destination, gpTex.tex);
+		p->render.setSubRect(bltSubRect);
+		p->render.setOpacity(normOpacity);
 
 		Quad &quad = shState->gpQuad();
 		quad.setTexPosRect(sourceRect, destRect);
 		quad.setColor(Vec4(1, 1, 1, normOpacity));
 
-		source.p->bindTexture(shader);
+		source.p->bindTexture();
 		p->bindFBO();
-		p->pushSetViewport(shader);
+		p->pushSetViewport();
 		p->blitQuad(quad);
 		p->popViewport();
 	}
@@ -466,9 +463,8 @@ void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec
 	guardDisposed();
 	GUARD_MEGA;
 
-	SimpleColorShader &shader = shState->shaders().simpleColor;
-	shader.bind();
-	shader.setTranslation(Vec2i());
+	p->render.useEffect(SHADER_simpleColor);
+	p->render.setTranslation(Vec2i());
 
 	Quad &quad = shState->gpQuad();
 
@@ -486,7 +482,7 @@ void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec
 
 	quad.setPosRect(rect);
 	p->bindFBO();
-	p->pushSetViewport(shader);
+	p->pushSetViewport();
 	p->blitQuad(quad);
 	p->popViewport();
 	p->addTaintedArea(rect);
@@ -501,9 +497,8 @@ void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec
 	guardDisposed();
 	GUARD_MEGA;
 
-	SimpleColorShader &shader = shState->shaders().simpleColor;
-	shader.bind();
-	shader.setTranslation(Vec2i());
+	p->render.useEffect(SHADER_simpleColor);
+	p->render.setTranslation(Vec2i());
 
 	Quad &quad = shState->gpQuad();
 
@@ -515,7 +510,7 @@ void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec
 	quad.setPosRect(rect);
 
 	p->bindFBO();
-	p->pushSetViewport(shader);
+	p->pushSetViewport();
 	p->blitQuad(quad);
 	p->popViewport();
 	p->addTaintedArea(rect);
@@ -544,28 +539,24 @@ void Bitmap::blur(){
 
 	RenderTarget auxTex = shState->texPool().request(width(), height());
 
-	BlurShader &shader = shState->shaders().blur;
-	BlurShader::HPass &pass1 = shader.pass1;
-	BlurShader::VPass &pass2 = shader.pass2;
-
 	p->render.pushBlend(false);
 	p->render.pushViewport(IntRect(0, 0, width(), height()));
 
 	p->render.bindTexture(p->gl.tex);
 	p->render.bindRenderTarget(auxTex);
 
-	pass1.bind();
-	pass1.setTexSize(Vec2i(width(), height()));
-	pass1.applyViewportProj();
+	p->render.useBlurPass(0);
+	p->render.setTexSize(Vec2i(width(), height()));
+	p->render.applyViewportProj();
 
 	quad.draw();
 
 	p->render.bindTexture(auxTex.tex);
 	p->bindFBO();
 
-	pass2.bind();
-	pass2.setTexSize(Vec2i(width(), height()));
-	pass2.applyViewportProj();
+	p->render.useBlurPass(1);
+	p->render.setTexSize(Vec2i(width(), height()));
+	p->render.applyViewportProj();
 
 	quad.draw();
 
@@ -642,17 +633,16 @@ void Bitmap::radialBlur(int angle, int divisions){
 
 	p->render.pushBlendMode(BlendAddition);
 
-	SimpleMatrixShader &shader = shState->shaders().simpleMatrix;
-	shader.bind();
+	p->render.useEffect(SHADER_simpleMatrix);
 
-	p->bindTexture(shader);
+	p->bindTexture();
 	p->render.setTextureSmooth(p->gl.tex, true);
 
-	p->pushSetViewport(shader);
+	p->pushSetViewport();
 
 	for (int i = 0; i < divisions; ++i){
 		trans.setRotation(baseAngle + i*angleStep);
-		shader.setMatrix(trans.getMatrix());
+		p->render.setMatrix(trans.getMatrix());
 		qArray.draw();
 	}
 
@@ -749,14 +739,13 @@ void Bitmap::hueChange(int hue){
 	quad.setTexPosRect(texRect, texRect);
 	quad.setColor(Vec4(1, 1, 1, 1));
 
-	HueShader &shader = shState->shaders().hue;
-	shader.bind();
+	p->render.useEffect(SHADER_hue);
 	/* Shader expects normalized value */
-	shader.setHueAdjust(wrapRange(hue, 0, 359) / 360.0f);
+	p->render.setHueAdjust(wrapRange(hue, 0, 359) / 360.0f);
 
 	p->render.bindRenderTarget(newTex);
-	p->pushSetViewport(shader);
-	p->bindTexture(shader);
+	p->pushSetViewport();
+	p->bindTexture();
 	p->blitQuad(quad);
 	p->popViewport();
 	p->render.unbindTexture();
@@ -1017,13 +1006,11 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 
 		FloatRect bltRect(0, 0, (float) (gpTexSize.x * squeeze) / gpTex2.width, (float) gpTexSize.y / gpTex2.height);
 
-		BltShader &shader = shState->shaders().blt;
-		shader.bind();
-		shader.setTexSize(gpTexSize);
-		shader.setSource();
-		shader.setDestination(gpTex2.tex);
-		shader.setSubRect(bltRect);
-		shader.setOpacity(txtAlpha);
+		p->render.useEffect(SHADER_blt);
+		p->render.setTexSize(gpTexSize);
+		p->render.setEffectTexture(EffectTexture::Destination, gpTex2.tex);
+		p->render.setSubRect(bltRect);
+		p->render.setOpacity(txtAlpha);
 
 		TexHandle globalTex = shState->bindTex();
 		p->render.uploadTextureRect(globalTex, 0, 0, txtSurf->w, txtSurf->h, txtSurf->pixels);
@@ -1034,7 +1021,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 		quad.setPosRect(posRect);
 
 		p->bindFBO();
-		p->pushSetViewport(shader);
+		p->pushSetViewport();
 		p->blitQuad(quad);
 		p->popViewport();
 	}
@@ -1127,8 +1114,8 @@ void Bitmap::ensureNonMega() const{
 	GUARD_MEGA;
 }
 
-void Bitmap::bindTex(ShaderBase &shader) {
-	p->bindTexture(shader);
+void Bitmap::bindTex() {
+	p->bindTexture();
 }
 
 void Bitmap::taintArea(const IntRect &rect) {

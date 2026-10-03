@@ -27,7 +27,6 @@
 #include "signals/signal.h"
 
 class Font;
-class ShaderBase;
 struct RenderTarget;
 struct SDL_Surface;
 
@@ -101,7 +100,7 @@ public:
 
 	/* Binds the backing texture and sets the correct
 	 * texture size uniform in shader */
-	void bindTex(ShaderBase &shader);
+	void bindTex();
 
 	/* Adds 'rect' to tainted area */
 	void taintArea(const IntRect &rect);

@@ -26,7 +26,7 @@
 #include "disposable.h"
 #include "viewport.h"
 #include "util.h"
-#include "shader.h"
+#include "render/effects.h"
 
 class Bitmap;
 struct Color;
@@ -84,7 +84,7 @@ private:
 
 	void draw();
 	void onGeometryChange(const Scene::Geometry &);
-	void defaultSpriteShaderInit(SpriteShaderBase &);
+	void defaultSpriteShaderInit(ShaderType effect);
 
 	void releaseResources();
 	const char *klassName() const { return "sprite"; }

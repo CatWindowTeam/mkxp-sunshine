@@ -12,7 +12,6 @@
 #include "meow.h"
 #include "exception.h"
 #include "config.h"
-#include "gl-fun.h"
 #include "debugwriter.h"
 #include "define.h"
 #include "binding.h"
@@ -29,11 +28,6 @@
 
 #include "crash.png.xxd"
 using namespace std;
-
-//help functions
-static inline const char* glGetStringInt(GLenum name){
-	return(const char*)gl.GetString(name);
-}
 
 #define STR2(x) #x
 #define STR(x) STR2(x)
