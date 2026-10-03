@@ -388,6 +388,12 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
             getWindow().setDecorFitsSystemWindows(false);
         }
 
+        if (!StorageAccessActivity.hasAccess(this)) {
+            startActivity(new Intent(this, StorageAccessActivity.class));
+            finish();
+            return;
+        }
+
         /* Control activity re-creation */
         if (mSDLMainFinished || mActivityCreated) {
               boolean allow_recreate = SDLActivity.nativeAllowRecreateActivity();

@@ -3,6 +3,7 @@ package org.libsdl.app;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -58,7 +59,7 @@ public class StorageAccessActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        if (hasAccess()) {
+        if (hasAccess(this)) {
             startGame();
         } else if (!requested) {
             requested = true;
@@ -66,13 +67,13 @@ public class StorageAccessActivity extends Activity {
         }
     }
 
-    private boolean hasAccess() {
+    static boolean hasAccess(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             return Environment.isExternalStorageManager();
         }
 
-        return checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-            && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        return context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+            && context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestAccess() {
