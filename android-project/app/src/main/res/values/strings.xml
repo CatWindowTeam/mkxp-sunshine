@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Oneshot: Sunshine</string>
+    <string name="storage_access_message">The game needs access to files to load its assets from the Sunshine folder in device storage.</string>
+    <string name="storage_access_button">Grant access</string>
 </resources>
