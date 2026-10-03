@@ -141,7 +141,7 @@ INITCOPY_FUN(Rect)
     rb_define_singleton_method(klass, "_load", RUBY_METHOD_FUNC(Klass##Load), -1); \
     serializableBindingInit<Klass>(klass); \
     rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(Klass##Initialize), -1); \
-    rb_define_method(klass, "initialize_copy", RUBY_METHOD_FUNC(Klass##InitializeCopy), 1); \
+    rb_define_method(klass, "initialize_copy", RUBY_METHOD_FUNC(Klass##InitializeCopy), -1); \
     rb_define_method(klass, "set", RUBY_METHOD_FUNC(Klass##Set), -1); \
     rb_define_method(klass, "==", RUBY_METHOD_FUNC(Klass##Equal), -1); \
     rb_define_method(klass, "===", RUBY_METHOD_FUNC(Klass##Equal), -1); \
