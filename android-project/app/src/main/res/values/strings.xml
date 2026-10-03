@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Oneshot: Sunshine</string>
-    <string name="storage_access_message">The game needs access to files to load its assets from the Sunshine folder in device storage.</string>
-    <string name="storage_access_button">Grant access</string>
+    <string name="asset_import_message">Game assets were not found. Choose the folder that contains the Data and Graphics folders. Its contents will be copied into the app storage.</string>
+    <string name="asset_import_button">Choose folder</string>
+    <string name="asset_import_progress">Copied files: %1$d</string>
+    <string name="asset_import_failed">Import failed: %1$s</string>
+    <string name="asset_import_no_data">The chosen folder does not contain a Data folder.</string>
 </resources>

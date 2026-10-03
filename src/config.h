@@ -59,10 +59,6 @@ struct Config {
     	std::string customDataPath;
     	std::string commonDataPath = "ux0:/data/Sunshine";
     	std::string gameFolder = "ux0:/data/Sunshine";
-    #elif defined(mkxp_android)
-    	std::string customDataPath;
-    	std::string commonDataPath;
-    	std::string gameFolder = "/sdcard/Sunshine";
     #else
     	std::string customDataPath;
     	std::string commonDataPath;

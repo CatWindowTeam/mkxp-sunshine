@@ -18,6 +18,8 @@ Config conf;
 void Config::read(int argc, char* argv[]) {
 	#if defined(mkxp_android) && !defined(TERMUX)
 		commonDataPath = SDL_GetAndroidInternalStoragePath();
+		if (const char *external = SDL_GetAndroidExternalStoragePath())
+			gameFolder = external;
 	#else
 		commonDataPath = prefPath("CatWindowTeam", "/Sunshine");
 	#endif
