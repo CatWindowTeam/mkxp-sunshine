@@ -23,8 +23,7 @@
 #define VERTEX_H
 
 #include "etc-internal.h"
-#include "gl-fun.h"
-#include "shader.h"
+#include "render/irender.h"
 
 /* Simple Vertex */
 struct SVertex{
@@ -48,17 +47,22 @@ struct Vertex{
 	Vertex();
 };
 
-struct VertexAttribute{
-	Shader::Attribute index;
-	GLint size;
-	GLenum type;
-	const GLvoid *offset;
+template<class VertType>
+struct VertexTraits;
+
+template<>
+struct VertexTraits<SVertex>{
+	static const VertexLayout layout = VertexLayout::Simple;
 };
 
-template<class VertType>
-struct VertexTraits{
-	static const VertexAttribute *attr;
-	static const GLsizei attrCount;
+template<>
+struct VertexTraits<CVertex>{
+	static const VertexLayout layout = VertexLayout::Color;
+};
+
+template<>
+struct VertexTraits<Vertex>{
+	static const VertexLayout layout = VertexLayout::Full;
 };
 
 #endif // VERTEX_H

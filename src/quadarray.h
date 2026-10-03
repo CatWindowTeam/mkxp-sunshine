@@ -21,11 +21,7 @@
 
 #pragma once
 #include "vertex.h"
-#include "gl-util.h"
-#include "gl-meta.h"
-#include "sharedstate.h"
-#include "global-ibo.h"
-#include "shader.h"
+#include "render/irender.h"
 #include <vector>
 #include <stdint.h>
 
@@ -33,25 +29,17 @@ template<class VertexType>
 struct QuadArray{
 	std::vector<VertexType> vertices;
 
-	VBO::ID vbo;
-	GLMeta::VAO vao;
+	GeometryHandle geom;
 
 	size_t quadCount;
-	GLsizeiptr vboSize;
+	ptrdiff_t vboSize;
 
 	QuadArray() : quadCount(0), vboSize(-1){
-		vbo = VBO::gen();
-
-		GLMeta::vaoFillInVertexData<VertexType>(vao);
-		vao.vbo = vbo;
-		vao.ibo = shState->globalIBO().ibo;
-
-		GLMeta::vaoInit(vao);
+		geom = activeRender().createGeometry(VertexTraits<VertexType>::layout);
 	}
 
 	~QuadArray(){
-		GLMeta::vaoFini(vao);
-		VBO::del(vbo);
+		activeRender().destroyGeometry(geom);
 	}
 
 	void resize(size_t size){
@@ -67,28 +55,22 @@ struct QuadArray{
 	/* This needs to be called after the final 'append()' call
 	 * and previous to the first 'draw()' call. */
 	void commit(){
-		VBO::bind(vbo);
-		GLsizeiptr size = vertices.size() * sizeof(VertexType);
+		IRender &render = activeRender();
+		ptrdiff_t size = vertices.size() * sizeof(VertexType);
 		if (size > vboSize){
 			/* New data exceeds already allocated size.
 			 * Reallocate VBO. */
-			VBO::uploadData(size, dataPtr(vertices), GL_DYNAMIC_DRAW);
+			render.uploadGeometry(geom, size, dataPtr(vertices), GeometryUsage::Dynamic);
 			vboSize = size;
-			shState->ensureQuadIBO(quadCount);
+			render.ensureQuadIndices(quadCount);
 		}else{
 			/* New data fits in allocated size */
-			VBO::uploadSubData(0, size, dataPtr(vertices));
+			render.uploadGeometryRange(geom, 0, size, dataPtr(vertices));
 		}
-
-		VBO::unbind();
 	}
 
 	void draw(size_t offset, size_t count){
-		GLMeta::vaoBind(vao);
-
-		const char *_offset = (const char*) 0 + offset * 6 * sizeof(index_t);
-		gl.DrawElements(GL_TRIANGLES, count * 6, _GL_INDEX_TYPE, _offset);
-		GLMeta::vaoUnbind(vao);
+		activeRender().drawQuads(geom, offset, count);
 	}
 
 	void draw(){

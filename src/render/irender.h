@@ -26,6 +26,16 @@ struct FboHandle{
 	bool operator!=(const FboHandle &o) const { return id != o.id; }
 };
 
+struct GeometryHandle{
+	uint32_t id;
+
+	explicit GeometryHandle(uint32_t id = 0) : id(id) {}
+
+	bool valid() const { return id != 0; }
+	bool operator==(const GeometryHandle &o) const { return id == o.id; }
+	bool operator!=(const GeometryHandle &o) const { return id != o.id; }
+};
+
 struct RenderTarget{
 	TexHandle tex;
 	FboHandle fbo;
@@ -39,6 +49,17 @@ struct RenderTarget{
 enum class PixelFormat{
 	RGBA,
 	Luminance
+};
+
+enum class VertexLayout{
+	Simple,
+	Color,
+	Full
+};
+
+enum class GeometryUsage{
+	Static,
+	Dynamic
 };
 
 enum class BlendOverride{
@@ -99,6 +120,14 @@ public:
 	virtual void pushClearColor(const Vec4 &color) = 0;
 	virtual void popClearColor() = 0;
 
+	virtual GeometryHandle createGeometry(VertexLayout layout) = 0;
+	virtual void destroyGeometry(GeometryHandle geom) = 0;
+	virtual void allocGeometry(GeometryHandle geom, size_t bytes, GeometryUsage usage) = 0;
+	virtual void uploadGeometry(GeometryHandle geom, size_t bytes, const void *data, GeometryUsage usage) = 0;
+	virtual void uploadGeometryRange(GeometryHandle geom, size_t offset, size_t bytes, const void *data) = 0;
+	virtual void ensureQuadIndices(size_t quadCount) = 0;
+	virtual void drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCount) = 0;
+
 	virtual void beginBlit(const RenderTarget &target) = 0;
 	virtual void beginBlitScreen(const Vec2i &size) = 0;
 	virtual void blitSource(const RenderTarget &source) = 0;
@@ -112,3 +141,4 @@ public:
 };
 
 IRender *createRender(const Config &conf);
+IRender &activeRender();

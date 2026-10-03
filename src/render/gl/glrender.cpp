@@ -3,7 +3,12 @@
 #include "gl-util.h"
 #include "config.h"
 #include "quad.h"
+#include "vertex.h"
 #include "shader.h"
+
+#include <assert.h>
+#include <limits>
+#include <cstddef>
 
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_surface.h>
@@ -24,10 +29,69 @@ static GLint glInternalFormat(PixelFormat fmt){
 	return fmt == PixelFormat::Luminance ? GL_LUMINANCE8 : GL_RGBA16F;
 }
 
+static IRender *activeInstance = 0;
+
+#define attrOffset(type, mem) ((const GLvoid*) offsetof(type, mem))
+
+static const VertexAttribute SimpleAttribs[] ={
+	{ Shader::Position, 2, GL_FLOAT, attrOffset(SVertex, pos)    },
+	{ Shader::TexCoord, 2, GL_FLOAT, attrOffset(SVertex, texPos) }
+};
+
+static const VertexAttribute ColorAttribs[] ={
+	{ Shader::Color,    4, GL_FLOAT, attrOffset(CVertex, color) },
+	{ Shader::Position, 2, GL_FLOAT, attrOffset(CVertex, pos)   }
+};
+
+static const VertexAttribute FullAttribs[] ={
+	{ Shader::Color,    4, GL_FLOAT, attrOffset(Vertex, color)  },
+	{ Shader::Position, 2, GL_FLOAT, attrOffset(Vertex, pos)    },
+	{ Shader::TexCoord, 2, GL_FLOAT, attrOffset(Vertex, texPos) }
+};
+
+static void fillVertexData(GLMeta::VAO &vao, VertexLayout layout){
+	switch (layout){
+	case VertexLayout::Simple :
+		vao.attr      = SimpleAttribs;
+		vao.attrCount = sizeof(SimpleAttribs) / sizeof(SimpleAttribs[0]);
+		vao.vertSize  = sizeof(SVertex);
+		break;
+
+	case VertexLayout::Color :
+		vao.attr      = ColorAttribs;
+		vao.attrCount = sizeof(ColorAttribs) / sizeof(ColorAttribs[0]);
+		vao.vertSize  = sizeof(CVertex);
+		break;
+
+	case VertexLayout::Full :
+		vao.attr      = FullAttribs;
+		vao.attrCount = sizeof(FullAttribs) / sizeof(FullAttribs[0]);
+		vao.vertSize  = sizeof(Vertex);
+		break;
+	}
+}
+
+static GLenum glUsage(GeometryUsage usage){
+	return usage == GeometryUsage::Dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
+}
+
 GLRender::GLRender(const Config &conf)
     : glStateObj(conf),
       context(SDL_GL_GetCurrentContext())
-{}
+{
+	activeInstance = this;
+	quadIbo = IBO::gen();
+	ensureQuadIndices(1);
+}
+
+GLRender::~GLRender(){
+	IBO::del(quadIbo);
+	activeInstance = 0;
+}
+
+IRender &activeRender(){
+	return *activeInstance;
+}
 
 int GLRender::maxTextureSize() const{
 	return glStateObj.caps.maxTexSize;
@@ -241,6 +305,79 @@ void GLRender::pushClearColor(const Vec4 &color){
 
 void GLRender::popClearColor(){
 	glStateObj.clearColor.pop();
+}
+
+GeometryHandle GLRender::createGeometry(VertexLayout layout){
+	Geometry geom;
+	geom.vbo = VBO::gen();
+	fillVertexData(geom.vao, layout);
+	geom.vao.vbo = geom.vbo;
+	geom.vao.ibo = quadIbo;
+	GLMeta::vaoInit(geom.vao);
+
+	uint32_t index;
+	if (freeGeometries.empty()){
+		geometries.push_back(geom);
+		index = geometries.size();
+	}else{
+		index = freeGeometries.back();
+		freeGeometries.pop_back();
+		geometries[index-1] = geom;
+	}
+
+	return GeometryHandle(index);
+}
+
+void GLRender::destroyGeometry(GeometryHandle geom){
+	Geometry &g = geometries[geom.id-1];
+	GLMeta::vaoFini(g.vao);
+	VBO::del(g.vbo);
+	freeGeometries.push_back(geom.id);
+}
+
+void GLRender::allocGeometry(GeometryHandle geom, size_t bytes, GeometryUsage usage){
+	VBO::bind(geometries[geom.id-1].vbo);
+	VBO::allocEmpty(bytes, glUsage(usage));
+	VBO::unbind();
+}
+
+void GLRender::uploadGeometry(GeometryHandle geom, size_t bytes, const void *data, GeometryUsage usage){
+	VBO::bind(geometries[geom.id-1].vbo);
+	VBO::uploadData(bytes, data, glUsage(usage));
+	VBO::unbind();
+}
+
+void GLRender::uploadGeometryRange(GeometryHandle geom, size_t offset, size_t bytes, const void *data){
+	VBO::bind(geometries[geom.id-1].vbo);
+	VBO::uploadSubData(offset, bytes, data);
+	VBO::unbind();
+}
+
+void GLRender::ensureQuadIndices(size_t quadCount){
+	assert(quadCount*6 < std::numeric_limits<uint16_t>::max());
+	if (quadIndices.size() >= quadCount*6)
+		return;
+
+	size_t startInd = quadIndices.size() / 6;
+	quadIndices.reserve(quadCount*6);
+	for (size_t i = startInd; i < quadCount; ++i){
+		static const uint16_t indTemp[] = { 0, 1, 2, 2, 3, 0 };
+		for (size_t j = 0; j < 6; ++j)
+			quadIndices.push_back(i * 4 + indTemp[j]);
+	}
+
+	IBO::bind(quadIbo);
+	IBO::uploadData(quadIndices.size() * sizeof(uint16_t), quadIndices.data());
+	IBO::unbind();
+}
+
+void GLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCount){
+	GLMeta::VAO &vao = geometries[geom.id-1].vao;
+	GLMeta::vaoBind(vao);
+
+	const char *offset = (const char*) 0 + firstQuad * 6 * sizeof(uint16_t);
+	gl.DrawElements(GL_TRIANGLES, quadCount * 6, GL_UNSIGNED_SHORT, offset);
+	GLMeta::vaoUnbind(vao);
 }
 
 void GLRender::beginBlitTo(FboHandle fbo, const Vec2i &size){

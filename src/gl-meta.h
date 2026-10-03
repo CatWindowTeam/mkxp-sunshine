@@ -24,7 +24,14 @@
 
 #include "gl-fun.h"
 #include "gl-util.h"
-#include "vertex.h"
+#include <stddef.h>
+
+struct VertexAttribute{
+	GLuint index;
+	GLint size;
+	GLenum type;
+	const GLvoid *offset;
+};
 
 namespace GLMeta{
 
@@ -40,13 +47,6 @@ struct VAO{
 	/* Don't touch */
 	GLuint nativeVAO;
 };
-
-template<class VertexType>
-inline void vaoFillInVertexData(VAO &vao){
-	vao.attr      = VertexTraits<VertexType>::attr;
-	vao.attrCount = VertexTraits<VertexType>::attrCount;
-	vao.vertSize  = sizeof(VertexType);
-}
 
 void vaoInit(VAO &vao, bool keepBound = false);
 void vaoFini(VAO &vao);

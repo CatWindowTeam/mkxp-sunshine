@@ -23,10 +23,7 @@
 
 #pragma once
 #include "table.h"
-#include "gl-util.h"
-#include "gl-meta.h"
 #include "sharedstate.h"
-#include "global-ibo.h"
 #include "shader.h"
 #include "vertex.h"
 #include "quad.h"
@@ -98,15 +95,11 @@ struct FlashMap{
 	      data(0),
 	      allocQuads(0)
 	{
-		vao.vbo = VBO::gen();
-		vao.ibo = shState->globalIBO().ibo;
-		GLMeta::vaoFillInVertexData<CVertex>(vao);
-		GLMeta::vaoInit(vao);
+		geom = shState->render().createGeometry(VertexLayout::Color);
 	}
 
 	~FlashMap(){
-		GLMeta::vaoFini(vao);
-		VBO::del(vao.vbo);
+		shState->render().destroyGeometry(geom);
 		dataCon.Disconnect();
 	}
 
@@ -145,16 +138,14 @@ struct FlashMap{
 		if (count == 0)
 			return;
 
-		GLMeta::vaoBind(vao);
 		shState->render().pushBlendMode(BlendAddition);
 		FlashMapShader &shader = shState->shaders().flashMap;
 		shader.bind();
 		shader.applyViewportProj();
 		shader.setAlpha(alpha);
 		shader.setTranslation(trans);
-		gl.DrawElements(GL_TRIANGLES, count * 6, _GL_INDEX_TYPE, 0);
+		shState->render().drawQuads(geom, 0, count);
 		shState->render().popBlendMode();
-		GLMeta::vaoUnbind(vao);
 	}
 
 private:
@@ -203,17 +194,16 @@ private:
 		if (vertices.size() == 0)
 			return;
 
-		VBO::bind(vao.vbo);
+		IRender &render = shState->render();
 		if (quadCount() > allocQuads){
 			allocQuads = quadCount();
-			VBO::allocEmpty(sizeof(CVertex) * vertices.size());
+			render.allocGeometry(geom, sizeof(CVertex) * vertices.size(), GeometryUsage::Static);
 		}
 
-		VBO::uploadSubData(0, sizeof(CVertex) * vertices.size(), dataPtr(vertices));
-		VBO::unbind();
+		render.uploadGeometryRange(geom, 0, sizeof(CVertex) * vertices.size(), dataPtr(vertices));
 
 		/* Ensure global IBO size */
-		shState->ensureQuadIBO(quadCount());
+		render.ensureQuadIndices(quadCount());
 	}
 
 	bool dirty;
@@ -223,7 +213,7 @@ private:
 
 	IntRect viewp;
 
-	GLMeta::VAO vao;
+	GeometryHandle geom;
 	size_t allocQuads;
 	std::vector<CVertex> vertices;
 };

@@ -29,7 +29,6 @@
 
 struct SharedStatePrivate;
 struct RGSSThreadData;
-struct GlobalIBO;
 struct SDL_Window;
 struct Quad;
 struct ShaderSet;
@@ -48,7 +47,6 @@ class Sunshine;
 class TexPool;
 class Font;
 class SharedFontState;
-struct GlobalIBO;
 struct Config;
 struct Vec2i;
 struct SharedMidiState;
@@ -98,11 +96,6 @@ struct SharedState{
 	Font &defaultFont() const;
 
 	unsigned int genTimeStamp();
-
-	/* Returns global quad IBO, and ensures it has indices
-	 * for at least minSize quads */
-	void ensureQuadIBO(size_t minSize);
-	GlobalIBO &globalIBO();
 
 	/* Global general purpose texture */
 	TexHandle bindTex();

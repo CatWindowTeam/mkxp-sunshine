@@ -29,6 +29,7 @@
 #include "tilequad.h"
 
 #include "quad.h"
+#include "shader.h"
 #include "quadarray.h"
 #include "texpool.h"
 

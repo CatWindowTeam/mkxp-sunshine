@@ -1,6 +1,8 @@
 #pragma once
 #include "render/irender.h"
 #include "glstate.h"
+#include "gl-meta.h"
+#include <vector>
 #include "sharedstate.h"
 
 typedef void *GLContextHandle;
@@ -8,6 +10,7 @@ typedef void *GLContextHandle;
 class GLRender : public IRender{
 public:
 	GLRender(const Config &conf);
+	~GLRender();
 
 	GLState &state() { return glStateObj; }
 
@@ -59,6 +62,14 @@ public:
 	void pushClearColor(const Vec4 &color);
 	void popClearColor();
 
+	GeometryHandle createGeometry(VertexLayout layout);
+	void destroyGeometry(GeometryHandle geom);
+	void allocGeometry(GeometryHandle geom, size_t bytes, GeometryUsage usage);
+	void uploadGeometry(GeometryHandle geom, size_t bytes, const void *data, GeometryUsage usage);
+	void uploadGeometryRange(GeometryHandle geom, size_t offset, size_t bytes, const void *data);
+	void ensureQuadIndices(size_t quadCount);
+	void drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCount);
+
 	void beginBlit(const RenderTarget &target);
 	void beginBlitScreen(const Vec2i &size);
 	void blitSource(const RenderTarget &source);
@@ -73,8 +84,17 @@ public:
 private:
 	void beginBlitTo(FboHandle fbo, const Vec2i &size);
 
+	struct Geometry{
+		VBO::ID vbo;
+		GLMeta::VAO vao;
+	};
+
 	GLState glStateObj;
 	GLContextHandle context;
+	std::vector<Geometry> geometries;
+	std::vector<uint32_t> freeGeometries;
+	IBO::ID quadIbo;
+	std::vector<uint16_t> quadIndices;
 };
 
 #define glState static_cast<GLRender&>(shState->render()).state()

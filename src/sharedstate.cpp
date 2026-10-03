@@ -35,7 +35,6 @@
 #include "texpool.h"
 #include "font.h"
 #include "eventthread.h"
-#include "global-ibo.h"
 #include "quad.h"
 #include "binding.h"
 #include "exception.h"
@@ -47,7 +46,6 @@
 #endif
 
 SharedState *SharedState::instance = 0;
-static GlobalIBO *_globalIBO = 0;
 
 struct SharedStatePrivate{
 	void *bindingData;
@@ -140,12 +138,7 @@ struct SharedStatePrivate{
 };
 
 void SharedState::initInstance(RGSSThreadData *threadData){
-	/* This section is tricky because of dependencies:
-	 * SharedState depends on GlobalIBO existing,
-	 * Font depends on SharedState existing */
-	_globalIBO = new GlobalIBO();
-	_globalIBO->ensureSize(1);
-
+	/* Font depends on SharedState existing */
 	SharedState::instance = 0;
 	Font *defaultFont = 0;
 
@@ -154,7 +147,6 @@ void SharedState::initInstance(RGSSThreadData *threadData){
 		Font::initDefaults(instance->p->fontState);
 		defaultFont = new Font();
 	}catch (const Exception &exc){
-		delete _globalIBO;
 		delete SharedState::instance;
 		delete defaultFont;
 
@@ -172,8 +164,6 @@ void SharedState::finiInstance(){
 	delete SharedState::instance->p->defaultFont;
 
 	delete SharedState::instance;
-
-	delete _globalIBO;
 }
 
 void SharedState::setScreen(Scene &screen){
@@ -214,14 +204,6 @@ GSATT(SharedFontState&, fontState)
 
 void SharedState::setBindingData(void *data){
 	p->bindingData = data;
-}
-
-void SharedState::ensureQuadIBO(size_t minSize){
-	_globalIBO->ensureSize(minSize);
-}
-
-GlobalIBO &SharedState::globalIBO(){
-	return *_globalIBO;
 }
 
 TexHandle SharedState::bindTex(){

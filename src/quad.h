@@ -21,16 +21,11 @@
 
 #pragma once
 #include "vertex.h"
-#include "gl-util.h"
-#include "gl-meta.h"
-#include "sharedstate.h"
-#include "global-ibo.h"
-#include "shader.h"
+#include "render/irender.h"
 
 struct Quad{
 	Vertex vert[4];
-	VBO::ID vbo;
-	GLMeta::VAO vao;
+	GeometryHandle geom;
 	bool vboDirty;
 
 	template<typename V>
@@ -64,27 +59,20 @@ struct Quad{
 			vert[i].color = c;
 	}
 
-	Quad() : vbo(VBO::gen()), vboDirty(true){
-		GLMeta::vaoFillInVertexData<Vertex>(vao);
-		vao.vbo = vbo;
-		vao.ibo = shState->globalIBO().ibo;
-
-		GLMeta::vaoInit(vao, true);
-		VBO::allocEmpty(sizeof(Vertex[4]), GL_DYNAMIC_DRAW);
-		GLMeta::vaoUnbind(vao);
+	Quad() : vboDirty(true){
+		IRender &render = activeRender();
+		geom = render.createGeometry(VertexTraits<Vertex>::layout);
+		render.allocGeometry(geom, sizeof(Vertex[4]), GeometryUsage::Dynamic);
 
 		setColor(Vec4(1, 1, 1, 1));
 	}
 
 	~Quad(){
-		GLMeta::vaoFini(vao);
-		VBO::del(vbo);
+		activeRender().destroyGeometry(geom);
 	}
 
 	void updateBuffer(){
-		VBO::bind(vbo);
-		VBO::uploadSubData(0, sizeof(Vertex[4]), vert);
-		VBO::unbind();
+		activeRender().uploadGeometryRange(geom, 0, sizeof(Vertex[4]), vert);
 	}
 
 	void setPosRect(const FloatRect &r){
@@ -115,8 +103,6 @@ struct Quad{
 			vboDirty = false;
 		}
 
-		GLMeta::vaoBind(vao);
-		gl.DrawElements(GL_TRIANGLES, 6, _GL_INDEX_TYPE, 0);
-		GLMeta::vaoUnbind(vao);
+		activeRender().drawQuads(geom, 0, 1);
 	}
 };
