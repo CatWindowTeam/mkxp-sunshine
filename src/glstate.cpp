@@ -41,10 +41,8 @@ void GLScissorBox::apply(const IntRect &value){
 
 void GLScissorBox::setIntersect(const IntRect &value){
 	const IntRect &current = get();
-
 	SDL_Rect r1 = { current.x, current.y, current.w, current.h };
 	SDL_Rect r2 = { value.x,   value.y,   value.w,   value.h };
-
 	SDL_Rect result;
 	if (!SDL_GetRectIntersection(&r1, &r2, &result))
 		result.w = result.h = 0;
@@ -108,14 +106,12 @@ GLState::Caps::Caps(){
 
 GLState::GLState(const Config &conf){
 	gl.Disable(GL_DEPTH_TEST);
-
 	clearColor.init(Vec4(0, 0, 0, 1));
 	blendMode.init(BlendNormal);
 	blend.init(true);
 	scissorTest.init(false);
 	scissorBox.init(IntRect(0, 0, conf.defScreenW, conf.defScreenH));
 	program.init(0);
-
 	if (conf.maxTextureSize > 0)
 		caps.maxTexSize = conf.maxTextureSize;
 }

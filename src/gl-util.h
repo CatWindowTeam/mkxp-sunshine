@@ -46,7 +46,6 @@ struct ID \
 /* 2D Texture */
 namespace TEX{
 	DEF_GL_ID
-
 	inline ID gen(){
 		ID id;
 		gl.GenTextures(1, &id.gl);

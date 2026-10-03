@@ -32,16 +32,12 @@ void subRectImageUpload(GLint srcW, GLint srcX, GLint srcY, GLint dstX, GLint ds
 		gl.PixelStorei(GL_UNPACK_ROW_LENGTH, srcW);
 		gl.PixelStorei(GL_UNPACK_SKIP_PIXELS, srcX);
 		gl.PixelStorei(GL_UNPACK_SKIP_ROWS, srcY);
-
 		TEX::uploadSubImage(dstX, dstY, dstW, dstH, src->pixels, format);
 	}else{
 		SDL_Surface* tmp = SDL_CreateSurface(dstW, dstH, src->format);
 		SDL_Rect srcRect = { srcX, srcY, dstW, dstH };
-
 		SDL_BlitSurface(src, &srcRect, tmp, 0);
-
 		TEX::uploadSubImage(dstX, dstY, dstW, dstH, tmp->pixels, format);
-
 		SDL_DestroySurface(tmp);
 	}
 }
@@ -59,10 +55,8 @@ void subRectImageEnd(){
 static void vaoBindRes(VAO &vao){
 	VBO::bind(vao.vbo);
 	IBO::bind(vao.ibo);
-
 	for (size_t i = 0; i < vao.attrCount; ++i){
 		const VertexAttribute &va = vao.attr[i];
-
 		gl.EnableVertexAttribArray(va.index);
 		gl.VertexAttribPointer(va.index, va.size, va.type, GL_FALSE, vao.vertSize, va.offset);
 	}
@@ -75,8 +69,7 @@ void vaoInit(VAO &vao, bool keepBound){
 		vaoBindRes(vao);
 		if (!keepBound)
 			gl.BindVertexArray(0);
-	}
-	else{
+	}else{
 		if (keepBound){
 			VBO::bind(vao.vbo);
 			IBO::bind(vao.ibo);
@@ -99,8 +92,7 @@ void vaoBind(VAO &vao){
 void vaoUnbind(VAO &vao){
 	if (HAVE_NATIVE_VAO){
 		gl.BindVertexArray(0);
-	}
-	else{
+	}else{
 		for (size_t i = 0; i < vao.attrCount; ++i)
 			gl.DisableVertexAttribArray(vao.attr[i].index);
 
@@ -114,8 +106,7 @@ void vaoUnbind(VAO &vao){
 static void _blitBegin(FBO::ID fbo, const Vec2i &size){
 	if (HAVE_NATIVE_BLIT){
 		gl.BindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo.gl);
-	}
-	else{
+	}else{
 		FBO::bind(fbo);
 		glState.viewport.pushSet(IntRect(0, 0, size.x, size.y));
 
@@ -137,8 +128,7 @@ void blitBeginScreen(const Vec2i &size){
 void blitSource(TEXFBO &source){
 	if (HAVE_NATIVE_BLIT){
 		gl.BindFramebuffer(GL_READ_FRAMEBUFFER, source.fbo.gl);
-	}
-	else{
+	}else{
 		SimpleShader &shader = shState->shaders().simple;
 		shader.setTexSize(Vec2i(source.width, source.height));
 		TEX::bind(source.tex);
@@ -154,8 +144,7 @@ void blitRectangle(const IntRect &src, const IntRect &dst, bool smooth){
 		gl.BlitFramebuffer(src.x, src.y, src.x+src.w, src.y+src.h,
 		                   dst.x, dst.y, dst.x+dst.w, dst.y+dst.h,
 		                   GL_COLOR_BUFFER_BIT, smooth ? GL_LINEAR : GL_NEAREST);
-	}
-	else{
+	}else{
 		if (smooth)
 			TEX::setSmooth(true);
 
@@ -164,7 +153,6 @@ void blitRectangle(const IntRect &src, const IntRect &dst, bool smooth){
 		quad.setTexPosRect(src, dst);
 		quad.draw();
 		glState.blend.pop();
-
 		if (smooth)
 			TEX::setSmooth(false);
 	}

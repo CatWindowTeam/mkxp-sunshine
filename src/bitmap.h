@@ -19,14 +19,11 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef BITMAP_H
-#define BITMAP_H
-
+#pragma once
 #include "disposable.h"
 #include "etc-internal.h"
 #include "etc.h"
 #include "debugwriter.h"
-
 #include "signals/signal.h"
 
 class Font;
@@ -117,5 +114,3 @@ private:
 
 	BitmapPrivate *p;
 };
-
-#endif // BITMAP_H

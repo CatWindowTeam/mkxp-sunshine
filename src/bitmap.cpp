@@ -20,7 +20,6 @@
 */
 
 #include "bitmap.h"
-
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -56,7 +55,6 @@
  * height are positive) */
 static IntRect normalizedRect(const IntRect &rect){
 	IntRect norm = rect;
-
 	if (norm.w < 0){
 		norm.w = -norm.w;
 		norm.x -= norm.w;
@@ -95,13 +93,8 @@ struct BitmapPrivate{
 	 * ourselves the expensive blending calculation */
 	pixman_region16_t tainted;
 
-	BitmapPrivate(Bitmap *self)
-	    : self(self),
-	      megaSurface(0),
-	      surface(0)
-	{
+	BitmapPrivate(Bitmap *self) : self(self), megaSurface(0), surface(0){
 		format = (SDL_PixelFormatDetails*)SDL_GetPixelFormatDetails(SDL_PixelFormat::SDL_PIXELFORMAT_ABGR8888);
-
 		font = &shState->defaultFont();
 		pixman_region_init(&tainted);
 	}
@@ -140,9 +133,8 @@ struct BitmapPrivate{
 		box.y1 = rect.y;
 		box.x2 = rect.x + rect.w;
 		box.y2 = rect.y + rect.h;
-
+		
 		pixman_region_overlap_t result = pixman_region_contains_rectangle(&tainted, &box);
-
 		return result != PIXMAN_REGION_OUT;
 	}
 

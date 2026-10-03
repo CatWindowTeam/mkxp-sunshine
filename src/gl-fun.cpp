@@ -34,29 +34,24 @@ static void parseExtensionsCore(_PFNGLGETINTEGERVPROC GetIntegerv, tsl::robin_se
 
 	GLint extCount = 0;
 	GetIntegerv(GL_NUM_EXTENSIONS, &extCount);
-
 	for (GLint i = 0; i < extCount; ++i)
 		out.insert((const char*) GetStringi(GL_EXTENSIONS, i));
 }
 
 static void parseExtensionsCompat(_PFNGLGETSTRINGPROC GetString, tsl::robin_set<std::string> &out){
 	const char *ext = (const char*) GetString(GL_EXTENSIONS);
-
 	if (!ext)
 		return;
 
 	char buffer[0x100];
 	size_t bufferI;
-
 	while (*ext){
 		bufferI = 0;
 		while (*ext && *ext != ' ')
 			buffer[bufferI++] = *ext++;
 
 		buffer[bufferI] = '\0';
-
 		out.insert(buffer);
-
 		if (*ext == ' ')
 			++ext;
 	}
@@ -80,13 +75,11 @@ void initGLFunctions(){
 	if (!SDL_strncmp(ver, glesPrefix, glesPrefixN)){
 		gles = true;
 		gl.glsles = true;
-
 		ver += glesPrefixN;
 	}
 
 	/* Assume single digit */
 	int glMajor = *ver - '0';
-
 	if (glMajor < 2){
 		#ifdef GLES2_HEADER
 			ErrorMsg("At least OpenGL ES 2.0 is required");
@@ -100,69 +93,62 @@ void initGLFunctions(){
 	}
 
 	tsl::robin_set<std::string> ext;
-
 	if (glMajor >= 3)
 		parseExtensionsCore(gl.GetIntegerv, ext);
 	else
 		parseExtensionsCompat(gl.GetString, ext);
 
-#define HAVE_EXT(_ext) ext.contains("GL_" #_ext)
+	#define HAVE_EXT(_ext) ext.contains("GL_" #_ext)
 
 	/* FBO entrypoints */
 	if (glMajor >= 3 || HAVE_EXT(ARB_framebuffer_object)){
-#undef EXT_SUFFIX
-#define EXT_SUFFIX ""
+		#undef EXT_SUFFIX
+		#define EXT_SUFFIX ""
 		GL_FBO_FUN;
 		GL_FBO_BLIT_FUN;
-	}
-	else if (gles && glMajor == 2){
+	}else if (gles && glMajor == 2){
 		GL_FBO_FUN;
 	}
 	else if (HAVE_EXT(EXT_framebuffer_object)){
-#undef EXT_SUFFIX
-#define EXT_SUFFIX "EXT"
+		#undef EXT_SUFFIX
+		#define EXT_SUFFIX "EXT"
 		GL_FBO_FUN;
-
 		if (HAVE_EXT(EXT_framebuffer_blit)){
 			GL_FBO_BLIT_FUN;
 		}
-	}
-	else{
+	}else{
 		ErrorMsg("No FBO support available");
 	}
 
 	/* VAO entrypoints */
 	if (HAVE_EXT(ARB_vertex_array_object) || glMajor >= 3){
-#undef EXT_SUFFIX
-#define EXT_SUFFIX ""
+		#undef EXT_SUFFIX
+		#define EXT_SUFFIX ""
 		GL_VAO_FUN;
-	}
-	else if (HAVE_EXT(APPLE_vertex_array_object)){
-#undef EXT_SUFFIX
-#define EXT_SUFFIX "APPLE"
+	}else if (HAVE_EXT(APPLE_vertex_array_object)){
+		#undef EXT_SUFFIX
+		#define EXT_SUFFIX "APPLE"
 		GL_VAO_FUN;
-	}
-	else if (HAVE_EXT(OES_vertex_array_object)){
-#undef EXT_SUFFIX
-#define EXT_SUFFIX "OES"
+	}else if (HAVE_EXT(OES_vertex_array_object)){
+		#undef EXT_SUFFIX
+		#define EXT_SUFFIX "OES"
 		GL_VAO_FUN;
 	}
 
 	/* Debug callback entrypoints */
 	if (HAVE_EXT(KHR_debug)){
-#undef EXT_SUFFIX
-#define EXT_SUFFIX ""
+		#undef EXT_SUFFIX
+		#define EXT_SUFFIX ""
 		GL_DEBUG_KHR_FUN;
-	}
-	else if (HAVE_EXT(ARB_debug_output)){
-#undef EXT_SUFFIX
-#define EXT_SUFFIX "ARB"
+	}else if (HAVE_EXT(ARB_debug_output)){
+		#undef EXT_SUFFIX
+		#define EXT_SUFFIX "ARB"
 		GL_DEBUG_KHR_FUN;
 	}
 
 	if (HAVE_EXT(GREMEDY_string_marker)){
-#undef EXT_SUFFIX
-#define EXT_SUFFIX "GREMEDY"
+		#undef EXT_SUFFIX
+		#define EXT_SUFFIX "GREMEDY"
 		GL_GREMEMDY_FUN;
 	}
 
