@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include "define.h"
-#include "CLI11.hpp"
 
 struct Config {
     bool debugMode = false;
@@ -25,9 +24,7 @@ struct Config {
     int fixedFramerate = 0;
     bool frameSkip = true;
     bool syncToRefreshrate = true;
-
     bool solidFonts = false;
-
     bool subImageFix = false;
     bool enableBlitting = true;
     int maxTextureSize = 0;

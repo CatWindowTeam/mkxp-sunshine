@@ -4,16 +4,14 @@
 #include "config.h"
 #include "exception.h"
 #ifndef NDEBUG
-#include "gl-debug.h"
+	#include "gl-debug.h"
 #endif
 #include "quad.h"
 #include "vertex.h"
 #include "shader.h"
-
 #include <assert.h>
 #include <limits>
 #include <cstddef>
-
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_surface.h>
 
@@ -60,13 +58,11 @@ static void fillVertexData(GLMeta::VAO &vao, VertexLayout layout){
 		vao.attrCount = sizeof(SimpleAttribs) / sizeof(SimpleAttribs[0]);
 		vao.vertSize  = sizeof(SVertex);
 		break;
-
 	case VertexLayout::Color :
 		vao.attr      = ColorAttribs;
 		vao.attrCount = sizeof(ColorAttribs) / sizeof(ColorAttribs[0]);
 		vao.vertSize  = sizeof(CVertex);
 		break;
-
 	case VertexLayout::Full :
 		vao.attr      = FullAttribs;
 		vao.attrCount = sizeof(FullAttribs) / sizeof(FullAttribs[0]);
@@ -79,10 +75,7 @@ static GLenum glUsage(GeometryUsage usage){
 	return usage == GeometryUsage::Dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
 }
 
-GLRender::GLRender(const Config &conf)
-    : glStateObj(conf),
-      context(SDL_GL_GetCurrentContext())
-{
+GLRender::GLRender() : glStateObj(), context(SDL_GL_GetCurrentContext()){
 	activeInstance = this;
 	quadIbo = IBO::gen();
 	ensureQuadIndices(1);
@@ -113,7 +106,6 @@ GLRender::GLRender(const Config &conf)
 	effectBases[SHADER_dynamicLight] = &shaders->dynamicLight;
 	currentEffect = SHADER_simple;
 	current = effectBases[SHADER_simple];
-
 	if (gl.ReleaseShaderCompiler)
 		gl.ReleaseShaderCompiler();
 }
@@ -162,12 +154,12 @@ void GLRender::unbindTexture(){
 	TEX::unbind();
 }
 
-void GLRender::setTextureSmooth(TexHandle tex, bool smooth){
+void GLRender::setTextureSmooth(TexHandle tex, const bool smooth){
 	TEX::bind(glTex(tex));
 	TEX::setSmooth(smooth);
 }
 
-void GLRender::setTextureRepeat(TexHandle tex, bool repeat){
+void GLRender::setTextureRepeat(TexHandle tex, const bool repeat){
 	TEX::bind(glTex(tex));
 	TEX::setRepeat(repeat);
 }
@@ -184,7 +176,6 @@ void GLRender::uploadTextureRect(TexHandle tex, int x, int y, int w, int h, cons
 
 void GLRender::uploadTextureRect(TexHandle tex, int dstX, int dstY, int w, int h, SDL_Surface *src, int srcX, int srcY){
 	TEX::bind(glTex(tex));
-
 	if (gl.unpack_subimage){
 		gl.PixelStorei(GL_UNPACK_ROW_LENGTH, src->w);
 		gl.PixelStorei(GL_UNPACK_SKIP_PIXELS, srcX);
@@ -202,7 +193,7 @@ void GLRender::uploadTextureRect(TexHandle tex, int dstX, int dstY, int w, int h
 	}
 }
 
-RenderTarget GLRender::createRenderTarget(int w, int h){
+RenderTarget GLRender::createRenderTarget(const int w, const int h){
 	TEXFBO obj;
 	TEXFBO::init(obj);
 	TEXFBO::allocEmpty(obj, w, h);
@@ -216,7 +207,7 @@ RenderTarget GLRender::createRenderTarget(int w, int h){
 	return target;
 }
 
-void GLRender::resizeRenderTarget(RenderTarget &target, int w, int h){
+void GLRender::resizeRenderTarget(RenderTarget &target, const int w, const int h){
 	TEX::bind(glTex(target.tex));
 	TEX::allocEmpty(w, h);
 	target.width = w;
@@ -263,7 +254,7 @@ void GLRender::refreshViewport(){
 	glStateObj.viewport.refresh();
 }
 
-void GLRender::pushBlend(bool enabled){
+void GLRender::pushBlend(const bool enabled){
 	glStateObj.blend.pushSet(enabled);
 }
 
@@ -302,7 +293,7 @@ void GLRender::refreshBlendMode(){
 	glStateObj.blendMode.refresh();
 }
 
-void GLRender::pushScissorTest(bool enabled){
+void GLRender::pushScissorTest(const bool enabled){
 	glStateObj.scissorTest.pushSet(enabled);
 }
 
@@ -432,7 +423,6 @@ void GLRender::useEffect(ShaderType effect){
 	currentEffect = effect;
 	current = effectBases[effect];
 	current->bind();
-
 	if (effect == SHADER_blt)
 		shaders->blt.setSource();
 }
@@ -459,7 +449,7 @@ void GLRender::setTranslation(const Vec2i &value){
 	current->setTranslation(value);
 }
 
-void GLRender::setTime(float value){
+void GLRender::setTime(const float value){
 	current->setTime(value);
 }
 
@@ -557,7 +547,7 @@ void GLRender::setModulate(const Vec4 &value){
 	spriteBase().setModulate(value);
 }
 
-void GLRender::setOpacity(float value){
+void GLRender::setOpacity(const float value){
 	switch (currentEffect){
 	case SHADER_alphaSprite :
 		shaders->alphaSprite.setAlpha(value);
@@ -581,23 +571,23 @@ void GLRender::setOpacity(float value){
 	}
 }
 
-void GLRender::setBushDepth(float value){
+void GLRender::setBushDepth(const float value){
 	spriteBase().setBushDepth(value);
 }
 
-void GLRender::setBushOpacity(float value){
+void GLRender::setBushOpacity(const float value){
 	spriteBase().setBushOpacity(value);
 }
 
-void GLRender::setGray(float value){
+void GLRender::setGray(const float value){
 	shaders->gray.setGray(value);
 }
 
-void GLRender::setHueAdjust(float value){
+void GLRender::setHueAdjust(const float value){
 	shaders->hue.setHueAdjust(value);
 }
 
-void GLRender::setAniIndex(int value){
+void GLRender::setAniIndex(const int value){
 	if (currentEffect == SHADER_tilemapWater)
 		shaders->tilemapWater.setAniIndex(value);
 	else
@@ -612,26 +602,26 @@ void GLRender::setSubRect(const FloatRect &value){
 	shaders->blt.setSubRect(value);
 }
 
-void GLRender::setProg(float value){
+void GLRender::setProg(const float value){
 	if (currentEffect == SHADER_trans)
 		shaders->trans.setProg(value);
 	else
 		shaders->simpleTrans.setProg(value);
 }
 
-void GLRender::setVague(float value){
+void GLRender::setVague(const float value){
 	shaders->trans.setVague(value);
 }
 
-void GLRender::setWallMapResolution(int x, int y){
+void GLRender::setWallMapResolution(const int x, const int y){
 	shaders->dynamicLight.setWallMapResolution(x, y);
 }
 
-void GLRender::setCameraPosition(int x, int y){
+void GLRender::setCameraPosition(const int x, const int y){
 	shaders->dynamicLight.setCameraPosition(x, y);
 }
 
-void GLRender::setTileMapOffset(int x, int y){
+void GLRender::setTileMapOffset(const int x, const int y){
 	shaders->dynamicLight.setTileMapOffset(x, y);
 }
 
@@ -639,7 +629,7 @@ void GLRender::setLightSources(const std::vector<LightSource> &sources){
 	shaders->dynamicLight.setLightSources(sources);
 }
 
-void GLRender::setAmbient(float value){
+void GLRender::setAmbient(const float value){
 	shaders->dynamicLight.setAmbient(value);
 }
 
@@ -660,7 +650,7 @@ void GLRender::blitRect(const IntRect &src, const Vec2i &dstPos){
 	blitRect(src, IntRect(dstPos.x, dstPos.y, src.w, src.h), false);
 }
 
-void GLRender::blitRect(const IntRect &src, const IntRect &dst, bool smooth){
+void GLRender::blitRect(const IntRect &src, const IntRect &dst, const bool smooth){
 	if (smooth)
 		TEX::setSmooth(true);
 
@@ -669,7 +659,6 @@ void GLRender::blitRect(const IntRect &src, const IntRect &dst, bool smooth){
 	quad.setTexPosRect(src, dst);
 	quad.draw();
 	glStateObj.blend.pop();
-
 	if (smooth)
 		TEX::setSmooth(false);
 }
@@ -690,11 +679,9 @@ void GLRender::resumeContext(SDL_Window *window){
 	SDL_GL_MakeCurrent(window, static_cast<SDL_GLContext>(context));
 }
 
-class GLRenderContext : public IRenderContext{
+class GLRenderContext final : public IRenderContext{
 public:
-	GLRenderContext(SDL_Window *window)
-	    : context(SDL_GL_CreateContext(window))
-	{
+	GLRenderContext(SDL_Window *window) : context(SDL_GL_CreateContext(window)){
 		if (!context)
 			throw Exception(Exception::MKXPError, "Failed to create OpenGL context");
 
@@ -736,11 +723,6 @@ uint64_t renderWindowFlags(){
 }
 
 void setupRenderWindowAttributes(){
-	#if mkxp_android
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
-	#endif
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	#ifndef NDEBUG
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
@@ -751,6 +733,6 @@ IRenderContext *createRenderContext(SDL_Window *window){
 	return new GLRenderContext(window);
 }
 
-IRender *createRender(const Config &conf){
-	return new GLRender(conf);
+IRender *createRender(){
+	return new GLRender();
 }

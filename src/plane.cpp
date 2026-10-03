@@ -20,19 +20,16 @@
 */
 
 #include "plane.h"
-
 #include "sharedstate.h"
 #include "bitmap.h"
 #include "etc.h"
 #include "etc-internal.h"
 #include "util.h"
-
 #include "quad.h"
 #include "quadarray.h"
 #include "transform.h"
 #include "etc-internal.h"
 #include "sunshine.h"
-
 #include "signals/signal.h"
 #include <chrono>
 
@@ -43,7 +40,6 @@ static float fwrap(float value, float range){
 
 struct PlanePrivate{
 	Bitmap *bitmap;
-
 	Rect *srcRect;
 
 	NormValue opacity;
@@ -53,17 +49,12 @@ struct PlanePrivate{
 
 	int ox, oy;
 	float zoomX, zoomY;
-
 	int shader;
 
 	Scene::Geometry sceneGeo;
-
 	bool quadSourceDirty;
-
 	SimpleQuadArray qArray;
-
 	EtcTemps tmp;
-
 	SignalConnection prepareCon;
 	SignalConnection srcRectCon;
 
@@ -81,7 +72,6 @@ struct PlanePrivate{
 	{
 		updateSrcRectCon();
 		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &PlanePrivate::prepare);
-
 		qArray.resize(1);
 	}
 
@@ -135,9 +125,7 @@ struct PlanePrivate{
 		size_t tilesY = SDL_ceil((vph - sh + woy) / sh) + 1;
 
 		FloatRect tex = srcRect->toFloatRect();
-
 		qArray.resize(tilesX * tilesY);
-
 		for (size_t y = 0; y < tilesY; ++y)
 			for (size_t x = 0; x < tilesX; ++x){
 				SVertex *vert = &qArray.vertices[(y*tilesX + x) * 4];
@@ -157,11 +145,8 @@ struct PlanePrivate{
 	}
 };
 
-Plane::Plane(Viewport *viewport)
-    : ViewportElement(viewport)
-{
+Plane::Plane(Viewport *viewport) : ViewportElement(viewport){
 	p = new PlanePrivate();
-
 	onGeometryChange(scene->getGeometry());
 }
 
@@ -184,21 +169,17 @@ Plane::~Plane(){
 
 void Plane::setBitmap(Bitmap *value){
 	guardDisposed();
-
 	p->bitmap = value;
-
 	if (!value)
 		return;
 
 	value->ensureNonMega();
-
 	*p->srcRect = value->rect();
 	p->onSrcRectChange();
 }
 
 void Plane::setOX(int value){
 	guardDisposed();
-
 	if (p->ox == value)
 	        return;
 
@@ -208,7 +189,6 @@ void Plane::setOX(int value){
 
 void Plane::setOY(int value){
 	guardDisposed();
-
 	if (p->oy == value)
 	        return;
 
@@ -218,7 +198,6 @@ void Plane::setOY(int value){
 
 void Plane::setZoomX(float value){
 	guardDisposed();
-
 	if (p->zoomX == value)
 	        return;
 
@@ -228,7 +207,6 @@ void Plane::setZoomX(float value){
 
 void Plane::setZoomY(float value){
 	guardDisposed();
-
 	if (p->zoomY == value)
 	        return;
 
@@ -257,7 +235,6 @@ void Plane::initDynAttribs(){
 	p->srcRect = new Rect;
 	p->color = new Color;
 	p->tone = new Tone;
-
 	p->updateSrcRectCon();
 }
 
@@ -273,8 +250,7 @@ void Plane::draw(){
 	bool renderEffect = p->color->hasEffect()    ||
 	                    p->tone->hasEffect();
 	
-	switch (p->shader)
-	{
+	switch (p->shader){
 	case ShaderType::SHADER_plane:
 		{
 			render.useEffect(SHADER_plane);
@@ -310,13 +286,11 @@ void Plane::draw(){
 		{
 			if (renderEffect){
 				defaultSpriteShaderInit(SHADER_sprite);
-			}
-			else if (p->opacity != 255){
+			}else if (p->opacity != 255){
 				render.useEffect(SHADER_alphaSprite);
 				render.setOpacity(p->opacity.norm);
 				render.applyViewportProj();
-			}
-			else{
+			}else{
 				render.useEffect(SHADER_simpleSprite);
 				render.applyViewportProj();
 			}
@@ -329,16 +303,13 @@ void Plane::draw(){
 	std::chrono::duration<float> elapsed = currentTime - startTime;
 	render.setTime(elapsed.count());
 	render.setTranslation(Vec2i());
-
 	render.pushBlendMode(p->blendType);
 
 	p->bitmap->bindTex();
-
 	if (render.repeatNpotSupported())
 		render.setTextureRepeat(p->bitmap->getRenderTarget().tex, true);
 
 	p->qArray.draw();
-
 	if (render.repeatNpotSupported())
 		render.setTextureRepeat(p->bitmap->getRenderTarget().tex, false);
 
@@ -360,15 +331,11 @@ void Plane::releaseResources(){
 
 void Plane::defaultSpriteShaderInit(ShaderType effect){
 	IRender &render = shState->render();
-
 	render.useEffect(effect);
-
 	render.applyViewportProj();
-
 	render.setTone(p->tone->norm);
 	render.setOpacity(p->opacity.norm);
 	render.setBushOpacity(1.0f);
-
 	render.setColor(p->color->norm);
 	render.setModulate(Vec4(1.0f, 1.0f, 1.0f, 1.0f));
 }

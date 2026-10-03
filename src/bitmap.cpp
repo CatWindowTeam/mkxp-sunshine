@@ -140,7 +140,9 @@ struct BitmapPrivate{
 		render.setTexSize(Vec2i(gl.width, gl.height));
 	}
 
-	void bindFBO(){ render.bindRenderTarget(gl); }
+	void bindFBO(){ 
+		render.bindRenderTarget(gl);
+	}
 
 	void pushSetViewport() const{
 		render.pushViewport(IntRect(0, 0, gl.width, gl.height));
@@ -163,9 +165,7 @@ struct BitmapPrivate{
 		render.pushScissorTest(true);
 		render.pushScissorBox(normalizedRect(rect));
 		render.pushClearColor(color);
-
 		render.clear();
-
 		render.popClearColor();
 		render.popScissorBox();
 		render.popScissorTest();
@@ -204,7 +204,6 @@ Bitmap::Bitmap(const char *filename){
 	BitmapOpenHandler handler;
 	shState->fileSystem().openRead(handler, filename);
 	SDL_Surface *imgSurf = handler.surf;
-
 	if (!imgSurf)
 		ErrorMsg(Exception::SDLError, "Error loading image '%s': %s", filename, SDL_GetError());
 
@@ -227,9 +226,7 @@ Bitmap::Bitmap(const char *filename){
 
 		p = new BitmapPrivate(this);
 		p->gl = tex;
-
 		p->render.uploadTexture(p->gl.tex, p->gl.width, p->gl.height, imgSurf->pixels);
-
 		SDL_DestroySurface(imgSurf);
 	}
 	p->addTaintedArea(rect());
@@ -335,7 +332,7 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 		return;
 
 	SDL_Surface *srcSurf = source.megaSurface();
-	if (srcSurf && shState->config().subImageFix){
+	if (srcSurf && conf.subImageFix){
 		// Blit from software surface, for broken GL drivers
 		Vec2i gpTexSize;
 		shState->ensureTexSize(sourceRect.w, sourceRect.h, gpTexSize);
@@ -467,7 +464,6 @@ void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec
 	p->render.setTranslation(Vec2i());
 
 	Quad &quad = shState->gpQuad();
-
 	if (vertical){
 		quad.vert[0].color = color1;
 		quad.vert[1].color = color1;
@@ -553,7 +549,7 @@ void Bitmap::blur(){
 
 	p->render.bindTexture(auxTex.tex);
 	p->bindFBO();
-
+	
 	p->render.useBlurPass(1);
 	p->render.setTexSize(Vec2i(width(), height()));
 	p->render.applyViewportProj();
@@ -623,7 +619,6 @@ void Bitmap::radialBlur(int angle, int divisions){
 	RenderTarget newTex = shState->texPool().request(_width, _height);
 
 	p->render.bindRenderTarget(newTex);
-
 	p->render.pushClearColor(Vec4());
 	p->render.clear();
 
@@ -632,14 +627,12 @@ void Bitmap::radialBlur(int angle, int divisions){
 	trans.setPosition(Vec2(_width / 2.0f, _height / 2.0f));
 
 	p->render.pushBlendMode(BlendAddition);
-
 	p->render.useEffect(SHADER_simpleMatrix);
 
 	p->bindTexture();
 	p->render.setTextureSmooth(p->gl.tex, true);
-
 	p->pushSetViewport();
-
+	
 	for (int i = 0; i < divisions; ++i){
 		trans.setRotation(baseAngle + i*angleStep);
 		p->render.setMatrix(trans.getMatrix());
@@ -647,15 +640,12 @@ void Bitmap::radialBlur(int angle, int divisions){
 	}
 
 	p->popViewport();
-
 	p->render.setTextureSmooth(p->gl.tex, false);
-
 	p->render.popBlendMode();
 	p->render.popClearColor();
 
 	shState->texPool().release(p->gl);
 	p->gl = newTex;
-
 	p->onModified();
 }
 
@@ -698,7 +688,6 @@ Color Bitmap::getPixel(int x, int y) const{
 void Bitmap::setPixel(int x, int y, const Color &color){
 	guardDisposed();
 	GUARD_MEGA;
-
     if (x < 0 || y < 0 || x >= width() || y >= height()) {
 		Debug() << "Invalid pixel position " << x << " " << y << " in bitmap " << width() << "x" << height();
         return;
@@ -712,7 +701,6 @@ void Bitmap::setPixel(int x, int y, const Color &color){
 	};
 
 	p->render.uploadTextureRect(p->gl.tex, x, y, 1, 1, &pixel);
-
 	p->addTaintedArea(IntRect(x, y, 1, 1));
 
 	/* Setting just a single pixel is no reason to throw away the
@@ -858,7 +846,6 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 
 	std::string fixed = fixupString(str);
 	str = fixed.c_str();
-
 	if (*str == '\0')
 		return;
 
@@ -868,14 +855,12 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 	TTF_Font *font = p->font->getSdlFont();
 	const Color &fontColor = p->font->getColor();
 	const Color &outColor = p->font->getOutColor();
-
 	SDL_Color c = fontColor.toSDLColor();
 	c.a = 255;
 
 	float txtAlpha = fontColor.norm.w;
 
 	SDL_Surface *txtSurf;
-
 	if (conf.solidFonts)
 		txtSurf = TTF_RenderText_Solid(font, str, SDL_strlen(str), c);
 	else
@@ -884,7 +869,6 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 	p->ensureFormat(txtSurf, SDL_PIXELFORMAT_ABGR8888);
 
 	int rawTxtSurfH = txtSurf->h;
-
 	if (p->font->getShadow())
 		applyShadow(txtSurf, p->format, c);
 
@@ -944,7 +928,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 
 	bool fastBlit = false;
 	if (fastBlit){
-		if (squeeze == 1.0f && !shState->config().subImageFix){
+		if (squeeze == 1.0f && !conf.subImageFix){
 			/* Even faster: upload directly to bitmap texture.
 			 * We have to make sure the posRect lies within the texture
 			 * boundaries or texSubImage will generate errors.
@@ -1063,19 +1047,16 @@ static uint16_t utf8_to_ucs2(const char *_input, const char **end_ptr){
 	return -1;
 }
 
-//TODO: replace with https://wiki.libsdl.org/SDL3_ttf/TTF_GetStringSize
 IntRect Bitmap::textSize(const char *str){
 	guardDisposed();
 	GUARD_MEGA;
+	int w = 0;
+	int h = 0;
 	TTF_Font *font = p->font->getSdlFont();
 	std::string fixed = fixupString(str);
 	str = fixed.c_str();
 
-	// i don't know if its right migration, i didn't find any other way
-	TTF_Text* text = TTF_CreateText(NULL, font, str, SDL_strlen(str));
-	int w, h;
-	TTF_GetTextSize(text, &w, &h);
-	TTF_DestroyText(text);
+	TTF_GetStringSize(font, str, SDL_strlen(str), &w, &h);
 
 	/* If str is one character long, *endPtr == 0 */
 	const char *endPtr;

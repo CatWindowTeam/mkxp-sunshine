@@ -11,7 +11,7 @@ typedef void *GLContextHandle;
 
 class GLRender : public IRender{
 public:
-	GLRender(const Config &conf);
+	GLRender();
 	~GLRender();
 
 	GLState &state() { return glStateObj; }
@@ -24,14 +24,14 @@ public:
 	void destroyTexture(TexHandle tex);
 	void bindTexture(TexHandle tex);
 	void unbindTexture();
-	void setTextureSmooth(TexHandle tex, bool smooth);
-	void setTextureRepeat(TexHandle tex, bool repeat);
+	void setTextureSmooth(TexHandle tex, const bool smooth);
+	void setTextureRepeat(TexHandle tex, const bool repeat);
 	void uploadTexture(TexHandle tex, int w, int h, const void *pixels, PixelFormat fmt);
 	void uploadTextureRect(TexHandle tex, int x, int y, int w, int h, const void *pixels, PixelFormat fmt);
 	void uploadTextureRect(TexHandle tex, int dstX, int dstY, int w, int h, SDL_Surface *src, int srcX, int srcY);
 
-	RenderTarget createRenderTarget(int w, int h);
-	void resizeRenderTarget(RenderTarget &target, int w, int h);
+	RenderTarget createRenderTarget(const int w, const int h);
+	void resizeRenderTarget(RenderTarget &target, const int w, const int h);
 	void destroyRenderTarget(RenderTarget &target);
 	void bindRenderTarget(const RenderTarget &target);
 	void bindScreenTarget();
@@ -43,7 +43,7 @@ public:
 	void popViewport();
 	void refreshViewport();
 
-	void pushBlend(bool enabled);
+	void pushBlend(const bool enabled);
 	void popBlend();
 
 	void pushBlendMode(BlendType mode);
@@ -51,7 +51,7 @@ public:
 	void setBlendOverride(BlendOverride mode);
 	void refreshBlendMode();
 
-	void pushScissorTest(bool enabled);
+	void pushScissorTest(const bool enabled);
 	void popScissorTest();
 
 	void pushScissorBox(const IntRect &rect);
@@ -78,7 +78,7 @@ public:
 	void applyPerspectiveProj();
 	void setTexSize(const Vec2i &size);
 	void setTranslation(const Vec2i &value);
-	void setTime(float value);
+	void setTime(const float value);
 	void setEffectTexture(EffectTexture slot, TexHandle tex);
 	void setSpriteMat(const float value[16]);
 	void setMatrix(const float value[16]);
@@ -86,27 +86,27 @@ public:
 	void setColor(const Vec4 &value);
 	void setFlash(const Vec4 &value);
 	void setModulate(const Vec4 &value);
-	void setOpacity(float value);
-	void setBushDepth(float value);
-	void setBushOpacity(float value);
-	void setGray(float value);
-	void setHueAdjust(float value);
-	void setAniIndex(int value);
+	void setOpacity(const float value);
+	void setBushDepth(const float value);
+	void setBushOpacity(const float value);
+	void setGray(const float value);
+	void setHueAdjust(const float value);
+	void setAniIndex(const int value);
 	void setOffset(const Vec2i &value);
 	void setSubRect(const FloatRect &value);
-	void setProg(float value);
-	void setVague(float value);
-	void setWallMapResolution(int x, int y);
-	void setCameraPosition(int x, int y);
-	void setTileMapOffset(int x, int y);
+	void setProg(const float value);
+	void setVague(const float value);
+	void setWallMapResolution(const int x, const int y);
+	void setCameraPosition(const int x, const int y);
+	void setTileMapOffset(const int x, const int y);
 	void setLightSources(const std::vector<LightSource> &sources);
-	void setAmbient(float value);
+	void setAmbient(const float value);
 
 	void beginBlit(const RenderTarget &target);
 	void beginBlitScreen(const Vec2i &size);
 	void blitSource(const RenderTarget &source);
 	void blitRect(const IntRect &src, const Vec2i &dstPos);
-	void blitRect(const IntRect &src, const IntRect &dst, bool smooth);
+	void blitRect(const IntRect &src, const IntRect &dst, const bool smooth);
 	void endBlit();
 
 	void swapWindow(SDL_Window *window);

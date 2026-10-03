@@ -46,7 +46,6 @@ class Sunshine;
 class TexPool;
 class Font;
 class SharedFontState;
-struct Config;
 struct Vec2i;
 struct SharedMidiState;
 
@@ -78,7 +77,6 @@ struct SharedState{
 	FileSystem &fileSystem() const;
 	EventThread &eThread() const;
 	RGSSThreadData &rtData() const;
-	Config &config() const;
 	Graphics &graphics() const;
 	Input &input() const;
 	Audio &audio() const;

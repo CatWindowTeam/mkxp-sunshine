@@ -24,10 +24,9 @@
 #include "etc.h"
 #include "gl-fun.h"
 #include "config.h"
-
 #include <SDL3/SDL_rect.h>
 
-static void applyBool(GLenum state, bool mode){
+static void applyBool(GLenum state, const bool mode){
 	mode ? gl.Enable(state) : gl.Disable(state);
 }
 
@@ -104,7 +103,7 @@ GLState::Caps::Caps(){
 	gl.GetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
 }
 
-GLState::GLState(const Config &conf){
+GLState::GLState(){
 	gl.Disable(GL_DEPTH_TEST);
 	clearColor.init(Vec4(0, 0, 0, 1));
 	blendMode.init(BlendNormal);

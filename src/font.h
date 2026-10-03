@@ -25,16 +25,14 @@
 #include <vector>
 #include <string>
 #include <SDL3_ttf/SDL_ttf.h>
-
 struct SDL_IOStream;
 struct _TTF_Font;
-struct Config;
 
 struct SharedFontStatePrivate;
 
 class SharedFontState{
 public:
-	SharedFontState(const Config &conf);
+	SharedFontState();
 	~SharedFontState();
 
 	/* Called from FileSystem during font cache initialization

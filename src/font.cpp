@@ -45,30 +45,26 @@ struct SharedFontStatePrivate{
 	/* Maps: font family name, To: substituted family name,
 	 * as specified via configuration file / arguments */
 	tsl::robin_map<std::string, std::string> subs;
-
 	/* Maps: font family name, To: set of physical
 	 * font filenames located in "Fonts/" */
 	tsl::robin_map<std::string, FontSet> sets;
-
 	/* Pool of already opened fonts; once opened, they are reused
 	 * and never closed until the termination of the program */
 	tsl::robin_map<FontKey, TTF_Font*, PairHash> pool;
 };
 
-SharedFontState::SharedFontState(const Config &conf){
+SharedFontState::SharedFontState(){
 	p = new SharedFontStatePrivate;
 
 	/* Parse font substitutions */
 	for (size_t i = 0; i < conf.fontSubs.size(); ++i){
 		const std::string &raw = conf.fontSubs[i];
 		size_t sepPos = raw.find_first_of('>');
-
 		if (sepPos == std::string::npos)
 			continue;
 
 		std::string from = raw.substr(0, sepPos);
 		std::string to   = raw.substr(sepPos+1);
-
 		p->subs.emplace(from, to);
 	}
 }
@@ -83,7 +79,6 @@ SharedFontState::~SharedFontState(){
 
 void SharedFontState::initFontSetCB(SDL_IOStream* &ops, const std::string &filename){
 	TTF_Font *font = TTF_OpenFontIO(ops, false, 16);
-
 	if (!font)
 		return;
 
@@ -91,9 +86,9 @@ void SharedFontState::initFontSetCB(SDL_IOStream* &ops, const std::string &filen
 	std::string style = TTF_GetFontStyleName(font);
 
 	TTF_CloseFont(font);
-
+	
 	FontSet &set = p->sets[family];
-
+	
 	if (style == "Regular")
 		set.regular = filename;
 	else
@@ -127,19 +122,16 @@ TTF_Font *SharedFontState::getFont(std::string family, unsigned int size){
 
 	/* Not in pool; open new handle */
 	SDL_IOStream *ops;
-
 	if (family.empty()){
 		crash(Exception::RGSSError, "font does not exist");
 	}else{
 		/* Use 'other' path as alternative in case
 		 * we have no 'regular' styled font asset */
 		const char *path = !req.regular.empty() ? req.regular.c_str() : req.other.c_str();
-
 		shState->fileSystem().openReadRaw(ops, path);
 	}
 
 	font = TTF_OpenFontIO(ops, 1, size);
-
 	if (!font){
 		crash(Exception::SDLError, "%s", SDL_GetError());
 	}
@@ -154,7 +146,6 @@ bool SharedFontState::fontPresent(std::string family) const{
 		family = p->subs[family];
 
 	const FontSet &set = p->sets[family];
-
 	return !(set.regular.empty() && set.other.empty());
 }
 
@@ -162,7 +153,6 @@ void pickExistingFontName(const std::vector<std::string> &names, std::string &ou
 	/* Note: In RMXP, a names array with no existing entry
 	 * results in no text being drawn at all (same for "" and []);
 	 * we can't replicate this in mkxp due to the default substitute. */
-
 	for (size_t i = 0; i < names.size(); ++i){
 		if (sfs.fontPresent(names[i])){
 			out = names[i];
@@ -195,10 +185,8 @@ struct FontPrivate{
 	static bool defaultShadow;
 	static Color *defaultColor;
 	static Color *defaultOutColor;
-
 	static Color defaultColorTmp;
 	static Color defaultOutColorTmp;
-
 	static std::vector<std::string> initialDefaultNames;
 
 	/* The actual font is opened as late as possible
@@ -242,7 +230,6 @@ struct FontPrivate{
 		 shadow   =  o.shadow;
 		*color    = *o.color;
 		*outColor = *o.outColor;
-
 		sdlFont = 0;
 	}
 };
@@ -270,7 +257,6 @@ bool Font::doesExist(const char *name){
 
 Font::Font(const std::vector<std::string> *names, unsigned int size){
 	p = new FontPrivate(size ? size : FontPrivate::defaultSize);
-
 	if (names)
 		setName(*names);
 	else
@@ -287,7 +273,6 @@ Font::~Font(){
 
 const Font &Font::operator=(const Font &o){
 	*p = *o.p;
-
 	return o;
 }
 
@@ -359,7 +344,6 @@ TTF_Font *Font::getSdlFont(){
 		p->sdlFont = shState->fontState().getFont(p->name, p->size);
 
 	int style = TTF_STYLE_NORMAL;
-
 	if (p->bold)
 		style |= TTF_STYLE_BOLD;
 
@@ -367,6 +351,5 @@ TTF_Font *Font::getSdlFont(){
 		style |= TTF_STYLE_ITALIC;
 
 	TTF_SetFontStyle(p->sdlFont, style);
-
 	return p->sdlFont;
 }

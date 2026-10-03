@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SHADER_H
-#define SHADER_H
-
+#pragma once
 #include "etc-internal.h"
 #include "render/irender.h"
 #include "gl-util.h"
@@ -29,7 +27,7 @@
 
 class Shader{
 public:
-	void bind();
+	void bind() const;
 	static void unbind();
 
 	enum Attribute{
@@ -54,7 +52,6 @@ protected:
 
 class ShaderBase : public Shader{
 public:
-
 	struct GLProjMat : public GLProperty<Vec2i>{
 	private:
 		void apply(const Vec2i &value);
@@ -74,7 +71,7 @@ public:
 
 	void setTexSize(const Vec2i &value);
 	void setTranslation(const Vec2i &value);
-	void setTime(float value);
+	void setTime(const float value);
 
 protected:
 	void init();
@@ -98,8 +95,7 @@ private:
 class SimpleShader : public ShaderBase{
 public:
 	SimpleShader();
-
-	void setTexOffsetX(int value);
+	void setTexOffsetX(const int value);
 
 private:
 	GLint u_texOffsetX;
@@ -111,11 +107,11 @@ public:
 	DynamicLightShader();
 
 	void setWallMapTexture(TexHandle texture);
-	void setWallMapResolution(int x, int y);
-	void setCameraPosition(int x, int y);
-	void setTileMapOffset(int x, int y);
+	void setWallMapResolution(const int x, const int y);
+	void setCameraPosition(const int x, const int y);
+	void setTileMapOffset(const int x, const int y);
 	void setLightSources(std::vector<LightSource> sources);
-	void setAmbient(float power);
+	void setAmbient(const float power);
 
 private:
 	GLint u_wallMapTexture, u_wallMapResolution, u_cameraPosition, u_tileMapOffset, u_lightSources, u_lightSourcesCount, u_lightSourcesColors, u_ambientLight;
@@ -147,7 +143,7 @@ public:
 	AlphaSpriteShader();
 
 	void setSpriteMat(const float value[16]);
-	void setAlpha(float value);
+	void setAlpha(const float value);
 
 private:
 	GLint u_spriteMat, u_alpha;
@@ -160,8 +156,8 @@ public:
 	void setCurrentScene(TexHandle tex);
 	void setFrozenScene(TexHandle tex);
 	void setTransMap(TexHandle tex);
-	void setProg(float value);
-	void setVague(float value);
+	void setProg(const float value);
+	void setVague(const float value);
 
 private:
 	GLint u_currentScene, u_frozenScene, u_transMap, u_prog, u_vague;
@@ -173,7 +169,7 @@ public:
 
 	void setCurrentScene(TexHandle tex);
 	void setFrozenScene(TexHandle tex);
-	void setProg(float value);
+	void setProg(const float value);
 
 private:
 	GLint u_currentScene, u_frozenScene, u_prog;
@@ -187,9 +183,9 @@ public:
 	void setTone(const Vec4 &value);
 	void setColor(const Vec4 &value);
 	void setModulate(const Vec4 &value);
-	void setOpacity(float value);
-	void setBushDepth(float value);
-	void setBushOpacity(float value);
+	void setOpacity(const float value);
+	void setBushDepth(const float value);
+	void setBushOpacity(const float value);
 
 private:
 	GLint u_spriteMat, u_tone, u_opacity, u_color, u_modulate, u_bushDepth, u_bushOpacity;
@@ -239,7 +235,7 @@ public:
 	void setTone(const Vec4 &value);
 	void setColor(const Vec4 &value);
 	void setFlash(const Vec4 &value);
-	void setOpacity(float value);
+	void setOpacity(const float value);
 
 private:
 	GLint u_tone, u_color, u_flash, u_opacity;
@@ -248,8 +244,7 @@ private:
 class GrayShader : public ShaderBase{
 public:
 	GrayShader();
-
-	void setGray(float value);
+	void setGray(const float value);
 
 private:
 	GLint u_gray;
@@ -259,7 +254,7 @@ class TilemapShader : public ShaderBase{
 public:
 	TilemapShader();
 
-	void setAniIndex(int value);
+	void setAniIndex(const int value);
 
 private:
 	GLint u_aniIndex;
@@ -269,7 +264,7 @@ class FlashMapShader : public ShaderBase{
 public:
 	FlashMapShader();
 
-	void setAlpha(float value);
+	void setAlpha(const float value);
 
 private:
 	GLint u_alpha;
@@ -279,7 +274,7 @@ class HueShader : public ShaderBase{
 public:
 	HueShader();
 
-	void setHueAdjust(float value);
+	void setHueAdjust(const float value);
 
 private:
 	GLint u_hueAdjust;
@@ -330,7 +325,7 @@ public:
 	void setDestination(const TexHandle value);
 	void setDestCoorF(const Vec2 &value);
 	void setSubRect(const FloatRect &value);
-	void setOpacity(float value);
+	void setOpacity(const float value);
 
 private:
 	GLint u_source, u_destination, u_subRect, u_opacity;
@@ -340,7 +335,6 @@ private:
 class ObscuredShader : public ShaderBase{
 public:
 	ObscuredShader();
-
 	void setObscured(const TexHandle value);
 
 private:
@@ -372,5 +366,3 @@ struct ShaderSet{
 	ObscuredShader obscured;
 	DynamicLightShader dynamicLight;
 };
-
-#endif // SHADER_H

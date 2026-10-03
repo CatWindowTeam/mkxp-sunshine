@@ -19,14 +19,12 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef GLFUN_H
-#define GLFUN_H
-
+#pragma once
 #ifdef GLES2_HEADER
-#include <SDL3/SDL_opengles2.h>
-#define APIENTRYP GL_APIENTRYP
+	#include <SDL3/SDL_opengles2.h>
+	#define APIENTRYP GL_APIENTRYP
 #else
-#include <SDL3/SDL_opengl.h>
+	#include <SDL3/SDL_opengl.h>
 #endif
 
 /* Etc */
@@ -231,5 +229,3 @@ struct GLFunctions{
 
 extern GLFunctions gl;
 void initGLFunctions();
-
-#endif // GLFUN_H

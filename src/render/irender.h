@@ -3,10 +3,10 @@
 #include "render/effects.h"
 #include <stdint.h>
 #include <vector>
+#include "config.h"
 
 struct SDL_Surface;
 struct SDL_Window;
-struct Config;
 
 struct TexHandle{
 	uint32_t id;
@@ -181,5 +181,5 @@ uint64_t renderWindowFlags();
 void setupRenderWindowAttributes();
 IRenderContext *createRenderContext(SDL_Window *window);
 
-IRender *createRender(const Config &conf);
+IRender *createRender();
 IRender &activeRender();

@@ -187,7 +187,7 @@ static bool writeBindings(const BDescVec &d, const std::string &dir){
 	return true;
 }
 
-void storeBindings(const BDescVec &d, const Config &conf){
+void storeBindings(const BDescVec &d){
 	if (writeBindings(d, conf.customDataPath))
 		return;
 
@@ -280,7 +280,7 @@ static bool readBindings(BDescVec &out, const std::string &dir){
 	return true;
 }
 
-BDescVec loadBindings(const Config &conf){
+BDescVec loadBindings(){
 	BDescVec d;
 
 	if (readBindings(d, conf.customDataPath))
