@@ -579,6 +579,7 @@ void GPURender::pushDraw(const GpuCommand &c){
 		    && memcmp(last.tex, c.tex, sizeof(c.tex)) == 0
 		    && memcmp(last.sampler, c.sampler, sizeof(c.sampler)) == 0){
 			last.quadCount += c.quadCount;
+			neededQuads = std::max<size_t>(neededQuads, last.quadCount);
 			return;
 		}
 	}
