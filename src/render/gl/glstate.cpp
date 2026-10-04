@@ -26,7 +26,7 @@
 #include "config.h"
 #include <SDL3/SDL_rect.h>
 
-static void applyBool(GLenum state, const bool mode){
+static void applyBool(GLenum state, const bool mode) noexcept{
 	mode ? gl.Enable(state) : gl.Disable(state);
 }
 

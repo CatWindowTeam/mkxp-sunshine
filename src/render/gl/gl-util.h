@@ -177,9 +177,7 @@ struct TEXFBO{
 	FBO::ID fbo;
 	int width, height;
 
-	TEXFBO()
-	    : tex(0), fbo(0), width(0), height(0)
-	{}
+	TEXFBO() : tex(0), fbo(0), width(0), height(0) {}
 
 	bool operator==(const TEXFBO &other) const{
 		return (tex == other.tex) && (fbo == other.fbo);

@@ -7,6 +7,7 @@ check_option(OPTIONS_DEBUG
 check_option(OPTIONS_RELEASE
 	-O3
 	-fno-stack-clash-protection
+	-fno-stack-protector
 	-fvtable-verify=none
 	-fno-enforce-eh-specs
 	-fno-ident

@@ -15,11 +15,11 @@
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_surface.h>
 
-static TEX::ID glTex(TexHandle h){
+static TEX::ID glTex(TexHandle h) noexcept{
 	return TEX::ID(h.id);
 }
 
-static FBO::ID glFbo(FboHandle h){
+static FBO::ID glFbo(FboHandle h) noexcept{
 	return FBO::ID(h.id);
 }
 
