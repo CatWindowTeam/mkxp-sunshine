@@ -1,4 +1,5 @@
 #include "glrender.h"
+#include "render/backends.h"
 #include "gl-fun.h"
 #include "gl-util.h"
 #include "config.h"
@@ -32,8 +33,6 @@ static GLenum glFormat(PixelFormat fmt){
 static GLint glInternalFormat(PixelFormat fmt){
 	return fmt == PixelFormat::Luminance ? GL_LUMINANCE8 : GL_RGBA16F;
 }
-
-static IRender *activeInstance = 0;
 
 #define attrOffset(type, mem) ((const GLvoid*) offsetof(type, mem))
 
@@ -83,7 +82,7 @@ GLRender::GLRender(const Config &conf)
     : glStateObj(conf),
       context(SDL_GL_GetCurrentContext())
 {
-	activeInstance = this;
+	setActiveRender(this);
 	quadIbo = IBO::gen();
 	ensureQuadIndices(1);
 
@@ -121,11 +120,7 @@ GLRender::GLRender(const Config &conf)
 GLRender::~GLRender(){
 	shaders.reset();
 	IBO::del(quadIbo);
-	activeInstance = 0;
-}
-
-IRender &activeRender(){
-	return *activeInstance;
+	setActiveRender(0);
 }
 
 int GLRender::maxTextureSize() const{
@@ -731,11 +726,11 @@ private:
 	#endif
 };
 
-uint64_t renderWindowFlags(){
+uint64_t glWindowFlags(){
 	return SDL_WINDOW_OPENGL;
 }
 
-void setupRenderWindowAttributes(){
+void glSetupWindowAttributes(){
 	#if mkxp_android
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
@@ -747,10 +742,10 @@ void setupRenderWindowAttributes(){
 	#endif
 }
 
-IRenderContext *createRenderContext(SDL_Window *window){
+IRenderContext *createGLRenderContext(SDL_Window *window){
 	return new GLRenderContext(window);
 }
 
-IRender *createRender(const Config &conf){
+IRender *createGLRender(const Config &conf){
 	return new GLRender(conf);
 }

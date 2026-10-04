@@ -183,3 +183,4 @@ IRenderContext *createRenderContext(SDL_Window *window);
 
 IRender *createRender(const Config &conf);
 IRender &activeRender();
+void setActiveRender(IRender *render);

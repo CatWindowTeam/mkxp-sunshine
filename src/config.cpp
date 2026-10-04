@@ -28,6 +28,8 @@ void Config::read(int argc, char* argv[]) {
     a.add_option("-d,--debug", debugMode, "Enable reset on F12 press and other debug stuff");
     a.add_option("-f,--fullscreen", fullscreen, "Start game in fullscreen mode but Game Scripts"
     											"can just enforce window mode so this exists only for debuging");
+    a.add_option("--renderer", renderer, "Rendering backend: gl or sdl");
+    a.add_option("--sdlRenderDriver", sdlRenderDriver, "SDL render driver name for the sdl backend, empty for automatic choice");
     a.add_option("--fixedAspectRatio", fixedAspectRatio, "Preserve game screen aspect ratio, as opposed to stretch-to-fill");
     a.add_option("--Windows.Alloc_console", Windows_AllocConsole, "Create new console window with debug output, windows only");
 	a.add_option("--width", defScreenW, "Window width");
