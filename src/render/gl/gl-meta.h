@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef GLMETA_H
-#define GLMETA_H
-
+#pragma once
 #include "gl-fun.h"
 #include "gl-util.h"
 #include <stddef.h>
@@ -54,5 +52,3 @@ void vaoBind(VAO &vao);
 void vaoUnbind(VAO &vao);
 
 }
-
-#endif // GLMETA_H

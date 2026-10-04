@@ -58,7 +58,6 @@ struct SharedStatePrivate{
 
 	EventThread &eThread;
 	RGSSThreadData &rtData;
-	Config &config;
 
 	std::unique_ptr<IRender> render;
 
@@ -97,26 +96,23 @@ struct SharedStatePrivate{
 	      fileSystem(conf.allowSymlinks),
 	      eThread(*threadData->ethread),
 	      rtData(*threadData),
-	      config(conf),
-	      render(createRender(conf)),
+	      render(createRender()),
 	      graphics(threadData, *render),
 	      input(*threadData),
 	      audio(*threadData),
 	      oneshot(*threadData),
 	      sunshine(),
-	      fontState(conf),
+	      fontState(),
 	      stampCounter(0)
 	{
 		fileSystem.addPath(".");
-
-		if (config.pathCache)
+		if (conf.pathCache)
 			fileSystem.createPathCache();
 
 		fileSystem.initFontSets(fontState);
 
 		globalTexW = 128;
 		globalTexH = 64;
-
 		globalTex = render->createTexture(globalTexW, globalTexH);
 		globalTexDirty = false;
 
@@ -142,14 +138,11 @@ void SharedState::initInstance(RGSSThreadData *threadData){
 	}catch (const Exception &exc){
 		delete SharedState::instance;
 		delete defaultFont;
-
 		throw exc;
 	}
 
 	SharedState::instance->p->defaultFont = defaultFont;
-
 	SharedState::instance->p->sunshine.loadNoise();
-
 	SharedState::instance->windowSignals.moved.Connect(SharedState::instance->p->oneshot, &Oneshot::updateObscured);
 }
 
@@ -177,7 +170,6 @@ GSATT(MainDispatcher&, mainDispatcher)
 GSATT(FileSystem&, fileSystem)
 GSATT(EventThread&, eThread)
 GSATT(RGSSThreadData&, rtData)
-GSATT(Config&, config)
 GSATT(Graphics&, graphics)
 GSATT(Input&, input)
 GSATT(Audio&, audio)

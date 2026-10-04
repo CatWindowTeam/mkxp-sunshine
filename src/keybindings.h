@@ -102,9 +102,7 @@ struct BindingDesc{
 };
 
 typedef std::vector<BindingDesc> BDescVec;
-struct Config;
-
 BDescVec genDefaultBindings();
 
-void storeBindings(const BDescVec &d, const Config &conf);
-BDescVec loadBindings(const Config &conf);
+void storeBindings(const BDescVec &d);
+BDescVec loadBindings();

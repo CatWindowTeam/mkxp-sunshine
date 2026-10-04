@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include "define.h"
-#include "CLI11.hpp"
 
 struct Config {
     bool debugMode = false;
@@ -30,7 +29,6 @@ struct Config {
     std::string sdlRenderDriver;
 
     bool solidFonts = false;
-
     bool subImageFix = false;
     bool enableBlitting = true;
     int maxTextureSize = 0;

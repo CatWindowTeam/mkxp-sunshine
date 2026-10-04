@@ -374,26 +374,26 @@ static VALUE wallpaperSet(int argc, VALUE *argv, VALUE self){
 	rb_get_args(argc, argv, "zi", &name, &color RB_ARG_END);
 	std::string path;
 
-	const std::string &wallpaperMode = shState->config().wallpaperMode;
+	const std::string &wallpaperMode = conf.wallpaperMode;
 	if (wallpaperMode == "disabled")
 		return Qnil;
 
 	if (wallpaperMode == "fallback") {
 		#ifdef _WIN32
-			wallpaperFallbackCopy(shState->config().gameFolder + "/Wallpaper/" + name + ".bmp");
+			wallpaperFallbackCopy(conf.gameFolder + "/Wallpaper/" + name + ".bmp");
 		#else
 			std::string nameFix(name);
 			std::size_t found = nameFix.find("w32");
 			if (found != std::string::npos){
 				nameFix.replace(nameFix.end()-3, nameFix.end(), "unix");
 			}
-			wallpaperFallbackCopy(shState->config().gameFolder + "/Wallpaper/" + nameFix + ".png");
+			wallpaperFallbackCopy(conf.gameFolder + "/Wallpaper/" + nameFix + ".png");
 		#endif
 		return Qnil;
 	}
 
 	#ifdef _WIN32
-		path = shState->config().gameFolder + "\\Wallpaper\\" + name + ".bmp";
+		path = conf.gameFolder + "\\Wallpaper\\" + name + ".bmp";
 		#ifndef NDEBUG
 			Debug() << "Setting wallpaper to " << path;
 		#endif
@@ -479,7 +479,7 @@ static VALUE wallpaperSet(int argc, VALUE *argv, VALUE self){
 				MacDesktop::CacheCurrentBackground();
 				isCached = true;
 			}
-			MacDesktop::ChangeBackground(shState->config().gameFolder + path, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, (color & 0xFF) / 255.0);
+			MacDesktop::ChangeBackground(conf.gameFolder + path, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, (color & 0xFF) / 255.0);
 		#elif mkxp_android
 			return Qnil;
 		#else
@@ -597,7 +597,7 @@ static VALUE wallpaperSet(int argc, VALUE *argv, VALUE self){
 }
 
 static VALUE wallpaperReset(VALUE self){
-	const std::string &wallpaperMode = shState->config().wallpaperMode;
+	const std::string &wallpaperMode = conf.wallpaperMode;
 	if (wallpaperMode == "disabled")
 		return Qnil;
 

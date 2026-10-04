@@ -55,7 +55,6 @@
 #include "blurV.vert.xxd"
 #include "obscured.frag.xxd"
 #include "dynamicLight.frag.xxd"
-
 #include "meow.h"
 #include "graphics.h"
 
@@ -99,7 +98,7 @@ Shader::~Shader(){
 	gl.DeleteShader(fragShader);
 }
 
-void Shader::bind(){
+void Shader::bind() const {
 	glState.program.set(program);
 }
 
@@ -264,10 +263,9 @@ void ShaderBase::setTranslation(const Vec2i &value){
 	gl.Uniform2f(u_translation, value.x, value.y);
 }
 
-void ShaderBase::setTime(float value){
+void ShaderBase::setTime(const float value){
 	gl.Uniform1f(u_uTime, value);
 }
-
 
 FlatColorShader::FlatColorShader(){
 	INIT_SHADER(minimal, flatColor, FlatColorShader);
@@ -286,7 +284,7 @@ SimpleShader::SimpleShader(){
 	GET_U(texOffsetX);
 }
 
-void SimpleShader::setTexOffsetX(int value){
+void SimpleShader::setTexOffsetX(const int value){
 	gl.Uniform1f(u_texOffsetX, value);
 }
 
@@ -309,17 +307,17 @@ void DynamicLightShader::setWallMapTexture(TexHandle texture){
 	setTexUniform(u_wallMapTexture, 1, texture);
 }
 
-void DynamicLightShader::setWallMapResolution(int x, int y){
+void DynamicLightShader::setWallMapResolution(const int x, const int y){
 	gl.Uniform2f(u_wallMapResolution, x, y);
 }
 
-void DynamicLightShader::setCameraPosition(int x, int y){
+void DynamicLightShader::setCameraPosition(const int x, const int y){
 	cameraPositionCache.x = x;
 	cameraPositionCache.y = y;
 	gl.Uniform2f(u_cameraPosition, x, y);
 }
 
-void DynamicLightShader::setTileMapOffset(int x, int y){
+void DynamicLightShader::setTileMapOffset(const int x, const int y){
 	gl.Uniform2f(u_tileMapOffset, x, y);
 }
 
@@ -360,7 +358,7 @@ void DynamicLightShader::setLightSources(const std::vector<LightSource> sources)
 	gl.Uniform1i(u_lightSourcesCount, count);
 }
 
-void DynamicLightShader::setAmbient(float power){
+void DynamicLightShader::setAmbient(const float power){
 	gl.Uniform1f(u_ambientLight, power);
 }
 
@@ -399,7 +397,7 @@ void AlphaSpriteShader::setSpriteMat(const float value[16]){
 	gl.UniformMatrix4fv(u_spriteMat, 1, GL_FALSE, value);
 }
 
-void AlphaSpriteShader::setAlpha(float value){
+void AlphaSpriteShader::setAlpha(const float value){
 	gl.Uniform1f(u_alpha, value);
 }
 
@@ -426,11 +424,11 @@ void TransShader::setTransMap(TexHandle tex){
 	setTexUniform(u_transMap, 3, tex);
 }
 
-void TransShader::setProg(float value){
+void TransShader::setProg(const float value){
 	gl.Uniform1f(u_prog, value);
 }
 
-void TransShader::setVague(float value){
+void TransShader::setVague(const float value){
 	gl.Uniform1f(u_vague, value);
 }
 
@@ -451,7 +449,7 @@ void SimpleTransShader::setFrozenScene(TexHandle tex){
 	setTexUniform(u_frozenScene, 2, tex);
 }
 
-void SimpleTransShader::setProg(float value){
+void SimpleTransShader::setProg(const float value){
 	gl.Uniform1f(u_prog, value);
 }
 
@@ -484,15 +482,15 @@ void SpriteShaderBase::setModulate(const Vec4 &color){
 	setVec4Uniform(u_modulate, color);
 }
 
-void SpriteShaderBase::setOpacity(float value){
+void SpriteShaderBase::setOpacity(const float value){
 	gl.Uniform1f(u_opacity, value);
 }
 
-void SpriteShaderBase::setBushDepth(float value){
+void SpriteShaderBase::setBushDepth(const float value){
 	gl.Uniform1f(u_bushDepth, value);
 }
 
-void SpriteShaderBase::setBushOpacity(float value){
+void SpriteShaderBase::setBushOpacity(const float value){
 	gl.Uniform1f(u_bushOpacity, value);
 }
 
@@ -542,7 +540,7 @@ void PlaneShader::setFlash(const Vec4 &flash){
 	setVec4Uniform(u_flash, flash);
 }
 
-void PlaneShader::setOpacity(float value){
+void PlaneShader::setOpacity(const float value){
 	gl.Uniform1f(u_opacity, value);
 }
 
@@ -552,7 +550,7 @@ GrayShader::GrayShader(){
 	GET_U(gray);
 }
 
-void GrayShader::setGray(float value){
+void GrayShader::setGray(const float value){
 	gl.Uniform1f(u_gray, value);
 }
 
@@ -574,7 +572,7 @@ TilemapWaterShader::TilemapWaterShader(){
 	GET_U(noiseTexture);
 }
 
-void TilemapWaterShader::setAniIndex(int value){
+void TilemapWaterShader::setAniIndex(const int value){
 	gl.Uniform1f(u_aniIndex, value);
 }
 
@@ -592,7 +590,7 @@ FlashMapShader::FlashMapShader(){
 	GET_U(alpha);
 }
 
-void FlashMapShader::setAlpha(float value){
+void FlashMapShader::setAlpha(const float value){
 	gl.Uniform1f(u_alpha, value);
 }
 
@@ -602,7 +600,7 @@ HueShader::HueShader(){
 	GET_U(hueAdjust);
 }
 
-void HueShader::setHueAdjust(float value){
+void HueShader::setHueAdjust(const float value){
 	gl.Uniform1f(u_hueAdjust, value);
 }
 
@@ -647,7 +645,7 @@ void BltShader::setSubRect(const FloatRect &value){
 	gl.Uniform4f(u_subRect, value.x, value.y, value.w, value.h);
 }
 
-void BltShader::setOpacity(float value){
+void BltShader::setOpacity(const float value){
 	gl.Uniform1f(u_opacity, value);
 }
 

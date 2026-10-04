@@ -20,7 +20,6 @@
 */
 
 #include "tilemap.h"
-
 #include "viewport.h"
 #include "bitmap.h"
 #include "table.h"
@@ -526,7 +525,7 @@ struct TilemapPrivate {
 			/* Mega surface tileset */
 			SDL_Surface *tsSurf = tileset->megaSurface();
 
-			if (shState->config().subImageFix){
+			if (conf.subImageFix){
 				/* Implementation for broken GL drivers */
 				render.bindRenderTarget(atlas.gl);
 				render.pushBlend(false);

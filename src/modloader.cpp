@@ -65,7 +65,7 @@ static int renderer_thread(void* data){
     return(0);
 }
 
-void ModLoader(Config conf, SDL_Window* win){
+void ModLoader(SDL_Window* win){
     if (!fs::exists(conf.Modloader.ModsDirPath) || !fs::is_directory(conf.Modloader.ModsDirPath)) {
         return;
     }else if (fs::is_empty(conf.Modloader.ModsDirPath)){

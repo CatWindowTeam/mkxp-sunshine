@@ -19,11 +19,8 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEBUGLOGGER_H
-#define DEBUGLOGGER_H
-
+#pragma once
 #include "gl-fun.h"
-
 #include <SDL3/SDL_stdinc.h>
 #include <algorithm>
 
@@ -39,12 +36,8 @@ private:
 };
 
 #define GL_MARKER(format, ...) \
-	if (gl.StringMarker) \
-	{ \
+	if (gl.StringMarker) \{ \
 		char buf[128]; \
 		int len = SDL_snprintf(buf, sizeof(buf), format, ##__VA_ARGS__); \
 		gl.StringMarker(std::min<size_t>(len, sizeof(buf)), buf); \
 	}
-
-
-#endif // DEBUGLOGGER_H

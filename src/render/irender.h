@@ -4,10 +4,10 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include "config.h"
 
 struct SDL_Surface;
 struct SDL_Window;
-struct Config;
 
 struct TexHandle{
 	uint32_t id;
@@ -185,6 +185,6 @@ std::vector<std::string> renderBackendOrder();
 bool probeRenderBackend(SDL_Window *window);
 IRenderContext *createRenderContext(SDL_Window *window);
 
-IRender *createRender(const Config &conf);
+IRender *createRender();
 IRender &activeRender();
 void setActiveRender(IRender *render);

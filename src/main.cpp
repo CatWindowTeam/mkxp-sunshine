@@ -301,9 +301,9 @@ int main(int argc, char *argv[]){
 		}
 	#endif
 	/* start modloader */
-	ModLoader(conf, win);
+	ModLoader(win);
 	/* Load and post key bindings */
-	rtData.bindingUpdateMsg.post(loadBindings(conf));
+	rtData.bindingUpdateMsg.post(loadBindings());
 	/* Start RGSS thread */
 	SDL_Thread *rgssThread = SDL_CreateThread(rgssThreadFun, "rgss", &rtData);
 	/* Start event processing */

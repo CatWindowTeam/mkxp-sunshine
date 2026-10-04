@@ -23,8 +23,7 @@
 #include "etc.h"
 #include <stack>
 #include <assert.h>
-
-struct Config;
+#include "config.h"
 
 template<typename T>
 struct GLProperty{
@@ -113,5 +112,5 @@ public:
 
 	} caps;
 
-	GLState(const Config &conf);
+	GLState();
 };

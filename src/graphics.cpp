@@ -519,7 +519,6 @@ struct GraphicsPrivate{
 
 	void compositeToBuffer(RenderTarget &buffer){
 		screen.composite();
-
 		render.beginBlit(buffer);
 		render.blitSource(screen.getPP().frontBuffer());
 		render.blitRect(IntRect(0, 0, scRes.x, scRes.y), Vec2i());
@@ -565,7 +564,6 @@ struct GraphicsPrivate{
 
 Graphics::Graphics(RGSSThreadData *data, IRender &render){
 	p = new GraphicsPrivate(data, render);
-
 	if (conf.syncToRefreshrate){
 		p->frameRate = data->refreshRate;
 		p->fpsLimiter.disabled = true;
@@ -614,7 +612,6 @@ void Graphics::update(bool limitFps){
 
 void Graphics::freeze(){
 	p->frozen = true;
-
 	p->checkShutDownReset();
 	p->checkResize();
 
@@ -686,7 +683,6 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 
 		p->render.useEffect(transMap ? SHADER_trans : SHADER_simpleTrans);
 		p->render.setProg(prog);
-
 		if(p->threadData->exiting)
 			SDL_SetWindowOpacity(p->threadData->window, 1.0f - prog);
 
@@ -701,7 +697,6 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 		/* Then blit it flipped and scaled to the screen */
 		p->render.bindScreenTarget();
 		p->render.clear();
-
 		p->render.beginBlitScreen(Vec2i(p->winSize));
 		p->render.blitSource(transBuffer);
 		p->metaBlitBufferFlippedScaled();
@@ -753,7 +748,6 @@ void Graphics::fadeout(unsigned int duration){
 		if (p->frozen){
 			p->render.beginBlitScreen(p->scSize);
 			p->render.blitSource(p->frozenScene);
-
 			p->render.clear();
 			p->metaBlitBufferFlippedScaled();
 			p->render.endBlit();
@@ -772,11 +766,9 @@ void Graphics::fadein(unsigned int duration){
 
 	for (int i = 1; i <= duration; ++i){
 		setBrightness(curr + (diff / duration) * i);
-
 		if (p->frozen){
 			p->render.beginBlitScreen(p->scSize);
 			p->render.blitSource(p->frozenScene);
-
 			p->render.clear();
 			p->metaBlitBufferFlippedScaled();
 			p->render.endBlit();
@@ -825,21 +817,17 @@ void Graphics::moveScreen(int x, int y){
 void Graphics::resizeScreen(int width, int height, bool emitSignal){
 	width = clamp(width, 1, 65000);
 	height = clamp(height, 1, 65000);
-
+	
 	Vec2i size(width, height);
-
 	if (p->scRes == size)
 		return;
 
 	p->scRes = size;
-
 	p->screen.setResolution(width, height);
-
 	p->render.resizeRenderTarget(p->frozenScene, width, height);
 
 	FloatRect screenRect(0, 0, width, height);
 	p->screenQuad.setTexPosRect(screenRect, screenRect);
-
 	p->render.setScissorBox(IntRect(0, 0, width, height));
 	shState->eThread().requestWindowResize(width, height);
 
@@ -864,7 +852,6 @@ void Graphics::setBrightness(int value){
 void Graphics::reset(){
 	/* Dispose all live Disposables */
 	IntruListLink<Disposable> *iter;
-
 	for (iter = p->dispList.begin(); iter != p->dispList.end(); iter = iter->next){
 		iter->data->dispose();
 	}
@@ -920,7 +907,6 @@ void Graphics::setFrameskip(bool value){
 	conf.frameSkip = value;
 }
 
-
 void Graphics::repaintWait(const AtomicFlag &exitCond, bool checkReset){
 	if (exitCond)
 		return;
@@ -929,7 +915,6 @@ void Graphics::repaintWait(const AtomicFlag &exitCond, bool checkReset){
 	RenderTarget &lastFrame = p->screen.getPP().frontBuffer();
 	p->render.beginBlitScreen(p->winSize);
 	p->render.blitSource(lastFrame);
-
 	while (!exitCond){
 		shState->checkShutdown();
 		if (checkReset)
@@ -939,7 +924,6 @@ void Graphics::repaintWait(const AtomicFlag &exitCond, bool checkReset){
 		p->metaBlitBufferFlippedScaled();
 		p->render.swapWindow(p->threadData->window);
 		p->fpsLimiter.delay();
-
 		p->threadData->ethread->notifyFrame();
 	}
 

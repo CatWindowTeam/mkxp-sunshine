@@ -19,7 +19,6 @@ module Settings
         :fog                    => true,
         :light                  => true,
         :water                  => true,
-      # :light_layer_detect     => true,
         :scaling_mode           => 0,
         :vsync                  => 0,
         :max_firefly_count      => 30,

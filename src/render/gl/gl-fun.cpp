@@ -20,6 +20,7 @@
 */
 
 #include "gl-fun.h"
+#include "glrender.h"
 #include <tsl/robin_set.h>
 #include "meow.h"
 #include <SDL3/SDL_video.h>
@@ -31,7 +32,7 @@ typedef const GLubyte* (APIENTRYP _PFNGLGETSTRINGIPROC) (GLenum, GLuint);
 
 static void parseExtensionsCore(_PFNGLGETINTEGERVPROC GetIntegerv, tsl::robin_set<std::string> &out){
 	_PFNGLGETSTRINGIPROC GetStringi = (_PFNGLGETSTRINGIPROC) SDL_GL_GetProcAddress("glGetStringi");
-
+	
 	GLint extCount = 0;
 	GetIntegerv(GL_NUM_EXTENSIONS, &extCount);
 	for (GLint i = 0; i < extCount; ++i)
@@ -66,10 +67,8 @@ void initGLFunctions(){
 
 	/* Determine GL version */
 	const char *ver = (const char*) gl.GetString(GL_VERSION);
-
 	const char glesPrefix[] = "OpenGL ES ";
 	const size_t glesPrefixN = sizeof(glesPrefix)-1;
-
 	bool gles = false;
 
 	if (!SDL_strncmp(ver, glesPrefix, glesPrefixN)){
@@ -108,8 +107,7 @@ void initGLFunctions(){
 		GL_FBO_BLIT_FUN;
 	}else if (gles && glMajor == 2){
 		GL_FBO_FUN;
-	}
-	else if (HAVE_EXT(EXT_framebuffer_object)){
+	}else if (HAVE_EXT(EXT_framebuffer_object)){
 		#undef EXT_SUFFIX
 		#define EXT_SUFFIX "EXT"
 		GL_FBO_FUN;

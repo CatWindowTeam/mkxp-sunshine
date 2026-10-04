@@ -61,7 +61,7 @@ IRenderContext *createRenderContext(SDL_Window *window){
 	return createGLRenderContext(window);
 }
 
-IRender *createRender(const Config &conf){
+IRender *createRender(){
 	if (conf.renderer == "gpu")
 		return createGPURender(conf);
 
