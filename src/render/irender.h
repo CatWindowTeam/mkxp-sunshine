@@ -77,6 +77,7 @@ public:
 
 	virtual int maxTextureSize() const = 0;
 	virtual bool repeatNpotSupported() const = 0;
+	virtual const char *apiName() const = 0;
 
 	virtual TexHandle createTexture(int w, int h, PixelFormat fmt = PixelFormat::RGBA) = 0;
 	virtual void resizeTexture(TexHandle tex, int w, int h, PixelFormat fmt = PixelFormat::RGBA) = 0;

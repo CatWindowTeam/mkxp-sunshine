@@ -127,6 +127,10 @@ int GLRender::maxTextureSize() const{
 	return glStateObj.caps.maxTexSize;
 }
 
+const char *GLRender::apiName() const{
+	return gl.glsles ? "opengles" : "opengl";
+}
+
 bool GLRender::repeatNpotSupported() const{
 	return gl.npot_repeat;
 }

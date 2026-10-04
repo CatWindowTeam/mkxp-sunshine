@@ -109,6 +109,7 @@ public:
 
 	int maxTextureSize() const;
 	bool repeatNpotSupported() const;
+	const char *apiName() const;
 
 	TexHandle createTexture(int w, int h, PixelFormat fmt);
 	void resizeTexture(TexHandle tex, int w, int h, PixelFormat fmt);
@@ -204,6 +205,7 @@ private:
 	GpuTexture *target;
 	uint32_t targetId;
 	int maxTexSize;
+	std::string apiNameStr;
 
 	std::vector<GpuCommand> commands;
 	std::vector<GpuVertex> vertexStream;

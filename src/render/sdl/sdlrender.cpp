@@ -83,6 +83,9 @@ SDLRender::SDLRender(const Config &conf, SDL_Renderer *renderer)
 	if (conf.maxTextureSize > 0)
 		maxTexSize = conf.maxTextureSize;
 
+	const char *rendererName = SDL_GetRendererName(renderer);
+	apiNameStr = rendererName ? rendererName : "unknown";
+
 	setActiveRender(this);
 }
 
@@ -102,6 +105,10 @@ SDLRender::~SDLRender(){
 
 int SDLRender::maxTextureSize() const{
 	return maxTexSize;
+}
+
+const char *SDLRender::apiName() const{
+	return apiNameStr.c_str();
 }
 
 bool SDLRender::repeatNpotSupported() const{

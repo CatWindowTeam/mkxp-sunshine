@@ -227,6 +227,9 @@ GPURender::GPURender(const Config &conf, SDL_GPUDevice *device, SDL_Window *wind
 	SDL_SubmitGPUCommandBuffer(cmd);
 	SDL_ReleaseGPUTransferBuffer(device, transfer);
 
+	const char *driverName = SDL_GetGPUDeviceDriver(device);
+	apiNameStr = driverName ? driverName : "unknown";
+
 	setActiveRender(this);
 }
 
@@ -270,6 +273,10 @@ GPURender::~GPURender(){
 
 int GPURender::maxTextureSize() const{
 	return maxTexSize;
+}
+
+const char *GPURender::apiName() const{
+	return apiNameStr.c_str();
 }
 
 bool GPURender::repeatNpotSupported() const{

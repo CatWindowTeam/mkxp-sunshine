@@ -4,6 +4,7 @@
 #include <SDL3/SDL_hints.h>
 #include "config.h"
 #include "sunshine.h"
+#include "sharedstate.h"
 #include "meow.h"
 #include "define.h"
 #ifdef mkxp_android
@@ -80,6 +81,8 @@ void SunshineBindingInit(){
     rb_const_set(module, rb_intern("SDLVersion_minor"), INT2NUM(SDL_MINOR_VERSION));
     rb_const_set(module, rb_intern("SDLVersion_micro"), INT2NUM(SDL_MICRO_VERSION));
 	rb_const_set(module, rb_intern("VERSION"), rb_str_new_cstr(VERSION_STRING));
+	rb_const_set(module, rb_intern("RENDERER"), rb_str_new_cstr(conf.renderer.c_str()));
+	rb_const_set(module, rb_intern("RENDER_API"), rb_str_new_cstr(shState->render().apiName()));
 	rb_define_singleton_method(module, "crash_privacy=", RUBY_METHOD_FUNC(sunshineSetCrashPrivacy), 1);
 	rb_define_singleton_method(module, "SetCrashScreenData", RUBY_METHOD_FUNC(SetCrashScreenData), 1);
 	rb_define_singleton_method(module, "wallpaper_mode=", RUBY_METHOD_FUNC(sunshineSetWallpaperMode), 1);

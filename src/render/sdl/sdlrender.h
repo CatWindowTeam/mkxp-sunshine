@@ -27,6 +27,7 @@ public:
 
 	int maxTextureSize() const;
 	bool repeatNpotSupported() const;
+	const char *apiName() const;
 
 	TexHandle createTexture(int w, int h, PixelFormat fmt);
 	void resizeTexture(TexHandle tex, int w, int h, PixelFormat fmt);
@@ -101,6 +102,7 @@ private:
 
 	SdlTexture *target;
 	int maxTexSize;
+	std::string apiNameStr;
 
 
 
