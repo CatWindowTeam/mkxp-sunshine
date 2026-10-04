@@ -2,6 +2,7 @@
 #include "etc.h"
 #include "render/effects.h"
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 struct SDL_Surface;
@@ -179,6 +180,8 @@ public:
 
 uint64_t renderWindowFlags();
 void setupRenderWindowAttributes();
+std::vector<std::string> renderBackendOrder();
+bool probeRenderBackend(SDL_Window *window);
 IRenderContext *createRenderContext(SDL_Window *window);
 
 IRender *createRender(const Config &conf);

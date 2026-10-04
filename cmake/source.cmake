@@ -58,3 +58,29 @@ endif()
 foreach(item ${EMBEDDED_INPUT})
 	ProcessWithXXD(EMBEDDED_SOURCE ${item} ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
+
+find_program(GLSLANG_EXE NAMES glslangValidator glslang)
+if(GLSLANG_EXE)
+	foreach(item uber.vert uber.frag light.frag)
+		set(gpu_spv ${CMAKE_CURRENT_BINARY_DIR}/${item}.spv)
+		set(gpu_hdr ${CMAKE_CURRENT_BINARY_DIR}/${item}.spv.xxd)
+		add_custom_command(
+			OUTPUT ${gpu_spv}
+			COMMAND ${GLSLANG_EXE} -V ${CMAKE_CURRENT_SOURCE_DIR}/shader/gpu/${item} -o ${gpu_spv}
+			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/shader/gpu/${item}
+			COMMENT "Compiling GPU shader ${item} to SPIR-V"
+		)
+		add_custom_command(
+			OUTPUT ${gpu_hdr}
+			COMMAND ${XXD_EXE} -i ${item}.spv ${gpu_hdr}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			DEPENDS ${gpu_spv}
+			COMMENT "Generating XXD for ${item}.spv"
+		)
+		set_source_files_properties(${gpu_hdr} PROPERTIES HEADER_FILE_ONLY TRUE)
+		list(APPEND EMBEDDED_SOURCE ${gpu_hdr})
+	endforeach()
+	list(APPEND DEFINES SUNSHINE_GPU_SHADERS)
+else()
+	message(STATUS "glslangValidator not found, GPU render backend disabled")
+endif()

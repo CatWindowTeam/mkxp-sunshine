@@ -216,13 +216,36 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 
-	SDL_Window *win;
-	Uint64 winFlags = renderWindowFlags() | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-	setupRenderWindowAttributes();
+	SDL_Window *win = 0;
+	std::string windowError;
+	const std::vector<std::string> backends = renderBackendOrder();
 
-	win = SDL_CreateWindow(conf.windowTitle.c_str(), conf.defScreenW, conf.defScreenH, winFlags);
+	for (size_t i = 0; i < backends.size() && !win; ++i){
+		conf.renderer = backends[i];
+		SDL_GL_ResetAttributes();
+		setupRenderWindowAttributes();
+
+		Uint64 winFlags = renderWindowFlags() | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+		SDL_Window *candidate = SDL_CreateWindow(conf.windowTitle.c_str(), conf.defScreenW, conf.defScreenH, winFlags);
+
+		if (!candidate){
+			windowError = SDL_GetError();
+			Debug() << "[Render] cannot create window for backend" << backends[i] << windowError;
+			continue;
+		}
+
+		if (probeRenderBackend(candidate)){
+			win = candidate;
+			Debug() << "[Render] backend:" << backends[i];
+		}else{
+			windowError = SDL_GetError();
+			Debug() << "[Render] backend unavailable:" << backends[i] << windowError;
+			SDL_DestroyWindow(candidate);
+		}
+	}
+
 	if(!win){
-		WarnMsg("%s", SDL_GetError());
+		WarnMsg("No usable render backend: %s", windowError.c_str());
 		MIX_Quit();
 		TTF_Quit();
 		SDL_Quit();

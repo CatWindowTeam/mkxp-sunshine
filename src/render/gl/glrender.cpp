@@ -749,3 +749,12 @@ IRenderContext *createGLRenderContext(SDL_Window *window){
 IRender *createGLRender(const Config &conf){
 	return new GLRender(conf);
 }
+
+bool glProbe(SDL_Window *window){
+	SDL_GLContext probe = SDL_GL_CreateContext(window);
+	if (!probe)
+		return false;
+
+	SDL_GL_DestroyContext(probe);
+	return true;
+}

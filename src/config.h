@@ -25,7 +25,7 @@ struct Config {
     int fixedFramerate = 0;
     bool frameSkip = true;
     bool syncToRefreshrate = true;
-    std::string renderer = "gl";
+    std::string renderer = "auto";
     std::string sdlRenderDriver;
 
     bool solidFonts = false;

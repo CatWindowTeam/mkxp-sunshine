@@ -1230,3 +1230,12 @@ IRenderContext *createSDLRenderContext(SDL_Window *window){
 IRender *createSDLRender(const Config &conf){
 	return new SDLRender(conf, createdRenderer);
 }
+
+bool sdlProbe(SDL_Window *window){
+	SDL_Renderer *probe = SDL_CreateRenderer(window, conf.sdlRenderDriver.empty() ? 0 : conf.sdlRenderDriver.c_str());
+	if (!probe)
+		return false;
+
+	SDL_DestroyRenderer(probe);
+	return true;
+}
