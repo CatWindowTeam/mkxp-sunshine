@@ -3,6 +3,7 @@
 #include "gl-fun.h"
 #include "gl-util.h"
 #include "config.h"
+#include "render/renderstats.h"
 #include "exception.h"
 #ifndef NDEBUG
 #include "gl-debug.h"
@@ -172,16 +173,19 @@ void GLRender::setTextureRepeat(TexHandle tex, bool repeat){
 }
 
 void GLRender::uploadTexture(TexHandle tex, int w, int h, const void *pixels, PixelFormat fmt){
+	renderStatsUpload((size_t) w * h * (fmt == PixelFormat::RGBA ? 4 : 1));
 	TEX::bind(glTex(tex));
 	gl.TexImage2D(GL_TEXTURE_2D, 0, glInternalFormat(fmt), w, h, 0, glFormat(fmt), GL_UNSIGNED_BYTE, pixels);
 }
 
 void GLRender::uploadTextureRect(TexHandle tex, int x, int y, int w, int h, const void *pixels, PixelFormat fmt){
+	renderStatsUpload((size_t) w * h * (fmt == PixelFormat::RGBA ? 4 : 1));
 	TEX::bind(glTex(tex));
 	TEX::uploadSubImage(x, y, w, h, pixels, glFormat(fmt));
 }
 
 void GLRender::uploadTextureRect(TexHandle tex, int dstX, int dstY, int w, int h, SDL_Surface *src, int srcX, int srcY){
+	renderStatsUpload((size_t) w * h * 4);
 	TEX::bind(glTex(tex));
 
 	if (gl.unpack_subimage){
@@ -409,6 +413,8 @@ void GLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCount
 	GLMeta::VAO &vao = geometries[geom.id-1].vao;
 	GLMeta::vaoBind(vao);
 
+	++renderStats.drawCalls;
+	renderStats.vertices += quadCount * 4;
 	const char *offset = (const char*) 0 + firstQuad * 6 * sizeof(uint16_t);
 	gl.DrawElements(GL_TRIANGLES, quadCount * 6, GL_UNSIGNED_SHORT, offset);
 	GLMeta::vaoUnbind(vao);
@@ -678,7 +684,9 @@ void GLRender::endBlit(){
 }
 
 void GLRender::swapWindow(SDL_Window *window){
+	renderStatsBeginSwap();
 	SDL_GL_SwapWindow(window);
+	renderStatsEndSwap();
 }
 
 void GLRender::suspendContext(SDL_Window *window){

@@ -1,6 +1,7 @@
 #include "gpurender.h"
 #include "render/backends.h"
 #include "config.h"
+#include "render/renderstats.h"
 #include "exception.h"
 #include "debugwriter.h"
 #include "sharedstate.h"
@@ -562,6 +563,29 @@ void GPURender::fillCommandState(GpuCommand &c, const EffectUniforms &u, int eff
 	}
 }
 
+void GPURender::pushDraw(const GpuCommand &c){
+	if (!commands.empty() && c.pipeline == PipelineUber){
+		GpuCommand &last = commands.back();
+
+		if (last.type == GpuCommand::Draw && last.pipeline == PipelineUber
+		    && last.target == c.target && last.blend == c.blend
+		    && last.scissorOn == c.scissorOn
+		    && last.firstVertex + last.quadCount * 4 == c.firstVertex
+		    && last.quadCount + c.quadCount <= (uint32_t) MaxQuadsPerDraw
+		    && memcmp(&last.viewport, &c.viewport, sizeof(SDL_Rect)) == 0
+		    && memcmp(&last.scissor, &c.scissor, sizeof(SDL_Rect)) == 0
+		    && memcmp(&last.vertexParams, &c.vertexParams, sizeof(c.vertexParams)) == 0
+		    && memcmp(&last.fragParams, &c.fragParams, sizeof(c.fragParams)) == 0
+		    && memcmp(last.tex, c.tex, sizeof(c.tex)) == 0
+		    && memcmp(last.sampler, c.sampler, sizeof(c.sampler)) == 0){
+			last.quadCount += c.quadCount;
+			return;
+		}
+	}
+
+	commands.push_back(c);
+}
+
 void GPURender::recordQuad(const GpuVertex verts[4], int effect, GpuBlend blendKind, const SDL_Rect &vp, bool scissor, const SDL_Rect &scissorRect, uint32_t targetTexture){
 	GpuCommand c;
 	memset(&c, 0, sizeof(c));
@@ -579,7 +603,7 @@ void GPURender::recordQuad(const GpuVertex verts[4], int effect, GpuBlend blendK
 	for (int i = 0; i < 4; ++i)
 		vertexStream.push_back(verts[i]);
 
-	commands.push_back(c);
+	pushDraw(c);
 }
 
 void GPURender::clear(){
@@ -623,7 +647,7 @@ void GPURender::clear(){
 		vertexStream.push_back(v[i]);
 	}
 
-	commands.push_back(c);
+	pushDraw(c);
 }
 
 void GPURender::readPixels(const RenderTarget &rt, int w, int h, void *out){
@@ -816,7 +840,7 @@ void GPURender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 		}
 
 		vertexStream.insert(vertexStream.end(), g.vertices.begin() + firstQuad * 4, g.vertices.begin() + (firstQuad + chunk) * 4);
-		commands.push_back(c);
+		pushDraw(c);
 
 		firstQuad += chunk;
 		quadCount -= chunk;
@@ -1137,6 +1161,7 @@ void GPURender::executeUpload(FlushState &s, const GpuCommand &c){
 		return;
 
 	const std::vector<uint8_t> &data = uploads[c.payload];
+	renderStatsUpload(data.size());
 	SDL_GPUTransferBuffer *transfer = createUploadBuffer(data.data(), data.size());
 
 	SDL_GPUCopyPass *copy = SDL_BeginGPUCopyPass(s.cmd);
@@ -1204,6 +1229,8 @@ void GPURender::executeDraw(FlushState &s, const GpuCommand &c, const ResolvedTa
 	}
 	SDL_SetGPUScissor(s.pass, &scissor);
 
+	++renderStats.drawCalls;
+	renderStats.vertices += c.quadCount * 4;
 	SDL_DrawGPUIndexedPrimitives(s.pass, c.quadCount * 6, 1, 0, (Sint32) c.firstVertex, 0);
 }
 
@@ -1252,7 +1279,9 @@ void GPURender::flush(){
 }
 
 void GPURender::swapWindow(SDL_Window *){
+	renderStatsBeginSwap();
 	flush();
+	renderStatsEndSwap();
 }
 
 void GPURender::suspendContext(SDL_Window *){

@@ -24,7 +24,7 @@
 
 namespace GLMeta{
 
-#define HAVE_NATIVE_VAO false //gl.GenVertexArrays
+#define HAVE_NATIVE_VAO (gl.GenVertexArrays && gl.BindVertexArray && gl.DeleteVertexArrays)
 
 static void vaoBindRes(VAO &vao){
 	VBO::bind(vao.vbo);

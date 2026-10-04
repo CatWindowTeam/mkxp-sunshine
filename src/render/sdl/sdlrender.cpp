@@ -1,6 +1,7 @@
 #include "sdlrender.h"
 #include "render/backends.h"
 #include "config.h"
+#include "render/renderstats.h"
 #include "exception.h"
 #include "debugwriter.h"
 #include "vertex.h"
@@ -143,6 +144,7 @@ void SDLRender::uploadTextureRect(TexHandle handle, int x, int y, int w, int h, 
 	if (!tex || !tex->texture || !pixels)
 		return;
 
+	renderStatsUpload((size_t) w * h * 4);
 	SDL_Rect rect = { x, y, w, h };
 
 	if (fmt == PixelFormat::Luminance){
@@ -167,6 +169,7 @@ void SDLRender::uploadTextureRect(TexHandle handle, int dstX, int dstY, int w, i
 	if (!tex || !tex->texture)
 		return;
 
+	renderStatsUpload((size_t) w * h * 4);
 	SDL_Rect rect = { dstX, dstY, w, h };
 	const uint8_t *base = static_cast<const uint8_t*>(src->pixels) + (size_t) srcY * src->pitch + (size_t) srcX * 4;
 	SDL_UpdateTexture(tex->texture, &rect, base, src->pitch);
@@ -350,6 +353,8 @@ void SDLRender::submit(SdlTexture *tex, const Vertices &v, SDL_BlendMode mode, b
 		SDL_SetRenderDrawBlendMode(renderer, mode);
 	}
 
+	++renderStats.drawCalls;
+	renderStats.vertices += v.list.size();
 	SDL_RenderGeometry(renderer, sdlTex, v.list.data(), (int) v.list.size(), v.indices.data(), (int) v.indices.size());
 }
 
@@ -661,8 +666,10 @@ void SDLRender::endBlit(){
 }
 
 void SDLRender::swapWindow(SDL_Window *){
+	renderStatsBeginSwap();
 	SDL_SetRenderTarget(renderer, 0);
 	SDL_RenderPresent(renderer);
+	renderStatsEndSwap();
 }
 
 void SDLRender::suspendContext(SDL_Window *){

@@ -196,6 +196,8 @@ void Shader::setTexUniform(GLint location, unsigned unitIndex, TexHandle texture
 	GLenum texUnit = GL_TEXTURE0 + unitIndex;
 	gl.ActiveTexture(texUnit);
 	gl.BindTexture(GL_TEXTURE_2D, texture.id);
+	if (unitIndex == 0)
+		TEX::bound() = texture.id;
 	gl.Uniform1i(location, unitIndex);
 	gl.ActiveTexture(GL_TEXTURE0);
 }

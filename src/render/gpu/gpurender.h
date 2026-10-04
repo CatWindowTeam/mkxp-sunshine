@@ -168,6 +168,7 @@ private:
 
 	GpuTexture *texture(uint32_t id);
 	void createGpuTexture(GpuTexture &tex, int w, int h);
+	void pushDraw(const GpuCommand &c);
 	void recordUpload(uint32_t id, int x, int y, int w, int h, std::vector<uint8_t> &data);
 	void recordClear(uint32_t id, const Vec4 &color);
 	GpuBlend currentBlend() const;

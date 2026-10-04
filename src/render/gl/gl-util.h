@@ -52,11 +52,21 @@ namespace TEX{
 		return id;
 	}
 
+	inline GLuint &bound(){
+		static GLuint id = 0;
+		return id;
+	}
+
 	static inline void del(ID id){
+		if (bound() == id.gl)
+			bound() = 0;
 		gl.DeleteTextures(1, &id.gl);
 	}
 
 	static inline void bind(ID id){
+		if (bound() == id.gl)
+			return;
+		bound() = id.gl;
 		gl.BindTexture(GL_TEXTURE_2D, id.gl);
 	}
 

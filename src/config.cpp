@@ -51,6 +51,7 @@ void Config::read(int argc, char* argv[]) {
 															"(exceptions are rendering backbuffers and similar). If set to 0, the hardware maximum is used."
 															"This is useful for recording traces that can be played back on machines with lower specs.");
 	a.add_option("--gameFolder", gameFolder, "Game Folder path");
+	a.add_option("--renderStats", renderStats, "Print render statistics once per second");
 	a.add_option("--allowSymlinks", allowSymlinks, "Allow symlinks for game assets to be followed");
 	a.add_option("--pathCache", pathCache, "Index all accesible assets via their lower case path (emulates windows case insensitivity)");
 	a.add_option("--JournalAddress", journal_address, "journal_address");
