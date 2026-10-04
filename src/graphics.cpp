@@ -155,7 +155,7 @@ public:
 			pp.swapRender();
 
 			if (!viewpRect.encloses(screenRect)){
-				/* Scissor test _does_ affect FBO blit operations,
+				/* Scissor test _does_ affect render target blit operations,
 				 * and since we're inside the draw cycle, it will
 				 * be turned on, so turn it off temporarily */
 				render.pushScissorTest(false);
@@ -488,7 +488,7 @@ struct GraphicsPrivate{
 
 	void checkResize(){
 		if (threadData->windowSizeMsg.poll(winSize)){
-			/* some GL drivers change the viewport on window resize */
+			/* some drivers change the viewport on window resize */
 			render.refreshViewport();
 			recalculateScreenSize(threadData);
 			updateScreenResoRatio(threadData);
@@ -509,7 +509,7 @@ struct GraphicsPrivate{
 		scriptBinding->terminate();
 	}
 
-	void swapGLBuffer(){
+	void swapBuffers(){
 		fpsLimiter.delay();
 		render.bindScreenTarget();
 		render.swapWindow(threadData->window);
@@ -545,14 +545,14 @@ struct GraphicsPrivate{
 
 		render.endBlit();
 
-		swapGLBuffer();
+		swapBuffers();
 	}
 
 	void checkSyncLock(){
 		if (!threadData->syncPoint.mainSyncLocked())
 			return;
 
-		/* Releasing the GL context before sleeping and making it
+		/* Releasing the graphics context before sleeping and making it
 		 * current again on wakeup seems to avoid the context loss
 		 * when the app moves into the background on Android */
 		render.suspendContext(threadData->window);
@@ -706,7 +706,7 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 		p->render.blitSource(transBuffer);
 		p->metaBlitBufferFlippedScaled();
 		p->render.endBlit();
-		p->swapGLBuffer();
+		p->swapBuffers();
 	}
 
 	p->render.popBlend();
@@ -757,7 +757,7 @@ void Graphics::fadeout(unsigned int duration){
 			p->render.clear();
 			p->metaBlitBufferFlippedScaled();
 			p->render.endBlit();
-			p->swapGLBuffer();
+			p->swapBuffers();
 		}else{
 			update();
 		}
@@ -780,7 +780,7 @@ void Graphics::fadein(unsigned int duration){
 			p->render.clear();
 			p->metaBlitBufferFlippedScaled();
 			p->render.endBlit();
-			p->swapGLBuffer();
+			p->swapBuffers();
 		}else{
 			update();
 		}

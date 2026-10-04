@@ -59,7 +59,7 @@ struct QuadArray{
 		ptrdiff_t size = vertices.size() * sizeof(VertexType);
 		if (size > vboSize){
 			/* New data exceeds already allocated size.
-			 * Reallocate VBO. */
+			 * Reallocate the vertex buffer. */
 			render.uploadGeometry(geom, size, dataPtr(vertices), GeometryUsage::Dynamic);
 			vboSize = size;
 			render.ensureQuadIndices(quadCount);

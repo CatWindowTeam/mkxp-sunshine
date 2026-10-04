@@ -14,22 +14,6 @@
 
 static SDL_Renderer *createdRenderer = 0;
 
-SdlUniforms::SdlUniforms()
-    : texSize(1, 1),
-      color(0, 0, 0, 0),
-      modulate(1, 1, 1, 1),
-      opacity(1),
-      aniIndex(0),
-      prog(0),
-      hueAdjust(0),
-      gray(0),
-      current(0),
-      frozen(0)
-{
-	for (int i = 0; i < 16; ++i)
-		spriteMat[i] = matrix[i] = (i % 5 == 0) ? 1.0f : 0.0f;
-}
-
 static inline float clamp01(float v){
 	return std::min(std::max(v, 0.0f), 1.0f);
 }
@@ -85,16 +69,11 @@ static SDL_FColor fcolor(float r, float g, float b, float a){
 }
 
 SDLRender::SDLRender(const Config &conf, SDL_Renderer *renderer)
-    : renderer(renderer),
+    : StatefulRender(conf),
+      renderer(renderer),
       probe(SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, 1, 1)),
       target(0),
-      boundTexture(0),
-      maxTexSize(0),
-      activeBlend(SdlBlend::Normal),
-      uniformSets(SHADER_COUNT),
-      currentSlot(SHADER_simple),
-      blurPass(0),
-      ambient(0)
+      maxTexSize(0)
 {
 	SDL_PropertiesID props = SDL_GetRendererProperties(renderer);
 	maxTexSize = (int) SDL_GetNumberProperty(props, SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, 4096);
@@ -103,13 +82,6 @@ SDLRender::SDLRender(const Config &conf, SDL_Renderer *renderer)
 
 	if (conf.maxTextureSize > 0)
 		maxTexSize = conf.maxTextureSize;
-
-	viewport.current = IntRect(0, 0, conf.defScreenW, conf.defScreenH);
-	blend.current = true;
-	blendModeProp.current = BlendNormal;
-	scissorTest.current = false;
-	scissorBoxProp.current = IntRect(0, 0, conf.defScreenW, conf.defScreenH);
-	clearColor.current = Vec4(0, 0, 0, 1);
 
 	setActiveRender(this);
 }
@@ -124,8 +96,8 @@ SDLRender::~SDLRender(){
 		SDL_DestroyTexture(lightMap.texture);
 
 	for (size_t i = 0; i < textures.size(); ++i)
-		if (textures[i] && textures[i]->texture)
-			SDL_DestroyTexture(textures[i]->texture);
+		if (textures.at(i) && textures.at(i)->texture)
+			SDL_DestroyTexture(textures.at(i)->texture);
 }
 
 int SDLRender::maxTextureSize() const{
@@ -137,14 +109,7 @@ bool SDLRender::repeatNpotSupported() const{
 }
 
 SdlTexture *SDLRender::texture(uint32_t id){
-	if (id == 0 || id > textures.size())
-		return 0;
-
-	return textures[id-1].get();
-}
-
-SdlUniforms &SDLRender::uniforms(){
-	return uniformSets[currentSlot];
+	return textures.get(id);
 }
 
 void SDLRender::createSdlTexture(SdlTexture &tex, int w, int h){
@@ -171,17 +136,7 @@ TexHandle SDLRender::createTexture(int w, int h, PixelFormat){
 	std::unique_ptr<SdlTexture> tex(new SdlTexture);
 	createSdlTexture(*tex, w, h);
 
-	uint32_t id;
-	if (freeTextures.empty()){
-		textures.push_back(std::move(tex));
-		id = textures.size();
-	}else{
-		id = freeTextures.back();
-		freeTextures.pop_back();
-		textures[id-1] = std::move(tex);
-	}
-
-	return TexHandle(id);
+	return TexHandle(textures.add(std::move(tex)));
 }
 
 void SDLRender::resizeTexture(TexHandle handle, int w, int h, PixelFormat){
@@ -209,16 +164,7 @@ void SDLRender::destroyTexture(TexHandle handle){
 	if (tex->texture)
 		SDL_DestroyTexture(tex->texture);
 
-	textures[handle.id-1].reset();
-	freeTextures.push_back(handle.id);
-}
-
-void SDLRender::bindTexture(TexHandle tex){
-	boundTexture = tex.id;
-}
-
-void SDLRender::unbindTexture(){
-	boundTexture = 0;
+	textures.remove(handle.id);
 }
 
 void SDLRender::setTextureSmooth(TexHandle handle, bool smooth){
@@ -383,151 +329,28 @@ void SDLRender::readPixels(const RenderTarget &rt, int w, int h, void *out){
 		memcpy(dst + (size_t) y * w * 4, &data[(size_t) y * tex->width * 4], (size_t) cw * 4);
 }
 
-void SDLRender::setViewport(const IntRect &rect){
-	viewport.set(rect);
-}
-
-void SDLRender::pushViewport(const IntRect &rect){
-	viewport.pushSet(rect);
-}
-
-void SDLRender::popViewport(){
-	viewport.pop();
-}
-
-void SDLRender::refreshViewport(){
-}
-
-void SDLRender::pushBlend(bool enabled){
-	blend.pushSet(enabled);
-}
-
-void SDLRender::popBlend(){
-	blend.pop();
-}
-
-static SdlBlend blendFromMode(BlendType mode){
-	switch (mode){
-	case BlendKeepDestAlpha : return SdlBlend::KeepDestAlpha;
-	case BlendAddition      : return SdlBlend::Addition;
-	case BlendSubstraction  : return SdlBlend::Substraction;
-	case BlendMultiply      : return SdlBlend::Multiply;
-	default                 : return SdlBlend::Normal;
-	}
-}
-
-void SDLRender::pushBlendMode(BlendType mode){
-	blendModeProp.pushSet(mode);
-	activeBlend = blendFromMode(mode);
-}
-
-void SDLRender::popBlendMode(){
-	blendModeProp.pop();
-	activeBlend = blendFromMode(blendModeProp.current);
-}
-
-void SDLRender::setBlendOverride(BlendOverride mode){
-	switch (mode){
-	case BlendOverride::ToneAdd :
-		activeBlend = SdlBlend::ToneAdd;
-		break;
-
-	case BlendOverride::ToneSubtract :
-		activeBlend = SdlBlend::ToneSubtract;
-		break;
-
-	case BlendOverride::Overlay :
-		activeBlend = SdlBlend::KeepDestAlpha;
-		break;
-	}
-}
-
-void SDLRender::refreshBlendMode(){
-	activeBlend = blendFromMode(blendModeProp.current);
-}
-
-void SDLRender::pushScissorTest(bool enabled){
-	scissorTest.pushSet(enabled);
-}
-
-void SDLRender::popScissorTest(){
-	scissorTest.pop();
-}
-
-void SDLRender::pushScissorBox(const IntRect &rect){
-	scissorBoxProp.pushSet(rect);
-}
-
-void SDLRender::saveScissorBox(){
-	scissorBoxProp.push();
-}
-
-void SDLRender::intersectScissorBox(const IntRect &rect){
-	const IntRect &cur = scissorBoxProp.current;
-	int x0 = std::max(cur.x, rect.x);
-	int y0 = std::max(cur.y, rect.y);
-	int x1 = std::min(cur.x + cur.w, rect.x + rect.w);
-	int y1 = std::min(cur.y + cur.h, rect.y + rect.h);
-
-	if (x1 <= x0 || y1 <= y0)
-		scissorBoxProp.set(IntRect(0, 0, 0, 0));
-	else
-		scissorBoxProp.set(IntRect(x0, y0, x1 - x0, y1 - y0));
-}
-
-void SDLRender::popScissorBox(){
-	scissorBoxProp.pop();
-}
-
-void SDLRender::setScissorBox(const IntRect &rect){
-	scissorBoxProp.set(rect);
-}
-
-const IntRect &SDLRender::scissorBox(){
-	return scissorBoxProp.current;
-}
-
-void SDLRender::pushClearColor(const Vec4 &color){
-	clearColor.pushSet(color);
-}
-
-void SDLRender::popClearColor(){
-	clearColor.pop();
-}
-
 GeometryHandle SDLRender::createGeometry(VertexLayout layout){
 	std::unique_ptr<SdlGeometry> geom(new SdlGeometry);
 	geom->layout = layout;
 
-	uint32_t id;
-	if (freeGeometries.empty()){
-		geometries.push_back(std::move(geom));
-		id = geometries.size();
-	}else{
-		id = freeGeometries.back();
-		freeGeometries.pop_back();
-		geometries[id-1] = std::move(geom);
-	}
-
-	return GeometryHandle(id);
+	return GeometryHandle(geometries.add(std::move(geom)));
 }
 
 void SDLRender::destroyGeometry(GeometryHandle geom){
-	geometries[geom.id-1].reset();
-	freeGeometries.push_back(geom.id);
+	geometries.remove(geom.id);
 }
 
 void SDLRender::allocGeometry(GeometryHandle geom, size_t bytes, GeometryUsage){
-	geometries[geom.id-1]->data.assign(bytes, 0);
+	geometries.get(geom.id)->data.assign(bytes, 0);
 }
 
 void SDLRender::uploadGeometry(GeometryHandle geom, size_t bytes, const void *data, GeometryUsage){
 	const uint8_t *src = static_cast<const uint8_t*>(data);
-	geometries[geom.id-1]->data.assign(src, src + bytes);
+	geometries.get(geom.id)->data.assign(src, src + bytes);
 }
 
 void SDLRender::uploadGeometryRange(GeometryHandle geom, size_t offset, size_t bytes, const void *data){
-	std::vector<uint8_t> &buf = geometries[geom.id-1]->data;
+	std::vector<uint8_t> &buf = geometries.get(geom.id)->data;
 	if (buf.size() < offset + bytes)
 		buf.resize(offset + bytes);
 
@@ -554,27 +377,27 @@ SDL_BlendMode SDLRender::blendMode(bool forceBlend){
 		return SDL_BLENDMODE_NONE;
 
 	switch (activeBlend){
-	case SdlBlend::Normal :
+	case BlendKind::Normal :
 		return SDL_BLENDMODE_BLEND;
 
-	case SdlBlend::Addition :
+	case BlendKind::Addition :
 		return SDL_BLENDMODE_ADD;
 
-	case SdlBlend::Multiply :
+	case BlendKind::Multiply :
 		return SDL_BLENDMODE_MUL;
 
-	case SdlBlend::KeepDestAlpha :
+	case BlendKind::KeepDestAlpha :
 		return composeOrFallback(SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDFACTOR_ONE_MINUS_SRC_ALPHA, SDL_BLENDOPERATION_ADD,
 		                         SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD, SDL_BLENDMODE_BLEND);
 
-	case SdlBlend::Substraction :
+	case BlendKind::Substraction :
 		return composeOrFallback(SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_REV_SUBTRACT,
 		                         SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD, SDL_BLENDMODE_INVALID);
 
-	case SdlBlend::ToneAdd :
+	case BlendKind::ToneAdd :
 		return SDL_BLENDMODE_ADD;
 
-	case SdlBlend::ToneSubtract :
+	case BlendKind::ToneSubtract :
 		return composeOrFallback(SDL_BLENDFACTOR_ONE, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_REV_SUBTRACT,
 		                         SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD, SDL_BLENDMODE_INVALID);
 	}
@@ -624,7 +447,7 @@ void SDLRender::drawFilteredCopy(SdlTexture &src, const Vertices &v, int filter)
 	std::vector<uint8_t> data;
 	readTexture(src, data);
 
-	const SdlUniforms &u = uniforms();
+	const EffectUniforms &u = uniforms();
 
 	for (size_t i = 0; i < data.size(); i += 4){
 		float r = data[i+0] / 255.0f;
@@ -682,9 +505,9 @@ void SDLRender::drawBlur(SdlTexture &src, const Vertices &v){
 }
 
 void SDLRender::drawTransition(const Vertices &v){
-	const SdlUniforms &u = uniforms();
-	SdlTexture *frozen = texture(u.frozen);
-	SdlTexture *current = texture(u.current);
+	const EffectUniforms &u = uniforms();
+	SdlTexture *frozen = texture(u.aux[2]);
+	SdlTexture *current = texture(u.aux[1]);
 
 	if (frozen){
 		Vertices copy = v;
@@ -780,8 +603,8 @@ static void transformPoint(const float m[16], float x, float y, float &ox, float
 }
 
 void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCount){
-	const SdlGeometry &g = *geometries[geom.id-1];
-	const SdlUniforms &u = uniforms();
+	const SdlGeometry &g = *geometries.get(geom.id);
+	const EffectUniforms &u = uniforms();
 	const int effect = currentSlot;
 
 	size_t stride = 0;
@@ -962,7 +785,7 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 	}
 
 	if (untextured){
-		const bool tone = activeBlend == SdlBlend::ToneAdd || activeBlend == SdlBlend::ToneSubtract;
+		const bool tone = activeBlend == BlendKind::ToneAdd || activeBlend == BlendKind::ToneSubtract;
 		if (tone){
 			for (size_t i = 0; i < v.list.size(); ++i)
 				v.list[i].color.a = 1.0f;
@@ -983,124 +806,6 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 	}
 
 	submit(bound, v, blendMode(effect == SHADER_blt), false);
-}
-
-void SDLRender::useEffect(ShaderType effect){
-	currentSlot = effect;
-}
-
-void SDLRender::useBlurPass(int pass){
-	currentSlot = SHADER_blur;
-	blurPass = pass;
-}
-
-void SDLRender::applyViewportProj(){
-}
-
-void SDLRender::applyPerspectiveProj(){
-}
-
-void SDLRender::setTexSize(const Vec2i &size){
-	uniforms().texSize = size;
-}
-
-void SDLRender::setTranslation(const Vec2i &value){
-	uniforms().translation = value;
-}
-
-void SDLRender::setTime(float){
-}
-
-void SDLRender::setEffectTexture(EffectTexture slot, TexHandle tex){
-	SdlUniforms &u = uniforms();
-
-	if (slot == EffectTexture::Current)
-		u.current = tex.id;
-	else if (slot == EffectTexture::Frozen)
-		u.frozen = tex.id;
-}
-
-void SDLRender::setSpriteMat(const float value[16]){
-	memcpy(uniforms().spriteMat, value, sizeof(float) * 16);
-}
-
-void SDLRender::setMatrix(const float value[16]){
-	memcpy(uniforms().matrix, value, sizeof(float) * 16);
-}
-
-void SDLRender::setTone(const Vec4 &){
-}
-
-void SDLRender::setColor(const Vec4 &value){
-	uniforms().color = value;
-}
-
-void SDLRender::setFlash(const Vec4 &){
-}
-
-void SDLRender::setModulate(const Vec4 &value){
-	uniforms().modulate = value;
-}
-
-void SDLRender::setOpacity(float value){
-	uniforms().opacity = value;
-}
-
-void SDLRender::setBushDepth(float){
-}
-
-void SDLRender::setBushOpacity(float){
-}
-
-void SDLRender::setGray(float value){
-	uniforms().gray = value;
-}
-
-void SDLRender::setHueAdjust(float value){
-	uniforms().hueAdjust = value;
-}
-
-void SDLRender::setAniIndex(int value){
-	uniforms().aniIndex = value;
-}
-
-void SDLRender::setOffset(const Vec2i &){
-}
-
-void SDLRender::setSubRect(const FloatRect &){
-}
-
-void SDLRender::setProg(float value){
-	uniforms().prog = value;
-}
-
-void SDLRender::setVague(float){
-}
-
-void SDLRender::setWallMapResolution(int, int){
-}
-
-void SDLRender::setCameraPosition(int x, int y){
-	cameraPos = Vec2i(x, y);
-}
-
-void SDLRender::setTileMapOffset(int, int){
-}
-
-void SDLRender::setLightSources(const std::vector<LightSource> &sources){
-	lights.clear();
-
-	for (size_t i = 0; i < sources.size() && lights.size() < 64; ++i){
-		LightSource source = sources[i];
-		if (!source.hasEffect())
-			continue;
-
-		lights.push_back(source);
-	}
-}
-
-void SDLRender::setAmbient(float value){
-	ambient = value;
 }
 
 void SDLRender::beginBlit(const RenderTarget &rt){

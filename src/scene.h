@@ -90,20 +90,21 @@ public:
 	virtual void aboutToAccess() const = 0;
 
 protected:
-	/* A bit about OpenGL state:
+	/* A bit about render state:
 	 *
 	 *   If we're not inside the draw cycle (ie. the 'draw()'
-	 * handle), you're SDL_free to change any GL state through
-	 * gl-util, except for those in GLState which you should
+	 * handle), you're SDL_free to change any state through
+	 * IRender, except for the pushed/popped properties (viewport,
+	 * blending, scissor, clear color) which you should
 	 * push/pop as needed.
 	 *
 	 *   If we're _drawing_, you should probably not touch most
-	 * things in GLState. For scissored rendering, use push with
-	 * setIntersect(), and then pop afterwards.
+	 * of those properties. For scissored rendering, use
+	 * intersectScissorBox(), and then pop afterwards.
 	 * Blendmode you can push/pop as you like. Do NOT touch viewport.
-	 * Texture/Shader bindings you're SDL_free to modify without
+	 * Texture and effect bindings you're SDL_free to modify without
 	 * cleanup (and therefore you should expect dirty state).
-	 * Do NOT touch the FBO::Draw binding. If you have to do work
+	 * Do NOT touch the bound render target. If you have to do work
 	 * immediately before drawing that touches this (such as flushing
 	 * Bitmaps), use the 'prepareDraw' signal in SharedState that
 	 * will fire immediately before each frame draw.

@@ -1,5 +1,5 @@
 #pragma once
-#include "render/irender.h"
+#include "render/statefulrender.h"
 #include <SDL3/SDL_gpu.h>
 #include <map>
 #include <memory>
@@ -65,32 +65,6 @@ struct GpuGeometry{
 	std::vector<GpuVertex> vertices;
 };
 
-struct GpuUniforms{
-	float proj[16];
-	float spriteMat[16];
-	float matrix[16];
-	Vec2i texSize;
-	Vec2i translation;
-	Vec2i offset;
-	Vec4 tone;
-	Vec4 color;
-	Vec4 flash;
-	Vec4 modulate;
-	Vec4 subRect;
-	float time;
-	float opacity;
-	float bushDepth;
-	float bushOpacity;
-	float gray;
-	float hueAdjust;
-	float aniIndex;
-	float prog;
-	float vague;
-	uint32_t aux[4];
-
-	GpuUniforms();
-};
-
 enum class GpuBlend{
 	None,
 	Normal,
@@ -128,18 +102,7 @@ struct GpuCommand{
 	SDL_Rect rect;
 };
 
-template<typename T>
-struct GpuProperty{
-	T current;
-	std::vector<T> stack;
-
-	void push() { stack.push_back(current); }
-	void pop() { if (!stack.empty()) { current = stack.back(); stack.pop_back(); } }
-	void set(const T &value) { current = value; }
-	void pushSet(const T &value) { push(); set(value); }
-};
-
-class GPURender : public IRender{
+class GPURender : public StatefulRender{
 public:
 	GPURender(const Config &conf, SDL_GPUDevice *device, SDL_Window *window);
 	~GPURender();
@@ -150,8 +113,6 @@ public:
 	TexHandle createTexture(int w, int h, PixelFormat fmt);
 	void resizeTexture(TexHandle tex, int w, int h, PixelFormat fmt);
 	void destroyTexture(TexHandle tex);
-	void bindTexture(TexHandle tex);
-	void unbindTexture();
 	void setTextureSmooth(TexHandle tex, bool smooth);
 	void setTextureRepeat(TexHandle tex, bool repeat);
 	void uploadTexture(TexHandle tex, int w, int h, const void *pixels, PixelFormat fmt);
@@ -166,31 +127,11 @@ public:
 	void clear();
 	void readPixels(const RenderTarget &target, int w, int h, void *out);
 
-	void setViewport(const IntRect &rect);
-	void pushViewport(const IntRect &rect);
-	void popViewport();
-	void refreshViewport();
 
-	void pushBlend(bool enabled);
-	void popBlend();
 
-	void pushBlendMode(BlendType mode);
-	void popBlendMode();
-	void setBlendOverride(BlendOverride mode);
-	void refreshBlendMode();
 
-	void pushScissorTest(bool enabled);
-	void popScissorTest();
 
-	void pushScissorBox(const IntRect &rect);
-	void saveScissorBox();
-	void intersectScissorBox(const IntRect &rect);
-	void popScissorBox();
-	void setScissorBox(const IntRect &rect);
-	const IntRect &scissorBox();
 
-	void pushClearColor(const Vec4 &color);
-	void popClearColor();
 
 	GeometryHandle createGeometry(VertexLayout layout);
 	void destroyGeometry(GeometryHandle geom);
@@ -200,35 +141,6 @@ public:
 	void ensureQuadIndices(size_t quadCount);
 	void drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCount);
 
-	void useEffect(ShaderType effect);
-	void useBlurPass(int pass);
-	void applyViewportProj();
-	void applyPerspectiveProj();
-	void setTexSize(const Vec2i &size);
-	void setTranslation(const Vec2i &value);
-	void setTime(float value);
-	void setEffectTexture(EffectTexture slot, TexHandle tex);
-	void setSpriteMat(const float value[16]);
-	void setMatrix(const float value[16]);
-	void setTone(const Vec4 &value);
-	void setColor(const Vec4 &value);
-	void setFlash(const Vec4 &value);
-	void setModulate(const Vec4 &value);
-	void setOpacity(float value);
-	void setBushDepth(float value);
-	void setBushOpacity(float value);
-	void setGray(float value);
-	void setHueAdjust(float value);
-	void setAniIndex(int value);
-	void setOffset(const Vec2i &value);
-	void setSubRect(const FloatRect &value);
-	void setProg(float value);
-	void setVague(float value);
-	void setWallMapResolution(int x, int y);
-	void setCameraPosition(int x, int y);
-	void setTileMapOffset(int x, int y);
-	void setLightSources(const std::vector<LightSource> &sources);
-	void setAmbient(float value);
 
 	void beginBlit(const RenderTarget &target);
 	void beginBlitScreen(const Vec2i &size);
@@ -242,6 +154,9 @@ public:
 	void resumeContext(SDL_Window *window);
 
 private:
+	struct FlushState;
+	struct ResolvedTarget;
+
 	struct PipelineKey{
 		int pipeline;
 		int blend;
@@ -251,12 +166,11 @@ private:
 	};
 
 	GpuTexture *texture(uint32_t id);
-	GpuUniforms &uniforms();
 	void createGpuTexture(GpuTexture &tex, int w, int h);
 	void recordUpload(uint32_t id, int x, int y, int w, int h, std::vector<uint8_t> &data);
 	void recordClear(uint32_t id, const Vec4 &color);
 	GpuBlend currentBlend() const;
-	void fillCommandState(GpuCommand &cmd, const GpuUniforms &u, int effect);
+	void fillCommandState(GpuCommand &cmd, const EffectUniforms &u, int effect);
 	void recordQuad(const GpuVertex verts[4], int effect, GpuBlend blend, const SDL_Rect &viewport, bool scissor, const SDL_Rect &scissorRect, uint32_t target);
 	void flush();
 	void ensureVertexCapacity(size_t bytes);
@@ -264,7 +178,15 @@ private:
 	SDL_GPUGraphicsPipeline *pipelineFor(int pipeline, GpuBlend blend, SDL_GPUTextureFormat format);
 	SDL_GPUSampler *samplerFor(int flags);
 	void releasePending();
-	int screenHeight();
+	Vec2i windowSize();
+	Vec2i targetSize();
+	SDL_GPUTransferBuffer *createUploadBuffer(const void *data, size_t size);
+	void uploadVertexStream(SDL_GPUCommandBuffer *cmd);
+	void endPass(FlushState &s);
+	void beginPass(FlushState &s, const ResolvedTarget &r, uint32_t id, SDL_GPULoadOp loadOp, const float *color);
+	bool resolveTarget(FlushState &s, uint32_t id, ResolvedTarget &out);
+	void executeUpload(FlushState &s, const GpuCommand &c);
+	void executeDraw(FlushState &s, const GpuCommand &c, const ResolvedTarget &r);
 
 	SDL_GPUDevice *device;
 	SDL_Window *window;
@@ -275,34 +197,13 @@ private:
 	SDL_GPUSampler *samplers[4];
 	SDL_GPUTexture *dummy;
 
-	std::vector<std::unique_ptr<GpuTexture>> textures;
-	std::vector<uint32_t> freeTextures;
+	HandlePool<GpuTexture> textures;
 	std::vector<uint32_t> quarantine;
-	std::vector<SDL_GPUTexture*> pendingRelease;
-	std::vector<std::unique_ptr<GpuGeometry>> geometries;
-	std::vector<uint32_t> freeGeometries;
+	HandlePool<GpuGeometry> geometries;
 
 	GpuTexture *target;
 	uint32_t targetId;
-	uint32_t boundTexture;
 	int maxTexSize;
-
-	GpuProperty<IntRect> viewport;
-	GpuProperty<bool> blend;
-	GpuProperty<BlendType> blendModeProp;
-	GpuProperty<bool> scissorTest;
-	GpuProperty<IntRect> scissorBoxProp;
-	GpuProperty<Vec4> clearColor;
-	GpuBlend activeBlend;
-	bool blendOverridden;
-
-	std::vector<GpuUniforms> uniformSets;
-	int currentSlot;
-	int blurPass;
-
-	std::vector<LightSource> lights;
-	Vec2i cameraPos;
-	float ambient;
 
 	std::vector<GpuCommand> commands;
 	std::vector<GpuVertex> vertexStream;

@@ -67,7 +67,7 @@ static IntRect normalizedRect(const IntRect &rect){
 struct BitmapPrivate{
 	Bitmap *self;
 	IRender &render;
-	RenderTarget gl;
+	RenderTarget target;
 	Font *font;
 
 	/* "Mega surfaces" are a hack to allow Tilesets to be used
@@ -101,7 +101,7 @@ struct BitmapPrivate{
 	}
 
 	void allocSurface(){
-		surface = SDL_CreateSurface(gl.width, gl.height, format->format);
+		surface = SDL_CreateSurface(target.width, target.height, format->format);
 	}
 
 	void clearTaintedArea(){
@@ -136,14 +136,14 @@ struct BitmapPrivate{
 	}
 
 	void bindTexture(){
-		render.bindTexture(gl.tex);
-		render.setTexSize(Vec2i(gl.width, gl.height));
+		render.bindTexture(target.tex);
+		render.setTexSize(Vec2i(target.width, target.height));
 	}
 
-	void bindFBO(){ render.bindRenderTarget(gl); }
+	void bindTarget(){ render.bindRenderTarget(target); }
 
 	void pushSetViewport() const{
-		render.pushViewport(IntRect(0, 0, gl.width, gl.height));
+		render.pushViewport(IntRect(0, 0, target.width, target.height));
 		render.applyViewportProj();
 	}
 
@@ -158,7 +158,7 @@ struct BitmapPrivate{
 	}
 
 	void fillRect(const IntRect &rect, const Vec4 &color) {
-		bindFBO();
+		bindTarget();
 
 		render.pushScissorTest(true);
 		render.pushScissorBox(normalizedRect(rect));
@@ -226,9 +226,9 @@ Bitmap::Bitmap(const char *filename){
 		}
 
 		p = new BitmapPrivate(this);
-		p->gl = tex;
+		p->target = tex;
 
-		p->render.uploadTexture(p->gl.tex, p->gl.width, p->gl.height, imgSurf->pixels);
+		p->render.uploadTexture(p->target.tex, p->target.width, p->target.height, imgSurf->pixels);
 
 		SDL_DestroySurface(imgSurf);
 	}
@@ -254,8 +254,8 @@ Bitmap::Bitmap(SDL_IOStream *src){
 		}
 
 		p = new BitmapPrivate(this);
-		p->gl = tex;
-		p->render.uploadTexture(p->gl.tex, p->gl.width, p->gl.height, imgSurf->pixels);
+		p->target = tex;
+		p->render.uploadTexture(p->target.tex, p->target.width, p->target.height, imgSurf->pixels);
 		SDL_DestroySurface(imgSurf);
 	}
 	p->addTaintedArea(rect());
@@ -267,14 +267,14 @@ Bitmap::Bitmap(int width, int height){
 
 	RenderTarget tex = shState->texPool().request(width, height);
 	p = new BitmapPrivate(this);
-	p->gl = tex;
+	p->target = tex;
 	clear();
 }
 
 Bitmap::Bitmap(const Bitmap &other){
 	other.ensureNonMega();
 	p = new BitmapPrivate(this);
-	p->gl = shState->texPool().request(other.width(), other.height());
+	p->target = shState->texPool().request(other.width(), other.height());
 	blt(0, 0, other, rect());
 }
 
@@ -287,7 +287,7 @@ int Bitmap::width() const{
 	if (p->megaSurface)
 		return p->megaSurface->w;
 
-	return p->gl.width;
+	return p->target.width;
 }
 
 int Bitmap::height() const{
@@ -296,7 +296,7 @@ int Bitmap::height() const{
 	if (p->megaSurface)
 		return p->megaSurface->h;
 
-	return p->gl.height;
+	return p->target.height;
 }
 
 IntRect Bitmap::rect() const{
@@ -348,7 +348,7 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 		p->render.setTexSize(gpTexSize);
 
 		p->pushSetViewport();
-		p->bindFBO();
+		p->bindTarget();
 
 		Quad &quad = shState->gpQuad();
 		quad.setTexRect(FloatRect(0, 0, sourceRect.w, sourceRect.h));
@@ -381,12 +381,12 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 
 		if (bltRect.w == dstRect.w && bltRect.h == dstRect.h){
 			// Dest rectangle lies within bounding box
-			p->render.uploadTextureRect(p->gl.tex, destRect.x, destRect.y,
+			p->render.uploadTextureRect(p->target.tex, destRect.x, destRect.y,
 			                            destRect.w, destRect.h,
 			                            blitTemp->pixels);
 		}else{
 			// Clipped blit
-			p->render.uploadTextureRect(p->gl.tex, bltRect.x, bltRect.y, bltRect.w, bltRect.h,
+			p->render.uploadTextureRect(p->target.tex, bltRect.x, bltRect.y, bltRect.w, bltRect.h,
 			                            blitTemp, bltRect.x - dstRect.x, bltRect.y - dstRect.y);
 		}
 
@@ -397,8 +397,8 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 
 	if (opacity == 255 && !p->touchesTaintedArea(destRect)){
 		// Fast blit
-		p->render.beginBlit(p->gl);
-		p->render.blitSource(source.p->gl);
+		p->render.beginBlit(p->target);
+		p->render.blitSource(source.p->target);
 		p->render.blitRect(sourceRect, destRect);
 		p->render.endBlit();
 	}else{
@@ -408,7 +408,7 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 		RenderTarget &gpTex = shState->gpTexFBO(destRect.w, destRect.h);
 
 		p->render.beginBlit(gpTex);
-		p->render.blitSource(p->gl);
+		p->render.blitSource(p->target);
 		p->render.blitRect(destRect, Vec2i());
 		p->render.endBlit();
 
@@ -427,7 +427,7 @@ void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const Int
 		quad.setColor(Vec4(1, 1, 1, normOpacity));
 
 		source.p->bindTexture();
-		p->bindFBO();
+		p->bindTarget();
 		p->pushSetViewport();
 		p->blitQuad(quad);
 		p->popViewport();
@@ -481,7 +481,7 @@ void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec
 	}
 
 	quad.setPosRect(rect);
-	p->bindFBO();
+	p->bindTarget();
 	p->pushSetViewport();
 	p->blitQuad(quad);
 	p->popViewport();
@@ -509,7 +509,7 @@ void Bitmap::gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec
 
 	quad.setPosRect(rect);
 
-	p->bindFBO();
+	p->bindTarget();
 	p->pushSetViewport();
 	p->blitQuad(quad);
 	p->popViewport();
@@ -542,7 +542,7 @@ void Bitmap::blur(){
 	p->render.pushBlend(false);
 	p->render.pushViewport(IntRect(0, 0, width(), height()));
 
-	p->render.bindTexture(p->gl.tex);
+	p->render.bindTexture(p->target.tex);
 	p->render.bindRenderTarget(auxTex);
 
 	p->render.useBlurPass(0);
@@ -552,7 +552,7 @@ void Bitmap::blur(){
 	quad.draw();
 
 	p->render.bindTexture(auxTex.tex);
-	p->bindFBO();
+	p->bindTarget();
 
 	p->render.useBlurPass(1);
 	p->render.setTexSize(Vec2i(width(), height()));
@@ -636,7 +636,7 @@ void Bitmap::radialBlur(int angle, int divisions){
 	p->render.useEffect(SHADER_simpleMatrix);
 
 	p->bindTexture();
-	p->render.setTextureSmooth(p->gl.tex, true);
+	p->render.setTextureSmooth(p->target.tex, true);
 
 	p->pushSetViewport();
 
@@ -648,13 +648,13 @@ void Bitmap::radialBlur(int angle, int divisions){
 
 	p->popViewport();
 
-	p->render.setTextureSmooth(p->gl.tex, false);
+	p->render.setTextureSmooth(p->target.tex, false);
 
 	p->render.popBlendMode();
 	p->render.popClearColor();
 
-	shState->texPool().release(p->gl);
-	p->gl = newTex;
+	shState->texPool().release(p->target);
+	p->target = newTex;
 
 	p->onModified();
 }
@@ -662,7 +662,7 @@ void Bitmap::radialBlur(int angle, int divisions){
 void Bitmap::clear(){
 	guardDisposed();
 	GUARD_MEGA;
-	p->bindFBO();
+	p->bindTarget();
 	p->render.pushClearColor(Vec4());
 	p->render.clear();
 	p->render.popClearColor();
@@ -684,7 +684,7 @@ Color Bitmap::getPixel(int x, int y) const{
 
 	if (!p->surface){
 		p->allocSurface();
-		p->render.readPixels(p->gl, width(), height(), p->surface->pixels);
+		p->render.readPixels(p->target, width(), height(), p->surface->pixels);
 	}
 
 	uint32_t pixel = getPixelAt(p->surface, p->format, x, y);
@@ -711,7 +711,7 @@ void Bitmap::setPixel(int x, int y, const Color &color){
 		(uint8_t) clamp<double>(color.alpha, 0, 255)
 	};
 
-	p->render.uploadTextureRect(p->gl.tex, x, y, 1, 1, &pixel);
+	p->render.uploadTextureRect(p->target.tex, x, y, 1, 1, &pixel);
 
 	p->addTaintedArea(IntRect(x, y, 1, 1));
 
@@ -749,8 +749,8 @@ void Bitmap::hueChange(int hue){
 	p->blitQuad(quad);
 	p->popViewport();
 	p->render.unbindTexture();
-	shState->texPool().release(p->gl);
-	p->gl = newTex;
+	shState->texPool().release(p->target);
+	p->target = newTex;
 	p->onModified();
 }
 
@@ -981,16 +981,16 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 				}
 
 				if (!subImage){
-					p->render.uploadTextureRect(p->gl.tex, posRect.x, posRect.y, posRect.w, posRect.h, txtSurf->pixels);
+					p->render.uploadTextureRect(p->target.tex, posRect.x, posRect.y, posRect.w, posRect.h, txtSurf->pixels);
 				}else{
-					p->render.uploadTextureRect(p->gl.tex, posRect.x, posRect.y, posRect.w, posRect.h, txtSurf, subSrcX, subSrcY);
+					p->render.uploadTextureRect(p->target.tex, posRect.x, posRect.y, posRect.w, posRect.h, txtSurf, subSrcX, subSrcY);
 				}
 			}
 		}else{
 			/* Squeezing involved: need to use intermediary TexFBO */
 			RenderTarget &gpTF = shState->gpTexFBO(txtSurf->w, txtSurf->h);
 			p->render.uploadTextureRect(gpTF.tex, 0, 0, txtSurf->w, txtSurf->h, txtSurf->pixels);
-			p->render.beginBlit(p->gl);
+			p->render.beginBlit(p->target);
 			p->render.blitSource(gpTF);
 			p->render.blitRect(IntRect(0, 0, txtSurf->w, txtSurf->h), posRect, true);
 			p->render.endBlit();
@@ -1000,7 +1000,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 		 * buffer we're about to render to */
 		RenderTarget &gpTex2 = shState->gpTexFBO(posRect.w, posRect.h);
 		p->render.beginBlit(gpTex2);
-		p->render.blitSource(p->gl);
+		p->render.blitSource(p->target);
 		p->render.blitRect(posRect, Vec2i());
 		p->render.endBlit();
 
@@ -1020,7 +1020,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 		quad.setTexRect(FloatRect(0, 0, txtSurf->w, txtSurf->h));
 		quad.setPosRect(posRect);
 
-		p->bindFBO();
+		p->bindTarget();
 		p->pushSetViewport();
 		p->blitQuad(quad);
 		p->popViewport();
@@ -1100,7 +1100,7 @@ void Bitmap::setInitFont(Font *value) {
 }
 
 RenderTarget &Bitmap::getRenderTarget() {
-	return p->gl;
+	return p->target;
 }
 
 SDL_Surface *Bitmap::megaSurface() const {
@@ -1126,6 +1126,6 @@ void Bitmap::releaseResources(){
 	if (p->megaSurface)
 		SDL_DestroySurface(p->megaSurface);
 	else
-		shState->texPool().release(p->gl);
+		shState->texPool().release(p->target);
 	delete p;
 }

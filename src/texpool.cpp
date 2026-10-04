@@ -48,10 +48,10 @@ struct CacheNode{
 typedef std::list<CacheNode> CNodeList;
 
 struct TexPoolPrivate{
-	/* Contains all cached TexFBOs, grouped by size */
+	/* Contains all cached render targets, grouped by size */
 	tsl::robin_map<Size, CNodeList, PairHash> poolHash;
 
-	/* Contains all cached TexFBOs, sorted by release time */
+	/* Contains all cached render targets, sorted by release time */
 	std::list<RenderTarget> priorityQueue;
 
 	/* Maximal allowed cache memory */
@@ -60,7 +60,7 @@ struct TexPoolPrivate{
 	/* Current amound of memory consumed by the cache */
 	uint32_t memSize;
 
-	/* Current amount of TexFBOs cached */
+	/* Current amount of render targets cached */
 	uint16_t objCount;
 
 	/* Has this pool been disabled? */
