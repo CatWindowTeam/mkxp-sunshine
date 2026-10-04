@@ -9,59 +9,9 @@
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_properties.h>
 #include <algorithm>
-#include <math.h>
 #include <string.h>
 
 static SDL_Renderer *createdRenderer = 0;
-
-static inline float clamp01(float v){
-	return std::min(std::max(v, 0.0f), 1.0f);
-}
-
-static inline float mixf(float a, float b, float t){
-	return a * (1.0f - t) + b * t;
-}
-
-static inline float fractf(float v){
-	return v - floorf(v);
-}
-
-static void rgb2hsv(float r, float g, float b, float &h, float &s, float &v){
-	float p0, p1, p2, p3;
-	if (g >= b){
-		p0 = g; p1 = b; p2 = 0.0f; p3 = -1.0f / 3.0f;
-	}else{
-		p0 = b; p1 = g; p2 = -1.0f; p3 = 2.0f / 3.0f;
-	}
-
-	float q0, q1, q2, q3;
-	if (r >= p0){
-		q0 = r; q1 = p1; q2 = p2; q3 = p0;
-	}else{
-		q0 = p0; q1 = p1; q2 = p3; q3 = r;
-	}
-
-	const float eps = 1.0e-10f;
-	float d = q0 - std::min(q3, q1);
-
-	h = fabsf(q2 + (q3 - q1) / (6.0f * d + eps));
-	s = d / (q0 + eps);
-	v = q0;
-}
-
-static void hsv2rgb(float h, float s, float v, float &r, float &g, float &b){
-	const float k[3] = { 1.0f, 2.0f / 3.0f, 1.0f / 3.0f };
-	float out[3];
-
-	for (int i = 0; i < 3; ++i){
-		float p = fabsf(fractf(h + k[i]) * 6.0f - 3.0f);
-		out[i] = v * mixf(1.0f, clamp01(p - 1.0f), s);
-	}
-
-	r = out[0];
-	g = out[1];
-	b = out[2];
-}
 
 static SDL_FColor fcolor(float r, float g, float b, float a){
 	SDL_FColor c = { r, g, b, a };
@@ -71,7 +21,6 @@ static SDL_FColor fcolor(float r, float g, float b, float a){
 SDLRender::SDLRender(const Config &conf, SDL_Renderer *renderer)
     : StatefulRender(conf),
       renderer(renderer),
-      probe(SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, 1, 1)),
       target(0),
       maxTexSize(0)
 {
@@ -91,12 +40,6 @@ SDLRender::SDLRender(const Config &conf, SDL_Renderer *renderer)
 
 SDLRender::~SDLRender(){
 	setActiveRender(0);
-
-	if (probe)
-		SDL_DestroyTexture(probe);
-
-	if (lightMap.texture)
-		SDL_DestroyTexture(lightMap.texture);
 
 	for (size_t i = 0; i < textures.size(); ++i)
 		if (textures.at(i) && textures.at(i)->texture)
@@ -367,49 +310,25 @@ void SDLRender::uploadGeometryRange(GeometryHandle geom, size_t offset, size_t b
 void SDLRender::ensureQuadIndices(size_t){
 }
 
-SDL_BlendMode SDLRender::composeOrFallback(SDL_BlendFactor srcColor, SDL_BlendFactor dstColor, SDL_BlendOperation colorOp,
-                                           SDL_BlendFactor srcAlpha, SDL_BlendFactor dstAlpha, SDL_BlendOperation alphaOp,
-                                           SDL_BlendMode fallback){
-	SDL_BlendMode mode = SDL_ComposeCustomBlendMode(srcColor, dstColor, colorOp, srcAlpha, dstAlpha, alphaOp);
-
-	std::map<SDL_BlendMode, bool>::iterator found = customSupport.find(mode);
-	if (found == customSupport.end())
-		found = customSupport.insert(std::make_pair(mode, probe && SDL_SetTextureBlendMode(probe, mode))).first;
-
-	return found->second ? mode : fallback;
-}
-
 SDL_BlendMode SDLRender::blendMode(bool forceBlend){
 	if (!blend.current && !forceBlend)
 		return SDL_BLENDMODE_NONE;
 
 	switch (activeBlend){
-	case BlendKind::Normal :
-		return SDL_BLENDMODE_BLEND;
-
 	case BlendKind::Addition :
+	case BlendKind::ToneAdd :
 		return SDL_BLENDMODE_ADD;
 
 	case BlendKind::Multiply :
 		return SDL_BLENDMODE_MUL;
 
-	case BlendKind::KeepDestAlpha :
-		return composeOrFallback(SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDFACTOR_ONE_MINUS_SRC_ALPHA, SDL_BLENDOPERATION_ADD,
-		                         SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD, SDL_BLENDMODE_BLEND);
-
 	case BlendKind::Substraction :
-		return composeOrFallback(SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_REV_SUBTRACT,
-		                         SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD, SDL_BLENDMODE_INVALID);
-
-	case BlendKind::ToneAdd :
-		return SDL_BLENDMODE_ADD;
-
 	case BlendKind::ToneSubtract :
-		return composeOrFallback(SDL_BLENDFACTOR_ONE, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_REV_SUBTRACT,
-		                         SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD, SDL_BLENDMODE_INVALID);
-	}
+		return SDL_BLENDMODE_INVALID;
 
-	return SDL_BLENDMODE_BLEND;
+	default :
+		return SDL_BLENDMODE_BLEND;
+	}
 }
 
 void SDLRender::submit(SdlTexture *tex, const Vertices &v, SDL_BlendMode mode, bool smooth){
@@ -450,67 +369,6 @@ void SDLRender::drawTextureQuad(SdlTexture *tex, const SDL_Vertex corners[4], SD
 	submit(tex, v, mode, smooth);
 }
 
-void SDLRender::drawFilteredCopy(SdlTexture &src, const Vertices &v, int filter){
-	std::vector<uint8_t> data;
-	readTexture(src, data);
-
-	const EffectUniforms &u = uniforms();
-
-	for (size_t i = 0; i < data.size(); i += 4){
-		float r = data[i+0] / 255.0f;
-		float g = data[i+1] / 255.0f;
-		float b = data[i+2] / 255.0f;
-
-		if (filter == SHADER_hue){
-			float h, s, val;
-			rgb2hsv(r, g, b, h, s, val);
-			h += u.hueAdjust;
-			hsv2rgb(h, s, val, r, g, b);
-		}else{
-			float l = r * .299f + g * .587f + b * .114f;
-			r = mixf(r, l, u.gray);
-			g = mixf(g, l, u.gray);
-			b = mixf(b, l, u.gray);
-		}
-
-		data[i+0] = (uint8_t) (clamp01(r) * 255.0f + 0.5f);
-		data[i+1] = (uint8_t) (clamp01(g) * 255.0f + 0.5f);
-		data[i+2] = (uint8_t) (clamp01(b) * 255.0f + 0.5f);
-	}
-
-	SdlTexture scratch;
-	createSdlTexture(scratch, src.width, src.height);
-	if (!scratch.texture)
-		return;
-
-	SDL_Rect rect = { 0, 0, src.width, src.height };
-	SDL_UpdateTexture(scratch.texture, &rect, data.data(), src.width * 4);
-	scratch.smooth = src.smooth;
-
-	submit(&scratch, v, blendMode(false), false);
-	SDL_FlushRenderer(renderer);
-	SDL_DestroyTexture(scratch.texture);
-}
-
-void SDLRender::drawBlur(SdlTexture &src, const Vertices &v){
-	const float dx = blurPass == 0 ? 1.0f / src.width : 0.0f;
-	const float dy = blurPass == 0 ? 0.0f : 1.0f / src.height;
-	const float weights[3] = { 1.0f, 0.5f, 1.0f / 3.0f };
-	const float offsets[3] = { 0.0f, -1.0f, 1.0f };
-
-	for (int pass = 0; pass < 3; ++pass){
-		Vertices copy = v;
-
-		for (size_t i = 0; i < copy.list.size(); ++i){
-			copy.list[i].tex_coord.x += dx * offsets[pass];
-			copy.list[i].tex_coord.y += dy * offsets[pass];
-			copy.list[i].color = fcolor(1, 1, 1, weights[pass]);
-		}
-
-		submit(&src, copy, pass == 0 ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND, false);
-	}
-}
-
 void SDLRender::drawTransition(const Vertices &v){
 	const EffectUniforms &u = uniforms();
 	SdlTexture *frozen = texture(u.aux[2]);
@@ -526,82 +384,9 @@ void SDLRender::drawTransition(const Vertices &v){
 	if (current){
 		Vertices copy = v;
 		for (size_t i = 0; i < copy.list.size(); ++i)
-			copy.list[i].color = fcolor(1, 1, 1, clamp01(u.prog));
+			copy.list[i].color = fcolor(1, 1, 1, std::min(std::max(u.prog, 0.0f), 1.0f));
 		submit(current, copy, SDL_BLENDMODE_BLEND, false);
 	}
-}
-
-void SDLRender::drawLightMap(const Vertices &v, const SdlTexture &bound){
-	const int w = bound.width;
-	const int h = bound.height;
-
-	if (w <= 0 || h <= 0)
-		return;
-
-	if (!lightMap.texture || lightMap.width != w || lightMap.height != h){
-		if (lightMap.texture)
-			SDL_DestroyTexture(lightMap.texture);
-
-		createSdlTexture(lightMap, w, h);
-		if (!lightMap.texture)
-			return;
-	}
-
-	const float amb = ambient / 255.0f;
-	std::vector<float> light((size_t) w * h * 3, amb);
-
-	for (size_t i = 0; i < lights.size(); ++i){
-		const LightSource &src = lights[i];
-		const float cx = (src.x - cameraPos.x / 32.0f) * 32.0f + 16.0f;
-		const float cy = (src.y - cameraPos.y / 32.0f) * 32.0f + 16.0f;
-		const float reach = 32.0f * src.radius;
-		const float exponent = (float) (src.color.alpha / 255.0) * 2.0f;
-		const float strength = src.power / 255.0f;
-		const float cr = (float) (src.color.red / 255.0) * strength;
-		const float cg = (float) (src.color.green / 255.0) * strength;
-		const float cb = (float) (src.color.blue / 255.0) * strength;
-
-		const int x0 = std::max(0, (int) floorf(cx - reach));
-		const int x1 = std::min(w - 1, (int) ceilf(cx + reach));
-		const int y0 = std::max(0, (int) floorf(cy - reach));
-		const int y1 = std::min(h - 1, (int) ceilf(cy + reach));
-
-		for (int y = y0; y <= y1; ++y){
-			const float dy = y + 0.5f - cy;
-
-			for (int x = x0; x <= x1; ++x){
-				const float dx = x + 0.5f - cx;
-				const float t = 1.0f - sqrtf(dx * dx + dy * dy) / reach;
-
-				if (t <= 0.0f)
-					continue;
-
-				const float f = exponent == 2.0f ? t * t : powf(t, exponent);
-				float *px = &light[((size_t) y * w + x) * 3];
-				px[0] += cr * f;
-				px[1] += cg * f;
-				px[2] += cb * f;
-			}
-		}
-	}
-
-	std::vector<uint8_t> bytes((size_t) w * h * 4);
-
-	for (size_t i = 0; i < (size_t) w * h; ++i){
-		bytes[i*4+0] = (uint8_t) (clamp01(light[i*3+0]) * 255.0f + 0.5f);
-		bytes[i*4+1] = (uint8_t) (clamp01(light[i*3+1]) * 255.0f + 0.5f);
-		bytes[i*4+2] = (uint8_t) (clamp01(light[i*3+2]) * 255.0f + 0.5f);
-		bytes[i*4+3] = 255;
-	}
-
-	SDL_Rect rect = { 0, 0, w, h };
-	SDL_UpdateTexture(lightMap.texture, &rect, bytes.data(), w * 4);
-
-	Vertices copy = v;
-	for (size_t i = 0; i < copy.list.size(); ++i)
-		copy.list[i].color = fcolor(1, 1, 1, 1);
-
-	submit(&lightMap, copy, blendMode(false), false);
 }
 
 static void transformPoint(const float m[16], float x, float y, float &ox, float &oy){
@@ -613,6 +398,9 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 	const SdlGeometry &g = *geometries.get(geom.id);
 	const EffectUniforms &u = uniforms();
 	const int effect = currentSlot;
+
+	if (effect == SHADER_dynamicLight)
+		return;
 
 	size_t stride = 0;
 	switch (g.layout){
@@ -786,11 +574,6 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 		return;
 	}
 
-	if (effect == SHADER_dynamicLight){
-		drawLightMap(v, *bound);
-		return;
-	}
-
 	if (untextured){
 		const bool tone = activeBlend == BlendKind::ToneAdd || activeBlend == BlendKind::ToneSubtract;
 		if (tone){
@@ -799,16 +582,6 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 		}
 
 		submit(0, v, blendMode(false), false);
-		return;
-	}
-
-	if (effect == SHADER_blur){
-		drawBlur(*bound, v);
-		return;
-	}
-
-	if (effect == SHADER_hue || effect == SHADER_gray){
-		drawFilteredCopy(*bound, v, effect);
 		return;
 	}
 

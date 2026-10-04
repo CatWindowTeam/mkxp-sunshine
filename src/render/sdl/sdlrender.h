@@ -1,7 +1,6 @@
 #pragma once
 #include "render/statefulrender.h"
 #include <SDL3/SDL_render.h>
-#include <map>
 #include <memory>
 #include <vector>
 
@@ -82,21 +81,13 @@ private:
 	void createSdlTexture(SdlTexture &tex, int w, int h);
 	void applyState();
 	SDL_BlendMode blendMode(bool forceBlend);
-	SDL_BlendMode composeOrFallback(SDL_BlendFactor srcColor, SDL_BlendFactor dstColor, SDL_BlendOperation colorOp,
-	                                SDL_BlendFactor srcAlpha, SDL_BlendFactor dstAlpha, SDL_BlendOperation alphaOp,
-	                                SDL_BlendMode fallback);
 	void submit(SdlTexture *tex, const Vertices &v, SDL_BlendMode mode, bool smooth);
 	void readTexture(SdlTexture &tex, std::vector<uint8_t> &out);
-	void drawFilteredCopy(SdlTexture &src, const Vertices &v, int filter);
-	void drawBlur(SdlTexture &src, const Vertices &v);
 	void drawTransition(const Vertices &v);
-	void drawLightMap(const Vertices &v, const SdlTexture &bound);
 	void drawTextureQuad(SdlTexture *tex, const SDL_Vertex corners[4], SDL_BlendMode mode, bool smooth);
 	int screenHeight();
 
 	SDL_Renderer *renderer;
-	SDL_Texture *probe;
-	std::map<SDL_BlendMode, bool> customSupport;
 	HandlePool<SdlTexture> textures;
 	HandlePool<SdlGeometry> geometries;
 
@@ -106,5 +97,4 @@ private:
 
 
 
-	SdlTexture lightMap;
 };
