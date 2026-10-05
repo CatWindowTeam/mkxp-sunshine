@@ -1,0 +1,4 @@
+---
+Checks: 'clang-analyzer*. android*, bugprone*, darwin*, misc*, modernize*, performance*, portability*, readability*'
+ExcludeHeaderFilterRegex: '.*/CLI11\.hpp$'
+...
