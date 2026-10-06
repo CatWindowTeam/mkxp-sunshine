@@ -24,8 +24,6 @@ check_option(OPTIONS_RELEASE
 	-fdata-sections
 	-fzero-call-used-regs=skip
 	-fzero-init-padding-bits=standard
-	-fdelete-null-pointer-checks
-	-fstrict-aliasing
 	-fomit-frame-pointer
 	-fno-rtti
 	-ffp-contract=fast
