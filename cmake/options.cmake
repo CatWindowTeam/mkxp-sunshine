@@ -27,9 +27,6 @@ set(CPU_OPT_PROFILE "x86_64" CACHE STRING "CPU Optimization profile")
 
 #code analysis
 if(CODE_ANAL)
-	#wrapper
-	#set(CMAKE_C_COMPILER_LAUNCHER "${CMAKE_SOURCE_DIR}/cmake/code_anal.sh")
-	#set(CMAKE_CXX_COMPILER_LAUNCHER "${CMAKE_SOURCE_DIR}/cmake/code_anal.sh")
 	#tools
 	set(CMAKE_CXX_CLANG_TIDY clang-tidy;-checks=clang-analyzer-core-*,clang-analyzer-cplusplus-*,clang-analyzer-deadcode.*,clang-analyzer-security.*,bugprone-*,performance-*,misc-unused-parameters,misc-unused-using-decls,modernize-use-nullptr,modernize-use-override,modernize-use-emplace,modernize-make-unique,modernize-make-shared,readability-container-size-empty,readability-redundant-string-cstr,readability-simplify-boolean-expr,readability-use-anyofallof;--quiet)
 	set(CMAKE_CXX_CPPCHECK
@@ -38,14 +35,12 @@ if(CODE_ANAL)
 	    --std=c++20;
 	    --inline-suppr;
 	    --suppress=missingIncludeSystem;
-	    --max-ctu-depth=8;
 	    -q
 	)
 	set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE include-what-you-use)
 	check_option(WARNS -Wdouble-promotion
 			-Wduplicate-decl-specifier
 			-Wformat=2
-			-Wformat-security
 			-Wdisabled-optimization
 			-Wunused-macros
 			-Wunsafe-loop-optimizations
