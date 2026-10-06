@@ -1,4 +1,6 @@
-//TODO: autogen of descs
+#ifdef NDEBUG
+	#define CLI11_DISABLE_EXTRA_VALIDATORS 1
+#endif
 #include <SDL3/SDL_filesystem.h>
 #include <SDL3/SDL_messagebox.h>
 #include <SDL3/SDL_system.h>
@@ -35,7 +37,6 @@ void Config::read(int argc, char* argv[]) {
     a.add_option("--Windows.Alloc_console", Windows_AllocConsole, "Create new console window with debug output, windows only");
 	a.add_option("--width", defScreenW, "Window width");
 	a.add_option("--height", defScreenH, "Window height");
-	a.add_option("--windowTitle", windowTitle, "Window Title");
 	a.add_option("--fixedFramerate", fixedFramerate, "Enforce a static frame rate");
 	a.add_option("--frameSkip", frameSkip, "Don't draw frames when behind. Can be overriden by game scripts");
 	a.add_option("--syncToRefreshrate", syncToRefreshrate, "Use a fixed framerate that is approx. equal to the "
