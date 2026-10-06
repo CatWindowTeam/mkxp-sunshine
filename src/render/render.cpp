@@ -12,13 +12,18 @@ void setActiveRender(IRender *render){
 }
 
 std::vector<std::string> renderBackendOrder(){
-	if (conf.renderer == "gpu" || conf.renderer == "gl" || conf.renderer == "sdl")
+	if (conf.renderer == "gl")
+		conf.renderer = "gl-legacy";
+	else if (conf.renderer == "sdl")
+		conf.renderer = "simple";
+
+	if (conf.renderer == "gpu" || conf.renderer == "gl-legacy" || conf.renderer == "simple")
 		return std::vector<std::string>(1, conf.renderer);
 
 	std::vector<std::string> order;
 	order.push_back("gpu");
-	order.push_back("gl");
-	order.push_back("sdl");
+	order.push_back("gl-legacy");
+	order.push_back("simple");
 	return order;
 }
 
@@ -26,7 +31,7 @@ uint64_t renderWindowFlags(){
 	if (conf.renderer == "gpu")
 		return gpuWindowFlags();
 
-	if (conf.renderer == "sdl")
+	if (conf.renderer == "simple")
 		return sdlWindowFlags();
 
 	return glWindowFlags();
@@ -35,7 +40,7 @@ uint64_t renderWindowFlags(){
 void setupRenderWindowAttributes(){
 	if (conf.renderer == "gpu")
 		gpuSetupWindowAttributes();
-	else if (conf.renderer == "sdl")
+	else if (conf.renderer == "simple")
 		sdlSetupWindowAttributes();
 	else
 		glSetupWindowAttributes();
@@ -45,7 +50,7 @@ bool probeRenderBackend(SDL_Window *window){
 	if (conf.renderer == "gpu")
 		return gpuProbe(window);
 
-	if (conf.renderer == "sdl")
+	if (conf.renderer == "simple")
 		return sdlProbe(window);
 
 	return glProbe(window);
@@ -55,7 +60,7 @@ IRenderContext *createRenderContext(SDL_Window *window){
 	if (conf.renderer == "gpu")
 		return createGPURenderContext(window);
 
-	if (conf.renderer == "sdl")
+	if (conf.renderer == "simple")
 		return createSDLRenderContext(window);
 
 	return createGLRenderContext(window);
@@ -65,7 +70,7 @@ IRender *createRender(){
 	if (conf.renderer == "gpu")
 		return createGPURender(conf);
 
-	if (conf.renderer == "sdl")
+	if (conf.renderer == "simple")
 		return createSDLRender(conf);
 
 	return createGLRender(conf);

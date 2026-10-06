@@ -326,8 +326,12 @@ SDL_BlendMode SDLRender::blendMode(bool forceBlend){
 		return SDL_BLENDMODE_MUL;
 
 	case BlendKind::Substraction :
+		return SDL_ComposeCustomBlendMode(SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_REV_SUBTRACT,
+		                                  SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD);
+
 	case BlendKind::ToneSubtract :
-		return SDL_BLENDMODE_INVALID;
+		return SDL_ComposeCustomBlendMode(SDL_BLENDFACTOR_ONE, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_REV_SUBTRACT,
+		                                  SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD);
 
 	default :
 		return SDL_BLENDMODE_BLEND;
