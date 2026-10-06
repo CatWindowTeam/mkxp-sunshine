@@ -136,8 +136,8 @@ void EventThread::process(RGSSThreadData &rtData){
 			break;
 		}
 
-		switch(event.window.type){
-			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED :
+		switch(event.type){
+			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
 				winW = event.window.data1;
 				winH = event.window.data2;
 				windowSizeMsg.post(Vec2i(winW, winH));
@@ -145,69 +145,67 @@ void EventThread::process(RGSSThreadData &rtData){
 					shState->windowSignals.resized.Emit(event.window.data1, event.window.data2);
 				resetInputStates();
 				break;
-			case SDL_EVENT_WINDOW_MOUSE_ENTER :
+			case SDL_EVENT_WINDOW_MOUSE_ENTER:
 				cursorInWindow = true;
 				mouseState.inWindow = true;
 				updateCursorState(cursorInWindow && windowFocused, gameScreen);
 				break;
-			case SDL_EVENT_WINDOW_MOUSE_LEAVE :
+			case SDL_EVENT_WINDOW_MOUSE_LEAVE:
 				cursorInWindow = false;
 				mouseState.inWindow = false;
 				updateCursorState(cursorInWindow && windowFocused, gameScreen);
 				break;
-			case SDL_EVENT_WINDOW_CLOSE_REQUESTED :
+			case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
 				if(rtData.allowExit)
 					terminate = true;
 				else
 					rtData.triedExit.set();
 				break;
-			case SDL_EVENT_WINDOW_FOCUS_GAINED :
+			case SDL_EVENT_WINDOW_FOCUS_GAINED:
 				windowFocused = true;
 				updateCursorState(cursorInWindow && windowFocused, gameScreen);
 				break;
-			case SDL_EVENT_WINDOW_FOCUS_LOST :
+			case SDL_EVENT_WINDOW_FOCUS_LOST:
 				windowFocused = false;
 				updateCursorState(cursorInWindow && windowFocused, gameScreen);
 				resetInputStates();
 				break;
-		#ifdef apple
 			case SDL_EVENT_WINDOW_MOVED:
-				if (shState != NULL && event.window.data1 && event.window.data2){
+				if (shState != nullptr || event.button.windowID != WindowID){
 					rtData.ethread->winX = event.window.data1;
 					rtData.ethread->winY = event.window.data2;
 					shState->windowSignals.moved.Emit(event.window.data1, event.window.data2);
 				}
 				break;
-		#endif
-		}
-
-		switch(event.type){
 			case SDL_EVENT_MOUSE_BUTTON_DOWN:
-				if (EventThread::mouseEnabled)
-					mouseState.buttons[event.button.button] = true;
-#ifndef mkxp_android
-				if(event.button.which == SDL_TOUCH_MOUSEID)
-					continue;
-#endif
+				#ifndef mkxp_android
+				    if (event.button.which == SDL_TOUCH_MOUSEID)
+				        break;
+				#endif
+				if(!EventThread::mouseEnabled || event.button.windowID != WindowID)
+					break;
+				mouseState.buttons[event.button.button] = true;
 				break;
 			case SDL_EVENT_MOUSE_BUTTON_UP:
-				if (EventThread::mouseEnabled)
-					mouseState.buttons[event.button.button] = false;
-#ifndef mkxp_android
-				if(event.button.which == SDL_TOUCH_MOUSEID)
-					continue;
-#endif
+				#ifndef mkxp_android
+				    if (event.button.which == SDL_TOUCH_MOUSEID)
+				        break;
+				#endif
+				if(!EventThread::mouseEnabled || event.button.windowID != WindowID)
+					break;
+				mouseState.buttons[event.button.button] = false;
 				break;			
 			case SDL_EVENT_MOUSE_MOTION:
-				if (EventThread::mouseEnabled){
-					mouseState.x = event.motion.x;
-					mouseState.y = event.motion.y;
-					updateCursorState(cursorInWindow, gameScreen);	
-				}
-#ifndef mkxp_android
-				if(event.button.which == SDL_TOUCH_MOUSEID)
-					continue;
-#endif
+				#ifndef mkxp_android
+				    if (event.motion.which == SDL_TOUCH_MOUSEID)
+				        break;
+				#endif
+				if(!EventThread::mouseEnabled || event.motion.windowID != WindowID)
+					break;
+					
+				mouseState.x = event.motion.x;
+				mouseState.y = event.motion.y;
+				updateCursorState(cursorInWindow, gameScreen);	
 				break;
 			case SDL_EVENT_FINGER_DOWN:
 				if (event.tfinger.fingerID >= MAX_FINGERS)
@@ -247,7 +245,7 @@ void EventThread::process(RGSSThreadData &rtData){
 					continue;
 				break;
 			case SDL_EVENT_LOW_MEMORY:
-				scriptBinding->execute();
+				scriptBinding->gc();
 				break;
 			case SDL_EVENT_QUIT:
 			case SDL_EVENT_WINDOW_DESTROYED:
@@ -524,6 +522,7 @@ void EventThread::notifyFrame(){
 
 	SDL_Event event;
 	event.user.code = fps.accDiv;
+	
 	fps.acc = fps.accDiv = 0;
 	event.user.type = usrIdStart + UPDATE_FPS;
 	SDL_PushEvent(&event);
