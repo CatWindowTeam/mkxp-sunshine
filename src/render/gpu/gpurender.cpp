@@ -276,10 +276,6 @@ int GPURender::maxTextureSize() const{
 	return maxTexSize;
 }
 
-int GPURender::videoMemoryUsed() const{
-	return 0;
-}
-
 const char *GPURender::apiName() const{
 	return apiNameStr.c_str();
 }

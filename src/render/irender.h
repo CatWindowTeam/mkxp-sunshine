@@ -76,7 +76,6 @@ public:
 	virtual ~IRender() {}
 
 	virtual int maxTextureSize() const = 0;
-	virtual int videoMemoryUsed() const = 0;
 	virtual bool repeatNpotSupported() const = 0;
 	virtual const char *apiName() const = 0;
 

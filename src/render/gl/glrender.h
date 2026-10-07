@@ -17,7 +17,6 @@ public:
 	GLState &state() { return glStateObj; }
 
 	int maxTextureSize() const;
-	int videoMemoryUsed() const;
 	bool repeatNpotSupported() const;
 	const char *apiName() const;
 

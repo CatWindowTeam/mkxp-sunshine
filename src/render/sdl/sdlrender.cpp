@@ -50,10 +50,6 @@ int SDLRender::maxTextureSize() const{
 	return maxTexSize;
 }
 
-int SDLRender::videoMemoryUsed() const{
-	return 0;
-}
-
 const char *SDLRender::apiName() const{
 	return apiNameStr.c_str();
 }
