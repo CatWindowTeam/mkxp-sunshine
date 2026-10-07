@@ -2,6 +2,7 @@ uniform vec4 lightSources[64];
 uniform vec4 lightSourcesColors[64];
 uniform int lightSourcesCount;
 uniform float ambientLight;
+uniform float scale;
 
 uniform sampler2D texture;
 uniform vec2 wallMapResolution;
@@ -14,7 +15,7 @@ const vec2 tileSize = vec2(32, 32);
 const float powerBase = 255.0;
 
 void main(){
-	vec2 screenPoint = v_texCoord / texSizeInv;
+	vec2 screenPoint = v_texCoord / texSizeInv * scale;
 	vec3 light = vec3(0, 0, 0);
 
 	for(int i = 0; i < lightSourcesCount; i++) {

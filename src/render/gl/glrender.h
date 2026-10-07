@@ -102,6 +102,7 @@ public:
 	void setTileMapOffset(const int x, const int y);
 	void setLightSources(const std::vector<LightSource> &sources);
 	void setAmbient(const float value);
+	void setScale(const float value);
 
 	void beginBlit(const RenderTarget &target);
 	void beginBlitScreen(const Vec2i &size);
