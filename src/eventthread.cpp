@@ -174,7 +174,9 @@ void EventThread::process(RGSSThreadData &rtData){
 				if (shState != nullptr || event.button.windowID != WindowID){
 					rtData.ethread->winX = event.window.data1;
 					rtData.ethread->winY = event.window.data2;
-					shState->windowSignals.moved.Emit(event.window.data1, event.window.data2);
+					shState->rubyDispatcher().invoke([event]{
+						shState->windowSignals.moved.Emit(event.window.data1, event.window.data2);
+					});
 				}
 				break;
 			case SDL_EVENT_MOUSE_BUTTON_DOWN:
