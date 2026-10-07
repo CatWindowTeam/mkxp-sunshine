@@ -452,8 +452,6 @@ void Oneshot::updateObscured(int winX, int winY){
 	SDL_UnlockMutex(p->winMutex);
 	if (!p->obscuredNeedToUpdate) return;
 
-	Debug() << winX << " " << winY;
-
 	// Map of unobscured pixels in this frame
 	static std::vector<bool> obscuredFrame;
 	obscuredFrame.resize(p->obscuredMap.size());
