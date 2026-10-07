@@ -1,4 +1,3 @@
-
 uniform sampler2D texture;
 uniform mediump float hueAdjust;
 

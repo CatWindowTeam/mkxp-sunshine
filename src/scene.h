@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCENE_H
-#define SCENE_H
-
+#pragma once
 #include "util.h"
 #include "intrulist.h"
 #include "etc.h"
@@ -39,10 +37,8 @@ public:
 	struct Geometry{
 		/* Position and size relative to parent */
 		IntRect rect;
-
 		/* Origin of contents */
 		Vec2i orig;
-
 		Vec2i offset() const{
 			return rect.pos() - orig;
 		}
@@ -132,7 +128,6 @@ protected:
 	friend struct TilemapPrivate;
 
 private:
-
 	/* RGSS2 introduced an enhanced type of Z ordering: sprites with
 	 * the same Z are first ordered by their Y value (higher Y = closer
 	 * to player) and then by creation time. However, the Enterbrain devs
@@ -150,5 +145,3 @@ private:
 
 #define ABOUT_TO_ACCESS_DISP \
 	void aboutToAccess() const { guardDisposed(); }
-
-#endif // SCENE_H

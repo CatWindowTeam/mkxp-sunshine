@@ -1,11 +1,8 @@
-
 uniform sampler2D texture;
-
 varying vec2 v_texCoord;
 varying vec2 v_blurCoord[2];
 
-void main()
-{
+void main(){
 	lowp vec4 frag = vec4(0, 0, 0, 0);
 
 	frag += texture2D(texture, v_texCoord);

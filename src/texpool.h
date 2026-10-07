@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TEXPOOL_H
-#define TEXPOOL_H
-
+#pragma once
 #include "render/irender.h"
 
 struct TexPoolPrivate;
@@ -33,11 +31,8 @@ public:
 
 	RenderTarget request(int width, int height);
 	void release(RenderTarget &obj);
-
 	void disable();
 
 private:
 	TexPoolPrivate *p;
 };
-
-#endif // TEXPOOL_H

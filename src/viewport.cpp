@@ -20,7 +20,6 @@
 */
 
 #include "viewport.h"
-
 #include "sharedstate.h"
 #include "etc.h"
 #include "util.h"
@@ -33,10 +32,8 @@
 struct ViewportPrivate{
 	/* Needed for geometry changes */
 	Viewport *self;
-
 	Rect *rect;
 	SignalConnection rectCon;
-
 	Color *color;
 	Tone *tone;
 
@@ -80,7 +77,6 @@ struct ViewportPrivate{
 
 	void recomputeOnScreen(){
 		SDL_Rect r1 = { screenRect.x, screenRect.y, screenRect.w, screenRect.h };
-
 		SDL_Rect r2 = { rect->x, rect->y, rect->width, rect->height };
 
 		SDL_Rect result;
@@ -95,24 +91,15 @@ struct ViewportPrivate{
 	}
 };
 
-Viewport::Viewport(int x, int y, unsigned int width, unsigned int height)
-    : SceneElement(*shState->screen()),
-      sceneLink(this)
-{
+Viewport::Viewport(int x, int y, unsigned int width, unsigned int height) : SceneElement(*shState->screen()), sceneLink(this){
 	initViewport(x, y, width, height);
 }
 
-Viewport::Viewport(Rect *rect)
-    : SceneElement(*shState->screen()),
-      sceneLink(this)
-{
+Viewport::Viewport(Rect *rect) : SceneElement(*shState->screen()), sceneLink(this){
 	initViewport(rect->x, rect->y, rect->width, rect->height);
 }
 
-Viewport::Viewport()
-    : SceneElement(*shState->screen()),
-      sceneLink(this)
-{
+Viewport::Viewport() : SceneElement(*shState->screen()), sceneLink(this){
 	const Graphics &graphics = shState->graphics();
 	initViewport(0, 0, graphics.width(), graphics.height());
 }
@@ -133,13 +120,11 @@ Viewport::~Viewport(){
 
 void Viewport::update(){
 	guardDisposed();
-
 	Flashable::update();
 }
 
 DEF_ATTR_RD_SIMPLE(Viewport, OX, int, geometry.orig.x)
 DEF_ATTR_RD_SIMPLE(Viewport, OY, int, geometry.orig.y)
-
 DEF_ATTR_RD_SIMPLE(Viewport, ScaleX,   double, p->scaleX)
 DEF_ATTR_RD_SIMPLE(Viewport, ScaleY,   double, p->scaleY)
 DEF_ATTR_RD_SIMPLE(Viewport, Rotation, double, p->rotation)
@@ -150,7 +135,6 @@ DEF_ATTR_SIMPLE(Viewport, Tone,  Tone&,  *p->tone)
 
 void Viewport::setOX(int value){
 	guardDisposed();
-
 	if (geometry.orig.x == value)
 		return;
 
@@ -160,7 +144,6 @@ void Viewport::setOX(int value){
 
 void Viewport::setOY(int value){
 	guardDisposed();
-
 	if (geometry.orig.y == value)
 		return;
 
@@ -170,7 +153,6 @@ void Viewport::setOY(int value){
 
 void Viewport::setScaleX(double value){
 	guardDisposed();
-
 	if (p->scaleX == value)
 		return;
 
@@ -180,7 +162,6 @@ void Viewport::setScaleX(double value){
 
 void Viewport::setScaleY(double value){
 	guardDisposed();
-
 	if (p->scaleY == value)
 		return;
 
@@ -190,7 +171,6 @@ void Viewport::setScaleY(double value){
 
 void Viewport::setRotation(double value){
 	guardDisposed();
-
 	if (p->rotation == value)
 		return;
 
@@ -202,7 +182,6 @@ void Viewport::initDynAttribs(){
 	p->rect = new Rect(*p->rect);
 	p->color = new Color;
 	p->tone = new Tone;
-
 	p->updateRectCon();
 }
 
@@ -212,7 +191,6 @@ void Viewport::composite(){
 		return;
 
 	bool renderEffect = p->needsEffectRender(flashing);
-
 	if (elements.getSize() == 0 && !renderEffect)
 		return;
 
@@ -244,7 +222,6 @@ void Viewport::onGeometryChange(const Geometry &geo){
 
 void Viewport::releaseResources(){
 	unlink();
-
 	delete p;
 }
 

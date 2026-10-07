@@ -2,7 +2,6 @@ uniform sampler2D texture;
 uniform sampler2D noiseTexture;
 
 uniform lowp vec4 tone;
-
 uniform lowp float opacity;
 uniform lowp vec4 color;
 uniform lowp vec4 modulate;
@@ -13,7 +12,6 @@ uniform lowp float bushOpacity;
 uniform float uTime;
 
 varying vec2 v_texCoord;
-
 uniform vec2 texSizeInv;
 
 const vec3 lumaF = vec3(.299, .587, .114);

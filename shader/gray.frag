@@ -1,7 +1,5 @@
-
 uniform sampler2D texture;
 uniform lowp float gray;
-
 varying vec2 v_texCoord;
 
 const vec3 lumaF = vec3(.299, .587, .114);

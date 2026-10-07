@@ -98,7 +98,6 @@ struct PingPong{
 
 	void swapRender(){
 		std::swap(srcInd, dstInd);
-
 		bind();
 	}
 
@@ -135,7 +134,7 @@ public:
 		render.setViewport(IntRect(0, 0, w, h));
 		render.clear();
 		Scene::composite();
-		if (brightEffect){
+		if(brightEffect){
 			render.useEffect(SHADER_simpleColor);
 			render.applyViewportProj();
 			render.setTranslation(Vec2i());
@@ -159,12 +158,10 @@ public:
 				 * and since we're inside the draw cycle, it will
 				 * be turned on, so turn it off temporarily */
 				render.pushScissorTest(false);
-
 				render.beginBlit(pp.frontBuffer());
 				render.blitSource(pp.backBuffer());
 				render.blitRect(geometry.rect, Vec2i());
 				render.endBlit();
-
 				render.popScissorTest();
 			}
 
@@ -172,10 +169,9 @@ public:
 			render.setGray(t.w);
 			render.applyViewportProj();
 			render.setTexSize(screenRect.size());
-
 			render.bindTexture(pp.backBuffer().tex);
-
 			render.pushBlend(false);
+			
 			screenQuad.draw();
 			render.popBlend();
 		}
@@ -376,7 +372,7 @@ private:
 			if (err == EINTR)
 				continue;
 
-			Debug() << "[delayTicks] nanosleep failed. errno:" << err;
+			Debug() << "nanosleep failed. errno:" << err;
 			SDL_Delay(ticks / tickFreqMS);
 			break;
 		}
@@ -538,12 +534,10 @@ struct GraphicsPrivate{
 
 		render.beginBlitScreen(winSize);
 		render.blitSource(screen.getPP().frontBuffer());
-
 		render.clear();
 		metaBlitBufferFlippedScaled();
 
 		render.endBlit();
-
 		swapBuffers();
 	}
 

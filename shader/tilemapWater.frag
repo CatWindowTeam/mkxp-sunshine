@@ -1,6 +1,5 @@
 uniform sampler2D texture;
 uniform sampler2D noiseTexture;
-
 uniform float uTime;
 uniform float aniIndex;
 
@@ -10,7 +9,6 @@ varying vec2 worldCoord;
 uniform vec2 texSizeInv;
 
 const float WATER_DISTORTION = 0.75;
-
 const float atAreaW = 96.0;
 const float atAreaH = 128.0*7.0;
 const float SpriteAreaH = 128.0;

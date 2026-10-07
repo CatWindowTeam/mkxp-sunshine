@@ -5,7 +5,6 @@
 #include "exception.h"
 #include "debugwriter.h"
 #include "vertex.h"
-
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_properties.h>
@@ -49,6 +48,10 @@ SDLRender::~SDLRender(){
 
 int SDLRender::maxTextureSize() const{
 	return maxTexSize;
+}
+
+int SDLRender::videoMemoryUsed() const{
+	return 0;
 }
 
 const char *SDLRender::apiName() const{

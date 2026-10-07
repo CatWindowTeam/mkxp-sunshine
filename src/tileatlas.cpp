@@ -54,7 +54,6 @@ static int freeArea(int width, int height){
 Vec2i minSize(int tilesetH, int maxAtlasSize){
 	int width = atAreaW;
 	int height = atAreaH;
-
 	const int tsArea = tilesetW * tilesetH;
 
 	/* Expand vertically */
@@ -77,10 +76,8 @@ Vec2i minSize(int tilesetH, int maxAtlasSize){
 static ColumnVec calcSrcCols(int tilesetH){
 	ColumnVec cols;
 	cols.reserve(2);
-
 	cols.push_back(Column(0, 0, tilesetH));
 	cols.push_back(Column(tsLaneW, 0, tilesetH));
-
 	return cols;
 }
 
@@ -107,17 +104,14 @@ static ColumnVec calcDstCols(int atlasW, int atlasH){
 
 static BlitVec calcBlitsInt(ColumnVec &srcCols, ColumnVec &dstCols){
 	BlitVec blits;
-
 	/* Using signed indices here is safer, as we
 	 * might decrement dstI while it is zero. */
 	int dstI = 0;
 
 	for (size_t srcI = 0; srcI < srcCols.size(); ++srcI){
 		Column &srcCol = srcCols[srcI];
-
 		for (; dstI < (int) dstCols.size() && srcCol.h > 0; ++dstI){
 			Column &dstCol = dstCols[dstI];
-
 			if (srcCol.h > dstCol.h){
 				/* srcCol doesn't fully fit into dstCol */
 				blits.push_back(Blit(srcCol.x, srcCol.y,
@@ -125,8 +119,7 @@ static BlitVec calcBlitsInt(ColumnVec &srcCols, ColumnVec &dstCols){
 
 				srcCol.y += dstCol.h;
 				srcCol.h -= dstCol.h;
-			}
-			else if (srcCol.h < dstCol.h){
+			}else if (srcCol.h < dstCol.h){
 				/* srcCol fits into dstCol with space remaining */
 				blits.push_back(Blit(srcCol.x, srcCol.y,
 				                     dstCol.x, dstCol.y, srcCol.h));
@@ -138,8 +131,7 @@ static BlitVec calcBlitsInt(ColumnVec &srcCols, ColumnVec &dstCols){
 				--dstI;
 
 				srcCol.h = 0;
-			}
-			else{
+			}else{
 				/* srcCol fits perfectly into dstCol */
 				blits.push_back(Blit(srcCol.x, srcCol.y, dstCol.x, dstCol.y, dstCol.h));
 			}
@@ -152,19 +144,15 @@ static BlitVec calcBlitsInt(ColumnVec &srcCols, ColumnVec &dstCols){
 BlitVec calcBlits(int tilesetH, const Vec2i &atlasSize){
 	ColumnVec srcCols = calcSrcCols(tilesetH);
 	ColumnVec dstCols = calcDstCols(atlasSize.x, atlasSize.y);
-
 	return calcBlitsInt(srcCols, dstCols);
 }
 
 Vec2i tileToAtlasCoor(int tileX, int tileY, int tilesetH, int atlasH){
 	int laneX = tileX*32;
 	int laneY = tileY*32;
-
 	int longlaneH = atlasH;
 	int shortlaneH = longlaneH - atAreaH;
-
 	int longlaneOffset = shortlaneH * 3;
-
 	int laneIdx = 0;
 	int atlasY = 0;
 
@@ -178,8 +166,7 @@ Vec2i tileToAtlasCoor(int tileX, int tileY, int tilesetH, int atlasH){
 		/* Below autotile area */
 		laneIdx = laneY / shortlaneH;
 		atlasY  = laneY % shortlaneH + atAreaH;
-	}
-	else{
+	}else{
 		/* Right of autotile area */
 		int _y = laneY - longlaneOffset;
 		laneIdx = 3 + _y / longlaneH;
@@ -187,7 +174,6 @@ Vec2i tileToAtlasCoor(int tileX, int tileY, int tilesetH, int atlasH){
 	}
 
 	int atlasX = laneIdx * tsLaneW + laneX;
-
 	return Vec2i(atlasX, atlasY);
 }
 

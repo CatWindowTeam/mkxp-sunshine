@@ -20,7 +20,6 @@
 */
 
 #include "tilequad.h"
-
 #include "quad.h"
 
 namespace TileQuads{
@@ -45,17 +44,14 @@ int buildH(const IntRect &sourceRect, int width, int x, int y, Vertex *verts){
 
 	int fullCount = width / sourceRect.w;
 	int partSize  = width % sourceRect.w;
-
 	FloatRect _sourceRect(sourceRect);
 	FloatRect destRect(x, y, sourceRect.w, sourceRect.h);
 
 	/* Full size quads */
 	for (int x = 0; x < fullCount; ++x){
 		Vertex *vert = &verts[x*4];
-
 		Quad::setTexRect(vert, _sourceRect);
 		Quad::setPosRect(vert, destRect);
-
 		destRect.x += sourceRect.w;
 	}
 
@@ -64,7 +60,6 @@ int buildH(const IntRect &sourceRect, int width, int x, int y, Vertex *verts){
 
 		_sourceRect.w = partSize;
 		destRect.w = partSize;
-
 		Quad::setTexRect(vert, _sourceRect);
 		Quad::setPosRect(vert, destRect);
 	}
@@ -85,10 +80,8 @@ int buildV(const IntRect &sourceRect, int height, int ox, int oy, Vertex *verts)
 	/* Full size quads */
 	for (int y = 0; y < fullCount; ++y){
 		Vertex *vert = &verts[y*4];
-
 		Quad::setTexRect(vert, _sourceRect);
 		Quad::setPosRect(vert, destRect);
-
 		destRect.y += sourceRect.h;
 	}
 
@@ -97,7 +90,6 @@ int buildV(const IntRect &sourceRect, int height, int ox, int oy, Vertex *verts)
 
 		_sourceRect.h = partSize;
 		destRect.h = partSize;
-
 		Quad::setTexRect(vert, _sourceRect);
 		Quad::setPosRect(vert, destRect);
 	}
@@ -110,21 +102,17 @@ int build(const IntRect &sourceRect, const IntRect &destRect, Vertex *verts) {
 	int oy = destRect.y;
 	int width = destRect.w;
 	int height = destRect.h;
-
 	if (width <= 0 || height <= 0)
 		return 0;
 
 	int fullCount = height / sourceRect.h;
 	int partSize  = height % sourceRect.h;
-
 	int rowTileCount = oneDimCount(sourceRect.w, width);
-
 	int qCount = 0;
 
 	int v = 0;
 	for (int i = 0; i < fullCount; ++i){
 		qCount += buildH(sourceRect, width, ox, oy, &verts[v]);
-
 		v += rowTileCount*4;
 		oy += sourceRect.h;
 	}
@@ -163,9 +151,7 @@ static void buildFrameInt(const IntRect &rect, FloatRect quadRects[9]) {
 
 int buildFrameSource(const IntRect &rect, Vertex vert[36]) {
 	FloatRect quadRects[9];
-
 	buildFrameInt(rect, quadRects);
-
 	for (int i = 0; i < 9; ++i)
 		Quad::setTexRect(&vert[i*4], quadRects[i]);
 
@@ -174,9 +160,7 @@ int buildFrameSource(const IntRect &rect, Vertex vert[36]) {
 
 int buildFrame(const IntRect &rect, Vertex vert[36]){
 	FloatRect quadRects[9];
-
 	buildFrameInt(rect, quadRects);
-
 	for (int i = 0; i < 9; ++i)
 		Quad::setPosRect(&vert[i*4], quadRects[i]);
 

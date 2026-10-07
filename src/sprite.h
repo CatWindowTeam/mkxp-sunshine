@@ -42,9 +42,7 @@ public:
 
 	int getWidth()  const;
 	int getHeight() const;
-
 	bool smooth = false;
-
 	void update();
  
 	DECL_ATTR( Bitmap,       Bitmap* )
@@ -81,11 +79,9 @@ public:
 
 private:
 	SpritePrivate *p;
-
 	void draw();
 	void onGeometryChange(const Scene::Geometry &);
 	void defaultSpriteShaderInit(ShaderType effect);
-
 	void releaseResources();
 	const char *klassName() const { return "sprite"; }
 

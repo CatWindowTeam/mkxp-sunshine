@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VIEWPORT_H
-#define VIEWPORT_H
-
+#pragma once
 #include "scene.h"
 #include "flashable.h"
 #include "disposable.h"
@@ -46,17 +44,14 @@ public:
 	DECL_ATTR( Rotation, double )
 	DECL_ATTR( Color,    Color& )
 	DECL_ATTR( Tone,     Tone&  )
-
 	void initDynAttribs();
 
 private:
 	void initViewport(int x, int y, unsigned int width, unsigned int height);
 	void geometryChanged();
-
 	void composite();
 	void draw();
 	void onGeometryChange(const Geometry &);
-
 	void releaseResources();
 	const char *klassName() const { return "viewport"; }
 
@@ -71,14 +66,9 @@ private:
 class ViewportElement : public SceneElement{
 public:
 	ViewportElement(Viewport *viewport = 0, int z = 0, int spriteY = 0);
-
 	DECL_ATTR( Viewport,  Viewport* )
-
 protected:
 	virtual void onViewportChange() {}
-
 private:
 	Viewport *m_viewport;
 };
-
-#endif // VIEWPORT_H

@@ -3,9 +3,7 @@
 
 uniform sampler2D source;
 uniform sampler2D destination;
-
 uniform vec4 subRect;
-
 uniform lowp float opacity;
 
 varying vec2 v_texCoord;
@@ -13,10 +11,8 @@ varying vec2 v_texCoord;
 void main(){
 	vec2 coor = v_texCoord;
 	vec2 dstCoor = (coor - subRect.xy) * subRect.zw;
-
 	vec4 srcFrag = texture2D(source, coor);
 	vec4 dstFrag = texture2D(destination, dstCoor);
-
 	vec4 resFrag;
 
 	float co1 = srcFrag.a * opacity;

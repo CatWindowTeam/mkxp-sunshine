@@ -343,7 +343,7 @@ void EventThread::process(RGSSThreadData &rtData){
 						}else
 							SDL_SetWindowSize(win, event.window.data1, event.window.data2);
 						break;
-						case REQUEST_WINMOVETO :
+					case REQUEST_WINMOVETO :
 						rtData.ethread->winX = event.window.data1;
 						rtData.ethread->winY = event.window.data2;
 						SDL_SetWindowPosition(win, event.window.data1, event.window.data2);
@@ -415,7 +415,7 @@ void EventThread::setFullscreen(SDL_Window *win, bool mode){
 void EventThread::updateCursorState(bool inWindow, const SDL_Rect &screen){
 	SDL_Point pos = { mouseState.x, mouseState.y };
 	bool inScreen = inWindow && SDL_PointInRect(&pos, &screen);
-	if (inScreen)
+	if(inScreen)
 		SDL_ShowCursor();
 	else
 		SDL_HideCursor();

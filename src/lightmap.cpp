@@ -14,7 +14,6 @@
 #include <chrono>
 
 struct LightMapPrivate{
-
 	Bitmap *bitmap;
 	Bitmap *wallMap;
 
@@ -86,7 +85,6 @@ struct LightMapPrivate{
 	void onSrcRectChange(){
 		FloatRect rect = srcRect->toFloatRect();
 		Vec2i bmSize;
-
 		if (!nullOrDisposed(bitmap))
 			bmSize = Vec2i(bitmap->width(), bitmap->height());
 
@@ -96,7 +94,6 @@ struct LightMapPrivate{
 		rect.h = clamp<int>(rect.h, 0, bmSize.y-rect.y);
 
 		quad.setTexRect(rect);
-
 		quad.setPosRect(FloatRect(0, 0, rect.w, rect.h));
 	}
 
@@ -109,7 +106,6 @@ struct LightMapPrivate{
 
 	void updateVisibility(){
 		isVisible = false;
-
 		if (nullOrDisposed(bitmap))
 			return;
 
@@ -127,8 +123,7 @@ struct LightMapPrivate{
 	}
 };
 
-LightMap::LightMap(Viewport *viewport)
-    : ViewportElement(viewport){
+LightMap::LightMap(Viewport *viewport) : ViewportElement(viewport){
 	p = new LightMapPrivate;
 	onGeometryChange(scene->getGeometry());
 	
@@ -152,17 +147,14 @@ DEF_ATTR_SIMPLE(LightMap, CameraX,        int, p->cameraX)
 DEF_ATTR_SIMPLE(LightMap, CameraY,        int, p->cameraY)
 DEF_ATTR_SIMPLE(LightMap, TilemapOffsetX, int, p->tilemapOffsetX)
 DEF_ATTR_SIMPLE(LightMap, TilemapOffsetY, int, p->tilemapOffsetY)
-
 DEF_ATTR_SIMPLE(LightMap, Ambient, float, p->ambient);
 
 void LightMap::setWallMap(Bitmap *bitmap){
 	guardDisposed();
-
 	if (p->wallMap == bitmap)
 		return;
 
 	p->wallMap = bitmap;
-
 	if (nullOrDisposed(bitmap))
 		return;
 
@@ -171,14 +163,12 @@ void LightMap::setWallMap(Bitmap *bitmap){
 
 void LightMap::initDynAttribs(){
 	p->srcRect = new Rect;
-
 	p->updateSrcRectCon();
 }
 
 /* Flashable */
 void LightMap::update(){
 	guardDisposed();
-
 	Flashable::update();
 }
 
@@ -214,8 +204,7 @@ void LightMap::draw(){
 	render.useEffect(SHADER_dynamicLight);
 	render.applyViewportProj();
 
-	if (p->wallMap)
-	{
+	if (p->wallMap){
 		render.setEffectTexture(EffectTexture::WallMap, p->wallMap->getRenderTarget().tex);
 		render.setWallMapResolution(p->wallMap->width(), p->wallMap->height());
 	}
@@ -231,11 +220,9 @@ void LightMap::draw(){
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<float> elapsed = currentTime - startTime;
 	render.setTime(elapsed.count());
-
 	render.pushBlendMode(BlendMultiply);
 
 	p->bitmap->bindTex();
-
 	p->quad.draw();
 
 	render.popBlendMode();
@@ -248,6 +235,5 @@ void LightMap::onGeometryChange(const Scene::Geometry &geo){
 
 void LightMap::releaseResources(){
 	unlink();
-
 	delete p;
 }

@@ -1,7 +1,5 @@
-
 uniform mat4 projMat;
 uniform mat4 matrix;
-
 uniform vec2 texSizeInv;
 
 attribute vec2 position;
