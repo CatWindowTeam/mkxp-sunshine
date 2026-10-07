@@ -80,7 +80,6 @@ TexPool::TexPool(uint32_t maxMemSize){
 
 TexPool::~TexPool(){
 	std::list<RenderTarget>::iterator iter;
-
 	for (iter = p->priorityQueue.begin(); iter != p->priorityQueue.end(); ++iter) {
 		RenderTarget obj = *iter;
 		shState->render().destroyRenderTarget(obj);
@@ -88,7 +87,6 @@ TexPool::~TexPool(){
 	}
 
 	assert(p->objCount == 0);
-
 	delete p;
 }
 
@@ -104,7 +102,6 @@ RenderTarget TexPool::request(int width, int height){
 		bucket.pop_back();
 
 		p->priorityQueue.erase(cnode.prioIter);
-
 		p->memSize -= byteCount(size);
 		--p->objCount;
 		return cnode.obj;

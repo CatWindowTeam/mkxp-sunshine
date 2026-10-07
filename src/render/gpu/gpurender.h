@@ -56,7 +56,6 @@ struct GpuTexture{
 	int height;
 	bool smooth;
 	bool repeat;
-
 	GpuTexture() : texture(0), width(0), height(0), smooth(false), repeat(false) {}
 };
 
@@ -108,6 +107,7 @@ public:
 	~GPURender();
 
 	int maxTextureSize() const;
+	int videoMemoryUsed() const;
 	bool repeatNpotSupported() const;
 	const char *apiName() const;
 

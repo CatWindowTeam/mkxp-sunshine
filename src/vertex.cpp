@@ -24,5 +24,4 @@
 #include <cstddef>
 
 CVertex::CVertex() : color(1, 1, 1, 1){}
-
 Vertex::Vertex() : color(1, 1, 1, 1){}

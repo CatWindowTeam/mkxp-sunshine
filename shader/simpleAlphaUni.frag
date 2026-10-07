@@ -1,4 +1,3 @@
-
 uniform sampler2D texture;
 uniform lowp float alpha;
 

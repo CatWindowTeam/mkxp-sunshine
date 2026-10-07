@@ -158,16 +158,12 @@ static elementsN(flashAlpha);
 struct GroundLayer : public ViewportElement {
 	size_t quadCount;
 	TilemapPrivate *p;
-
 	GroundLayer(TilemapPrivate *p, Viewport *viewport);
 
 	void updateQuadCount();
-
 	void draw();
 	void drawInt();
-
 	void onGeometryChange(const Scene::Geometry &geo);
-
 	ABOUT_TO_ACCESS_NOOP
 };
 
@@ -188,7 +184,6 @@ struct ZLayer : public ViewportElement {
 	ZLayer(TilemapPrivate *p, Viewport *viewport);
 
 	void setIndex(int value);
-
 	void draw();
 	void drawInt();
 
@@ -196,30 +191,24 @@ struct ZLayer : public ViewportElement {
 
 	void initUpdateZ();
 	void finiUpdateZ(ZLayer *prev);
-
 	ABOUT_TO_ACCESS_NOOP
 };
 
 struct TilemapPrivate {
 	Viewport *viewport;
-
 	Bitmap *autotiles[autotileCount];
-
 	Bitmap *tileset;
-
 	Table *mapData;
 	Table *priorities;
 	bool visible;
 	bool betterWater;
 	bool wrapping;
 	Vec2i origin;
-
 	Vec2i dispPos;
 
 	/* Tile atlas */
 	struct {
 		RenderTarget gl;
-
 		Vec2i size;
 
 		/* Effective tileset height,
@@ -237,25 +226,20 @@ struct TilemapPrivate {
 	int viewpW, viewpH;
 	SignalConnection viewpUpdateConnection;
 	size_t zlayersMax;
-
 	/* Map viewport position */
 	Vec2i viewpPos;
-
 	/* Ground layer vertices */
 	SVVector groundVert;
-
 	/* ZLayer vertices */
 	std::vector<SVVector> zlayerVert;
-
 	/* Base quad indices of each zlayer
 	 * in the shared buffer */
 	std::vector<size_t> zlayerBases;
-
+	
 	/* Shared buffers for all tiles */
 	struct{
 		GeometryHandle geom;
 		bool animated;
-
 		/* Animation state */
 		uint8_t frameIdx;
 		uint8_t aniIdx;
@@ -283,7 +267,6 @@ struct TilemapPrivate {
 	bool mapViewportDirty;
 	/* Affected by: oy */
 	bool zOrderDirty;
-
 	/* Resources are sufficient and tilemap is ready to be drawn */
 	bool tilemapReady;
 
@@ -329,13 +312,11 @@ struct TilemapPrivate {
 		tiles.animated = false;
 		tiles.frameIdx = 0;
 		tiles.aniIdx = 0;
-
 		/* Init tile buffers */
 		tiles.geom = shState->render().createGeometry(VertexLayout::Simple);
 
 		elem.ground = new GroundLayer(this, viewport);
 		elem.zlayers.resize(zlayersMax);
-
 		for (size_t i = 0; i < zlayersMax; ++i)
 			elem.zlayers[i] = new ZLayer(this, viewport);
 
@@ -359,8 +340,7 @@ struct TilemapPrivate {
 					for (size_t i = oldZLayersCount; i < zlayersMax; ++i)
 						if (elem.zlayers[i] == nullptr)
 							elem.zlayers[i] = new ZLayer(this, this->viewport);
-				}
-				else{
+				}else{
 					for (size_t i = zlayersMax; i < oldZLayersCount; ++i)
 						if (elem.zlayers[i] != nullptr)
 							delete elem.zlayers[i];
@@ -375,7 +355,7 @@ struct TilemapPrivate {
 	~TilemapPrivate(){
 		/* Destroy elements */
 		delete elem.ground;
-		for (ZLayer* ptr : elem.zlayers)
+		for(ZLayer* ptr : elem.zlayers)
 		    delete ptr;
 
 		shState->releaseAtlasTex(atlas.gl);
@@ -386,13 +366,12 @@ struct TilemapPrivate {
 		/* Disconnect signal handlers */
 		viewpUpdateConnection.Disconnect();
 		tilesetCon.Disconnect();
-		for (int i = 0; i < autotileCount; ++i){
+		for(int i = 0; i < autotileCount; ++i){
 			autotilesCon[i].Disconnect();
 			autotilesDispCon[i].Disconnect();
 		}
 		mapDataCon.Disconnect();
 		prioritiesCon.Disconnect();
-
 		prepareCon.Disconnect();
 	}
 
@@ -408,9 +387,7 @@ struct TilemapPrivate {
 
 		int tsH = tileset->height();
 		atlas.efTilesetH = tsH - (tsH % 32);
-
 		atlas.size = TileAtlas::minSize(atlas.efTilesetH, shState->render().maxTextureSize());
-
 		if (atlas.size.x < 0)
 			throw Exception(Exception::MKXPError, "Cannot allocate big enough texture for tileset atlas");
 	}
@@ -421,7 +398,6 @@ struct TilemapPrivate {
 		std::vector<uint8_t> &animatedATs = atlas.animatedATs;
 
 		usableATs.clear();
-
 		for (int i = 0; i < autotileCount; ++i){
 			if (nullOrDisposed(autotiles[i]))
 				continue;
@@ -430,7 +406,6 @@ struct TilemapPrivate {
 				continue;
 
 			usableATs.push_back(i);
-
 			if (autotiles[i]->width() > autotileW)
 				animatedATs.push_back(i);
 		}
@@ -473,14 +448,13 @@ struct TilemapPrivate {
 		/* Aquire atlas tex */
 		shState->releaseAtlasTex(atlas.gl);
 		shState->requestAtlasTex(atlas.size.x, atlas.size.y, atlas.gl);
-
+		
 		atlasDirty = true;
 	}
 
 	/* Assembles atlas from tileset and autotile bitmaps */
 	void buildAtlas(){
 		updateAutotileInfo();
-
 		TileAtlas::BlitVec blits = TileAtlas::calcBlits(atlas.efTilesetH, atlas.size);
 
 		/* Clear atlas */
@@ -489,12 +463,9 @@ struct TilemapPrivate {
 		render.bindRenderTarget(atlas.gl);
 		render.pushClearColor(Vec4());
 		render.pushScissorTest(false);
-
 		render.clear();
-
 		render.popScissorTest();
 		render.popClearColor();
-
 		render.beginBlit(atlas.gl);
 
 		/* Blit autotiles */
@@ -511,8 +482,7 @@ struct TilemapPrivate {
 				/* Static autotile */
 				for (int j = 0; j < 4; ++j)
 					render.blitRect(IntRect(0, 0, blitW, blitH), Vec2i(autotileW*j, atInd*autotileH));
-			}
-			else{
+			}else{
 				/* Animated autotile */
 				render.blitRect(IntRect(0, 0, blitW, blitH), Vec2i(0, atInd*autotileH));
 			}
@@ -524,19 +494,16 @@ struct TilemapPrivate {
 		if (tileset->megaSurface()){
 			/* Mega surface tileset */
 			SDL_Surface *tsSurf = tileset->megaSurface();
-
 			if (conf.subImageFix){
 				/* Implementation for broken GL drivers */
 				render.bindRenderTarget(atlas.gl);
 				render.pushBlend(false);
 				render.pushViewport(IntRect(0, 0, atlas.size.x, atlas.size.y));
-
 				render.useEffect(SHADER_simple);
 				render.applyViewportProj();
 				render.setTranslation(Vec2i());
 
 				Quad &quad = shState->gpQuad();
-
 				for (size_t i = 0; i < blits.size(); ++i){
 					const TileAtlas::Blit &blitOp = blits[i];
 
@@ -548,18 +515,14 @@ struct TilemapPrivate {
 					render.setTexSize(texSize);
 					quad.setTexRect(FloatRect(0, 0, tsLaneW, blitOp.h));
 					quad.setPosRect(FloatRect(blitOp.dst.x, blitOp.dst.y, tsLaneW, blitOp.h));
-
 					quad.draw();
 				}
-
 				render.popViewport();
 				render.popBlend();
-			}
-			else{
+			}else{
 				/* Clean implementation */
 				for (size_t i = 0; i < blits.size(); ++i){
 					const TileAtlas::Blit &blitOp = blits[i];
-
 					render.uploadTextureRect(atlas.gl.tex, blitOp.dst.x, blitOp.dst.y, tsLaneW, blitOp.h, tsSurf, blitOp.src.x, blitOp.src.y);
 				}
 			}
@@ -569,13 +532,10 @@ struct TilemapPrivate {
 			/* Regular tileset */
 			render.beginBlit(atlas.gl);
 			render.blitSource(tileset->getRenderTarget());
-
 			for (size_t i = 0; i < blits.size(); ++i){
 				const TileAtlas::Blit &blitOp = blits[i];
-
 				render.blitRect(IntRect(blitOp.src.x, blitOp.src.y, tsLaneW, blitOp.h), blitOp.dst);
 			}
-
 			render.endBlit();
 		}
 	}
@@ -583,12 +543,10 @@ struct TilemapPrivate {
 	int samplePriority(int tileInd){
 		if (!priorities)
 			return 0;
-
 		if (tileInd > priorities->xSize()-1)
 			return 0;
 
 		int value = priorities->at(tileInd);
-
 		if (value > 5)
 			return -1;
 
@@ -600,14 +558,12 @@ struct TilemapPrivate {
 		int atInd = tileInd / 48 - 1;
 		/* Which tile pattern of the autotile [0-47] */
 		int subInd = tileInd % 48;
-
 		const StaticRect *pieceRect = &autotileRects[subInd*4];
 
 		/* Iterate over the 4 tile pieces */
 		for (int i = 0; i < 4; ++i){
 			FloatRect posRect(x*32, y*32, 16, 16);
 			atSelectSubPos(posRect, i);
-
 			FloatRect texRect = pieceRect[i];
 
 			/* Adjust to atlas coordinates */
@@ -645,8 +601,7 @@ struct TilemapPrivate {
 		/* Prio 0 tiles are all part of the same ground layer */
 		if (prio == 0){
 			targetArray = &groundVert;
-		}
-		else{
+		}else{
 			int layerInd = y + prio;
 			targetArray = &zlayerVert[layerInd];
 		}
@@ -667,21 +622,18 @@ struct TilemapPrivate {
 
 		SVertex v[4];
 		Quad::setTexPosRect(v, texRect, posRect);
-
 		for (size_t i = 0; i < 4; ++i)
 			targetArray->push_back(v[i]);
 	}
 
 	void clearQuadArrays(){
 		groundVert.clear();
-
 		for (size_t i = 0; i < zlayersMax; ++i)
 			zlayerVert[i].clear();
 	}
 
 	void buildQuadArray(){
 		clearQuadArrays();
-
 		for (int x = 0; x < viewpW; ++x)
 			for (int y = 0; y < viewpH; ++y)
 				for (int z = 0; z < mapData->zSize(); ++z)
@@ -700,7 +652,6 @@ struct TilemapPrivate {
 		/* Calculate total quad count */
 		size_t groundQuadCount = groundVert.size() / 4;
 		size_t quadCount = groundQuadCount;
-
 		for (size_t i = 0; i < zlayersMax; ++i){
 			zlayerBases[i] = quadCount;
 			quadCount += zlayerVert[i].size() / 4;
@@ -710,9 +661,7 @@ struct TilemapPrivate {
 
 		IRender &render = shState->render();
 		render.allocGeometry(tiles.geom, quadDataSize(quadCount), GeometryUsage::Static);
-
 		render.uploadGeometryRange(tiles.geom, 0, quadDataSize(groundQuadCount), dataPtr(groundVert));
-
 		for (size_t i = 0; i < zlayersMax; ++i){
 			if (zlayerVert[i].empty())
 				continue;
@@ -726,11 +675,9 @@ struct TilemapPrivate {
 
 	void bindShader(){
 		IRender &render = shState->render();
-
 		if (tiles.animated && betterWater){ // it is advisable to check for water in some way ッ
 			render.useEffect(SHADER_tilemapWater);
-
-			if (tiles.animated)
+			if(tiles.animated)
 				render.setAniIndex(tiles.frameIdx);
 			
 			render.setOffset(viewpPos);
@@ -741,15 +688,12 @@ struct TilemapPrivate {
 
 			if (shState->sunshine().noiseBitmap())
 				render.setEffectTexture(EffectTexture::Noise, shState->sunshine().noiseBitmap()->getRenderTarget().tex);
-		}
-		else if(tiles.animated){
+		}else if(tiles.animated){
 			render.useEffect(SHADER_tilemap);
 			render.setAniIndex(tiles.frameIdx);
-		}
-		else{
+		}else{
 			render.useEffect(SHADER_simple);
 		}
-
 		render.applyViewportProj();
 	}
 
@@ -760,14 +704,12 @@ struct TilemapPrivate {
 
 	void updateActiveElements(std::vector<int> &zlayerInd){
 		elem.ground->updateQuadCount();
-
 		for (size_t i = 0; i < zlayersMax; ++i){
 			if (i < zlayerInd.size()){
 				int index = zlayerInd[i];
 				elem.zlayers[i]->setVisible(visible);
 				elem.zlayers[i]->setIndex(index);
-			}
-			else{
+			}else{
 				/* Hide unused layers */
 				elem.zlayers[i]->setVisible(false);
 			}
@@ -777,7 +719,6 @@ struct TilemapPrivate {
 	void updateSceneElements(){
 		/* Only allocate elements for non-emtpy zlayers */
 		std::vector<int> zlayerInd;
-
 		for (size_t i = 0; i < zlayersMax; ++i)
 			if (zlayerVert[i].size() > 0)
 				zlayerInd.push_back(i);
@@ -789,7 +730,6 @@ struct TilemapPrivate {
 
 	void hideElements(){
 		elem.ground->setVisible(false);
-
 		for (size_t i = 0; i < zlayersMax; ++i)
 			elem.zlayers[i]->setVisible(false);
 	}
@@ -803,7 +743,6 @@ struct TilemapPrivate {
 
 		ZLayer *prev = elem.zlayers[0];
 		prev->finiUpdateZ(0);
-
 		for (size_t i = 1; i < elem.activeLayers; ++i){
 			ZLayer *layer = elem.zlayers[i];
 			layer->finiUpdateZ(prev);
@@ -822,14 +761,12 @@ struct TilemapPrivate {
 	 * single sized batches are possible. */
 	void prepareZLayerBatches(){
 		ZLayer *const *zlayers = elem.zlayers.data();
-
 		for (size_t i = 0; i < elem.activeLayers; ++i){
 			ZLayer *batchHead = zlayers[i];
 			batchHead->batchedFlag = false;
 
 			size_t batchQuadCount = batchHead->quadCount;
 			IntruListLink<SceneElement> *iter = &batchHead->link;
-
 			for (i = i+1; i < elem.activeLayers; ++i){
 				iter = iter->next;
 				ZLayer *layer = zlayers[i];
@@ -852,7 +789,6 @@ struct TilemapPrivate {
 	void updateMapViewport(){
 		const Vec2i combOrigin = origin + elem.sceneGeo.orig;
 		const Vec2i mvpPos = getTilePos(combOrigin);
-
 		if (mvpPos != viewpPos){
 			viewpPos = mvpPos;
 			buffersDirty = true;
@@ -867,7 +803,6 @@ struct TilemapPrivate {
 			if (tilemapReady)
 				hideElements();
 			tilemapReady = false;
-
 			return;
 		}
 
@@ -894,14 +829,12 @@ struct TilemapPrivate {
 		}
 
 		flashMap.prepare();
-
 		if (zOrderDirty){
 			updateZOrder();
 			zOrderDirty = false;
 		}
 
 		prepareZLayerBatches();
-
 		tilemapReady = true;
 	}
 };
@@ -983,7 +916,6 @@ void ZLayer::initUpdateZ(){
 
 void ZLayer::finiUpdateZ(ZLayer *prev){
 	z = calculateZ(p, index);
-
 	if (prev)
 		scene->insertAfter(*this, *prev);
 	else
@@ -1001,15 +933,11 @@ void Tilemap::Autotiles::set(int i, Bitmap *bitmap){
 		return;
 
 	p->autotiles[i] = bitmap;
-
 	p->invalidateAtlasContents();
-
 	p->autotilesCon[i].Disconnect();
 	p->autotilesCon[i] = bitmap->modified.Connect(p, &TilemapPrivate::invalidateAtlasContents);
-
 	p->autotilesDispCon[i].Disconnect();
 	p->autotilesDispCon[i] = bitmap->wasDisposed.Connect(p, &TilemapPrivate::invalidateAtlasContents);
-
 	p->updateAutotileInfo();
 }
 
@@ -1034,7 +962,6 @@ Tilemap::~Tilemap(){
 
 void Tilemap::update(){
 	guardDisposed();
-
 	if (!p->tilemapReady)
 		return;
 
@@ -1047,14 +974,12 @@ void Tilemap::update(){
 		return;
 
 	p->tiles.frameIdx = atAnimation[p->tiles.aniIdx];
-
 	if (++p->tiles.aniIdx >= atAnimationN)
 		p->tiles.aniIdx = 0;
 }
 
 Tilemap::Autotiles &Tilemap::getAutotiles(){
 	guardDisposed();
-
 	return atProxy;
 }
 
@@ -1071,30 +996,25 @@ DEF_ATTR_RD_SIMPLE(Tilemap, OY, int, p->origin.y)
 
 void Tilemap::setTileset(Bitmap *value){
 	guardDisposed();
-
 	if (p->tileset == value)
 		return;
 
 	p->tileset = value;
-
 	if (!value)
 		return;
 
 	p->invalidateAtlasSize();
 	p->tilesetCon.Disconnect();
 	p->tilesetCon = value->modified.Connect(p, &TilemapPrivate::invalidateAtlasSize);
-
 	p->updateAtlasInfo();
 }
 
 void Tilemap::setMapData(Table *value){
 	guardDisposed();
-
 	if (p->mapData == value)
 		return;
 
 	p->mapData = value;
-
 	if (!value)
 		return;
 
@@ -1105,18 +1025,15 @@ void Tilemap::setMapData(Table *value){
 
 void Tilemap::setFlashData(Table *value){
 	guardDisposed();
-
 	p->flashMap.setData(value);
 }
 
 void Tilemap::setPriorities(Table *value){
 	guardDisposed();
-
 	if (p->priorities == value)
 		return;
 
 	p->priorities = value;
-
 	if (!value)
 		return;
 
@@ -1127,12 +1044,10 @@ void Tilemap::setPriorities(Table *value){
 
 void Tilemap::setVisible(bool value){
 	guardDisposed();
-
 	if (p->visible == value)
 		return;
 
 	p->visible = value;
-
 	if (!p->tilemapReady)
 		return;
 
@@ -1143,7 +1058,6 @@ void Tilemap::setVisible(bool value){
 
 void Tilemap::setOX(int value){
 	guardDisposed();
-
 	if (p->origin.x == value)
 		return;
 
@@ -1153,7 +1067,6 @@ void Tilemap::setOX(int value){
 
 void Tilemap::setOY(int value){
 	guardDisposed();
-
 	if (p->origin.y == value)
 		return;
 

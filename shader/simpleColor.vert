@@ -1,4 +1,3 @@
-
 uniform mat4 projMat;
 
 uniform vec2 texSizeInv;
@@ -13,7 +12,6 @@ varying lowp vec4 v_color;
 
 void main(){
 	gl_Position = projMat * vec4(position + translation, 0, 1);
-
 	v_texCoord = texCoord * texSizeInv;
 	v_color = color;
 }

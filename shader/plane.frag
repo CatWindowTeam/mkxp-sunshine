@@ -2,7 +2,6 @@
 uniform sampler2D texture;
 
 uniform lowp vec4 tone;
-
 uniform lowp float opacity;
 uniform lowp vec4 color;
 uniform lowp vec4 flash;

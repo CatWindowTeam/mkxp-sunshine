@@ -29,12 +29,7 @@
 #include <SDL3/SDL_video.h>
 #include <physfs.h>
 #include <cstdio>
-#ifdef _MSC_VER
-	#include <direct.h>
-	#define chdir _chdir
-#else
-	#include <unistd.h>
-#endif
+#include <unistd.h>
 #ifdef windows
 	#include <windows.h>
 #endif
@@ -104,14 +99,6 @@ static int rgssThreadFun(void *userdata){
 	threadData->ethread->requestTerminate();
 	SharedState::finiInstance();
 	return 0;
-}
-
-static void setupWindowIcon(SDL_Window *win){
-	SDL_IOStream *iconSrc;
-	iconSrc = SDL_IOFromConstMem(assets_icon_png, assets_icon_png_len);
-	SDL_Surface *iconImg = IMG_Load_IO(iconSrc, true);
-	SDL_SetWindowIcon(win, iconImg);
-	SDL_DestroySurface(iconImg);
 }
 
 int main(int argc, char *argv[]){
@@ -226,8 +213,7 @@ int main(int argc, char *argv[]){
 		setupRenderWindowAttributes();
 
 		Uint64 winFlags = renderWindowFlags() | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-		SDL_Window *candidate = SDL_CreateWindow(conf.windowTitle.c_str(), conf.defScreenW, conf.defScreenH, winFlags);
-
+		SDL_Window *candidate = SDL_CreateWindow(conf.windowTitle, conf.defScreenW, conf.defScreenH, winFlags);
 		if (!candidate){
 			windowError = SDL_GetError();
 			Debug() << "[Render] cannot create window for backend" << backends[i] << windowError;
@@ -257,16 +243,17 @@ int main(int argc, char *argv[]){
 	/* OSX and Windows have their own native ways of
 	 * dealing with icons; don't interfere with them */
 	#ifdef unix_like
-		setupWindowIcon(win);
-	#else
-		(void) setupWindowIcon;
+		SDL_IOStream *iconSrc;
+		iconSrc = SDL_IOFromConstMem(assets_icon_png, assets_icon_png_len);
+		SDL_Surface *iconImg = IMG_Load_IO(iconSrc, true);
+		SDL_SetWindowIcon(win, iconImg);
+		SDL_DestroySurface(iconImg);
 	#endif
 
 	SDL_AudioSpec spec{};
 	spec.format = SDL_AUDIO_F32;
 	spec.channels = 2;
 	spec.freq = 44100;
-
 	MIX_Mixer* mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
 	if (!mixer){
 		WarnMsg("Error creating Mixer Device, check your system audio configuration");
@@ -328,11 +315,12 @@ int main(int argc, char *argv[]){
 	if (rtData.rqTermAck){
 		SDL_WaitThread(rgssThread, 0);
 	}else{
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and Sunshine will now force quit", win);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle, "The RGSS script seems to be stuck and Sunshine will now force quit", win);
 	}
 
-	if (!rtData.rgssErrorMsg.empty())
+	if (!rtData.rgssErrorMsg.empty()){
 		ErrorMsg(rtData.rgssErrorMsg.c_str());
+	}
 
 	/* Clean up any remainin events */
 	eventThread.cleanup();

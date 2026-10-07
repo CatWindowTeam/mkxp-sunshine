@@ -30,13 +30,11 @@ public:
 	void addDynamicLightSource(const LightSource source);
 	void removeStaticLightSource(float x, float y);
 	void initDynAttribs();
-
 private:
 	LightMapPrivate *p;
 
 	void draw();
 	void onGeometryChange(const Scene::Geometry &);
-
 	void releaseResources();
 	const char *klassName() const { return "lightmap"; }
 

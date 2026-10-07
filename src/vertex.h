@@ -19,9 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VERTEX_H
-#define VERTEX_H
-
+#pragma once
 #include "etc-internal.h"
 #include "render/irender.h"
 
@@ -35,7 +33,6 @@ struct SVertex{
 struct CVertex{
 	Vec2 pos;
 	Vec4 color;
-
 	CVertex();
 };
 
@@ -43,7 +40,6 @@ struct Vertex{
 	Vec2 pos;
 	Vec2 texPos;
 	Vec4 color;
-
 	Vertex();
 };
 
@@ -64,5 +60,3 @@ template<>
 struct VertexTraits<Vertex>{
 	static const VertexLayout layout = VertexLayout::Full;
 };
-
-#endif // VERTEX_H

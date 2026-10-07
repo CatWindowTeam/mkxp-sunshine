@@ -4,13 +4,9 @@ uniform int lightSourcesCount;
 uniform float ambientLight;
 
 uniform sampler2D texture;
-//uniform sampler2D wallMapTexture;
-
 uniform vec2 wallMapResolution;
-
 uniform vec2 cameraPosition;
 uniform vec2 tileMapOffset;
-
 uniform vec2 texSizeInv;
 varying vec2 v_texCoord;
 
@@ -19,9 +15,6 @@ const float powerBase = 255.0;
 
 void main(){
 	vec2 screenPoint = v_texCoord / texSizeInv;
-	//vec2 mapPoint = cameraPosition + screenPoint;
-	//vec2 wallmapUV = mapPoint / tileSize / wallMapResolution;
-
 	vec3 light = vec3(0, 0, 0);
 
 	for(int i = 0; i < lightSourcesCount; i++) {
@@ -34,6 +27,6 @@ void main(){
 	}
 
 	light += ambientLight / powerBase;
-
+	
 	gl_FragColor = vec4(light, 1.0);
 }

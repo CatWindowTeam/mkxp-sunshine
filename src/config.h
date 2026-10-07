@@ -19,7 +19,7 @@ struct Config {
     	int defScreenW = 640;
     	int defScreenH = 480;
     #endif
-    std::string windowTitle = "Oneshot: Sunshine";
+    const char* windowTitle = "Oneshot: Sunshine";
 
     int fixedFramerate = 0;
     bool frameSkip = true;

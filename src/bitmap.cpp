@@ -588,29 +588,24 @@ void Bitmap::radialBlur(int angle, int divisions){
 	/* Center */
 	FloatRect texRect(0, 0, _width, _height);
 	FloatRect posRect(0, 0, _width, _height);
-
 	i += Quad::setTexPosRect(&vert[i*4], texRect, posRect);
 
 	/* Upper */
 	posRect = FloatRect(0, 0, _width, -_height);
-
 	i += Quad::setTexPosRect(&vert[i*4], texRect, posRect);
 
 	/* Lower */
 	posRect = FloatRect(0, _height*2, _width, -_height);
-
 	i += Quad::setTexPosRect(&vert[i*4], texRect, posRect);
 
 	/* Left */
 	posRect = FloatRect(0, 0, -_width, _height);
-
 	i += Quad::setTexPosRect(&vert[i*4], texRect, posRect);
 
 	/* Right */
 	posRect = FloatRect(_width*2, 0, -_width, _height);
 
 	i += Quad::setTexPosRect(&vert[i*4], texRect, posRect);
-
 	for (int i = 0; i < 4*5; ++i)
 		vert[i].color = Vec4(1, 1, 1, opacity);
 
@@ -628,12 +623,9 @@ void Bitmap::radialBlur(int angle, int divisions){
 
 	p->render.pushBlendMode(BlendAddition);
 	p->render.useEffect(SHADER_simpleMatrix);
-
 	p->bindTexture();
 	p->render.setTextureSmooth(p->target.tex, true);
-
 	p->pushSetViewport();
-	
 	for (int i = 0; i < divisions; ++i){
 		trans.setRotation(baseAngle + i*angleStep);
 		p->render.setMatrix(trans.getMatrix());
@@ -641,15 +633,12 @@ void Bitmap::radialBlur(int angle, int divisions){
 	}
 
 	p->popViewport();
-
 	p->render.setTextureSmooth(p->target.tex, false);
-
 	p->render.popBlendMode();
 	p->render.popClearColor();
 
 	shState->texPool().release(p->target);
 	p->target = newTex;
-
 	p->onModified();
 }
 
@@ -705,7 +694,6 @@ void Bitmap::setPixel(int x, int y, const Color &color){
 	};
 
 	p->render.uploadTextureRect(p->target.tex, x, y, 1, 1, &pixel);
-
 	p->addTaintedArea(IntRect(x, y, 1, 1));
 
 	/* Setting just a single pixel is no reason to throw away the

@@ -1,4 +1,3 @@
-
 uniform mat4 projMat;
 attribute vec2 position;
 

@@ -39,15 +39,11 @@
 #endif
 
 struct SpritePrivate{
-
 	Bitmap *bitmap;
-
 	Quad quad;
 	Transform trans;
-
 	Rect *srcRect;
 	SignalConnection srcRectCon;
-
 	bool mirrorX;
 	bool mirrorY;
 	int bushDepth;
@@ -55,20 +51,16 @@ struct SpritePrivate{
 	NormValue bushOpacity;
 	NormValue opacity;
 	BlendType blendType;
-
 	IntRect sceneRect;
 	Vec2i sceneOrig;
 
 	/* Would this sprite be visible on
 	 * the screen if drawn? */
 	bool isVisible;
-
 	bool obscured;
-
 	Color *color;
 	Tone *tone;
 	Color *modulate;
-	
 	int shader;
 
 	struct{
@@ -148,7 +140,6 @@ struct SpritePrivate{
 
 		quad.setTexRect(mirrorX ? rect.wFlipped() : rect);
 		quad.setTexRect(mirrorY ? rect.hFlipped() : rect);
-
 		quad.setPosRect(FloatRect(0, 0, rect.w, rect.h));
 		recomputeBushDepth();
 
@@ -247,13 +238,10 @@ struct SpritePrivate{
 
 		/* The length of the sprite as it appears on screen */
 		int visibleLength = height * zoomY;
-
 		/* First chunk length (aligned to 8 pixel boundary */
 		int firstLength = ((int) trans.getPosition().y) % 8;
-
 		/* Amount of full 8 pixel chunks in the middle */
 		int chunks = (visibleLength - firstLength) / 8;
-
 		/* Final chunk length */
 		int lastLength = (visibleLength - firstLength) % 8;
 
@@ -333,7 +321,6 @@ void Sprite::setBitmap(Bitmap *bitmap){
 		return;
 
 	p->bitmap = bitmap;
-
 	if (nullOrDisposed(bitmap))
 		return;
 
@@ -342,7 +329,6 @@ void Sprite::setBitmap(Bitmap *bitmap){
 	*p->srcRect = bitmap->rect();
 	p->onSrcRectChange();
 	p->quad.setPosRect(p->srcRect->toFloatRect());
-
 	p->wave.dirty = true;
 }
 
@@ -423,7 +409,6 @@ void Sprite::setMirrorY(bool mirrored){
 
 void Sprite::setBushDepth(int value){
 	guardDisposed();
-
 	if (p->bushDepth == value)
 		return;
 
@@ -510,7 +495,6 @@ void Sprite::initDynAttribs(){
 /* Flashable */
 void Sprite::update(){
 	guardDisposed();
-
 	Flashable::update();
 	p->wave.phase += p->wave.speed / 180;
 	p->wave.dirty = true;
@@ -538,50 +522,36 @@ void Sprite::draw(){
 	}else{
 		switch (p->shader){
 		case ShaderType::SHADER_plane:
-			{
-				render.useEffect(SHADER_plane);
-				render.setTone(p->tone->norm);
-				render.setColor(p->color->norm);
-				render.setFlash(Vec4());
-				render.setOpacity(p->opacity.norm);
-				break;
-			}
+			render.useEffect(SHADER_plane);
+			render.setTone(p->tone->norm);
+			render.setColor(p->color->norm);
+			render.setFlash(Vec4());
+			render.setOpacity(p->opacity.norm);
+			break;
 		case ShaderType::SHADER_water:
-			{
-				defaultSpriteShaderInit(SHADER_water);
+			defaultSpriteShaderInit(SHADER_water);
+			if (shState->sunshine().noiseBitmap())
+				render.setEffectTexture(EffectTexture::Noise, shState->sunshine().noiseBitmap()->getRenderTarget().tex);
 
-				if (shState->sunshine().noiseBitmap())
-					render.setEffectTexture(EffectTexture::Noise, shState->sunshine().noiseBitmap()->getRenderTarget().tex);
-
-				break;
-			}
+			break;
 		case ShaderType::SHADER_crt:
-			{
-				defaultSpriteShaderInit(SHADER_crt);
-				break;
-			}
+			defaultSpriteShaderInit(SHADER_crt);
+			break;
 		case ShaderType::SHADER_worldMachine:
-			{
-				defaultSpriteShaderInit(SHADER_worldMachine);
-				break;
-			}
+			defaultSpriteShaderInit(SHADER_worldMachine);
+			break;
 		default:
-			{
-				if (renderEffect){
-					defaultSpriteShaderInit(SHADER_sprite);
-				}
-				else if (p->opacity != 255){
-					render.useEffect(SHADER_alphaSprite);
-					render.setSpriteMat(p->trans.getMatrix());
-					render.setOpacity(p->opacity.norm);
-				}
-				else{
-					render.useEffect(SHADER_simpleSprite);
-					render.setSpriteMat(p->trans.getMatrix());
-				}
-
-				break;
+			if (renderEffect){
+				defaultSpriteShaderInit(SHADER_sprite);
+			}else if (p->opacity != 255){
+				render.useEffect(SHADER_alphaSprite);
+				render.setSpriteMat(p->trans.getMatrix());
+				render.setOpacity(p->opacity.norm);
+			}else{
+				render.useEffect(SHADER_simpleSprite);
+				render.setSpriteMat(p->trans.getMatrix());
 			}
+			break;
 		}
 	}
 	auto currentTime = std::chrono::high_resolution_clock::now();
@@ -615,8 +585,7 @@ void Sprite::onGeometryChange(const Scene::Geometry &geo){
 	if (viewport) {
 		p->trans.setGlobalScale(Vec2(viewport->getScaleX(), viewport->getScaleY()));
 		p->trans.setGlobalRotation(viewport->getRotation());
-	}
-	else {
+	}else{
 		p->trans.setGlobalScale(Vec2(1.0, 1.0));
 		p->trans.setGlobalRotation(0);
 	}

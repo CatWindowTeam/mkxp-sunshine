@@ -2,7 +2,6 @@
 #include "config.h"
 #include "sharedstate.h"
 #include "graphics.h"
-
 #include <algorithm>
 #include <math.h>
 #include <string.h>

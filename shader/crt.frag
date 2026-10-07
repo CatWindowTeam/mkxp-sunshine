@@ -1,16 +1,13 @@
-
 uniform sampler2D texture;
 
 uniform lowp vec4 tone;
-
 uniform lowp float opacity;
 uniform lowp vec4 color;
 uniform lowp vec4 modulate;
 
 uniform float bushDepth;
-uniform lowp float bushOpacity;
-
 uniform float uTime;
+uniform lowp float bushOpacity;
 
 varying vec2 v_texCoord;
 
@@ -23,14 +20,11 @@ const float lines_scale = 3.0;
 const float lines_fill = 0.075;
 const float lines_speed = 0.19;
 const float lines_opacity = 0.25;
-
 const float layers_scale = 0.01;
 const float layers_fill = 0.5;
 const float layers_opacity = 0.25;
-
 const float edge_dark_power = 1.0;
 const float edge_dark_dist = 0.05;
-
 const float chromatic_power = 0.0005;
 
 const vec2 scale = vec2(0.85, 0.8);
@@ -77,9 +71,7 @@ void main(){
 		vec4 frag2 = texture2D(texture, uv + vec2(1, -1) * chromatic_power);
 		vec4 frag3 = texture2D(texture, uv);
 		frag = vec4(frag1.r, frag2.g, frag3.b, (frag1.w + frag2.w + frag3.w) / 3.0);
-	}
-	else
-	{
+	}else{
 		uv *= scale;
 		uv += 0.5;
 		frag = texture2D(texture, uv);

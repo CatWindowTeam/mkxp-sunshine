@@ -1,15 +1,10 @@
-
 uniform mat4 projMat;
-
 uniform vec2 texSizeInv;
 uniform vec2 translation;
 uniform vec2 offset;
-
 uniform float aniIndex;
-
 attribute vec2 position;
 attribute vec2 texCoord;
-
 varying vec2 v_texCoord;
 varying vec2 worldCoord;
 

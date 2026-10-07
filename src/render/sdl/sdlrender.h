@@ -25,6 +25,7 @@ public:
 	~SDLRender();
 
 	int maxTextureSize() const;
+	int videoMemoryUsed() const;
 	bool repeatNpotSupported() const;
 	const char *apiName() const;
 
@@ -94,7 +95,4 @@ private:
 	SdlTexture *target;
 	int maxTexSize;
 	std::string apiNameStr;
-
-
-
 };
