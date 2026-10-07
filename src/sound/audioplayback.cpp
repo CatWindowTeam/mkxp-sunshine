@@ -248,14 +248,16 @@ bool AudioPlayback::fadeIn(double time, int loops) {
 
     bool result = MIX_SetTrackAudio(p_track, p_source->getAudio());
 
-    SDL_PropertiesID props = SDL_CreateProperties();
-    SDL_SetNumberProperty(props, MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, time * 1000.0);
-    SDL_SetNumberProperty(props, MIX_PROP_PLAY_LOOPS_NUMBER, loops);
     if (result)
     {
+        SDL_PropertiesID props = SDL_CreateProperties();
+        SDL_SetNumberProperty(props, MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, time * 1000.0);
+        
         result = MIX_PlayTrack(p_track, props);
+        MIX_SetTrackLoops(p_track, loops);
+        
+        SDL_DestroyProperties(props);
     }
-    SDL_DestroyProperties(props);
 
     return result;
 }
@@ -265,16 +267,17 @@ bool AudioPlayback::fadeIn(double time) {
         return false;
 
     bool result = MIX_SetTrackAudio(p_track, p_source->getAudio());
-
-    SDL_PropertiesID props = SDL_CreateProperties();
-    SDL_SetNumberProperty(props, MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, time * 1000.0);
-    SDL_SetNumberProperty(props, MIX_PROP_PLAY_START_FRAME_NUMBER, startSample);
-    SDL_SetNumberProperty(props, MIX_PROP_PLAY_MAX_FRAME_NUMBER, maxSample);
     if (result)
     {
+        SDL_PropertiesID props = SDL_CreateProperties();
+        SDL_SetNumberProperty(props, MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, time * 1000.0);
+        SDL_SetNumberProperty(props, MIX_PROP_PLAY_START_FRAME_NUMBER, startSample);
+        SDL_SetNumberProperty(props, MIX_PROP_PLAY_MAX_FRAME_NUMBER, maxSample);
+        
         result = MIX_PlayTrack(p_track, props);
+        
+        SDL_DestroyProperties(props);
     }
-    SDL_DestroyProperties(props);
 
     return result;
 }
