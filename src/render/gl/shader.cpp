@@ -54,7 +54,6 @@
 #include "blurH.vert.xxd"
 #include "blurV.vert.xxd"
 #include "obscured.frag.xxd"
-#include "dynamicLight.vert.xxd"
 #include "dynamicLight.frag.xxd"
 #include "meow.h"
 #include "graphics.h"
