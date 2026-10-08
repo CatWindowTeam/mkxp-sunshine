@@ -638,6 +638,10 @@ void GLRender::setAmbient(const float value){
 	shaders->dynamicLight.setAmbient(value);
 }
 
+void GLRender::setScale(const float value){
+	shaders->dynamicLight.setScale(value);
+}
+
 void GLRender::beginBlit(const RenderTarget &target){
 	beginBlitTo(target.fbo, Vec2i(target.width, target.height));
 }

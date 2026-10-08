@@ -53,6 +53,9 @@ class DynamicLight
       return
     end
 
+    @light_sprite.scale = 2 ** Settings[:light_scale]
+    @light_sprite.smooth = Settings[:light_smooth]
+
     @debug_sprite.visible = Settings[:debug_lightmap]
 
     if $light.update_clear_lights

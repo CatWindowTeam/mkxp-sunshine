@@ -20,6 +20,23 @@ DEF_PROP_I(LightMap, CameraX)
 DEF_PROP_I(LightMap, CameraY)
 DEF_PROP_I(LightMap, TilemapOffsetX)
 DEF_PROP_I(LightMap, TilemapOffsetY)
+DEF_PROP_I(LightMap, Scale)
+
+static VALUE LightMapGetSmooth(int argc, VALUE *argv, VALUE self){
+    LightMap *k = getPrivateData<LightMap>(self);
+    bool value = false;
+    GUARD_EXC( value = k->smooth; )
+    return rb_bool_new(value);
+}
+
+static VALUE LightMapSetSmooth(int argc, VALUE *argv, VALUE self){
+    rb_check_argc(argc, 1);
+    LightMap *k = getPrivateData<LightMap>(self);
+    bool value;
+    rb_bool_arg(*argv, &value);
+    GUARD_EXC( k->smooth = value; )
+    return *argv;
+}
 
 static VALUE clearStaticSources(VALUE self) {
 	LightMap *k = getPrivateData<LightMap>(self);
@@ -87,6 +104,8 @@ void lightmapBindingInit(){
 	INIT_PROP_BIND( LightMap, CameraY, "camera_y" );
 	INIT_PROP_BIND( LightMap, TilemapOffsetX, "tilemap_offset_x" );
 	INIT_PROP_BIND( LightMap, TilemapOffsetY, "tilemap_offset_y" );
+	INIT_PROP_BIND( LightMap, Scale, "scale" );
+	INIT_PROP_BIND( LightMap, Smooth, "smooth" );
 	
 	rb_define_method(klass, "clear_static_sources", clearStaticSources, 0);
 	rb_define_method(klass, "clear_dynamic_sources", clearDynamicSources, 0);

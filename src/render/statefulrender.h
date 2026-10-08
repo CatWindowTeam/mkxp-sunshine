@@ -156,6 +156,7 @@ public:
 	void setTileMapOffset(int x, int y);
 	void setLightSources(const std::vector<LightSource> &sources);
 	void setAmbient(float value);
+	void setScale(float value);
 
 protected:
 	EffectUniforms &uniforms();
@@ -177,4 +178,5 @@ protected:
 	std::vector<LightSource> lights;
 	Vec2i cameraPos;
 	float ambient;
+	float scale;
 };

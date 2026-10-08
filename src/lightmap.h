@@ -14,6 +14,8 @@ public:
 	LightMap(Viewport *viewport = 0);
 	~LightMap();
 
+	bool smooth = true;
+
 	void update();
 
 	DECL_ATTR( Bitmap,         Bitmap* )
@@ -22,6 +24,7 @@ public:
 	DECL_ATTR( CameraY,        int )
 	DECL_ATTR( TilemapOffsetX, int )
 	DECL_ATTR( TilemapOffsetY, int )
+	DECL_ATTR( Scale,          int )
 	DECL_ATTR( Ambient,        float )
 
 	void clearStaticLightSources();

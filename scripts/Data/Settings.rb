@@ -18,6 +18,8 @@ module Settings
         :twm_shader             => true,
         :fog                    => true,
         :light                  => true,
+        :light_scale            => 0,
+        :light_smooth           => true,
         :water                  => true,
         :scaling_mode           => 0,
         :vsync                  => 0,
@@ -292,6 +294,19 @@ class Window_Settings
         :name => "Dynamic Light",
         :parameter => :light,
         :icons => [[3, 3]],
+      },
+      {
+        :type => :enum,
+        :name => "Dynamic Light Scale",
+        :parameter => :light_scale,
+        :values => ["1x", "2x", "4x", "8x", "16x", "32x", "64x", "128x"],
+        :icons => [[3, 3]],
+      },
+      {
+        :type => :bool,
+        :name => "Smooth Dynamic Light",
+        :parameter => :light_smooth,
+        :icons => [[3, 3]]
       },
       {
         :type => :bool,

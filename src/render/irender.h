@@ -161,6 +161,7 @@ public:
 	virtual void setTileMapOffset(int x, int y) = 0;
 	virtual void setLightSources(const std::vector<LightSource> &sources) = 0;
 	virtual void setAmbient(float value) = 0;
+	virtual void setScale(float value) = 0;
 
 	virtual void beginBlit(const RenderTarget &target) = 0;
 	virtual void beginBlitScreen(const Vec2i &size) = 0;

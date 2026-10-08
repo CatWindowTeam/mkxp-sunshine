@@ -9,6 +9,7 @@
 #include "quadarray.h"
 #include "config.h"
 #include "sunshine.h"
+#include "transform.h"
 #include <math.h>
 #include <SDL3/SDL_rect.h>
 #include <chrono>
@@ -17,7 +18,7 @@ struct LightMapPrivate{
 	Bitmap *bitmap;
 	Bitmap *wallMap;
 
-	int cameraX, cameraY, tilemapOffsetX, tilemapOffsetY;
+	int cameraX, cameraY, tilemapOffsetX, tilemapOffsetY, scale;
 	float ambient;
 	std::vector<LightSource> staticLightSources;
 	std::vector<LightSource> dynamicLightSources;
@@ -51,7 +52,6 @@ struct LightMapPrivate{
 		  ambient(255.0),
 	      srcRect(&tmp.rect),
 	      isVisible(false)
-
 	{
 		sceneRect.x = sceneRect.y = 0;
 
@@ -59,12 +59,8 @@ struct LightMapPrivate{
 
 		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &LightMapPrivate::prepare);
 		bitmapUpdateConnection = shState->graphicsSignals.resized.Connect([&](int w, int h){
-			shState->rubyDispatcher().invoke([&, w, h]{
-				bitmap = new Bitmap(w, h);
-				bitmap->ensureNonMega();
-				*srcRect = bitmap->rect();
-				onSrcRectChange();
-				quad.setPosRect(srcRect->toFloatRect());
+			shState->rubyDispatcher().invoke([&]{
+				updateBitmap();
 			});
 		});
 		
@@ -82,6 +78,18 @@ struct LightMapPrivate{
 		bitmapUpdateConnection.Disconnect();
 	}
 
+	void updateBitmap(){
+		int w = shState->graphics().width();
+		int h = shState->graphics().height();
+		int s_w = (w + scale - 1) / scale;
+		int s_h = (h + scale - 1) / scale;
+		bitmap = new Bitmap(s_w, s_h);
+		bitmap->ensureNonMega();
+		*srcRect = IntRect(0, 0, s_w * scale, s_h * scale);
+		onSrcRectChange();
+		quad.setPosRect(srcRect->toFloatRect());
+	}
+
 	void onSrcRectChange(){
 		FloatRect rect = srcRect->toFloatRect();
 		Vec2i bmSize;
@@ -96,7 +104,7 @@ struct LightMapPrivate{
 		quad.setTexRect(rect);
 		quad.setPosRect(FloatRect(0, 0, rect.w, rect.h));
 	}
-
+ 
 	void updateSrcRectCon(){
 		/* Cut old connection */
 		srcRectCon.Disconnect();
@@ -130,11 +138,7 @@ LightMap::LightMap(Viewport *viewport) : ViewportElement(viewport){
 	if (nullOrDisposed(p->bitmap))
 		return;
 
-	p->bitmap->ensureNonMega();
-
-	*p->srcRect = p->bitmap->rect();
-	p->onSrcRectChange();
-	p->quad.setPosRect(p->srcRect->toFloatRect());
+	p->updateBitmap();
 }
 
 LightMap::~LightMap(){
@@ -142,12 +146,27 @@ LightMap::~LightMap(){
 }
 
 DEF_ATTR_RD_SIMPLE(LightMap, WallMap, Bitmap*, p->wallMap)
+DEF_ATTR_RD_SIMPLE(LightMap, Scale, int, p->scale)
 
-DEF_ATTR_SIMPLE(LightMap, CameraX,        int, p->cameraX)
-DEF_ATTR_SIMPLE(LightMap, CameraY,        int, p->cameraY)
-DEF_ATTR_SIMPLE(LightMap, TilemapOffsetX, int, p->tilemapOffsetX)
-DEF_ATTR_SIMPLE(LightMap, TilemapOffsetY, int, p->tilemapOffsetY)
-DEF_ATTR_SIMPLE(LightMap, Ambient, float, p->ambient);
+DEF_ATTR_SIMPLE(LightMap, CameraX,        int,   p->cameraX)
+DEF_ATTR_SIMPLE(LightMap, CameraY,        int,   p->cameraY)
+DEF_ATTR_SIMPLE(LightMap, TilemapOffsetX, int,   p->tilemapOffsetX)
+DEF_ATTR_SIMPLE(LightMap, TilemapOffsetY, int,   p->tilemapOffsetY)
+DEF_ATTR_SIMPLE(LightMap, Ambient,        float, p->ambient);
+
+void LightMap::setScale(int scale){
+	guardDisposed();
+	if (p->scale == scale)
+		return;
+	
+	p->scale = scale;
+	if (p->bitmap != nullptr && !p->bitmap->isDisposed())
+	{
+		p->bitmap->dispose();
+		delete p->bitmap; // TODO: check
+	}
+	p->updateBitmap();
+}
 
 void LightMap::setWallMap(Bitmap *bitmap){
 	guardDisposed();
@@ -203,6 +222,7 @@ void LightMap::draw(){
 	IRender &render = shState->render();
 	render.useEffect(SHADER_dynamicLight);
 	render.applyViewportProj();
+	render.setScale(getScale());
 
 	if (p->wallMap){
 		render.setEffectTexture(EffectTexture::WallMap, p->wallMap->getRenderTarget().tex);
@@ -210,6 +230,8 @@ void LightMap::draw(){
 	}
 	render.setCameraPosition(p->cameraX, p->cameraY);
 	render.setTileMapOffset(p->tilemapOffsetX, p->tilemapOffsetY);
+	if (smooth)
+		render.setTextureSmooth(p->bitmap->getRenderTarget().tex, true);
 
 	p->gpuBuffer.clear();
 	p->gpuBuffer.insert(p->gpuBuffer.end(), p->staticLightSources.begin(), p->staticLightSources.end());

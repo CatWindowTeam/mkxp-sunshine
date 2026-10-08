@@ -364,3 +364,7 @@ void StatefulRender::setLightSources(const std::vector<LightSource> &sources){
 void StatefulRender::setAmbient(float value){
 	ambient = value;
 }
+
+void StatefulRender::setScale(float value){
+	scale = value;
+}

@@ -293,6 +293,7 @@ DynamicLightShader::DynamicLightShader(){
 	INIT_SHADER(simple, dynamicLight, DynamicLightShader);
 
 	ShaderBase::init();
+	GET_U(scale);
 	GET_U(wallMapTexture);
 	GET_U(wallMapResolution);
 	GET_U(cameraPosition);
@@ -301,6 +302,10 @@ DynamicLightShader::DynamicLightShader(){
 	GET_U(ambientLight);
 	u_lightSources = gl.GetUniformLocation(program, "lightSources[0]");
 	u_lightSourcesColors = gl.GetUniformLocation(program, "lightSourcesColors[0]");
+}
+
+void DynamicLightShader::setScale(const float value){
+	gl.Uniform1f(u_scale, value);
 }
 
 void DynamicLightShader::setWallMapTexture(TexHandle texture){

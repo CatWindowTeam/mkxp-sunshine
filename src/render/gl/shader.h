@@ -106,6 +106,7 @@ class DynamicLightShader : public ShaderBase{
 public:
 	DynamicLightShader();
 
+	void setScale(const float value);
 	void setWallMapTexture(TexHandle texture);
 	void setWallMapResolution(const int x, const int y);
 	void setCameraPosition(const int x, const int y);
@@ -114,7 +115,7 @@ public:
 	void setAmbient(const float power);
 
 private:
-	GLint u_wallMapTexture, u_wallMapResolution, u_cameraPosition, u_tileMapOffset, u_lightSources, u_lightSourcesCount, u_lightSourcesColors, u_ambientLight;
+	GLint u_scale, u_wallMapTexture, u_wallMapResolution, u_cameraPosition, u_tileMapOffset, u_lightSources, u_lightSourcesCount, u_lightSourcesColors, u_ambientLight;
 	Vec2i cameraPositionCache;
 };
 
