@@ -12,17 +12,12 @@ void setActiveRender(IRender *render){
 }
 
 std::vector<std::string> renderBackendOrder(){
-	if (conf.renderer == "gl")
-		conf.renderer = "gl-legacy";
-	else if (conf.renderer == "sdl")
-		conf.renderer = "simple";
-
-	if (conf.renderer == "gpu" || conf.renderer == "gl-legacy" || conf.renderer == "simple")
+	if (conf.renderer == "gpu" || conf.renderer == "gl-mkxp" || conf.renderer == "simple")
 		return std::vector<std::string>(1, conf.renderer);
 
 	std::vector<std::string> order;
 	order.push_back("gpu");
-	order.push_back("gl-legacy");
+	order.push_back("gl-mkxp");
 	order.push_back("simple");
 	return order;
 }

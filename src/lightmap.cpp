@@ -18,26 +18,23 @@ struct LightMapPrivate{
 	Bitmap *bitmap;
 	Bitmap *wallMap;
 
-	int cameraX, cameraY, tilemapOffsetX, tilemapOffsetY, scale;
+	int cameraX, cameraY, tilemapOffsetX, tilemapOffsetY;
+	int scale = 1;
 	float ambient;
 	std::vector<LightSource> staticLightSources;
 	std::vector<LightSource> dynamicLightSources;
 	std::vector<LightSource> gpuBuffer;
 
 	SignalConnection bitmapUpdateConnection;
-
 	Quad quad;
-
 	Rect *srcRect;
 	SignalConnection srcRectCon;
-
 	IntRect sceneRect;
 	Vec2i sceneOrig;
 
 	/* Would this sprite be visible on
 	 * the screen if drawn? */
 	bool isVisible;
-
 	EtcTemps tmp;
 
 	SignalConnection prepareCon;
