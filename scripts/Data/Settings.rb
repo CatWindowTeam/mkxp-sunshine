@@ -18,7 +18,7 @@ module Settings
         :twm_shader             => true,
         :fog                    => true,
         :light                  => true,
-        :light_scale            => 0,
+        :light_scale            => 1,
         :light_smooth           => true,
         :water                  => true,
         :scaling_mode           => 0,
@@ -252,6 +252,8 @@ class Window_Settings
         :presets => [
           {
             :light => false,
+            :light_smooth => true,
+            :light_scale => 7,
             :water => false,
             :twm_shader => false,
             :fog => false,
@@ -260,7 +262,9 @@ class Window_Settings
             :footsplashes => false,
           },
           {
-            :light => false,
+            :light => true,
+            :light_smooth => true,
+            :light_scale => 5,
             :water => false,
             :twm_shader => false,
             :fog => true,
@@ -270,6 +274,8 @@ class Window_Settings
           },
           {
             :light => true,
+            :light_smooth => true,
+            :light_scale => 2,
             :water => false,
             :twm_shader => false,
             :fog => true,
@@ -279,6 +285,8 @@ class Window_Settings
           },
           {
             :light => true,
+            :light_smooth => true,
+            :light_scale => 1,
             :water => true,
             :twm_shader => true,
             :fog => true,
