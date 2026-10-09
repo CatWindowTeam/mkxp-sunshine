@@ -36,10 +36,11 @@ static void APIENTRY arbDebugFunc(GLenum source, GLenum type, GLuint id, GLenum 
 
 GLDebugLogger::GLDebugLogger(const char *filename){
 	p = new GLDebugLoggerPrivate();
-	if (gl.DebugMessageCallback)
+	if (gl.DebugMessageCallback){
 		gl.DebugMessageCallback(arbDebugFunc, p);
-	else
-		Debug() << "No GL debug extensions found";
+	}else{
+		Debug() << "No OpenGL debug extensions found";
+	}
 }
 
 GLDebugLogger::~GLDebugLogger(){

@@ -36,11 +36,22 @@ struct GLProperty{
 		apply(value);
 	}
 
-	void push() { stack.push(current); }
-	void pop()  { if (!stack.empty()) { set(stack.top()); stack.pop(); } }
-	const T &get()    { return current; }
+	void push(){ 
+		stack.push(current);
+	}
+
+	void pop() {
+		if(!stack.empty()){
+			set(stack.top()); stack.pop();
+		}
+	}
+	
+	const T &get(){
+		return current;
+	}
+
 	void set(const T &value){
-		if (value == current)
+		if(value == current)
 			return;
 
 		init(value);
@@ -109,7 +120,6 @@ public:
 	struct Caps{
 		int maxTexSize;
 		Caps();
-
 	} caps;
 
 	GLState();

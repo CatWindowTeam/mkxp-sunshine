@@ -27,16 +27,16 @@
 struct GLDebugLoggerPrivate;
 
 class GLDebugLogger{
-public:
-	GLDebugLogger(const char *filename = 0);
-	~GLDebugLogger();
+	public:
+		GLDebugLogger(const char *filename = 0);
+		~GLDebugLogger();
 
-private:
-	GLDebugLoggerPrivate *p;
+	private:
+		GLDebugLoggerPrivate *p;
 };
 
 #define GL_MARKER(format, ...) \
-	if (gl.StringMarker) \{ \
+	if (gl.StringMarker){ \
 		char buf[128]; \
 		int len = SDL_snprintf(buf, sizeof(buf), format, ##__VA_ARGS__); \
 		gl.StringMarker(std::min<size_t>(len, sizeof(buf)), buf); \
