@@ -97,6 +97,7 @@ public:
 	RenderTarget &getRenderTarget();
 	SDL_Surface *megaSurface() const;
 	void ensureNonMega() const;
+	void callModified();
 
 	/* Binds the backing texture and sets the correct
 	 * texture size uniform in shader */

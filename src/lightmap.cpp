@@ -10,6 +10,7 @@
 #include "config.h"
 #include "sunshine.h"
 #include "transform.h"
+#include "texpool.h"
 #include <math.h>
 #include <SDL3/SDL_rect.h>
 #include <chrono>
@@ -18,17 +19,19 @@ struct LightMapPrivate{
 	Bitmap *bitmap;
 	Bitmap *wallMap;
 
-	int cameraX, cameraY, tilemapOffsetX, tilemapOffsetY;
-	int scale = 1;
+	int cameraX, cameraY, tilemapOffsetX, tilemapOffsetY, scale;
 	float ambient;
+
 	std::vector<LightSource> staticLightSources;
 	std::vector<LightSource> dynamicLightSources;
 	std::vector<LightSource> gpuBuffer;
 
 	SignalConnection bitmapUpdateConnection;
+	SignalConnection lightRenderConnection;
+	SignalConnection srcRectCon;
+	SignalConnection prepareCon;
 	Quad quad;
 	Rect *srcRect;
-	SignalConnection srcRectCon;
 	IntRect sceneRect;
 	Vec2i sceneOrig;
 
@@ -37,29 +40,30 @@ struct LightMapPrivate{
 	bool isVisible;
 	EtcTemps tmp;
 
-	SignalConnection prepareCon;
 
 	LightMapPrivate()
-	    : bitmap(new Bitmap(shState->graphics().width(), shState->graphics().height())),
-		  wallMap(0),
+	    : wallMap(0),
 		  cameraX(0),
 		  cameraY(0),
 		  tilemapOffsetX(0),
 		  tilemapOffsetY(0),
 		  ambient(255.0),
+		  scale(1),
 	      srcRect(&tmp.rect),
 	      isVisible(false)
 	{
 		sceneRect.x = sceneRect.y = 0;
 
+		updateBitmap();
 		updateSrcRectCon();
 
-		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &LightMapPrivate::prepare);
 		bitmapUpdateConnection = shState->graphicsSignals.resized.Connect([&](int w, int h){
 			shState->rubyDispatcher().invoke([&]{
 				updateBitmap();
 			});
 		});
+		lightRenderConnection = shState->graphicsSignals.prepareDraw.Connect(*this, &LightMapPrivate::renderLight);
+		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &LightMapPrivate::prepare);
 		
 		bitmap->ensureNonMega();
 		//bitmap->fillRect(0, 0, shState->graphics().width(), shState->graphics().height(), Vec4(0, 0, 0, 1));
@@ -73,9 +77,12 @@ struct LightMapPrivate{
 		srcRectCon.Disconnect();
 		prepareCon.Disconnect();
 		bitmapUpdateConnection.Disconnect();
+		lightRenderConnection.Disconnect();
 	}
 
 	void updateBitmap(){
+		if (scale <= 0)
+			scale = 1;
 		int w = shState->graphics().width();
 		int h = shState->graphics().height();
 		int s_w = (w + scale - 1) / scale;
@@ -85,6 +92,55 @@ struct LightMapPrivate{
 		*srcRect = IntRect(0, 0, s_w * scale, s_h * scale);
 		onSrcRectChange();
 		quad.setPosRect(srcRect->toFloatRect());
+	}
+
+	void renderLight(){
+		IRender &render = shState->render();
+
+		Quad &renderQuad = shState->gpQuad();
+		FloatRect rect(0, 0, bitmap->width(), bitmap->height());
+		renderQuad.setTexPosRect(rect, rect);
+
+		RenderTarget auxTex = shState->texPool().request(bitmap->width(), bitmap->height());
+
+		render.pushBlend(false);
+		render.pushViewport(IntRect(0, 0, bitmap->width(), bitmap->height()));
+
+		render.bindTexture(auxTex.tex);
+		render.bindRenderTarget(bitmap->getRenderTarget());
+
+		// render light into bitmap
+
+		render.useEffect(SHADER_dynamicLight);
+		render.setTexSize(Vec2i(bitmap->width(), bitmap->height()));
+		render.applyViewportProj();
+		render.setScale(scale);
+
+		if (wallMap){
+			render.setEffectTexture(EffectTexture::WallMap, wallMap->getRenderTarget().tex);
+			render.setWallMapResolution(wallMap->width(), wallMap->height());
+		}
+		render.setCameraPosition(cameraX, cameraY);
+		render.setTileMapOffset(tilemapOffsetX, tilemapOffsetY);
+
+		gpuBuffer.clear();
+		gpuBuffer.insert(gpuBuffer.end(), staticLightSources.begin(), staticLightSources.end());
+		gpuBuffer.insert(gpuBuffer.end(), dynamicLightSources.begin(), dynamicLightSources.end());
+		render.setLightSources(gpuBuffer);
+		render.setAmbient(ambient);
+
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<float> elapsed = currentTime - startTime;
+		render.setTime(elapsed.count());
+
+		renderQuad.draw();
+
+		render.popViewport();
+		render.popBlend();
+
+		shState->texPool().release(auxTex);
+
+		bitmap->callModified();
 	}
 
 	void onSrcRectChange(){
@@ -217,6 +273,20 @@ void LightMap::draw(){
 		return;
 
 	IRender &render = shState->render();
+	
+	// render bitmap on screen
+	render.useEffect(SHADER_simple);
+	render.applyViewportProj();
+	render.setTextureSmooth(p->bitmap->getRenderTarget().tex, smooth);
+
+	render.pushBlendMode(BlendMultiply);
+
+	p->bitmap->bindTex();
+	p->quad.draw();
+
+	render.popBlendMode();
+
+	/*
 	render.useEffect(SHADER_dynamicLight);
 	render.applyViewportProj();
 	render.setScale(getScale());
@@ -245,6 +315,7 @@ void LightMap::draw(){
 	p->quad.draw();
 
 	render.popBlendMode();
+	*/
 }
 
 void LightMap::onGeometryChange(const Scene::Geometry &geo){

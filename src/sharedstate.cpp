@@ -165,7 +165,8 @@ void SharedState::setScreen(Scene &screen){
 GSATT(void*, bindingData)
 GSATT(SDL_Window*, sdlWindow)
 GSATT(Scene*, screen)
-GSATT(RubyDispatcher&, rubyDispatcher)
+RubyDispatcher& SharedState :: rubyDispatcher() const { return p->rubyDispatcher; }
+
 GSATT(MainDispatcher&, mainDispatcher)
 GSATT(FileSystem&, fileSystem)
 GSATT(EventThread&, eThread)

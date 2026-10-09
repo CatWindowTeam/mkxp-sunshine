@@ -1088,6 +1088,10 @@ void Bitmap::ensureNonMega() const{
 	GUARD_MEGA;
 }
 
+void Bitmap::callModified(){
+	p->onModified();
+}
+
 void Bitmap::bindTex() {
 	p->bindTexture();
 }

@@ -171,7 +171,7 @@ void EventThread::process(RGSSThreadData &rtData){
 				resetInputStates();
 				break;
 			case SDL_EVENT_WINDOW_MOVED:
-				if (shState != nullptr || event.button.windowID != WindowID){
+				if (shState != nullptr && event.button.windowID != WindowID){
 					rtData.ethread->winX = event.window.data1;
 					rtData.ethread->winY = event.window.data2;
 					shState->rubyDispatcher().invoke([event]{
