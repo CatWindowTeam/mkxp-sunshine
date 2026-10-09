@@ -40,11 +40,13 @@ void GLScissorBox::apply(const IntRect &value){
 
 void GLScissorBox::setIntersect(const IntRect &value){
 	const IntRect &current = get();
+
 	SDL_Rect r1 = { current.x, current.y, current.w, current.h };
 	SDL_Rect r2 = { value.x,   value.y,   value.w,   value.h };
 	SDL_Rect result;
-	if (!SDL_GetRectIntersection(&r1, &r2, &result))
+	if (!SDL_GetRectIntersection(&r1, &r2, &result)){
 		result.w = result.h = 0;
+	}
 
 	set(IntRect(result.x, result.y, result.w, result.h));
 }
@@ -55,35 +57,31 @@ void GLScissorTest::apply(const bool &value){
 
 void GLBlendMode::apply(const BlendType &value){
 	switch (value){
-	case BlendKeepDestAlpha :
-		gl.BlendEquation(GL_FUNC_ADD);
-		gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
-		                     GL_ZERO,      GL_ONE);
-		break;
-
-	case BlendNormal :
-		gl.BlendEquation(GL_FUNC_ADD);
-		gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
-		                     GL_ONE,       GL_ONE_MINUS_SRC_ALPHA);
-		break;
-
-	case BlendAddition :
-		gl.BlendEquation(GL_FUNC_ADD);
-		gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE,
-		                     GL_ONE,       GL_ONE);
-		break;
-
-	case BlendSubstraction :
-		gl.BlendEquation(GL_FUNC_REVERSE_SUBTRACT);
-		gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE,
-		                     GL_ZERO,      GL_ONE);
-		break;
-
-	case BlendMultiply :
-		gl.BlendEquation(GL_FUNC_ADD);
-		gl.BlendFuncSeparate(GL_DST_COLOR, GL_ZERO,
-		                     GL_ZERO,      GL_ONE);
-		break;
+		case BlendKeepDestAlpha :
+			gl.BlendEquation(GL_FUNC_ADD);
+			gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+		    	                 GL_ZERO,      GL_ONE);
+			break;
+		case BlendNormal :
+			gl.BlendEquation(GL_FUNC_ADD);
+			gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+			                     GL_ONE,       GL_ONE_MINUS_SRC_ALPHA);
+			break;
+		case BlendAddition :
+			gl.BlendEquation(GL_FUNC_ADD);
+			gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE,
+			                     GL_ONE,       GL_ONE);
+			break;
+		case BlendSubstraction :
+			gl.BlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+			gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE,
+			                     GL_ZERO,      GL_ONE);
+			break;
+		case BlendMultiply :
+			gl.BlendEquation(GL_FUNC_ADD);
+			gl.BlendFuncSeparate(GL_DST_COLOR, GL_ZERO,
+			                     GL_ZERO,      GL_ONE);
+			break;
 	}
 }
 
@@ -111,6 +109,7 @@ GLState::GLState(){
 	scissorTest.init(false);
 	scissorBox.init(IntRect(0, 0, conf.defScreenW, conf.defScreenH));
 	program.init(0);
-	if (conf.maxTextureSize > 0)
+	if(conf.maxTextureSize > 0){
 		caps.maxTexSize = conf.maxTextureSize;
+	}
 }

@@ -23,56 +23,56 @@
 #include "gl-fun.h"
 
 namespace GLMeta{
-
-#define HAVE_NATIVE_VAO (gl.GenVertexArrays && gl.BindVertexArray && gl.DeleteVertexArrays)
-
-static void vaoBindRes(VAO &vao){
-	VBO::bind(vao.vbo);
-	IBO::bind(vao.ibo);
-	for (size_t i = 0; i < vao.attrCount; ++i){
-		const VertexAttribute &va = vao.attr[i];
-		gl.EnableVertexAttribArray(va.index);
-		gl.VertexAttribPointer(va.index, va.size, va.type, GL_FALSE, vao.vertSize, va.offset);
-	}
-}
-
-void vaoInit(VAO &vao, bool keepBound){
-	if (HAVE_NATIVE_VAO){
-		gl.GenVertexArrays(1, &vao.nativeVAO);
-		gl.BindVertexArray(vao.nativeVAO);
-		vaoBindRes(vao);
-		if (!keepBound)
-			gl.BindVertexArray(0);
-	}else{
-		if (keepBound){
-			VBO::bind(vao.vbo);
-			IBO::bind(vao.ibo);
+	static void vaoBindRes(VAO &vao){
+		VBO::bind(vao.vbo);
+		IBO::bind(vao.ibo);
+		for(size_t i = 0; i < vao.attrCount; ++i){
+			const VertexAttribute &va = vao.attr[i];
+			gl.EnableVertexAttribArray(va.index);
+			gl.VertexAttribPointer(va.index, va.size, va.type, GL_FALSE, vao.vertSize, va.offset);
 		}
 	}
-}
 
-void vaoFini(VAO &vao){
-	if (HAVE_NATIVE_VAO)
-		gl.DeleteVertexArrays(1, &vao.nativeVAO);
-}
-
-void vaoBind(VAO &vao){
-	if (HAVE_NATIVE_VAO)
-		gl.BindVertexArray(vao.nativeVAO);
-	else
-		vaoBindRes(vao);
-}
-
-void vaoUnbind(VAO &vao){
-	if (HAVE_NATIVE_VAO){
-		gl.BindVertexArray(0);
-	}else{
-		for (size_t i = 0; i < vao.attrCount; ++i)
-			gl.DisableVertexAttribArray(vao.attr[i].index);
-
-		VBO::unbind();
-		IBO::unbind();
+	void vaoInit(VAO &vao, bool keepBound){
+		if(gl.vao){
+			gl.GenVertexArrays(1, &vao.nativeVAO);
+			gl.BindVertexArray(vao.nativeVAO);
+			vaoBindRes(vao);
+			if(!keepBound){
+				gl.BindVertexArray(0);
+			}
+		}else{
+			if (keepBound){
+				VBO::bind(vao.vbo);
+				IBO::bind(vao.ibo);
+			}
+		}
 	}
-}
 
+	void vaoFini(VAO &vao){
+		if(gl.vao){
+			gl.DeleteVertexArrays(1, &vao.nativeVAO);
+		}
+	}
+
+	void vaoBind(VAO &vao){
+		if(gl.vao){
+			gl.BindVertexArray(vao.nativeVAO);
+		}else{
+			vaoBindRes(vao);
+		}
+	}
+
+	void vaoUnbind(VAO &vao){
+		if (gl.vao){
+			gl.BindVertexArray(0);
+		}else{
+			for(size_t i = 0; i < vao.attrCount; ++i){
+				gl.DisableVertexAttribArray(vao.attr[i].index);
+			}
+
+			VBO::unbind();
+			IBO::unbind();
+		}
+	}
 }

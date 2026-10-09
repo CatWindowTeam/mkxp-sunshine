@@ -190,7 +190,7 @@ class Scene_Title
     @debug.bitmap.draw_text(0, ENTRY_HEIGHT, 400, ENTRY_HEIGHT, "SDL #{Sunshine::SDLVersion_major}.#{Sunshine::SDLVersion_minor}.#{Sunshine::SDLVersion_micro}")
     @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 2, 400, ENTRY_HEIGHT, "Sunshine #{Sunshine::VERSION}")
     @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 3, 400, ENTRY_HEIGHT, "Render backend: #{Sunshine::RENDERER}")
-    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 4, 400, ENTRY_HEIGHT, "Render API #{Sunshine::RENDER_API}")
+    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 4, 400, ENTRY_HEIGHT, "Render API: #{Sunshine::RENDER_API}")
     if ModLoader::IS_ENABLED
       @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 5, 400, ENTRY_HEIGHT, tr("Mods loaded: ") + ModLoader::COUNT.to_s)
       @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 6, 400, ENTRY_HEIGHT, tr("PreloadScripts loaded: ") + ModLoader::PRELOAD_SCRIPTS_COUNT.to_s)

@@ -21,7 +21,6 @@
 
 #include "gl-fun.h"
 #include "glrender.h"
-#include <tsl/robin_set.h>
 #include "meow.h"
 #include <SDL3/SDL_video.h>
 #include <string>
@@ -29,48 +28,28 @@
 GLFunctions gl;
 
 typedef const GLubyte* (APIENTRYP _PFNGLGETSTRINGIPROC) (GLenum, GLuint);
-
-static void parseExtensionsCore(_PFNGLGETINTEGERVPROC GetIntegerv, tsl::robin_set<std::string> &out){
-	_PFNGLGETSTRINGIPROC GetStringi = (_PFNGLGETSTRINGIPROC) SDL_GL_GetProcAddress("glGetStringi");
-	
-	GLint extCount = 0;
-	GetIntegerv(GL_NUM_EXTENSIONS, &extCount);
-	for (GLint i = 0; i < extCount; ++i)
-		out.insert((const char*) GetStringi(GL_EXTENSIONS, i));
-}
-
-static void parseExtensionsCompat(_PFNGLGETSTRINGPROC GetString, tsl::robin_set<std::string> &out){
-	const char *ext = (const char*) GetString(GL_EXTENSIONS);
-	if (!ext)
-		return;
-
-	char buffer[0x100];
-	size_t bufferI;
-	while (*ext){
-		bufferI = 0;
-		while (*ext && *ext != ' ')
-			buffer[bufferI++] = *ext++;
-
-		buffer[bufferI] = '\0';
-		out.insert(buffer);
-		if (*ext == ' ')
-			++ext;
-	}
-}
-
 #define GL_FUN(name, type) \
 	gl.name = (type) SDL_GL_GetProcAddress("gl" #name EXT_SUFFIX);
+
+//https://github.com/elizagamedev/mkxp-oneshot/blob/master/src/main.cpp
+static inline const char* glGetStringInt(GLenum name){
+	return (const char*) gl.GetString(name);
+}
 
 void initGLFunctions(){
 #define EXT_SUFFIX ""
 	GL_20_FUN;
 
+	//https://github.com/elizagamedev/mkxp-oneshot/blob/master/src/main.cpp
+	Debug() << "GL Vendor: " << glGetStringInt(GL_VENDOR);
+	Debug() << "GL Renderer: " << glGetStringInt(GL_RENDERER);
+	Debug() << "GL Version: " << glGetStringInt(GL_VERSION);
+		
 	/* Determine GL version */
 	const char *ver = (const char*) gl.GetString(GL_VERSION);
 	const char glesPrefix[] = "OpenGL ES ";
 	const size_t glesPrefixN = sizeof(glesPrefix)-1;
 	bool gles = false;
-
 	if (!SDL_strncmp(ver, glesPrefix, glesPrefixN)){
 		gles = true;
 		gl.glsles = true;
@@ -91,27 +70,19 @@ void initGLFunctions(){
 		GL_ES_FUN;
 	}
 
-	tsl::robin_set<std::string> ext;
-	if (glMajor >= 3)
-		parseExtensionsCore(gl.GetIntegerv, ext);
-	else
-		parseExtensionsCompat(gl.GetString, ext);
-
-	#define HAVE_EXT(_ext) ext.contains("GL_" #_ext)
-
 	/* FBO entrypoints */
-	if (glMajor >= 3 || HAVE_EXT(ARB_framebuffer_object)){
+	if (glMajor >= 3 || SDL_GL_ExtensionSupported("GL_ARB_framebuffer_object")){
 		#undef EXT_SUFFIX
 		#define EXT_SUFFIX ""
 		GL_FBO_FUN;
 		GL_FBO_BLIT_FUN;
-	}else if (gles && glMajor == 2){
+	}else if(gles && glMajor == 2){
 		GL_FBO_FUN;
-	}else if (HAVE_EXT(EXT_framebuffer_object)){
+	}else if(SDL_GL_ExtensionSupported("GL_EXT_framebuffer_object")){
 		#undef EXT_SUFFIX
 		#define EXT_SUFFIX "EXT"
 		GL_FBO_FUN;
-		if (HAVE_EXT(EXT_framebuffer_blit)){
+		if(SDL_GL_ExtensionSupported("GL_EXT_framebuffer_blit")){
 			GL_FBO_BLIT_FUN;
 		}
 	}else{
@@ -119,41 +90,47 @@ void initGLFunctions(){
 	}
 
 	/* VAO entrypoints */
-	if (HAVE_EXT(ARB_vertex_array_object) || glMajor >= 3){
+	if(SDL_GL_ExtensionSupported("GL_ARB_vertex_array_object") || glMajor >= 3){
 		#undef EXT_SUFFIX
 		#define EXT_SUFFIX ""
 		GL_VAO_FUN;
-	}else if (HAVE_EXT(APPLE_vertex_array_object)){
+		gl.vao = true;
+	}else if(SDL_GL_ExtensionSupported("GL_APPLE_vertex_array_object")){
 		#undef EXT_SUFFIX
 		#define EXT_SUFFIX "APPLE"
 		GL_VAO_FUN;
-	}else if (HAVE_EXT(OES_vertex_array_object)){
+		gl.vao = true;
+	}else if(SDL_GL_ExtensionSupported("GL_OES_vertex_array_object")){
 		#undef EXT_SUFFIX
 		#define EXT_SUFFIX "OES"
 		GL_VAO_FUN;
+		gl.vao = true;
 	}
 
 	/* Debug callback entrypoints */
-	if (HAVE_EXT(KHR_debug)){
+	if(SDL_GL_ExtensionSupported("GL_KHR_debug")){
 		#undef EXT_SUFFIX
 		#define EXT_SUFFIX ""
 		GL_DEBUG_KHR_FUN;
-	}else if (HAVE_EXT(ARB_debug_output)){
+	}else if(SDL_GL_ExtensionSupported("GL_ARB_debug_output")){
 		#undef EXT_SUFFIX
 		#define EXT_SUFFIX "ARB"
 		GL_DEBUG_KHR_FUN;
 	}
 
-	if (HAVE_EXT(GREMEDY_string_marker)){
+	if(SDL_GL_ExtensionSupported("GL_GREMEDY_string_marker")){
 		#undef EXT_SUFFIX
 		#define EXT_SUFFIX "GREMEDY"
 		GL_GREMEMDY_FUN;
 	}
 
 	/* Misc caps */
-	if (!gles || glMajor >= 3 || HAVE_EXT(EXT_unpack_subimage))
-		gl.unpack_subimage = true;
+	if (!gles || glMajor >= 3 || SDL_GL_ExtensionSupported("GL_EXT_unpack_subimage")){
+		gl.unpack_subimage = true;	
+	}
 
-	if (!gles || glMajor >= 3 || HAVE_EXT(OES_texture_npot))
+	if (!gles || glMajor >= 3 || SDL_GL_ExtensionSupported("GL_OES_texture_npot")){
 		gl.npot_repeat = true;
+	}
 }
+
