@@ -99,10 +99,8 @@ cmake . \
 make -j$(nproc)
 cd ..
 
-wget https://github.com/icculus/physfs/archive/refs/tags/release-3.2.0.tar.gz
-tar xf release-3.2.0.tar.gz
-rm release-3.2.0.tar.gz 
-cd physfs-release-3.2.0
+git clone --depth 1 https://github.com/AnmiTaliDev/physfs
+cd physfs
 cmake . \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_TOOLCHAIN_FILE=$PS2DEV/share/ps2dev.cmake \
@@ -121,6 +119,8 @@ cmake . \
 	-DPHYSFS_BUILD_TEST=OFF \
 	-DPHYSFS_DISABLE_INSTALL=ON \
 	-DPHYSFS_BUILD_DOCS=OFF
+make -j8
+cd ..
 	
 git clone --depth 1 https://github.com/AnmiTaliDev/ruby
 cd ruby
@@ -130,16 +130,16 @@ CXX="mips64r5900el-ps2-elf-g++" \
 CPP="mips64r5900el-ps2-elf-cpp" \
 AR="mips64r5900el-ps2-elf-ar" \
 AS="mips64r5900el-ps2-elf-as" \
-LD="mips64r5900el-ps2-elf-ld" \
 NM="mips64r5900el-ps2-elf-nm" \
 OBJCOPY="mips64r5900el-ps2-elf-objcopy" \
 OBJDUMP="mips64r5900el-ps2-elf-objdump" \
 RANLIB="mips64r5900el-ps2-elf-ranlib" \
 STRIP="mips64r5900el-ps2-elf-strip" \
 	./configure --disable-option-checking \
+	--with-static-linked-ext \
 	--host="mips64r5900el-ps2-elf" \
 	--target="mips64r5900el-ps2-elf" \
-	--with-static-linked-ext \
+	--build="$(./tool/config.guess)" \
 	--prefix="$PS2SDK/ports" \
 	--disable-shared \
 	--enable-static \
@@ -157,7 +157,12 @@ STRIP="mips64r5900el-ps2-elf-strip" \
 	--disable-pgo \
 	--disable-rjit \
 	--with-out-ext='*' \
-	--with-ext=zlib,monitor \
+	--with-ext= \
+	--disable-rubygems \
+	--disable-dln \
+	--disable-largefile \
+	--with-baseruby="$(command -v ruby)" \
+	--with-compress-debug-sections=no \
 	debugflags=-Wno-unused-value warnflags=-Wno-unused-value hardenflags=-Wno-unused-value
 make -j8
 cd ..
