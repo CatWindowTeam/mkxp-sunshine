@@ -2,6 +2,65 @@
 set -euo pipefail
 cd $PS2DEV
 ls $PS2SDK
+
+wget https://github.com/libsigcplusplus/libsigcplusplus/releases/download/2.12.2/libsigc++-2.12.2.tar.xz
+tar -xf libsigc++-2.12.2.tar.xz
+rm libsigc++-*.tar.xz
+cd libsigc++-2.12.2
+./autogen.sh
+CC="mips64r5900el-ps2-elf-gcc" \
+CXX="mips64r5900el-ps2-elf-g++" \
+CPP="mips64r5900el-ps2-elf-cpp" \
+AR="mips64r5900el-ps2-elf-ar" \
+AS="mips64r5900el-ps2-elf-as" \
+NM="mips64r5900el-ps2-elf-nm" \
+OBJCOPY="mips64r5900el-ps2-elf-objcopy" \
+OBJDUMP="mips64r5900el-ps2-elf-objdump" \
+RANLIB="mips64r5900el-ps2-elf-ranlib" \
+STRIP="mips64r5900el-ps2-elf-strip" \
+	./configure --disable-option-checking \
+	--with-static-linked-ext \
+	--host="mips64r5900el-ps2-elf" \
+	--target="mips64r5900el-ps2-elf" \
+	--prefix="$PS2SDK/ports" \
+	--disable-shared \
+	--enable-static \
+	--without-boost \
+	--disable-deprecated-api \
+	--disable-documentation
+make -j8
+cd ..
+
+
+git clone --depth 1 https://gitlab.freedesktop.org/pixman/pixman.git --branch 0.34
+cd pixman
+./autogen.sh
+CC="mips64r5900el-ps2-elf-gcc" \
+CXX="mips64r5900el-ps2-elf-g++" \
+CPP="mips64r5900el-ps2-elf-cpp" \
+AR="mips64r5900el-ps2-elf-ar" \
+AS="mips64r5900el-ps2-elf-as" \
+NM="mips64r5900el-ps2-elf-nm" \
+OBJCOPY="mips64r5900el-ps2-elf-objcopy" \
+CFLAGS="-O2 -Wno-error=incompatible-pointer-types" \
+OBJDUMP="mips64r5900el-ps2-elf-objdump" \
+RANLIB="mips64r5900el-ps2-elf-ranlib" \
+STRIP="mips64r5900el-ps2-elf-strip" \
+	./configure \
+	--host="mips64r5900el-ps2-elf" \
+	--target="mips64r5900el-ps2-elf" \
+	--prefix="$PS2SDK/ports" \
+	--disable-shared \
+	--enable-static \
+	--disable-libpng \
+	--disable-gtk \
+	--disable-timers \
+	--disable-static-testprogs \
+	--disable-gcc-inline-asm
+make -j8
+cd ..
+
+
 git clone --depth 1 https://github.com/libsdl-org/SDL
 cd SDL
 cmake . \
@@ -29,17 +88,11 @@ make -j$(nproc)
 cd ..
 
 git clone --depth 1 https://github.com/libsdl-org/SDL_image
-echo """set(ZLIB_LIBRARY
-    "$PS2SDK/ports/lib/libz.a"
-    CACHE FILEPATH "PS2 zlib library" FORCE)
 
-set(ZLIB_INCLUDE_DIR
-    "$PS2SDK/ports/include"
-    CACHE PATH "PS2 zlib include directory" FORCE)
-
-set(ZLIB_INCLUDE_DIRS
-    "${ZLIB_INCLUDE_DIR}"
-    CACHE PATH "PS2 zlib include directories" FORCE)
+cat > /tmp/zlib-init.cmake <<'EOF'
+set(ZLIB_LIBRARY "$ENV{PS2SDK}/ports/lib/libz.a" CACHE FILEPATH "PS2 zlib library" FORCE)
+set(ZLIB_INCLUDE_DIR "$ENV{PS2SDK}/ports/include" CACHE PATH "PS2 zlib include directory" FORCE)
+set(ZLIB_INCLUDE_DIRS "${ZLIB_INCLUDE_DIR}" CACHE PATH "PS2 zlib include directories" FORCE)
 
 if(NOT TARGET ZLIB::ZLIB)
     add_library(ZLIB::ZLIB STATIC IMPORTED GLOBAL)
@@ -47,7 +100,9 @@ if(NOT TARGET ZLIB::ZLIB)
         IMPORTED_LOCATION "${ZLIB_LIBRARY}"
         INTERFACE_INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIR}"
     )
-endif()""" > /tmp/zlib-init.cmake
+endif()
+EOF
+
 cd SDL_image
 cmake . \
 	-DCMAKE_BUILD_TYPE=Release \
@@ -56,6 +111,7 @@ cmake . \
 	-DCMAKE_PREFIX_PATH="$PS2SDK/ports" \
 	-DSDLIMAGE_TIF=OFF \
 	-DBUILD_SHARED_LIBS=OFF \
+	-DPLATFORM_SUPPORTS_SHARED=OFF \
 	-DSDLIMAGE_DEPS_SHARED=OFF \
 	-DSDLIMAGE_SAMPLES=OFF \
 	-DSDLIMAGE_TESTS=OFF \
@@ -86,9 +142,44 @@ cmake . \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_TOOLCHAIN_FILE="$PS2DEV/share/ps2dev.cmake" \
 	-DSDL3_DIR="$PS2DEV/SDL" \
+	-DSDLMIXER_GME=OFF \
+	-DPLATFORM_SUPPORTS_SHARED=OFF \
+	-DSDLMIXER_INSTALL=OFF \
+	-DSDLMIXER_DEPS_SHARED=OFF \
+	-DSDLMIXER_TESTS=OFF \
+	-DSDLMIXER_EXAMPLES=OFF \
+	-DSDLMIXER_AIFF=OFF \
+	-DSDLMIXER_WAVE=OFF \
+	-DSDLMIXER_VOC=OFF \
+	-DSDLMIXER_AU=OFF \
+	-DSDLMIXER_FLAC=OFF \
+	-DSDLMIXER_MOD=OFF \
+	-DSDLMIXER_MP3=ON \
+	-DSDLMIXER_MIDI=OFF \
+	-DSDLMIXER_OPUS=OFF \
+	-DSDLMIXER_VORBIS_STB=OFF \
+	-DSDLMIXER_VORBIS_VORBISFILE=OFF \
+	-DSDLMIXER_VORBIS_TREMOR=OFF \
+	-DSDLMIXER_VORBIS_VORBISFILE=OFF \
+	-DSDLMIXER_WAVPACK=OFF \
+	-DBUILD_SHARED_LIBS=OFF \
 	-DCMAKE_PREFIX_PATH="$PS2SDK/ports"
 make -j$(nproc)
 cd ..
+
+git clone --depth 1 https://github.com/libsdl-org/SDL_ttf
+cd SDL_ttf
+cmake . \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_TOOLCHAIN_FILE="$PS2DEV/share/ps2dev.cmake" \
+	-DSDL3_DIR="$PS2DEV/SDL" \
+	-DBUILD_SHARED_LIBS=OFF \
+	-DSDLTTF_SAMPLES=OFF \
+	-DSDLTTF_BUILD_SHARED_LIBS=OFF \
+	-DPLATFORM_SUPPORTS_SHARED=OFF
+make -j8
+cd ..
+
 
 git clone --depth 1 https://github.com/Tessil/robin-map
 cd robin-map

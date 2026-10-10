@@ -1,5 +1,6 @@
-#prepare Vita specific thinks
-function(vita_prepare)
+# tweaks for some ports
+
+function(ports_prepare)
 	if(VITA)
     	if(NOT DEFINED VITASDK_PATH OR VITASDK_PATH STREQUAL "")
         	if(DEFINED ENV{VITASDK})
@@ -15,10 +16,18 @@ function(vita_prepare)
     	if(NOT EXISTS "${VITASDK_PATH}/SDL_mixer/cmake/PkgConfigHelper.cmake")
         	message(FATAL_ERROR "PkgConfigHelper.cmake not found in ${VITASDK_PATH}/SDL_mixer/cmake")
     	endif()
+    elseif(PS2)
+		# adjust the default behavior of the FIND_XXX() commands:
+	    # search programs in the host environment
+	    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+	
+	    # search headers and libraries in the target environment
+	    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+	    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)    	
 	endif()
 endfunction()
 
-function(vita_finish)
+function(ports_finish)
 	if(VITA)
 		add_custom_command(
 			OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/build/sunshine.zip
@@ -40,6 +49,6 @@ function(vita_finish)
 		  FILE ${CMAKE_CURRENT_SOURCE_DIR}/sce_sys/livearea/contents/startup.png sce_sys/livearea/contents/startup.png
 		  FILE ${CMAKE_CURRENT_SOURCE_DIR}/sce_sys/livearea/contents/template.xml sce_sys/livearea/contents/template.xml
 		  FILE ${CMAKE_CURRENT_SOURCE_DIR}/build/sunshine.zip sunshine.zip
-		)
+		)	
 	endif()
 endfunction()

@@ -1,3 +1,5 @@
+# TODO: rework this code
+
 if(ANDROID)
 	if(TERMUX)
 		set(APP_TARGET ${PROJECT_NAME})

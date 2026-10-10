@@ -5,41 +5,31 @@ endif()
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
-set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
-    Debug
-    Release
-)
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release)
 project(oneshot)
 include(CheckIPOSupported)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/xxd.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/check.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/options.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/vita.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/ports.cmake)
 
 # cmake/vita.cmake
-vita_prepare()
+ports_prepare()
 
-check_ipo_supported(
-	RESULT ipo_supported
-	OUTPUT ipo_error
-	LANGUAGES CXX
-)
+check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error LANGUAGES CXX)
 
 # find src, embeds and binding src
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/source.cmake)
-#add_executable
+# add_executable
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_exec.cmake)
 # platform specific tweaks
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/platform.cmake)
-
+# tweak compiler and linker for optimization
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/compiler_tweaks.cmake)
 
 if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 	if(ipo_supported)
-	    set_property(
-	        TARGET ${APP_TARGET}
-	        PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
-	    )
+	    set_property(TARGET ${APP_TARGET} PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
 	else()
 	    message(WARNING "IPO/LTO is not supported: ${ipo_error}")
 	endif()
@@ -47,7 +37,7 @@ endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/deps.cmake)
 add_subdirectory(scripts)
-vita_finish()
+ports_finish()
 message(STATUS "")
 message(STATUS "----------------------------")
 message(STATUS "Version ${VERSION_STRING}")

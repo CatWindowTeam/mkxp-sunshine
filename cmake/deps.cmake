@@ -1,6 +1,5 @@
 include(FindPackageHandleStandardArgs)
 find_package(PkgConfig REQUIRED)
-find_package(tsl-robin-map REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(Ruby 3.3 COMPONENTS Interpreter Development REQUIRED)
 if(NOT TARGET SDL3::SDL3)
@@ -16,12 +15,14 @@ if(NOT TARGET SDL3_ttf::SDL3_ttf)
 	find_package(SDL3_ttf CONFIG REQUIRED)
 endif()
 
-# SDL_net doesn't support PSP so lets disable it
-if(NOT PSP)
+# SDL_net doesn't support PSP or PS2  so lets disable it
+if(NOT PSP AND NOT PS2)
 	if(NOT TARGET SDL3_net::SDL3_net)
 		find_package(SDL3_net REQUIRED)
 	endif()
 	target_compile_definitions(${APP_TARGET} PRIVATE JOURNAL_ENABLED=1)
+	target_include_directories(${APP_TARGET} PRIVATE SDL3_net::SDL3_net)
+	target_link_libraries(${APP_TARGET} PRIVATE SDL3_net::SDL3_net)
 else()
 	target_compile_definitions(${APP_TARGET} PRIVATE JOURNAL_ENABLED=0)
 endif()
@@ -43,26 +44,27 @@ if(ANDROID AND NOT TERMUX)
 	endif()
 endif()
 
+if(NOT ROBIN_MAP_VENDORED)
+	find_package(tsl-robin-map REQUIRED)
+	target_link_libraries(${APP_TARGET} PRIVATE tsl::robin_map)
+endif()
+
 target_compile_definitions(${APP_TARGET} PRIVATE ${DEFINES})
 target_include_directories(${APP_TARGET} PRIVATE
 	src
-	include
+	external/robin-map/include
 	${SDL_INCLUDE_DIRS}
 	${PIXMAN_INCLUDE_DIR}
 	${SIGC2_INCLUDE_DIRS}
 	${Ruby_INCLUDE_DIRS}
 	${PHYSFS_INCLUDE_DIR}
-	${ZLIB_INCLUDE_DIRS}
-	SDL3::Headers
-	SDL3_mixer::SDL3_mixer
-	SDL3_net::SDL3_net)
+	${ZLIB_INCLUDE_DIRS})
 target_link_directories(${APP_TARGET} PRIVATE ${SIGC2_LIBRARY_DIRS})
 
 target_link_libraries(${APP_TARGET} PRIVATE
 	SDL3_image::SDL3_image
 	SDL3_mixer::SDL3_mixer
 	SDL3_ttf::SDL3_ttf
-	SDL3_net::SDL3_net
 	SDL3::SDL3
 	${PHYSFS_LIBRARY}
 	${PIXMAN_LIBRARY}
@@ -70,5 +72,6 @@ target_link_libraries(${APP_TARGET} PRIVATE
 	${PLATFORM_LIBRARIES}
 	${Ruby_LIBRARIES}
 	ZLIB::ZLIB
-	physfs
-	tsl::robin_map)
+	physfs)
+
+message(STATUS "PHYSFS_INCLUDE_DIR=${PHYSFS_INCLUDE_DIR}")

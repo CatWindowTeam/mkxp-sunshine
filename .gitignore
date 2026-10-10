@@ -51,5 +51,5 @@ build/
 .idea/
 .rubocop_todo.yml
 test.py
-appimagetool-*.AppImage
 sunshine.zip
+external/*
