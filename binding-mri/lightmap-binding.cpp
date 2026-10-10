@@ -21,6 +21,7 @@ DEF_PROP_I(LightMap, CameraY)
 DEF_PROP_I(LightMap, TilemapOffsetX)
 DEF_PROP_I(LightMap, TilemapOffsetY)
 DEF_PROP_I(LightMap, Scale)
+DEF_PROP_B(LightMap, SnapToMap)
 
 static VALUE LightMapGetSmooth(int argc, VALUE *argv, VALUE self){
     LightMap *k = getPrivateData<LightMap>(self);
@@ -106,6 +107,7 @@ void lightmapBindingInit(){
 	INIT_PROP_BIND( LightMap, TilemapOffsetY, "tilemap_offset_y" );
 	INIT_PROP_BIND( LightMap, Scale, "scale" );
 	INIT_PROP_BIND( LightMap, Smooth, "smooth" );
+	INIT_PROP_BIND( LightMap, SnapToMap, "snap_to_map" );
 	
 	rb_define_method(klass, "clear_static_sources", clearStaticSources, 0);
 	rb_define_method(klass, "clear_dynamic_sources", clearDynamicSources, 0);

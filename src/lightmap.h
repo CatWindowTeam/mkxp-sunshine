@@ -18,7 +18,6 @@ public:
 
 	void update();
 
-	DECL_ATTR( Bitmap,         Bitmap* )
 	DECL_ATTR( WallMap,        Bitmap* )
 	DECL_ATTR( CameraX,        int )
 	DECL_ATTR( CameraY,        int )
@@ -26,6 +25,7 @@ public:
 	DECL_ATTR( TilemapOffsetY, int )
 	DECL_ATTR( Scale,          int )
 	DECL_ATTR( Ambient,        float )
+	DECL_ATTR( SnapToMap,      bool )
 
 	void clearStaticLightSources();
 	void clearDynamicLightSources();

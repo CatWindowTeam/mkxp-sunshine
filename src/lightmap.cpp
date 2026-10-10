@@ -36,7 +36,7 @@ struct LightMapPrivate{
 
 	/* Would this sprite be visible on
 	 * the screen if drawn? */
-	bool isVisible;
+	bool isVisible, snapToMap;
 	EtcTemps tmp;
 
 
@@ -49,7 +49,8 @@ struct LightMapPrivate{
 		  ambient(255.0),
 		  scale(1),
 	      srcRect(&tmp.rect),
-	      isVisible(false)
+	      isVisible(false),
+		  snapToMap(true)
 	{
 		sceneRect.x = sceneRect.y = 0;
 
@@ -77,20 +78,52 @@ struct LightMapPrivate{
 		bitmapUpdateConnection.Disconnect();
 	}
 
-	void updateBitmap(){
+	Vec2i calcBitmapSize(){
 		if (scale <= 0)
 			scale = 1;
+		
 		int w = shState->graphics().width();
 		int h = shState->graphics().height();
 		int s_w = (w + scale - 1) / scale;
 		int s_h = (h + scale - 1) / scale;
-		bitmap = new Bitmap(s_w, s_h);
-		bitmap->ensureNonMega();
-		*srcRect = IntRect(0, 0, s_w * scale, s_h * scale);
-		onSrcRectChange();
-		quad.setPosRect(srcRect->toFloatRect());
+		
+		if (snapToMap){
+			s_w += 1;
+			s_h += 1;
+		}
+
+		return Vec2i(s_w, s_h);
 	}
 
+	Vec2i calcOffset(){
+		int offsetX = (tilemapOffsetX - tilemapOffsetX / scale * scale);
+		int offsetY = (tilemapOffsetY - tilemapOffsetY / scale * scale);
+		return Vec2i(offsetX, offsetY);
+	}
+
+	void updateBitmap() {
+		Vec2i size = calcBitmapSize();
+
+		bitmap = new Bitmap(size.x, size.y);
+		bitmap->ensureNonMega();
+		snapLight(size);
+	}
+
+	void snapLight(Vec2i size) {
+		if (!snapToMap || scale == 1)
+			*srcRect = IntRect(0, 0, size.x * scale, size.y * scale);
+		else {
+			Vec2i offset = calcOffset();
+			*srcRect = IntRect(offset.x, offset.y, size.x * scale, size.y * scale);
+		}
+		onSrcRectChange();
+		//quad.setPosRect(srcRect->toFloatRect());
+	}
+
+	void snapLight() {
+		Vec2i size = calcBitmapSize();
+		snapLight(size);
+	}
 
 	// render light into bitmap
 	void renderLight(){
@@ -117,8 +150,14 @@ struct LightMapPrivate{
 			render.setEffectTexture(EffectTexture::WallMap, wallMap->getRenderTarget().tex);
 			render.setWallMapResolution(wallMap->width(), wallMap->height());
 		}
-		render.setCameraPosition(cameraX, cameraY);
-		render.setTileMapOffset(tilemapOffsetX, tilemapOffsetY);
+		if (!snapToMap)
+			render.setCameraPosition(cameraX, cameraY);
+		else {
+			Vec2i offset = calcOffset();
+			render.setCameraPosition(cameraX + offset.x, cameraY + offset.y);
+		}
+		// for wallmap
+		//render.setTileMapOffset(tilemapOffsetX, tilemapOffsetY);
 
 		gpuBuffer.clear();
 		gpuBuffer.insert(gpuBuffer.end(), staticLightSources.begin(), staticLightSources.end());
@@ -141,18 +180,9 @@ struct LightMapPrivate{
 	}
 
 	void onSrcRectChange(){
-		FloatRect rect = srcRect->toFloatRect();
-		Vec2i bmSize;
 		if (!nullOrDisposed(bitmap))
-			bmSize = Vec2i(bitmap->width(), bitmap->height());
-
-		/* Clamp the rectangle so it doesn't reach outside
-		 * the bitmap bounds */
-		rect.w = clamp<int>(rect.w, 0, bmSize.x-rect.x);
-		rect.h = clamp<int>(rect.h, 0, bmSize.y-rect.y);
-
-		quad.setTexRect(rect);
-		quad.setPosRect(FloatRect(0, 0, rect.w, rect.h));
+			quad.setTexRect(FloatRect(0, 0, bitmap->width(), bitmap->height()));
+		quad.setPosRect(srcRect->toFloatRect());
 	}
  
 	void updateSrcRectCon(){
@@ -198,12 +228,21 @@ LightMap::~LightMap(){
 
 DEF_ATTR_RD_SIMPLE(LightMap, WallMap, Bitmap*, p->wallMap)
 DEF_ATTR_RD_SIMPLE(LightMap, Scale, int, p->scale)
+DEF_ATTR_RD_SIMPLE(LightMap, SnapToMap,      bool,  p->snapToMap);
 
 DEF_ATTR_SIMPLE(LightMap, CameraX,        int,   p->cameraX)
 DEF_ATTR_SIMPLE(LightMap, CameraY,        int,   p->cameraY)
 DEF_ATTR_SIMPLE(LightMap, TilemapOffsetX, int,   p->tilemapOffsetX)
 DEF_ATTR_SIMPLE(LightMap, TilemapOffsetY, int,   p->tilemapOffsetY)
 DEF_ATTR_SIMPLE(LightMap, Ambient,        float, p->ambient);
+
+void LightMap::setSnapToMap(bool value){
+	if (value == p->snapToMap)
+		return;
+	
+	p->snapToMap = value;
+	p->updateBitmap();
+}
 
 void LightMap::setScale(int scale){
 	guardDisposed();
@@ -269,6 +308,8 @@ void LightMap::draw(){
 
 	if (emptyFlashFlag)
 		return;
+
+	p->snapLight();
 
 	IRender &render = shState->render();
 	
