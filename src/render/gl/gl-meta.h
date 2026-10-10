@@ -20,35 +20,35 @@
 */
 
 #pragma once
-#include "gl-fun.h"
-#include "gl-util.h"
-#include <stddef.h>
+#ifdef RENDER_GL_MKXP
+	#include "gl-fun.h"
+	#include "gl-util.h"
+	#include <stddef.h>
 
-struct VertexAttribute{
-	GLuint index;
-	GLint size;
-	GLenum type;
-	const GLvoid *offset;
-};
+	struct VertexAttribute{
+		GLuint index;
+		GLint size;
+		GLenum type;
+		const GLvoid *offset;
+	};
 
-namespace GLMeta{
+	namespace GLMeta{
+		/* ARB_vertex_array_object */
+		struct VAO{
+			/* Set manually, then call vaoInit() */
+			const VertexAttribute *attr;
+			size_t attrCount;
+			GLsizei vertSize;
+			VBO::ID vbo;
+			IBO::ID ibo;
 
-/* ARB_vertex_array_object */
-struct VAO{
-	/* Set manually, then call vaoInit() */
-	const VertexAttribute *attr;
-	size_t attrCount;
-	GLsizei vertSize;
-	VBO::ID vbo;
-	IBO::ID ibo;
+			/* Don't touch */
+			GLuint nativeVAO;
+		};
 
-	/* Don't touch */
-	GLuint nativeVAO;
-};
-
-void vaoInit(VAO &vao, bool keepBound = false);
-void vaoFini(VAO &vao);
-void vaoBind(VAO &vao);
-void vaoUnbind(VAO &vao);
-
-}
+		void vaoInit(VAO &vao, bool keepBound = false);
+		void vaoFini(VAO &vao);
+		void vaoBind(VAO &vao);
+		void vaoUnbind(VAO &vao);
+	}
+#endif

@@ -1,3 +1,5 @@
+#ifdef RENDER_GPU
+
 #include "gpurender.h"
 #include "render/backends.h"
 #include "config.h"
@@ -15,9 +17,9 @@
 #include <string.h>
 
 #ifdef SUNSHINE_GPU_SHADERS
-#include "uber.vert.spv.xxd"
-#include "uber.frag.spv.xxd"
-#include "light.frag.spv.xxd"
+	#include "uber.vert.spv.xxd"
+	#include "uber.frag.spv.xxd"
+	#include "light.frag.spv.xxd"
 #endif
 
 static SDL_GPUDevice *createdDevice = 0;
@@ -1376,3 +1378,5 @@ IRenderContext *createGPURenderContext(SDL_Window *window){
 IRender *createGPURender(const Config &conf){
 	return new GPURender(conf, createdDevice, createdWindow);
 }
+
+#endif

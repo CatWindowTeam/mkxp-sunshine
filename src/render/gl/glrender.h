@@ -1,4 +1,7 @@
 #pragma once
+
+#ifdef RENDER_GL_MKXP
+
 #include "render/irender.h"
 #include "glstate.h"
 #include "gl-meta.h"
@@ -139,3 +142,5 @@ private:
 };
 
 #define glState static_cast<GLRender&>(activeRender()).state()
+
+#endif

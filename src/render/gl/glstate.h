@@ -20,107 +20,106 @@
 */
 
 #pragma once
-#include "etc.h"
-#include <stack>
-#include <assert.h>
-#include "config.h"
+#ifdef RENDER_GL_MKXP
+	#include "etc.h"
+	#include <stack>
+	#include <assert.h>
+	#include "config.h"
 
-template<typename T>
-struct GLProperty{
-	~GLProperty(){
-		assert(stack.size() == 0);
-	}
-
-	void init(const T &value){
-		current = value;
-		apply(value);
-	}
-
-	void push(){ 
-		stack.push(current);
-	}
-
-	void pop() {
-		if(!stack.empty()){
-			set(stack.top()); stack.pop();
+	template<typename T>
+	struct GLProperty{
+		~GLProperty(){
+			assert(stack.size() == 0);
 		}
-	}
+
+		void init(const T &value){
+			current = value;
+			apply(value);
+		}
+
+		void push(){ 
+			stack.push(current);
+		}
+
+		void pop() {
+			if(!stack.empty()){
+				set(stack.top()); stack.pop();
+			}
+		}
 	
-	const T &get(){
-		return current;
-	}
+		const T &get(){
+			return current;
+		}
 
-	void set(const T &value){
-		if(value == current)
-			return;
+		void set(const T &value){
+			if(value == current)
+				return;
 
-		init(value);
-	}
+			init(value);
+		}
 
-	void pushSet(const T &value){
-		push();
-		set(value);
-	}
+		void pushSet(const T &value){
+			push();
+			set(value);
+		}
 
-	void refresh(){
-		apply(current);
-	}
-private:
-	virtual void apply(const T &value) = 0;
+		void refresh(){
+			apply(current);
+		}
+	private:
+		virtual void apply(const T &value) = 0;
 
-	T current;
-	std::stack<T> stack;
-};
+		T current;
+		std::stack<T> stack;
+	};
 
+	class GLClearColor : public GLProperty<Vec4>{
+		void apply(const Vec4 &);
+	};
 
-class GLClearColor : public GLProperty<Vec4>{
-	void apply(const Vec4 &);
-};
+	class GLScissorBox : public GLProperty<IntRect>{
+	public:
+		/* Sets the intersection of the current box with value */
+		void setIntersect(const IntRect &value);
 
-class GLScissorBox : public GLProperty<IntRect>{
-public:
-	/* Sets the intersection of the current box with value */
-	void setIntersect(const IntRect &value);
+	private:
+		void apply(const IntRect &value);
+	};
 
-private:
-	void apply(const IntRect &value);
-};
+	class GLScissorTest : public GLProperty<bool>{
+		void apply(const bool &value);
+	};
 
-class GLScissorTest : public GLProperty<bool>{
-	void apply(const bool &value);
-};
+	class GLBlendMode : public GLProperty<BlendType>{
+		void apply(const BlendType &value);
+	};
 
-class GLBlendMode : public GLProperty<BlendType>{
-	void apply(const BlendType &value);
-};
+	class GLBlend : public GLProperty<bool>{
+		void apply(const bool &value);
+	};
 
-class GLBlend : public GLProperty<bool>{
-	void apply(const bool &value);
-};
+	class GLViewport : public GLProperty<IntRect>{
+		void apply(const IntRect &value);
+	};
 
-class GLViewport : public GLProperty<IntRect>{
-	void apply(const IntRect &value);
-};
+	class GLProgram : public GLProperty<unsigned int> /* GLuint */{
+		void apply(const unsigned int &value);
+	};
 
-class GLProgram : public GLProperty<unsigned int> /* GLuint */{
-	void apply(const unsigned int &value);
-};
+	class GLState{
+	public:
+		GLClearColor clearColor;
+		GLScissorBox scissorBox;
+		GLScissorTest scissorTest;
+		GLBlendMode blendMode;
+		GLBlend blend;
+		GLViewport viewport;
+		GLProgram program;
 
-
-class GLState{
-public:
-	GLClearColor clearColor;
-	GLScissorBox scissorBox;
-	GLScissorTest scissorTest;
-	GLBlendMode blendMode;
-	GLBlend blend;
-	GLViewport viewport;
-	GLProgram program;
-
-	struct Caps{
-		int maxTexSize;
-		Caps();
-	} caps;
-
-	GLState();
-};
+		struct Caps{
+			int maxTexSize;
+			Caps();
+		} caps;
+		GLState();
+	};
+#endif

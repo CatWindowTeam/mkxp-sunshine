@@ -19,6 +19,8 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifdef RENDER_GL_MKXP
+
 #include "shader.h"
 #include "sharedstate.h"
 #include "render/gl/glrender.h"
@@ -663,3 +665,5 @@ ObscuredShader::ObscuredShader(){
 void ObscuredShader::setObscured(const TexHandle value){
 	setTexUniform(u_obscured, 1, value);
 }
+
+#endif

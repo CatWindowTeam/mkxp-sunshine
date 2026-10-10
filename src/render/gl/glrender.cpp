@@ -1,3 +1,5 @@
+#ifdef RENDER_GL_MKXP
+
 #include "glrender.h"
 #include "render/backends.h"
 #include "gl-fun.h"
@@ -762,3 +764,6 @@ bool glProbe(SDL_Window *window){
 	SDL_GL_DestroyContext(probe);
 	return true;
 }
+
+
+#endif

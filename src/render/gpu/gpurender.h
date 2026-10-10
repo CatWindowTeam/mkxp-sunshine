@@ -1,4 +1,6 @@
 #pragma once
+#ifdef RENDER_GPU
+
 #include "render/statefulrender.h"
 #include <SDL3/SDL_gpu.h>
 #include <map>
@@ -218,3 +220,5 @@ private:
 	size_t indexQuads;
 	size_t neededQuads;
 };
+
+#endif

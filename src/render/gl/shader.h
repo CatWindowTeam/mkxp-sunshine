@@ -20,6 +20,8 @@
 */
 
 #pragma once
+#ifdef RENDER_GL_MKXP
+
 #include "etc-internal.h"
 #include "render/irender.h"
 #include "gl-util.h"
@@ -367,3 +369,5 @@ struct ShaderSet{
 	ObscuredShader obscured;
 	DynamicLightShader dynamicLight;
 };
+
+#endif

@@ -20,24 +20,26 @@
 */
 
 #pragma once
-#include "gl-fun.h"
-#include <SDL3/SDL_stdinc.h>
-#include <algorithm>
+#ifdef RENDER_GL_MKXP
+	#include "gl-fun.h"
+	#include <SDL3/SDL_stdinc.h>
+	#include <algorithm>
 
-struct GLDebugLoggerPrivate;
+	struct GLDebugLoggerPrivate;
 
-class GLDebugLogger{
-	public:
-		GLDebugLogger(const char *filename = 0);
-		~GLDebugLogger();
+	class GLDebugLogger{
+		public:
+			GLDebugLogger(const char *filename = 0);
+			~GLDebugLogger();
+		private:
+			GLDebugLoggerPrivate *p;
+	};
 
-	private:
-		GLDebugLoggerPrivate *p;
-};
+	#define GL_MARKER(format, ...) \
+		if(gl.StringMarker){ \
+			char buf[128]; \
+			int len = SDL_snprintf(buf, sizeof(buf), format, ##__VA_ARGS__); \
+			gl.StringMarker(std::min<size_t>(len, sizeof(buf)), buf); \
+		}
 
-#define GL_MARKER(format, ...) \
-	if (gl.StringMarker){ \
-		char buf[128]; \
-		int len = SDL_snprintf(buf, sizeof(buf), format, ##__VA_ARGS__); \
-		gl.StringMarker(std::min<size_t>(len, sizeof(buf)), buf); \
-	}
+#endif

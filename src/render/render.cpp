@@ -16,57 +16,96 @@ std::vector<std::string> renderBackendOrder(){
 		return std::vector<std::string>(1, conf.renderer);
 
 	std::vector<std::string> order;
-	order.push_back("gpu");
-	order.push_back("gl-mkxp");
-	order.push_back("simple");
+	#ifdef RENDER_GPU
+		order.push_back("gpu");
+	#endif
+
+	#ifdef RENDER_GL_MKXP
+		order.push_back("gl-mkxp");
+	#endif
+
+	#ifdef RENDER_SIMPLE
+		order.push_back("simple");
+	#endif
 	return order;
 }
 
 uint64_t renderWindowFlags(){
-	if (conf.renderer == "gpu")
-		return gpuWindowFlags();
+	#ifdef RENDER_GPU
+		if(conf.renderer == "gpu")
+			return gpuWindowFlags();
+	#endif
 
-	if (conf.renderer == "simple")
-		return sdlWindowFlags();
+	#ifdef RENDER_SIMPLE
+		if(conf.renderer == "simple")
+			return sdlWindowFlags();
+	#endif
 
-	return glWindowFlags();
+	#ifdef RENDER_GL_MKXP
+		return glWindowFlags();
+	#endif
 }
 
 void setupRenderWindowAttributes(){
-	if (conf.renderer == "gpu")
-		gpuSetupWindowAttributes();
-	else if (conf.renderer == "simple")
-		sdlSetupWindowAttributes();
-	else
-		glSetupWindowAttributes();
+	if(conf.renderer == "gpu"){
+		#ifdef RENDER_GPU
+			gpuSetupWindowAttributes();
+		#endif
+	}else if(conf.renderer == "simple"){
+		#ifdef RENDER_SIMPLE
+			sdlSetupWindowAttributes();
+		#endif
+	}else{
+		#ifdef RENDER_GL_MKXP
+			glSetupWindowAttributes();
+		#endif
+	}
 }
 
 bool probeRenderBackend(SDL_Window *window){
-	if (conf.renderer == "gpu")
-		return gpuProbe(window);
+	#ifdef RENDER_GPU
+		if(conf.renderer == "gpu")
+			return gpuProbe(window);
+	#endif
 
-	if (conf.renderer == "simple")
-		return sdlProbe(window);
+	#ifdef RENDER_SIMPLE
+		if(conf.renderer == "simple")
+			return sdlProbe(window);
+	#endif
 
-	return glProbe(window);
+	#ifdef RENDER_GL_MKXP
+		return glProbe(window);
+	#endif
 }
 
 IRenderContext *createRenderContext(SDL_Window *window){
-	if (conf.renderer == "gpu")
-		return createGPURenderContext(window);
+	#ifdef RENDER_GPU
+		if(conf.renderer == "gpu")
+			return createGPURenderContext(window);
+	#endif
 
-	if (conf.renderer == "simple")
-		return createSDLRenderContext(window);
+	#ifdef RENDER_SIMPLE
+		if(conf.renderer == "simple")
+			return createSDLRenderContext(window);
+	#endif
 
-	return createGLRenderContext(window);
+	#ifdef RENDER_GL_MKXP
+		return createGLRenderContext(window);
+	#endif
 }
 
 IRender *createRender(){
-	if (conf.renderer == "gpu")
-		return createGPURender(conf);
+	#ifdef RENDER_GPU
+		if(conf.renderer == "gpu")
+			return createGPURender(conf);
+	#endif
 
-	if (conf.renderer == "simple")
-		return createSDLRender(conf);
+	#ifdef RENDER_SIMPLE
+		if(conf.renderer == "simple")
+			return createSDLRender(conf);
+	#endif
 
-	return createGLRender(conf);
+	#ifdef RENDER_GL_MKXP
+		return createGLRender(conf);
+	#endif
 }

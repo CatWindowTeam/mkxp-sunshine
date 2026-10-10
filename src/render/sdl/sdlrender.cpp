@@ -1,3 +1,5 @@
+#ifdef RENDER_SIMPLE
+
 #include "sdlrender.h"
 #include "render/backends.h"
 #include "config.h"
@@ -734,3 +736,5 @@ bool sdlProbe(SDL_Window *window){
 	SDL_DestroyRenderer(probe);
 	return true;
 }
+
+#endif

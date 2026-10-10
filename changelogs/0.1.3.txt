@@ -22,3 +22,7 @@ Boost removed
 Embeds size optimized
 OPTIMIZATION!
 RGSSAS archives support removed
+Remorked light system
+Added Render backends: gl-mkxp, simple, GPU
+Improved VAO support in gl-mkxp
+Rewrited cmake configuration

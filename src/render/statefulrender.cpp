@@ -257,22 +257,19 @@ void StatefulRender::setEffectTexture(EffectTexture slot, TexHandle tex){
 	EffectUniforms &u = uniforms();
 
 	switch (slot){
-	case EffectTexture::Noise :
-	case EffectTexture::Obscured :
-	case EffectTexture::Destination :
-	case EffectTexture::Current :
+	case EffectTexture::Noise:
+	case EffectTexture::Obscured:
+	case EffectTexture::Destination:
+	case EffectTexture::Current:
 		u.aux[1] = tex.id;
 		break;
-
-	case EffectTexture::Frozen :
+	case EffectTexture::Frozen:
 		u.aux[2] = tex.id;
 		break;
-
-	case EffectTexture::TransMap :
+	case EffectTexture::TransMap:
 		u.aux[3] = tex.id;
 		break;
-
-	case EffectTexture::WallMap :
+	case EffectTexture::WallMap:
 		break;
 	}
 }
@@ -348,8 +345,7 @@ void StatefulRender::setCameraPosition(int x, int y){
 	cameraPos = Vec2i(x, y);
 }
 
-void StatefulRender::setTileMapOffset(int, int){
-}
+void StatefulRender::setTileMapOffset(int, int){}
 
 void StatefulRender::setLightSources(const std::vector<LightSource> &sources){
 	lights.clear();

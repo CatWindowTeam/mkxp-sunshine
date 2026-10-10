@@ -1,4 +1,6 @@
 #pragma once
+#ifdef RENDER_SIMPLE
+
 #include "render/statefulrender.h"
 #include <SDL3/SDL_render.h>
 #include <memory>
@@ -95,3 +97,5 @@ private:
 	int maxTexSize;
 	std::string apiNameStr;
 };
+
+#endif

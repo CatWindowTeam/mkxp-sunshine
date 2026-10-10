@@ -19,30 +19,32 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "gl-debug.h"
-#include "debugwriter.h"
-#include "gl-fun.h"
+#ifdef RENDER_GL_MKXP
+	#include "gl-debug.h"
+	#include "debugwriter.h"
+	#include "gl-fun.h"
 
-struct GLDebugLoggerPrivate{
-	~GLDebugLoggerPrivate(){}
-};
+	struct GLDebugLoggerPrivate{
+		~GLDebugLoggerPrivate(){}
+	};
 
-static void APIENTRY arbDebugFunc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
-	GLDebugLoggerPrivate *p = static_cast<GLDebugLoggerPrivate*>(const_cast<void*>(userParam));
-	if (severity != GL_DEBUG_SEVERITY_HIGH_ARB)
-		return;
-	Debug() << message;
-}
-
-GLDebugLogger::GLDebugLogger(const char *filename){
-	p = new GLDebugLoggerPrivate();
-	if (gl.DebugMessageCallback){
-		gl.DebugMessageCallback(arbDebugFunc, p);
-	}else{
-		Debug() << "No OpenGL debug extensions found";
+	static void APIENTRY arbDebugFunc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+		GLDebugLoggerPrivate *p = static_cast<GLDebugLoggerPrivate*>(const_cast<void*>(userParam));
+		if(severity != GL_DEBUG_SEVERITY_HIGH_ARB)
+			return;
+		Debug() << message;
 	}
-}
 
-GLDebugLogger::~GLDebugLogger(){
-	delete p;
-}
+	GLDebugLogger::GLDebugLogger(const char *filename){
+		p = new GLDebugLoggerPrivate();
+		if(gl.DebugMessageCallback){
+			gl.DebugMessageCallback(arbDebugFunc, p);
+		}else{
+			Debug() << "No OpenGL debug extensions found";
+		}
+	}
+
+	GLDebugLogger::~GLDebugLogger(){
+		delete p;
+	}
+#endif
