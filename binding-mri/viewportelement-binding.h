@@ -70,6 +70,6 @@ static C *viewportElementInitialize(int argc, VALUE *argv, VALUE self){
 template<class C>
 void viewportElementBindingInit(VALUE klass){
 	sceneElementBindingInit<C>(klass);
-	rb_define_singleton_method(klass, "viewport", RUBY_METHOD_FUNC(viewportElementGetViewport<C>), -1);
+	rb_define_method(klass, "viewport", RUBY_METHOD_FUNC(viewportElementGetViewport<C>), -1);
 	rb_define_method(klass, "viewport=", RUBY_METHOD_FUNC(viewportElementSetViewport<C>), -1);
 }

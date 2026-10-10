@@ -20,6 +20,7 @@ module Settings
         :light                  => true,
         :light_scale            => 1,
         :light_smooth           => true,
+        :light_snap             => true,
         :water                  => true,
         :scaling_mode           => 0,
         :vsync                  => 0,
@@ -253,7 +254,7 @@ class Window_Settings
           {
             :light => false,
             :light_smooth => true,
-            :light_scale => 7,
+            :light_scale => 5,
             :water => false,
             :twm_shader => false,
             :fog => false,
@@ -264,7 +265,7 @@ class Window_Settings
           {
             :light => true,
             :light_smooth => true,
-            :light_scale => 5,
+            :light_scale => 3,
             :water => false,
             :twm_shader => false,
             :fog => true,
@@ -307,13 +308,19 @@ class Window_Settings
         :type => :enum,
         :name => "Dynamic Light Scale",
         :parameter => :light_scale,
-        :values => ["1x", "2x", "4x", "8x", "16x", "32x", "64x", "128x"],
+        :values => ["1x", "2x", "4x", "8x", "16x", "32x"],
         :icons => [[3, 3]],
       },
       {
         :type => :bool,
         :name => "Smooth Dynamic Light",
         :parameter => :light_smooth,
+        :icons => [[3, 3]]
+      },
+      {
+        :type => :bool,
+        :name => "Snap light to map",
+        :parameter => :light_snap,
         :icons => [[3, 3]]
       },
       {
