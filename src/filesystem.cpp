@@ -254,10 +254,11 @@ void FileSystem::addPath(const char *path){
 	/* Try the normal mount first */
 	if (!PHYSFS_mount(path, 0, 1)){
 		/* If it didn't work, try mounting via a wrapped
-		 * SDL_IOStream */
+		* SDL_IOStream */
 		PHYSFS_Io *io = createSDLRWIo(path);
-		if (io)
+		if(io){
 			PHYSFS_mountIo(io, path, 0, 1);
+		}
 	}
 }
 

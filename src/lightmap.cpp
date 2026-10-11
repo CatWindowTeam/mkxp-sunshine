@@ -137,10 +137,8 @@ struct LightMapPrivate{
 
 		render.pushBlend(false);
 		render.pushViewport(IntRect(0, 0, bitmap->width(), bitmap->height()));
-
 		render.bindTexture(auxTex.tex);
 		render.bindRenderTarget(bitmap->getRenderTarget());
-
 		render.useEffect(SHADER_dynamicLight);
 		render.setTexSize(Vec2i(bitmap->width(), bitmap->height()));
 		render.applyViewportProj();
@@ -150,9 +148,10 @@ struct LightMapPrivate{
 			render.setEffectTexture(EffectTexture::WallMap, wallMap->getRenderTarget().tex);
 			render.setWallMapResolution(wallMap->width(), wallMap->height());
 		}
-		if (!snapToMap)
+		
+		if(!snapToMap){
 			render.setCameraPosition(cameraX, cameraY);
-		else {
+		}else{
 			Vec2i offset = calcOffset();
 			render.setCameraPosition(cameraX + offset.x, cameraY + offset.y);
 		}
@@ -170,7 +169,6 @@ struct LightMapPrivate{
 		render.setTime(elapsed.count());
 
 		renderQuad.draw();
-
 		render.popViewport();
 		render.popBlend();
 
@@ -250,8 +248,7 @@ void LightMap::setScale(int scale){
 		return;
 	
 	p->scale = scale;
-	if (p->bitmap != nullptr && !p->bitmap->isDisposed())
-	{
+	if (p->bitmap != nullptr && !p->bitmap->isDisposed()){
 		p->bitmap->dispose();
 		delete p->bitmap;
 	}
@@ -312,11 +309,9 @@ void LightMap::draw(){
 	p->snapLight();
 
 	IRender &render = shState->render();
-	
 	render.useEffect(SHADER_simple);
 	render.applyViewportProj();
 	render.setTextureSmooth(p->bitmap->getRenderTarget().tex, smooth);
-
 	render.pushBlendMode(BlendMultiply);
 
 	p->bitmap->bindTex();

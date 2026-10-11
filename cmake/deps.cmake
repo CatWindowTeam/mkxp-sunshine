@@ -23,8 +23,6 @@ if(NOT PSP AND NOT PS2)
 	target_compile_definitions(${APP_TARGET} PRIVATE JOURNAL_ENABLED=1)
 	target_include_directories(${APP_TARGET} PRIVATE SDL3_net::SDL3_net)
 	target_link_libraries(${APP_TARGET} PRIVATE SDL3_net::SDL3_net)
-else()
-	target_compile_definitions(${APP_TARGET} PRIVATE JOURNAL_ENABLED=0)
 endif()
 
 find_package(PhysFS REQUIRED)
@@ -71,7 +69,6 @@ target_link_libraries(${APP_TARGET} PRIVATE
 	${SIGC2_LIBRARIES}
 	${PLATFORM_LIBRARIES}
 	${Ruby_LIBRARIES}
-	ZLIB::ZLIB
-	physfs)
+	ZLIB::ZLIB)
 
 message(STATUS "PHYSFS_INCLUDE_DIR=${PHYSFS_INCLUDE_DIR}")

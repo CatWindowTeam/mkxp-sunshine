@@ -23,11 +23,8 @@ bool AudioPlayback::initialize(MIX_Mixer* mixer, AudioSource* source, AudioGroup
         return false;
 
     deinitilize();
-
     p_track = MIX_CreateTrack(mixer);
-
-    if (!p_track)
-    {
+    if (!p_track){
         ErrorMsg("AudioPlayback: MIX_CreateTrack failed: %s", SDL_GetError());
         return false;
     }

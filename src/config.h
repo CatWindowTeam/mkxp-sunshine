@@ -52,18 +52,19 @@ struct Config {
     struct {
         std::string scripts = "Data/xScripts.rxdata";
     } game;
-
-	std::string commonDataPath_org;
-    std::string commonDataPath_app;
-
+    
 	#ifdef vita
     	std::string customDataPath;
     	std::string commonDataPath = "ux0:/data/Sunshine";
     	std::string gameFolder = "ux0:/data/Sunshine";
+    #elif ps2
+		std::string customDataPath;
+		std::string commonDataPath = "mc0:/data/Sunshine";
+		std::string gameFolder = "mc0:/Sunshine";
     #else
     	std::string customDataPath;
     	std::string commonDataPath;
-    	std::string gameFolder = ".";    	
+    	std::string gameFolder = ".";	
     #endif
     void read(int argc, char* argv[]);
 };

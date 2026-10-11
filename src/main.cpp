@@ -165,6 +165,7 @@ int main(int argc, char *argv[]){
 	}
 
 	//TODO: rewrite this shit
+	#ifndef ps2
 	#ifndef mkxp_android
 		std::string path;
 		if(!conf.gameFolder.empty()) {
@@ -189,6 +190,7 @@ int main(int argc, char *argv[]){
 	    	out << path;
 		}
 	#endif
+	#endif
 
 	if (TTF_Init() == false){
 		WarnMsg("Error initializing SDL_ttf: %s", SDL_GetError());
@@ -206,7 +208,6 @@ int main(int argc, char *argv[]){
 	SDL_Window *win = 0;
 	std::string windowError;
 	const std::vector<std::string> backends = renderBackendOrder();
-
 	for (size_t i = 0; i < backends.size() && !win; ++i){
 		conf.renderer = backends[i];
 		SDL_GL_ResetAttributes();
@@ -216,16 +217,16 @@ int main(int argc, char *argv[]){
 		SDL_Window *candidate = SDL_CreateWindow(conf.windowTitle, conf.defScreenW, conf.defScreenH, winFlags);
 		if (!candidate){
 			windowError = SDL_GetError();
-			Debug() << "[Render] cannot create window for backend" << backends[i] << windowError;
+			Debug() << "cannot create window for backend" << backends[i] << windowError;
 			continue;
 		}
 
 		if (probeRenderBackend(candidate)){
 			win = candidate;
-			Debug() << "[Render] backend:" << backends[i];
+			Debug() << "Render backend:" << backends[i];
 		}else{
 			windowError = SDL_GetError();
-			Debug() << "[Render] backend unavailable:" << backends[i] << windowError;
+			Debug() << "Render backend unavailable:" << backends[i] << windowError;
 			SDL_DestroyWindow(candidate);
 		}
 	}

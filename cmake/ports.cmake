@@ -49,6 +49,8 @@ function(ports_finish)
 		  FILE ${CMAKE_CURRENT_SOURCE_DIR}/sce_sys/livearea/contents/startup.png sce_sys/livearea/contents/startup.png
 		  FILE ${CMAKE_CURRENT_SOURCE_DIR}/sce_sys/livearea/contents/template.xml sce_sys/livearea/contents/template.xml
 		  FILE ${CMAKE_CURRENT_SOURCE_DIR}/build/sunshine.zip sunshine.zip
-		)	
+		)
+	elseif(PS2)
+		set_target_properties(${APP_TARGET} PROPERTIES SUFFIX ".elf")
 	endif()
 endfunction()

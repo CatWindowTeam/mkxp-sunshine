@@ -149,8 +149,6 @@ void crash_screen(SDL_Window* win){
 	if (tex == nullptr) {
 		WarnMsg("Failed to create a texture, please make sure that your device is powerful enough to run the game; otherwise, report the bug. Error Message: ", SDL_GetError());
 		skip_crash_screen = true;
-	}else{
-		SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
 	}
 
 	static int w = 0;
@@ -216,7 +214,7 @@ void crash_screen(SDL_Window* win){
 			for (int i = pager_start; i <= pager_end; ++i){
 				if(i < cd.size()){
 					count = count + 10;
-					snprintf(index_str, sizeof(index_str), "%03d", i);
+					SDL_snprintf(index_str, sizeof(index_str), "%03d", i);
 					SDL_RenderDebugTextFormat(ren, 10, count, "%s| %s", index_str, cd[i].c_str());
 				}
 			}
@@ -261,8 +259,6 @@ void WarnMsg(const char *fmt, ...) {
     SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
     va_end(args);
     Debug() << "[W] " << buf;
-    #ifndef ps2
-    	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", buf, NULL);
-    #endif
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", buf, NULL);
     SDL_free(buf);
 }

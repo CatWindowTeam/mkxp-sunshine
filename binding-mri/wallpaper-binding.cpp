@@ -5,7 +5,7 @@
 #elif unix_like
 	#include "wallpaper/w_unix.h"
 #else
-	#include "wallpaper/dummy.h"
+	#include "wallpaper/w_dummy.h"
 #endif
 
 void wallpaperBindingInit(){

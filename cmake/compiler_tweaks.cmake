@@ -5,7 +5,6 @@ check_option(OPTIONS_DEBUG
 	-Og)
 
 check_option(OPTIONS_RELEASE
-	-O3
 	-fno-stack-clash-protection
 	-fno-stack-protector
 	-fvtable-verify=none
@@ -51,8 +50,12 @@ target_compile_options(${APP_TARGET} PRIVATE
     -Wno-tautological-pointer-compare
     "$<$<CONFIG:Debug>:${OPTIONS_DEBUG}>"
     "$<$<CONFIG:Debug>:${ARCH_DEBUG_OPTIONS}>"
+    "$<$<CONFIG:Release>:-O3>"
     "$<$<CONFIG:Release>:${OPTIONS_RELEASE}>"
     "$<$<CONFIG:Release>:${ARCH_RELEASE_OPTIONS}>"
+    "$<$<CONFIG:Release_LowMemory>:-Os>"
+    "$<$<CONFIG:Release_LowMemory>:${OPTIONS_RELEASE}>"
+    "$<$<CONFIG:Release_LowMemory>:${ARCH_RELEASE_OPTIONS}>"
 )
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	target_compile_options(${APP_TARGET} PRIVATE "$<$<CONFIG:Release>:${OPTIONS_RELEASE_WINDOWS_INCOMPATIBLE}>")

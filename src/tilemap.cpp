@@ -935,9 +935,9 @@ void Tilemap::Autotiles::set(int i, Bitmap *bitmap){
 	p->autotiles[i] = bitmap;
 	p->invalidateAtlasContents();
 	p->autotilesCon[i].Disconnect();
-	p->autotilesCon[i] = bitmap->modified.Connect(p, &TilemapPrivate::invalidateAtlasContents);
+	p->autotilesCon[i] = bitmap->modified.Connect(*p, &TilemapPrivate::invalidateAtlasContents);
 	p->autotilesDispCon[i].Disconnect();
-	p->autotilesDispCon[i] = bitmap->wasDisposed.Connect(p, &TilemapPrivate::invalidateAtlasContents);
+	p->autotilesDispCon[i] = bitmap->wasDisposed.Connect(*p, &TilemapPrivate::invalidateAtlasContents);
 	p->updateAutotileInfo();
 }
 
@@ -1005,7 +1005,7 @@ void Tilemap::setTileset(Bitmap *value){
 
 	p->invalidateAtlasSize();
 	p->tilesetCon.Disconnect();
-	p->tilesetCon = value->modified.Connect(p, &TilemapPrivate::invalidateAtlasSize);
+	p->tilesetCon = value->modified.Connect(*p, &TilemapPrivate::invalidateAtlasSize);
 	p->updateAtlasInfo();
 }
 
@@ -1020,7 +1020,7 @@ void Tilemap::setMapData(Table *value){
 
 	p->invalidateBuffers();
 	p->mapDataCon.Disconnect();
-	p->mapDataCon = value->modified.Connect(p, &TilemapPrivate::invalidateBuffers);
+	p->mapDataCon = value->modified.Connect(*p, &TilemapPrivate::invalidateBuffers);
 }
 
 void Tilemap::setFlashData(Table *value){
@@ -1039,7 +1039,7 @@ void Tilemap::setPriorities(Table *value){
 
 	p->invalidateBuffers();
 	p->prioritiesCon.Disconnect();
-	p->prioritiesCon = value->modified.Connect(p, &TilemapPrivate::invalidateBuffers);
+	p->prioritiesCon = value->modified.Connect(*p, &TilemapPrivate::invalidateBuffers);
 }
 
 void Tilemap::setVisible(bool value){

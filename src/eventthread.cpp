@@ -499,14 +499,15 @@ bool EventThread::getShowCursor() const{
 void EventThread::notifyFrame(){
 	if (!fps.sendUpdates)
 		return;
-
+		
 	uint64_t current = SDL_GetPerformanceCounter();
 	uint64_t diff = current - fps.lastFrame;
-	if (diff == 0)
+	if(diff == 0){
 	    return;
+	}
 	    
 	fps.lastFrame = current;
-	if (fps.immInitFlag){
+	if(fps.immInitFlag){
 		fps.immInitFlag.clear();
 		fps.immFiniFlag.set();
 		return;
@@ -516,7 +517,7 @@ void EventThread::notifyFrame(){
 	++fps.accDiv;
 
 	fps.displayCounter += diff;
-	if (fps.displayCounter < fps.frequency && !fps.immFiniFlag)
+	if(fps.displayCounter < fps.frequency && !fps.immFiniFlag)
 		return;
 
 	fps.displayCounter = 0;
