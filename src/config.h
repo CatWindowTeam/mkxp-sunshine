@@ -57,10 +57,6 @@ struct Config {
     	std::string customDataPath;
     	std::string commonDataPath = "ux0:/data/Sunshine";
     	std::string gameFolder = "ux0:/data/Sunshine";
-    #elif ps2
-		std::string customDataPath;
-		std::string commonDataPath = "mc0:/data/Sunshine";
-		std::string gameFolder = "mc0:/Sunshine";
     #else
     	std::string customDataPath;
     	std::string commonDataPath;

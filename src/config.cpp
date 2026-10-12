@@ -9,9 +9,7 @@
 #include "meow.h"
 #include "util.h"
 #include "define.h"
-#ifndef LOW_MEMORY
-	#include "CLI11.hpp"
-#endif
+#include "CLI11.hpp"
 #include "debugwriter.h"
 static std::string prefPath(const char *org, const char *app){
 	const char *path = SDL_GetPrefPath(org, app);
@@ -27,8 +25,6 @@ void Config::read(int argc, char* argv[]) {
 		commonDataPath = SDL_GetAndroidInternalStoragePath();
 		if (const char *external = SDL_GetAndroidExternalStoragePath())
 			gameFolder = external;
-	#elif ps2
-		commonDataPath = "mc0:/Sunshine";
 	#else
 		commonDataPath = prefPath("CatWindowTeam", "Sunshine");
 	#endif

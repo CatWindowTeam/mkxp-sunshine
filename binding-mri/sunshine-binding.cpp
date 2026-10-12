@@ -100,7 +100,7 @@ void SunshineBindingInit(){
 	    rb_define_method(rb_cInteger, "times", RUBY_METHOD_FUNC(int_times), 0);
 
 	//detect unsupported enviroment like wayland or PSVita	
-	#ifdef defined(vita) || defined(psp) || defined(ps2) || \
+	#ifdef defined(vita) || defined(psp) || \
 	defined(haiku) || defined(web) || defined(unix_like) || defined(android) \
 	defined(TERMUX)
 		rb_const_set(module, rb_intern("UNSUPPORTED_ENVIROMENT"), Qtrue);

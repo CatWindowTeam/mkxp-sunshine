@@ -53,12 +53,6 @@
 #include "binding.h"
 #include "icon.png.xxd"
 
-#ifndef NDEBUG
-	#ifdef ps2
-		SDL_PS2_SKIP_IOP_RESET();
-	#endif
-#endif
-
 #ifdef STEAM
 	#include "steamshim/steamshim_child.h"
 #else
@@ -165,7 +159,6 @@ int main(int argc, char *argv[]){
 	}
 
 	//TODO: rewrite this shit
-	#ifndef ps2
 	#ifndef mkxp_android
 		std::string path;
 		if(!conf.gameFolder.empty()) {
@@ -189,7 +182,6 @@ int main(int argc, char *argv[]){
 		}else{
 	    	out << path;
 		}
-	#endif
 	#endif
 
 	if (TTF_Init() == false){

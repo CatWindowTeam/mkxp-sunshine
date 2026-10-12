@@ -28,14 +28,6 @@
 	#define haiku 1
 #endif
 
-#if SDL_PLATFORM_PS2
-	#define ps2 1
-#endif
-
 #if SDL_PLATFORM_VITA
 	#define vita 1
-#endif
-
-#if SDL_PLATFORM_PSP
-	#define psp 1
 #endif

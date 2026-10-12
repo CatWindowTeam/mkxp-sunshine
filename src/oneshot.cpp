@@ -136,8 +136,6 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 		p->os = "haiku";
 	#elif vita
 		p->os = "vita";
-	#elif ps2
-		p->os = "ps2";
 	#endif
 
 	//username
@@ -191,8 +189,6 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 		const char* path = "/sdcard/Sunshine/Documents";
 	#elif vita
 		const char* path = "ux0:/data/Sunshine";
-	#elif ps2
-		const char* path = "mc0:/Sunshine";	
 	#else
 		const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
 		if(path == nullptr){
