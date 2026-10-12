@@ -15,7 +15,6 @@
 	#include "config.h"
 	#include "oneshot.h"
 	#include "debugwriter.h"
-
 	#include <gio/gio.h>
 	#ifdef API_ONESHOT_EXTENSIONS_XFCE
 		#include <xfconf/xfconf.h>
@@ -98,8 +97,7 @@
 		desktop = shState->oneshot().desktopEnv;
 		if (desktop == "nope") {
     			return;
-		}
-		if (desktop == "lxde"){
+		}if (desktop == "lxde"){
 			const char* homeC = SDL_getenv("HOME");
 			if (!homeC) return;
 			std::string home(homeC);

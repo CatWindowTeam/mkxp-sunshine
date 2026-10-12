@@ -218,10 +218,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 			std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::SDL_tolower);
 			if (desktop.find("cinnamon") != std::string::npos){
 				desktopEnv = "cinnamon";
-			}else if (
-				desktop.find("gnome") != std::string::npos ||
-				desktop.find("unity") != std::string::npos)
-			{
+			}else if (desktop.find("gnome") != std::string::npos || desktop.find("unity") != std::string::npos){
 				desktopEnv = "gnome";
 			}else if(desktop.find("mate") != std::string::npos){
 				desktopEnv = "mate";
@@ -239,8 +236,6 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 				desktopEnv = "budgie";
 			}else if(desktop.find("pantheon") != std::string::npos){
 				desktopEnv = "pantheon";
-			}else if(desktop.find("Hyprland") != std::string::npos){
-				desktopEnv = "hyperland";
 			}
 		}
 		Debug() << "Desktop env: " << desktopEnv;
