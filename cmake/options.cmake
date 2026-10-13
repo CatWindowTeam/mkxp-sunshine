@@ -86,9 +86,9 @@ endif()
 add_definitions(-DRUBY_DONT_SUBST)
 
 if(DEVBUILD)
-	set(VERSION_STRING "${VERSION_STRING}-dev" FORCE)
+    set(VERSION_STRING "${VERSION_STRING}-dev")
 endif()
-add_definitions(-DVERSION_STRING="${VERSION_STRING}")
+add_definitions(-DVERSION_STRING="${VERSION_STRION_STRING}")
 
 if(RENDER_SIMPLE)
 	add_definitions(-DRENDER_SIMPLE)
