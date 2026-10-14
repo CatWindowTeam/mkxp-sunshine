@@ -8,7 +8,6 @@ option(USE_OPENGL_ES2 "GLES2_HEADER define" OFF)
 set(VERSION_STRING "0.1.3" CACHE STRING "Version string")
 set(BINDING_PATH "binding-mri" CACHE STRING "Binding to use")
 set(VITASDK_PATH "/usr/local/vitasdk" CACHE STRING "VitaSDK path")
-option(DEVBUILD "Developoment build" OFF)
 option(TERMUX "Build for TERMUX" OFF)
 option(VITA "Build for Playstation Vita" OFF)
 option(PSP "Build for PlayStation Portable" OFF)
@@ -84,10 +83,6 @@ if(USE_OPENGL_ES2)
 endif()
 
 add_definitions(-DRUBY_DONT_SUBST)
-
-if(DEVBUILD)
-	set(VERSION_STRING "${VERSION_STRING}-dev" FORCE)
-endif()
 add_definitions(-DVERSION_STRING="${VERSION_STRING}")
 
 if(RENDER_SIMPLE)
