@@ -48,7 +48,6 @@
 		static bool xfceSingleWorkspaceMode = false;
 		static int xfceSingleWorkspaceNumber = 0;
 	#endif
-		
 	// LXDE settings
 	static std::string originalBgPath = "";
 	static std::string originalBgMode = "";
@@ -58,8 +57,6 @@
 	static std::string wpTool = "";
 	static std::string originalFehbgCmd = "";
 	static bool originalFehbgExists = false;
-	// Fallback settings
-	static std::string fallbackPath;
 
 	static bool gsettingsHasKey(GSettings *settings, const char *key){
 		GSettingsSchema *schema = NULL;
@@ -78,11 +75,10 @@
 		}
 	}
 
-	//review it
 	void replaceAll(std::string& text, std::string_view from, std::string_view to){
 	    if (from.empty())
 	        return;
-	
+
 	    std::size_t pos = 0;
 	    while ((pos = text.find(from, pos)) != std::string::npos) {
 	        text.replace(pos, from.size(), to);
@@ -102,13 +98,12 @@
 			if (!homeC) return;
 			std::string home(homeC);
 			std::string path = home + "/.config/pcmanfm/LXDE/desktop-items-0.conf";
-
 			std::ifstream infile(path);
 			if (!infile) {
 			   Debug() << "Can't open LXDE settings";
 			   return;
 			}
-			
+
 			std::string line;
 			unsigned int lineNumber = 0;
 			static bool first_found = false;
@@ -318,6 +313,8 @@
 					}
 				}
 				configFile.close();
+			} else if (desktop == "sway") {
+				//placeholder, anyway compiler remove it like deadcode(maybe)
 			} else {
 				Debug() << "FATAL: Cannot find desktop configuration!";
 				desktop = "kde_error";
@@ -348,6 +345,8 @@
 				wpTool = "feh";
 			} else if (std::system("command -v nitrogen >/dev/null 2>&1") == 0) {
 				wpTool = "nitrogen";
+			} else if (std::system("command -v swaybg >/dev/null 2>&1") == 0) {
+				wpTool = "swaybg";
 			} else {
 				fallbackPath = home + "/Desktop/ONESHOT_hint.png";
 			}
@@ -359,24 +358,23 @@
 		const char *name;
 		int color;
 		rb_get_args(argc, argv, "zi", &name, &color RB_ARG_END);
-		std::string path;
 
 		std::string nameFix(name);
 		std::size_t found = nameFix.find("w32");
 		if(found != std::string::npos) {
 			nameFix.replace(nameFix.end()-3, nameFix.end(), "unix");
 		}
-		path = "/Wallpaper/" + nameFix + ".png";
+		std::string path = "/Wallpaper/" + nameFix + ".png";
 		#ifndef NDEBUG
 			Debug() << "Setting wallpaper to " << path;
 		#endif
 		char gameDir[PATH_MAX];
 
 		std::string gameDirStr(gameDir);
+		std::string concatPath = gameDirStr + path;
+		std::stringstream hexColor << "#" << std::hex << color;
 		desktopEnvironmentInit();
 		if(desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
-			std::stringstream hexColor;
-			hexColor << "#" << std::hex << color;
 			g_settings_set_string(bgsetting, "picture-options", "scaled");
 			g_settings_set_string(bgsetting, "primary-color", hexColor.str().c_str());
 			g_settings_set_string(bgsetting, "color-shading-type", "solid");
@@ -440,12 +438,10 @@
 				Debug() << "XFCE support disabled in this build";
 			#endif
 		} else if (desktop == "kde") {
-			std::stringstream command;
-			std::string concatPath(gameDirStr + path);
 			replaceAll(concatPath, "\\", "\\\\");
 			replaceAll(concatPath, "\"", "\\\"");
 			replaceAll(concatPath, "'", "\\x27");
-			command << "qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
+			std::stringstream command << "qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
 				"var allDesktops = desktops();" <<
 				"for (var i = 0, l = allDesktops.length; i < l; ++i) {" <<
 					"var d = allDesktops[i];" <<
@@ -461,25 +457,20 @@
 					"\"]);" <<
 				"}" <<
 			"'";
-			execCommand(command.str().c_str());
+			execCommand(command.str());
 		} else if (desktop == "lxde") {
-			std::string concatPath = gameDirStr + path;
-			std::string cmd = "pcmanfm -w \"" + concatPath + "\"" + " --wallpaper-mode=center";
-			execCommand(cmd);
+			execCommand("pcmanfm -w \"" + concatPath + "\"" + " --wallpaper-mode=center");
 		} else if (desktop == "lxqt") {
-			std::string concatPath = gameDirStr + path;
 			std::string cmd = "DBUS_SESSION_BUS_ADDRESS=" + DBUS_SESSION_BUS_ADDRESS + " pcmanfm-qt -w \"" + concatPath + "\"" + " --wallpaper-mode=center";
 			execCommand(cmd);
+		} else if (desktop == "sway" || wpTool == "swaybg") {
+                        execCommand("swaybg -i \"" + concatPath + "\"" + " --color " + hexColor + " --mode center");
 		} else if (wpTool == "feh") {
-			std::string concatPath = gameDirStr + path;
-			std::string cmd = "feh --bg-scale \"" + concatPath + "\"";
-			execCommand(cmd);
+			execCommand("feh --bg-scale \"" + concatPath + "\"");
 		} else if (wpTool == "nitrogen") {
-			std::string concatPath = gameDirStr + path;
-			std::string cmd = "nitrogen --set-scaled \"" + concatPath + "\"";
-			execCommand(cmd);
+			execCommand("nitrogen --set-scaled \"" + concatPath + "\"");
 		} else {
-			std::ifstream srcHint(gameDirStr + path);
+			std::ifstream srcHint(concatPath);
 			std::ofstream dstHint(fallbackPath);
 			dstHint << srcHint.rdbuf();
 			srcHint.close();
@@ -539,8 +530,7 @@
 					Debug() << "XFCE support disabled in this build";
 				#endif
 			} else if (desktop == "kde") {
-				std::stringstream command;
-				command << "qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
+				std::stringstream command << "qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
 						"var allDesktops = desktops();" <<
 						"var data = {";
 				// Plugin, picture, color, mode, blur
@@ -584,8 +574,8 @@
 						"d.writeConfig(\"Blur\", dat.blur);" <<
 						"}" <<
 					"}" <<
-				"'";		
-				execCommand(command.str().c_str());
+				"'";
+				execCommand(command.str());
 			} else if(desktop == "lxde"){
 				if (originalBgPath != "" && originalBgMode != ""){
 					std::string cmd = "pcmanfm -w \"" + originalBgPath + "\"" + " --wallpaper-mode=" + originalBgMode;
@@ -596,9 +586,10 @@
 					std::string cmd = "DBUS_SESSION_BUS_ADDRESS=" + DBUS_SESSION_BUS_ADDRESS + " pcmanfm-qt -w \"" + originalBgPath + "\"" + " --wallpaper-mode=" + originalBgMode;
 					execCommand(cmd);
 				}
+			} else if (desktop == "sway") {
+				//placeholder
 			} else if (wpTool == "feh") {
-				std::string cmd = originalFehbgExists ? originalFehbgCmd : "xsetroot -solid black";
-				execCommand(cmd);
+				execCommand(originalFehbgExists ? originalFehbgCmd : "xsetroot -solid black");
 			} else if (wpTool == "nitrogen") {
 				execCommand("nitrogen --restore");
 			}

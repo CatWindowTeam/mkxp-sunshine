@@ -101,9 +101,9 @@ void ModLoader(SDL_Window* win){
         }
         SDL_Delay(1000);
         stop_render = true;
-		if(!conf.Modloader.skip_modloader_screen){
+	if(!conf.Modloader.skip_modloader_screen){
         	SDL_WaitThread(render_thread_pointer, NULL);
-		}
+	}
         modloader_is_enabled = true;
     }catch (const std::exception& e) {
     	ErrorMsg(e.what());

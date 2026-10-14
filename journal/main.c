@@ -64,7 +64,6 @@ void load_game_directory(char *gamedir_path, size_t gamedir_path_size){
         SDL_Log("Unable to open file: %s", file_path);
     }
     SDL_free(file_path);
-    SDL_free((void *)base_path);
 }
 
 static int network_thread(void*){

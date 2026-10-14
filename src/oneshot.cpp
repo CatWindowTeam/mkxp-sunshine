@@ -236,7 +236,10 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 				desktopEnv = "budgie";
 			}else if(desktop.find("pantheon") != std::string::npos){
 				desktopEnv = "pantheon";
-			}
+			}else if(desktop.find("sway") != std::string::npos){
+				//some sway users configure XDG_DESKTOP manually
+                                desktopEnv = "sway";
+                        }
 		}
 		Debug() << "Desktop env: " << desktopEnv;
 	#endif
