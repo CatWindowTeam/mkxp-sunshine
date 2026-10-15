@@ -53,6 +53,7 @@
 	static std::string originalBgMode = "";
 	// LXQT
 	static std::string DBUS_SESSION_BUS_ADDRESS = "";
+	static std::string fallbackPath = "";
 	// Wallpaper utility (feh/nitrogen), used when no known DE is detected
 	static std::string wpTool = "";
 	static std::string originalFehbgCmd = "";
@@ -372,7 +373,9 @@
 
 		std::string gameDirStr(gameDir);
 		std::string concatPath = gameDirStr + path;
-		std::stringstream hexColor << "#" << std::hex << color;
+		std::stringstream hexColor;
+		hexColor << "#" << std::hex << color;
+		
 		desktopEnvironmentInit();
 		if(desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin" || desktop == "budgie" || desktop == "pantheon") {
 			g_settings_set_string(bgsetting, "picture-options", "scaled");
@@ -394,7 +397,6 @@
 				unsigned int ug = g * 256 + g;
 				unsigned int ub = b * 256 + b;
 				unsigned int alpha = 65535;
-				std::string concatPath(gameDirStr + path);
 				for(const std::string &prefix : xfceMonitorPrefixes) {
 					std::string optionImage = prefix + "last-image";
 					std::string optionColor = prefix + "color1";
@@ -441,7 +443,8 @@
 			replaceAll(concatPath, "\\", "\\\\");
 			replaceAll(concatPath, "\"", "\\\"");
 			replaceAll(concatPath, "'", "\\x27");
-			std::stringstream command << "qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
+			std::stringstream command;
+			command << "qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
 				"var allDesktops = desktops();" <<
 				"for (var i = 0, l = allDesktops.length; i < l; ++i) {" <<
 					"var d = allDesktops[i];" <<
@@ -461,10 +464,9 @@
 		} else if (desktop == "lxde") {
 			execCommand("pcmanfm -w \"" + concatPath + "\"" + " --wallpaper-mode=center");
 		} else if (desktop == "lxqt") {
-			std::string cmd = "DBUS_SESSION_BUS_ADDRESS=" + DBUS_SESSION_BUS_ADDRESS + " pcmanfm-qt -w \"" + concatPath + "\"" + " --wallpaper-mode=center";
-			execCommand(cmd);
+			execCommand("DBUS_SESSION_BUS_ADDRESS=" + DBUS_SESSION_BUS_ADDRESS + " pcmanfm-qt -w \"" + concatPath + "\"" + " --wallpaper-mode=center");
 		} else if (desktop == "sway" || wpTool == "swaybg") {
-                        execCommand("swaybg -i \"" + concatPath + "\"" + " --color " + hexColor + " --mode center");
+			execCommand("swaybg -i \"" + concatPath + "\"" + " --color " + hexColor.str() + " --mode center");
 		} else if (wpTool == "feh") {
 			execCommand("feh --bg-scale \"" + concatPath + "\"");
 		} else if (wpTool == "nitrogen") {
@@ -530,13 +532,14 @@
 					Debug() << "XFCE support disabled in this build";
 				#endif
 			} else if (desktop == "kde") {
-				std::stringstream command << "qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
+				std::stringstream command;
+				command << "qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
 						"var allDesktops = desktops();" <<
 						"var data = {";
+
 				// Plugin, picture, color, mode, blur
 				for (auto const& x : defPlugins) {
-					command << "\"" << x.first << "\": {"
-							<< "plugin: \"" << x.second << "\"";
+					command << "\"" << x.first << "\": {" << "plugin: \"" << x.second << "\"";
 					if (defPictures.find(x.first) != defPictures.end()) {
 						std::string picture = defPictures[x.first];
 						replaceAll(picture, "\\", "\\\\");
@@ -578,13 +581,11 @@
 				execCommand(command.str());
 			} else if(desktop == "lxde"){
 				if (originalBgPath != "" && originalBgMode != ""){
-					std::string cmd = "pcmanfm -w \"" + originalBgPath + "\"" + " --wallpaper-mode=" + originalBgMode;
-					execCommand(cmd);
+					execCommand("pcmanfm -w \"" + originalBgPath + "\"" + " --wallpaper-mode=" + originalBgMode);
 				}
 			} else if(desktop == "lxqt"){
 				if (originalBgPath != "" && originalBgMode != ""){
-					std::string cmd = "DBUS_SESSION_BUS_ADDRESS=" + DBUS_SESSION_BUS_ADDRESS + " pcmanfm-qt -w \"" + originalBgPath + "\"" + " --wallpaper-mode=" + originalBgMode;
-					execCommand(cmd);
+					execCommand("DBUS_SESSION_BUS_ADDRESS=" + DBUS_SESSION_BUS_ADDRESS + " pcmanfm-qt -w \"" + originalBgPath + "\"" + " --wallpaper-mode=" + originalBgMode);
 				}
 			} else if (desktop == "sway") {
 				//placeholder
