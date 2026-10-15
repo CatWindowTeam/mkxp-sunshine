@@ -4,10 +4,12 @@ uniform int lightSourcesCount;
 uniform float ambientLight;
 uniform float scale;
 
+// wallmap
 uniform sampler2D texture;
 uniform vec2 wallMapResolution;
-uniform vec2 cameraPosition;
 uniform vec2 tileMapOffset;
+
+uniform vec2 cameraPosition;
 uniform vec2 texSizeInv;
 varying vec2 v_texCoord;
 

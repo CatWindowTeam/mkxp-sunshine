@@ -311,6 +311,7 @@ void LightMap::draw(){
 	IRender &render = shState->render();
 	render.useEffect(SHADER_simple);
 	render.applyViewportProj();
+	render.setTranslation(Vec2i(0, 0));
 	render.setTextureSmooth(p->bitmap->getRenderTarget().tex, smooth);
 	render.pushBlendMode(BlendMultiply);
 

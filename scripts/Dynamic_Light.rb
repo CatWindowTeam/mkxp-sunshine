@@ -49,14 +49,18 @@ class DynamicLight
   def update
     # dont render light if its disabled or not awaked
     @light_sprite.visible = Settings[:light] && $light.awaked
-    if !Settings[:light] || !$light.awaked
+    @debug_sprite.visible = Settings[:debug_lightmap] && @light_sprite.visible
+    if !@light_sprite.visible
       return
     end
 
-    @debug_sprite.visible = Settings[:debug_lightmap]
     @light_sprite.scale = 2 ** Settings[:light_scale]
     @light_sprite.smooth = Settings[:light_smooth]
     @light_sprite.snap_to_map = Settings[:light_snap]
+    @light_sprite.camera_x = $game_map.display_x / 4
+    @light_sprite.camera_y = $game_map.display_y / 4
+    @light_sprite.tilemap_offset_x = ($game_map.display_x / 128) * 32 - $game_map.display_x / 4
+    @light_sprite.tilemap_offset_y = ($game_map.display_y / 128) * 32 - $game_map.display_y / 4
 
     if $light.update_clear_lights
       @light_sprite.clear_static_sources()
@@ -86,11 +90,8 @@ class DynamicLight
       $light.update_static_lights = []
     end
 
-    # shader uniforms
-    @light_sprite.camera_x = $game_map.display_x / 4
-    @light_sprite.camera_y = $game_map.display_y / 4
-    @light_sprite.tilemap_offset_x = ($game_map.display_x / 128) * 32 - $game_map.display_x / 4
-    @light_sprite.tilemap_offset_y = ($game_map.display_y / 128) * 32 - $game_map.display_y / 4
+
+    puts $game_map.display_y
 
     # clear all npc light
     @light_sprite.clear_dynamic_sources()
@@ -131,7 +132,7 @@ class DynamicLight
   #end
   
   def tile_to_atlas(tile_id)
-    tile_id -= 384
+    tile_id -= 384 # bcz autotiles
     y = tile_id / 8
     x = tile_id - y * 8
     [x * 32, y * 32]
