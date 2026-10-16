@@ -19,7 +19,7 @@ class FastTravel
     @title.bitmap.font.size = 20
     @title.y = TITLE_TOP_MARGIN
     @title.x = MARGIN
-    @title.zoom_x = @title.zoom_y = 2
+    @title.scale_x = @title.scale_y = 2
 
     # WME Location name
     @location_name_text = Sprite.new(@viewport)
@@ -31,8 +31,8 @@ class FastTravel
     # WME Niko Icon
     @niko_icon = Sprite.new(@viewport)
     @niko_icon.bitmap = RPG::Cache.load_bitmap("Graphics/Menus/Minimap/", "niko_icon")
-    @niko_icon.zoom_x = @niko_icon.zoom_y = @scale_multiplier
-    @niko_icon.z = 10
+    @niko_icon.scale_x = @niko_icon.scale_y = @scale_multiplier
+    @niko_icon.order = 10
     @niko_icon.opacity = 0
     @niko_icon.shader = Shader::WorldMachine
 
@@ -59,10 +59,10 @@ class FastTravel
     @arrow_right.bitmap = Bitmap.new(16, 16)
     @arrow_right.bitmap.stretch_blt(Rect.new(0, 0, 16, 16), arrows_bitmap, Rect.new(48, 0, 16, 16))
 
-    @arrow_top.zoom_x = @arrow_top.zoom_y =
-    @arrow_bottom.zoom_x = @arrow_bottom.zoom_y =
-    @arrow_left.zoom_x = @arrow_left.zoom_y =
-    @arrow_right.zoom_x = @arrow_right.zoom_y = @scale_multiplier
+    @arrow_top.scale_x = @arrow_top.scale_y =
+    @arrow_bottom.scale_x = @arrow_bottom.scale_y =
+    @arrow_left.scale_x = @arrow_left.scale_y =
+    @arrow_right.scale_x = @arrow_right.scale_y = @scale_multiplier
     
     @arrow_top.opacity = @arrow_bottom.opacity =
     @arrow_left.opacity = @arrow_right.opacity = 0
@@ -70,8 +70,8 @@ class FastTravel
     @arrow_top.shader = @arrow_bottom.shader =
     @arrow_left.shader = @arrow_right.shader = Shader::WorldMachine
 
-    @arrow_top.z = @arrow_bottom.z =
-    @arrow_left.z = @arrow_right.z = 11
+    @arrow_top.order = @arrow_bottom.order =
+    @arrow_left.order = @arrow_right.order = 11
 
     @arrows_timer = 0
     @arrows_offset = 0
@@ -84,7 +84,7 @@ class FastTravel
     @data_sprites = []
 
     #other
-    @viewport.z = 9998
+    @viewport.order = 9998
 
     self.visible = false
     @index = 0
@@ -189,7 +189,7 @@ class FastTravel
         #WME
         spr = Sprite.new(@viewport)
         spr.bitmap = RPG::Cache.load_bitmap("Graphics/Menus/Minimap/", "#{$game_fasttravel.zone}_#{item}")
-        spr.zoom_x = spr.zoom_y = @scale_multiplier
+        spr.scale_x = spr.scale_y = @scale_multiplier
         spr.x = Graphics.width / 2 + zone.locations[item].x * @scale_multiplier
         spr.y = Graphics.height / 2 + zone.locations[item].y * @scale_multiplier
         spr.opacity = 0

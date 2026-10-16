@@ -82,8 +82,8 @@ void viewportBindingInit(){
 	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(viewportInitialize), -1);
 
 	INIT_PROP_BIND( Viewport, Rect,     "rect"    );
-	INIT_PROP_BIND( Viewport, OX,       "ox"      );
-	INIT_PROP_BIND( Viewport, OY,       "oy"      );
+	INIT_PROP_BIND( Viewport, OX,       "origin_x");
+	INIT_PROP_BIND( Viewport, OY,       "origin_y");
 	INIT_PROP_BIND( Viewport, ScaleX,   "scale_x" );
 	INIT_PROP_BIND( Viewport, ScaleY,   "scale_y" );
 	INIT_PROP_BIND( Viewport, Rotation, "rotation");

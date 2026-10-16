@@ -3,10 +3,10 @@ class DynamicLight
     @debug_sprite = Sprite.new(viewport)
     @debug_sprite.bitmap = Bitmap.new(1, 1)
     @debug_sprite.bitmap.fill_rect(0,0,1,1,Color.new(255,255,255))
-    @debug_sprite.zoom_x = Graphics.width
-    @debug_sprite.zoom_y = Graphics.height
+    @debug_sprite.scale_x = Graphics.width
+    @debug_sprite.scale_y = Graphics.height
     @debug_sprite.visible = false
-    @debug_sprite.z = -1
+    @debug_sprite.order = -1
     @light_sprite = LightMap.new(viewport)
     #@light_sprite.wallmap = Bitmap.new($game_map.width, $game_map.height)
     
@@ -21,8 +21,8 @@ class DynamicLight
     #end
     
     @update_connection = Graphics.viewport_resized do |w, h|
-      @debug_sprite.zoom_x = w
-      @debug_sprite.zoom_y = h
+      @debug_sprite.scale_x = w
+      @debug_sprite.scale_y = h
     end
     
     if $light == nil

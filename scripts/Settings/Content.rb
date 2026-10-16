@@ -44,12 +44,12 @@ class Window_Settings
       @selection_sprite = Sprite.new(@viewport)
       @selection_sprite.bitmap = Bitmap.new(1, 1)
       @selection_sprite.bitmap.fill_rect(Rect.new(0, 0, 1, 1), Color.new(255, 255, 255, 64))
-      @selection_sprite.zoom_x = PARAMETER_WIDTH + 16
-      @selection_sprite.zoom_y = PARAMETER_HEIGHT
+      @selection_sprite.scale_x = PARAMETER_WIDTH + 16
+      @selection_sprite.scale_y = PARAMETER_HEIGHT
       @selection_sprite.x = @x - 8
       @selection_sprite.y = @index * PARAMETER_HEIGHT + @y
       @selection_sprite.blend_type = 1
-      @selection_sprite.z = 1
+      @selection_sprite.order = 1
 
       @screen_panel_selection_sprite = Sprite.new(@viewport)
       @screen_panel_selection_sprite.bitmap = Bitmap.new(1, @offset - SCREENS_PANELS_MARGIN * 2 - SCREENS_PANELS_TOP_MARGIN)
@@ -69,8 +69,8 @@ class Window_Settings
       @switch_panels_hint_left.bitmap.font.size = @switch_panels_hint_right.bitmap.font.size = 20
       @switch_panels_hint_left.x = @switch_panels_hint_right.x = @target_hints_x
       @switch_panels_hint_left.y = @switch_panels_hint_right.y = @screen_panel_selection_sprite.y
-      @switch_panels_hint_left.zoom_x = @switch_panels_hint_right.zoom_x =
-      @switch_panels_hint_left.zoom_y = @switch_panels_hint_right.zoom_y = 2
+      @switch_panels_hint_left.scale_x = @switch_panels_hint_right.scale_x =
+      @switch_panels_hint_left.scale_y = @switch_panels_hint_right.scale_y = 2
       @switch_panels_hint_left.opacity = @switch_panels_hint_right.opacity = 127
       @switch_panels_hint_left.blend_type = @switch_panels_hint_right.blend_type = 1
 
@@ -172,7 +172,7 @@ class Window_Settings
       end
       @selection_sprite.y = selection_sprite_result_pos * 0.5 + @selection_sprite.y * 0.5
       @selection_sprite.x = get_current_parameter.x * 0.5 + @selection_sprite.x * 0.5 - 4
-      @selection_sprite.zoom_x = get_current_parameter.width * 0.5 + @selection_sprite.zoom_x * 0.5 + 8
+      @selection_sprite.scale_x = get_current_parameter.width * 0.5 + @selection_sprite.scale_x * 0.5 + 8
 
       # update parameters
       @parameters.each do |screen_name, screen_parameters|
@@ -201,7 +201,7 @@ class Window_Settings
         screen_panel.opacity = ((@opacity.to_f / 255.0) * (1.0 - (screen_panel.x + 16 - (Graphics.width - screen_panel.width) / 2).abs.to_f / (PARAMETER_WIDTH / 2 - 48)) * 255.0).to_i
       end
       
-      @screen_panel_selection_sprite.zoom_x = @screen_panels[@screen].width * 0.3 + @screen_panel_selection_sprite.zoom_x * 0.7
+      @screen_panel_selection_sprite.scale_x = @screen_panels[@screen].width * 0.3 + @screen_panel_selection_sprite.scale_x * 0.7
       @screen_panel_selection_sprite.x = (Graphics.width - @screen_panels[@screen].width) * 0.5 * 0.3 + @screen_panel_selection_sprite.x * 0.7
 
       @switch_panels_hint_left.x = @switch_panels_hint_left.x * 0.8 + @target_hints_x * 0.2

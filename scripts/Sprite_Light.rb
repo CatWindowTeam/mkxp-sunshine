@@ -6,7 +6,7 @@ class Light < RPG::Sprite
     self.intensity = intensity
     @map_x = x
     @map_y = y
-    self.z = 9999
+    self.order = 9999
     self.visible = true
     update
   end

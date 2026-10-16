@@ -22,7 +22,7 @@ class Window_Base < Window
     self.y = y
     self.width = width
     self.height = height
-    self.z = 100
+    self.order = 100
   end
   #--------------------------------------------------------------------------
   # * Dispose

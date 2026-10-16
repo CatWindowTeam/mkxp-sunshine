@@ -20,13 +20,13 @@ class Doc_Message
       @sprite_scroll_up.bitmap = RPG::Cache.picture('scroll_up_blue')
       @sprite_scroll_down.bitmap = RPG::Cache.picture('scroll_down_blue')
   	end
-    @sprite_bg.zoom_x = @sprite_bg.zoom_y = 2
+    @sprite_bg.scale_x = @sprite_bg.scale_y = 2
     @sprite_bg.x = Graphics.width / 2 - 200
     @sprite_bg.y = Graphics.height / 2 - 216
-    @sprite_scroll_up.zoom_x = @sprite_scroll_up.zoom_y = 2
+    @sprite_scroll_up.scale_x = @sprite_scroll_up.scale_y = 2
     @sprite_scroll_up.x = @sprite_bg.x + 404
     @sprite_scroll_up.y = @sprite_bg.y
-    @sprite_scroll_down.zoom_x = @sprite_scroll_down.zoom_y = 2
+    @sprite_scroll_down.scale_x = @sprite_scroll_down.scale_y = 2
     @sprite_scroll_down.x = @sprite_bg.x + 404
     @sprite_scroll_down.y = @sprite_bg.y + 400
     @sprite_text = Sprite.new(@viewport)
@@ -36,10 +36,10 @@ class Doc_Message
     @sprite_text.bitmap = @contents
     @sprite_text.x = @sprite_bg.x
     @sprite_text.y = @sprite_bg.y
-    @sprite_bg.z = 0
-    @sprite_text.z = 1
-    @sprite_text.zoom_x = @sprite_text.zoom_y = 2
-    @viewport.z = 9999
+    @sprite_bg.order = 0
+    @sprite_text.order = 1
+    @sprite_text.scale_x = @sprite_text.scale_y = 2
+    @viewport.order = 9999
     @viewport.visible = false
 
     @sprite_bg.opacity = 0

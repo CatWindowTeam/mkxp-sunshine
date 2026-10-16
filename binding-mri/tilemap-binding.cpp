@@ -129,6 +129,6 @@ void tilemapBindingInit(){
 	INIT_PROP_BIND( Tilemap, Visible,     "visible"      );
 	INIT_PROP_BIND( Tilemap, BetterWater, "better_water" );
 	INIT_PROP_BIND( Tilemap, Wrapping,    "wrapping"     );
-	INIT_PROP_BIND( Tilemap, OX,          "ox"           );
-	INIT_PROP_BIND( Tilemap, OY,          "oy"           );
+	INIT_PROP_BIND( Tilemap, OX,          "origin_x"     );
+	INIT_PROP_BIND( Tilemap, OY,          "origin_y"     );
 }

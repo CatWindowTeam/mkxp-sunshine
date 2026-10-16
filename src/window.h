@@ -60,7 +60,7 @@ private:
 
 	void draw();
 	void onGeometryChange(const Scene::Geometry &);
-	void setZ(int value);
+	void setOrder(int value);
 	void setVisible(bool value);
 
 	void onViewportChange();

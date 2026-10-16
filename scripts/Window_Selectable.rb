@@ -123,7 +123,7 @@ class Window_Selectable < Window_Base
     cursor_width = self.width / @column_max - 32
     # Calculate cursor coordinates
     x = @index % @column_max * (cursor_width + 32)
-    y = @index / @column_max * 32 - self.oy
+    y = @index / @column_max * 32 - self.origin_y
     # Update cursor rectangle
     self.cursor_rect.set(x * 0.8 + self.cursor_rect.x * 0.2, y * 0.8 + self.cursor_rect.y * 0.2, cursor_width, 32)
   end
@@ -134,7 +134,7 @@ class Window_Selectable < Window_Base
     super
     # If cursor is movable
     if self.active and @item_max > 0 and @index >= 0
-      self.oy = self.oy * 0.2 + @content_pos * 0.8
+      self.origin_y = self.origin_y * 0.2 + @content_pos * 0.8
 
       new = (@index - Input.wheel_y.round).clamp(0, @item_max - 1)
       if new != @index

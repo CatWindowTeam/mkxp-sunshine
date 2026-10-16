@@ -10,7 +10,7 @@ class Desktop_Message
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @sprite_messagebox = Sprite.new(@viewport)
     @sprite_messagebox.bitmap = RPG::Cache.picture('cg_desktop_messagebox')
-    @sprite_messagebox.zoom_x = @sprite_messagebox.zoom_y = 2
+    @sprite_messagebox.scale_x = @sprite_messagebox.scale_y = 2
     @sprite_messagebox.x = (Graphics.width) / 2 - 320
     @sprite_messagebox.y = (Graphics.height) / 2 - 240
     @sprite_messagebox.shader = Shader::CRT
@@ -19,10 +19,10 @@ class Desktop_Message
     Language.register_text_sprite(self.class.name + "_contents", @contents)
     @sprite_text.bitmap = @contents
     @sprite_text.y = (Graphics.height - Graphics.height) / 2
-    @sprite_messagebox.z = 1
-    @sprite_text.z = 2
-    @sprite_text.zoom_x = @sprite_text.zoom_y = 1
-    @viewport.z = 9999
+    @sprite_messagebox.order = 1
+    @sprite_text.order = 2
+    @sprite_text.scale_x = @sprite_text.scale_y = 1
+    @viewport.order = 9999
     @viewport.visible = false
 
     @sprite_messagebox.opacity = 0

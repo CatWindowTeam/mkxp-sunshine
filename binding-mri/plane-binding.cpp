@@ -46,8 +46,8 @@ DEF_PROP_I(Plane, OY)
 DEF_PROP_I(Plane, Opacity)
 DEF_PROP_I(Plane, BlendType)
 DEF_PROP_I(Plane, Shader)
-DEF_PROP_F(Plane, ZoomX)
-DEF_PROP_F(Plane, ZoomY)
+DEF_PROP_F(Plane, ScaleX)
+DEF_PROP_F(Plane, ScaleY)
 
 void planeBindingInit(){
 	VALUE klass = rb_define_class("Plane", rb_cObject);
@@ -57,13 +57,13 @@ void planeBindingInit(){
 	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(planeInitialize), -1);
 	INIT_PROP_BIND( Plane, Bitmap,    "bitmap"     );
 	INIT_PROP_BIND( Plane, SrcRect,   "src_rect"   );
-	INIT_PROP_BIND( Plane, OX,        "ox"         );
-	INIT_PROP_BIND( Plane, OY,        "oy"         );
-	INIT_PROP_BIND( Plane, ZoomX,     "zoom_x"     );
-	INIT_PROP_BIND( Plane, ZoomY,     "zoom_y"     );
+	INIT_PROP_BIND( Plane, OX,        "origin_x"   );
+	INIT_PROP_BIND( Plane, OY,        "origin_y"   );
+	INIT_PROP_BIND( Plane, ScaleX,    "scale_x"    );
+	INIT_PROP_BIND( Plane, ScaleY,    "scale_y"    );
 	INIT_PROP_BIND( Plane, Opacity,   "opacity"    );
 	INIT_PROP_BIND( Plane, BlendType, "blend_type" );
 	INIT_PROP_BIND( Plane, Color,     "color"      );
 	INIT_PROP_BIND( Plane, Tone,      "tone"       );
-	INIT_PROP_BIND( Plane, Shader,    "shader"      );
+	INIT_PROP_BIND( Plane, Shader,    "shader"     );
 }

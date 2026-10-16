@@ -3,7 +3,7 @@ def film_puzzle_begin
   $game_temp.filmsprite.dispose if $game_temp.filmsprite
   filmsprite = Sprite.new
   filmsprite.bitmap = RPG::Cache.picture('numbersheet')
-  filmsprite.z = 9999
+  filmsprite.order = 9999
   filmsprite.obscured = true
   $game_temp.filmsprite = filmsprite
   Oneshot.obscured_updating = true

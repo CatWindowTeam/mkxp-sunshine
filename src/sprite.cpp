@@ -287,8 +287,8 @@ DEF_ATTR_RD_SIMPLE(Sprite, X,            int,     p->trans.getPosition().x)
 DEF_ATTR_RD_SIMPLE(Sprite, Y,            int,     p->trans.getPosition().y)
 DEF_ATTR_RD_SIMPLE(Sprite, OX,           int,     p->trans.getOrigin().x)
 DEF_ATTR_RD_SIMPLE(Sprite, OY,           int,     p->trans.getOrigin().y)
-DEF_ATTR_RD_SIMPLE(Sprite, ZoomX,        float,   p->trans.getScale().x)
-DEF_ATTR_RD_SIMPLE(Sprite, ZoomY,        float,   p->trans.getScale().y)
+DEF_ATTR_RD_SIMPLE(Sprite, ScaleX,       float,   p->trans.getScale().x)
+DEF_ATTR_RD_SIMPLE(Sprite, ScaleY,       float,   p->trans.getScale().y)
 DEF_ATTR_RD_SIMPLE(Sprite, Angle,        float,   p->trans.getRotation())
 DEF_ATTR_RD_SIMPLE(Sprite, MirrorX,      bool,    p->mirrorX)
 DEF_ATTR_RD_SIMPLE(Sprite, MirrorY,      bool,    p->mirrorY)
@@ -301,10 +301,10 @@ DEF_ATTR_RD_SIMPLE(Sprite, WaveLength,   int,     p->wave.length)
 DEF_ATTR_RD_SIMPLE(Sprite, WaveSpeed,    int,     p->wave.speed)
 DEF_ATTR_RD_SIMPLE(Sprite, WavePhase,    float,   p->wave.phase)
 // 3D shit
-DEF_ATTR_RD_SIMPLE(Sprite, PerspectiveMode,      bool,  p->trans.getPerspectiveMode())
-DEF_ATTR_RD_SIMPLE(Sprite, PerspectiveZ,         int,   p->trans.getPerspectiveZ())
-DEF_ATTR_RD_SIMPLE(Sprite, PerspectiveRotationX, float, p->trans.getPerspectiveRotation().x)
-DEF_ATTR_RD_SIMPLE(Sprite, PerspectiveRotationY, float, p->trans.getPerspectiveRotation().y)
+DEF_ATTR_RD_SIMPLE(Sprite, PerspectiveMode, bool,  p->trans.getPerspectiveMode())
+DEF_ATTR_RD_SIMPLE(Sprite, Z,               int,   p->trans.getPerspectiveZ())
+DEF_ATTR_RD_SIMPLE(Sprite, RotationX,       float, p->trans.getPerspectiveRotation().x)
+DEF_ATTR_RD_SIMPLE(Sprite, RotationY,       float, p->trans.getPerspectiveRotation().y)
 
 DEF_ATTR_SIMPLE(Sprite, BushOpacity,  int,        p->bushOpacity)
 DEF_ATTR_SIMPLE(Sprite, Opacity,      int,        p->opacity)
@@ -364,20 +364,20 @@ void Sprite::setOY(int value){
 	p->trans.setOrigin(Vec2(getOX(), value));
 }
 
-void Sprite::setZoomX(float value){
+void Sprite::setScaleX(float value){
 	guardDisposed();
 	if (p->trans.getScale().x == value)
 		return;
 
-	p->trans.setScale(Vec2(value, getZoomY()));
+	p->trans.setScale(Vec2(value, getScaleY()));
 }
 
-void Sprite::setZoomY(float value){
+void Sprite::setScaleY(float value){
 	guardDisposed();
 	if (p->trans.getScale().y == value)
 		return;
 
-	p->trans.setScale(Vec2(getZoomX(), value));
+	p->trans.setScale(Vec2(getScaleX(), value));
 	p->recomputeBushDepth();
 }
 
@@ -444,7 +444,7 @@ void Sprite::setPerspectiveMode(bool value){
 	p->trans.setPerspectiveMode(value);
 }
 
-void Sprite::setPerspectiveZ(int value){
+void Sprite::setZ(int value){
 	guardDisposed();
 	if (p->trans.getPerspectiveZ() == value)
 		return;
@@ -452,7 +452,7 @@ void Sprite::setPerspectiveZ(int value){
 	p->trans.setPerspectiveZ(value);
 }
 
-void Sprite::setPerspectiveRotationX(float value){
+void Sprite::setRotationX(float value){
 	guardDisposed();
 	if (p->trans.getPerspectiveRotation().x == value)
 		return;
@@ -460,7 +460,7 @@ void Sprite::setPerspectiveRotationX(float value){
 	p->trans.setPerspectiveRotation(Vec2(value, p->trans.getPerspectiveRotation().y));
 }
 
-void Sprite::setPerspectiveRotationY(float value){
+void Sprite::setRotationY(float value){
 	guardDisposed();
 	if (p->trans.getPerspectiveRotation().y == value)
 		return;

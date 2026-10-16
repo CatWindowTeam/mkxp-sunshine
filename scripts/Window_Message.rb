@@ -15,7 +15,7 @@ class Window_Message < Window_Selectable
     self.contents = Bitmap.new(width - 32, height - 32)
     Language.register_text_sprite(self.class.name + "_contents", self.contents)
     self.visible = false
-    self.z = 9999
+    self.order = 9999
     self.back_opacity = 210
 
     @update_connection = Graphics.viewport_resized do |w, h|

@@ -8,15 +8,15 @@ class Ed_Message
     @sprite_bg = Sprite.new(@viewport)
     @sprite_bg.bitmap = Bitmap.new(1, 1)
     @sprite_bg.bitmap.fill_rect(0, 0, 1, 1, Color.new(0, 0, 0, 128))
-    @sprite_bg.zoom_x = Graphics.width
-    @sprite_bg.zoom_y = Graphics.height
+    @sprite_bg.scale_x = Graphics.width
+    @sprite_bg.scale_y = Graphics.height
     @sprite_text = Sprite.new(@viewport)
     @contents = Bitmap.new(Graphics.width, Graphics.height)
     Language.register_text_sprite(self.class.name + "_contents", @contents)
     @sprite_text.bitmap = @contents
-    @sprite_bg.z = 0
-    @sprite_text.z = 1
-    @viewport.z = 9999
+    @sprite_bg.order = 0
+    @sprite_text.order = 1
+    @viewport.order = 9999
     @viewport.visible = false
 
     # Sprite visibility
@@ -33,8 +33,8 @@ class Ed_Message
       @viewport.rect.width = w
       @viewport.rect.height = h
 
-      @sprite_bg.zoom_x = w
-      @sprite_bg.zoom_y = h
+      @sprite_bg.scale_x = w
+      @sprite_bg.scale_y = h
       
       @contents.dispose
       @contents = Bitmap.new(w, h)

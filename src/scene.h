@@ -80,7 +80,7 @@ public:
 
 	void setScene(Scene &scene);
 
-	DECL_ATTR_VIRT( Z,       int  )
+	DECL_ATTR_VIRT( Order,   int  )
 	DECL_ATTR_VIRT( Visible, bool )
 
 	virtual void aboutToAccess() const = 0;
@@ -119,7 +119,7 @@ protected:
 
 	IntruListLink<SceneElement> link;
 	const unsigned int creationStamp;
-	int z;
+	int order;
 	bool visible;
 	Scene *scene;
 

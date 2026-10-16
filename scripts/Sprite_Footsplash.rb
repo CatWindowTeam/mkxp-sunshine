@@ -20,10 +20,10 @@ class Sprite_Footsplash < Sprite
 
     @real_y += 48
 
-    self.zoom_x = 2
-    self.zoom_y = 2
-    self.ox = 40
-    self.oy = 80
+    self.scale_x = 2
+    self.scale_y = 2
+    self.origin_x = 40
+    self.origin_y = 80
     self.bitmap = RPG::Cache.misc('foot_splash')
     self.src_rect.set(0, 0, 80, 80)
     update

@@ -24,21 +24,21 @@
 #include "binding-util.h"
 
 template<class C>
-static VALUE sceneElementGetZ(VALUE self){
+static VALUE sceneElementGetOrder(VALUE self){
 	SceneElement *se = getPrivateData<C>(self);
 	int value = 0;
-	GUARD_EXC( value = se->getZ(); );
+	GUARD_EXC( value = se->getOrder(); );
 	return rb_fix_new(value);
 }
 
 template<class C>
-static VALUE sceneElementSetZ(int argc, VALUE *argv, VALUE self){
+static VALUE sceneElementSetOrder(int argc, VALUE *argv, VALUE self){
 	SceneElement *se = getPrivateData<C>(self);
 
-	int z;
-	rb_get_args(argc, argv, "i", &z RB_ARG_END);
-	GUARD_EXC( se->setZ(z); );
-	return rb_fix_new(z);
+	int order;
+	rb_get_args(argc, argv, "i", &order RB_ARG_END);
+	GUARD_EXC( se->setOrder(order); );
+	return rb_fix_new(order);
 }
 
 template<class C>
@@ -60,8 +60,8 @@ static VALUE sceneElementSetVisible(int argc, VALUE *argv, VALUE self){
 
 template<class C>
 void sceneElementBindingInit(VALUE klass){
-	rb_define_method(klass, "z", RUBY_METHOD_FUNC(sceneElementGetZ<C>), 0);
-	rb_define_method(klass, "z=", RUBY_METHOD_FUNC(sceneElementSetZ<C>), -1);
+	rb_define_method(klass, "order", RUBY_METHOD_FUNC(sceneElementGetOrder<C>), 0);
+	rb_define_method(klass, "order=", RUBY_METHOD_FUNC(sceneElementSetOrder<C>), -1);
 	rb_define_method(klass, "visible", RUBY_METHOD_FUNC(sceneElementGetVisible<C>), 0);
 	rb_define_method(klass, "visible=", RUBY_METHOD_FUNC(sceneElementSetVisible<C>), -1);
 }

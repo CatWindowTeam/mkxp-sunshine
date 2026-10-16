@@ -55,7 +55,7 @@ class Sprite_Character
     if Settings[:debug_text]
       @text_sprite.x = @character.screen_x
       @text_sprite.y = @character.screen_y
-      @text_sprite.z = 100
+      @text_sprite.order = 100
     end
     # Update sprites
     @sprite.update
@@ -74,8 +74,8 @@ class Sprite_Character
         @light_sprite.visible = false
         @sprite.src_rect.set(0, 0, 32, 32)
         @light_sprite.src_rect.set(0, 0, 32, 32)
-        self.ox = 16
-        self.oy = 32
+        self.origin_x = 16
+        self.origin_y = 32
       # If tile ID value is invalid
       else
         name = @character.character_name == "" && Settings[:debug_character] ? "debug" : @character.character_name
@@ -97,8 +97,8 @@ class Sprite_Character
         end
         @cw = @sprite.bitmap.width / 4
         @ch = @sprite.bitmap.height / 4
-        self.ox = @cw / 2
-        self.oy = @ch
+        self.origin_x = @cw / 2
+        self.origin_y = @ch
       end
     end
     # Set visible situation
@@ -114,7 +114,7 @@ class Sprite_Character
     # Set sprite coordinates
     self.x = @character.screen_x
     self.y = @character.screen_y
-    self.z = @character.screen_z(@ch)
+    self.order = @character.screen_z(@ch)
     # Set opacity level, blend method, and bush depth
     self.opacity = @character.opacity
     self.blend_type = @character.blend_type
@@ -133,7 +133,7 @@ class Sprite_Character
     # Set sprite coordinates
     self.x = @character.screen_x
     self.y = @character.screen_y
-    self.z = @character.screen_z(@ch)
+    self.order = @character.screen_z(@ch)
   end
   #--------------------------------------------------------------------------
   # * Sprite attribute wrapper
@@ -211,9 +211,9 @@ class Sprite_Character
   #--------------------------------------------------------------------------
   sprite_attr :src_rect
   sprite_attr :visible
-  sprite_attr :x, :y, :z
-  sprite_attr :ox, :oy
-  sprite_attr :zoom_x, :zoom_y
+  sprite_attr :x, :y, :order
+  sprite_attr :origin_x, :origin_y
+  sprite_attr :scale_x, :scale_y
   sprite_attr :angle
   sprite_attr :bush_depth
   sprite_attr :opacity

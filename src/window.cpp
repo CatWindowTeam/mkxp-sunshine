@@ -193,7 +193,7 @@ struct WindowPrivate {
 		WindowPrivate *p;
 
 		WindowControls(WindowPrivate *p, Viewport *viewport = 0) : ViewportElement(viewport), p(p) {
-			setZ(2);
+			setOrder(2);
 		}
 
 		void draw(){
@@ -780,9 +780,9 @@ void Window::onGeometryChange(const Scene::Geometry &geo){
 	p->sceneOffset = geo.offset();
 }
 
-void Window::setZ(int value){
-	ViewportElement::setZ(value);
-	p->controlsElement.setZ(value + 2);
+void Window::setOrder(int value){
+	ViewportElement::setOrder(value);
+	p->controlsElement.setOrder(value + 2);
 }
 
 void Window::setVisible(bool value){

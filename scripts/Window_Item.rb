@@ -17,7 +17,7 @@ class Window_Item < Window_Selectable
     refresh
     self.index = 0
     self.back_opacity = 230
-    self.z = 9998
+    self.order = 9998
     self.visible = false
     self.active = false
     @update_connection = Graphics.viewport_resized do |w, h|
@@ -89,9 +89,9 @@ class Window_Item < Window_Selectable
 	translation_name = "#{$persistent.langcode}/#{item.icon_name}"
     if File.exist?("Graphics/Icons/#{translation_name}.png")
       bitmap = RPG::Cache.icon(translation_name)
-	else
+    else
       bitmap = RPG::Cache.icon(item.icon_name)
-	end
+    end
     self.contents.stretch_blt(Rect.new(x, y, 32, 32), bitmap, Rect.new(0, 0, bitmap.width, bitmap.height), self.contents.font.color.alpha)
   end
   #--------------------------------------------------------------------------

@@ -2,12 +2,12 @@ class Particle
   def initialize(viewport, bitmap)
     @sprite = Sprite.new(viewport)
     @sprite.bitmap = bitmap
-    @sprite.ox = bitmap.width / 2
-    @sprite.oy = bitmap.height / 2
+    @sprite.origin_x = bitmap.width / 2
+    @sprite.origin_y = bitmap.height / 2
     @light = Sprite.new(viewport)
     @light.bitmap = RPG::Cache.light("light")
-    @light.ox = @light.bitmap.width / 2
-    @light.oy = @light.bitmap.height / 2
+    @light.origin_x = @light.bitmap.width / 2
+    @light.origin_y = @light.bitmap.height / 2
     @light.z -= 1
     @light.blend_type = 3
     @light.tone = Tone.new(512, 512, 512)
@@ -17,11 +17,11 @@ class Particle
   end
 
   def light_scale
-    @light.zoom_x
+    @light.scale_x
   end
 
   def light_scale=(val)
-    @light.zoom_x = @light.zoom_y = val
+    @light.scale_x = @light.scale_y = val
   end
 
   # Link various things to the sprite
@@ -30,7 +30,7 @@ class Particle
   end
   def x=(val)
     @x = val
-    width = [@sprite.bitmap.width * @sprite.zoom_x, @light.bitmap.width * @light.zoom_x].max
+    width = [@sprite.bitmap.width * @sprite.scale_x, @light.bitmap.width * @light.scale_x].max
     if @x < -width
       @x = Graphics.width + width
     elsif @x > Graphics.width + width
@@ -43,7 +43,7 @@ class Particle
   end
   def y=(val)
     @y = val
-    height = [@sprite.bitmap.height * @sprite.zoom_y, @light.bitmap.height * @light.zoom_y].max
+    height = [@sprite.bitmap.height * @sprite.scale_y, @light.bitmap.height * @light.scale_y].max
     if @y < -height
       @y = Graphics.height + height
     elsif @y > Graphics.height + height
@@ -52,11 +52,11 @@ class Particle
     @light.y = @sprite.y = @y
   end
   def scale
-    @sprite.zoom_x
+    @sprite.scale_x
   end
   def scale=(val)
-    @sprite.zoom_x = val
-    @sprite.zoom_y = val
+    @sprite.scale_x = val
+    @sprite.scale_y = val
   end
   def opacity
     @sprite.opacity

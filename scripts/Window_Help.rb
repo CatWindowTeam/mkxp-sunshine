@@ -14,7 +14,7 @@ class Window_Help < Window_Base
     Language.register_text_sprite(self.class.name + "_contents", self.contents)
     self.visible = false
     self.back_opacity = 230
-    self.z = 9998
+    self.order = 9998
     
     @update_connection = Graphics.viewport_resized do |w, h|
       self.x = Graphics.width / 2 - 304

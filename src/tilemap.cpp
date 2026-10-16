@@ -884,7 +884,7 @@ ZLayer::ZLayer(TilemapPrivate *p, Viewport *viewport)
 void ZLayer::setIndex(int value){
 	index = value;
 
-	z = calculateZ(p, index);
+	order = calculateZ(p, index);
 	scene->reinsert(*this);
 
 	firstQuad = p->zlayerBases[index];
@@ -915,7 +915,7 @@ void ZLayer::initUpdateZ(){
 }
 
 void ZLayer::finiUpdateZ(ZLayer *prev){
-	z = calculateZ(p, index);
+	order = calculateZ(p, index);
 	if (prev)
 		scene->insertAfter(*this, *prev);
 	else

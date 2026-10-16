@@ -239,11 +239,11 @@ module RPG
       end
       @_damage_sprite = ::Sprite.new(self.viewport)
       @_damage_sprite.bitmap = bitmap
-      @_damage_sprite.ox = 80
-      @_damage_sprite.oy = 20
+      @_damage_sprite.origin_x = 80
+      @_damage_sprite.origin_y = 20
       @_damage_sprite.x = self.x
-      @_damage_sprite.y = self.y - self.oy / 2
-      @_damage_sprite.z = 3000
+      @_damage_sprite.y = self.y - self.origin_y / 2
+      @_damage_sprite.order = 3000
       @_damage_duration = 40
     end
     def animation(animation, hit)
@@ -460,19 +460,19 @@ module RPG
             sprite.y = 240
           end
         else
-          sprite.x = self.x - self.ox + self.src_rect.width / 2
-          sprite.y = self.y - self.oy + self.src_rect.height / 2
+          sprite.x = self.x - self.origin_x + self.src_rect.width / 2
+          sprite.y = self.y - self.origin_y + self.src_rect.height / 2
           sprite.y -= self.src_rect.height / 4 if position == 0
           sprite.y += self.src_rect.height / 4 if position == 2
         end
         sprite.x += cell_data[i, 1]
         sprite.y += cell_data[i, 2]
-        sprite.z = 2000
-        sprite.ox = 96
-        sprite.oy = 96
-        sprite.zoom_x = cell_data[i, 3] / 100.0
-        sprite.zoom_y = cell_data[i, 3] / 100.0
-        sprite.angle = cell_data[i, 4]
+        sprite.order = 2000
+        sprite.origin_x = 96
+        sprite.origin_y = 96
+        sprite.scale_x = cell_data[i, 3] / 100.0
+        sprite.scale_y = cell_data[i, 3] / 100.0
+        sprite.rot_z = cell_data[i, 4]
         sprite.mirror_x = (cell_data[i, 5] == 1)
         sprite.opacity = cell_data[i, 6] * self.opacity / 255.0
         sprite.blend_type = cell_data[i, 7]
@@ -558,7 +558,7 @@ module RPG
       @sprites = []
       (1..40).each do |i|
         sprite = Sprite.new(viewport)
-        sprite.z = 1000
+        sprite.order = 1000
         sprite.visible = false
         sprite.opacity = 0
         @sprites.push(sprite)
@@ -593,18 +593,18 @@ module RPG
         end
       end
     end
-    def ox=(ox)
+    def origin_x=(ox)
       return if @ox == ox;
       @ox = ox
       @sprites.each do |s|
-        s.ox = @ox
+        s.origin_x = @ox
       end
     end
-    def oy=(oy)
+    def origin_y=(oy)
       return if @oy == oy;
       @oy = oy
       @sprites.each do |s|
-        s.oy = @oy
+        s.origin_y = @oy
       end
     end
     def max=(max)

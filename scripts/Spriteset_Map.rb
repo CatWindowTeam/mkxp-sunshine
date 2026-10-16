@@ -39,10 +39,10 @@ class Spriteset_Map
       @viewport_flash.rect.height = h
     end
 
-    @viewport_bg.z = -500
-    @viewport_lights.z = 200
-    @viewport_pics.z = 500
-    @viewport_flash.z = 5000
+    @viewport_bg.order = -500
+    @viewport_lights.order = 200
+    @viewport_pics.order = 500
+    @viewport_flash.order = 5000
 
     # Make tilemap
     @old_setting = Settings[:water]
@@ -66,18 +66,18 @@ class Spriteset_Map
     @tilemap.priorities = $game_map.priorities
     # Make panorama plane
     @panorama = Plane.new(@viewport_bg)
-    @panorama.z = -1000
+    @panorama.order = -1000
 
     if $game_map.pan_fade_animate
       @panorama2 = Plane.new(@viewport_bg)
-      @panorama2.z = -999
+      @panorama2.order = -999
       @panorama2.opacity = 0
       @pan_frame_index = 0
     end
 
     # Make fog plane
     @fog = Plane.new(@viewport)
-    @fog.z = 3000
+    @fog.order = 3000
     # Make character sprites
     @character_sprites = []
     $game_map.events.keys.sort.each do |i|
@@ -196,7 +196,7 @@ class Spriteset_Map
           @panorama.shader = Shader::Plane
           if @panorama2 == nil
             @panorama2 = Plane.new(@viewport_bg)
-            @panorama2.z = -999
+            @panorama2.order = -999
             @panorama2.opacity = 0
             @pan_frame_index = 0
           end
@@ -243,8 +243,8 @@ class Spriteset_Map
       @bg_name = $game_map.bg_name
       if !@bg
         @bg = Sprite.new(@viewport_bg)
-        @bg.zoom_x = 2
-        @bg.zoom_y = 2
+        @bg.scale_x = 2
+        @bg.scale_y = 2
       end
       if @bg_name.empty?
         @bg.bitmap = nil
@@ -273,15 +273,15 @@ class Spriteset_Map
           Logger.Warn 'invalid particle type used'
         end
         @particles = ParticleLayer.new(@viewport_particles, klass, count)
-        @viewport_particles.z = (layer == :front) ? 499 : -400
+        @viewport_particles.order = (layer == :front) ? 499 : -400
       end
     end
     # Update bg plane
     @bg.x = (-$game_map.display_x / 4) 
     @bg.y = (-$game_map.display_y / 4) 
     # Update tilemap
-    @tilemap.ox = $game_map.display_x / 4
-    @tilemap.oy = $game_map.display_y / 4
+    @tilemap.origin_x = $game_map.display_x / 4
+    @tilemap.origin_y = $game_map.display_y / 4
     @tilemap.update
     # Update panorama plane
     if $game_map.always_moving
@@ -289,18 +289,18 @@ class Spriteset_Map
     end
     if $game_map.clamped_x
       x = ($game_player.real_x.to_f / (($game_map.width  - 1) * 128)) * (@panorama.bitmap.width * $game_map.pan_zoom - Graphics.width) 
-      @panorama.ox = x < 0.0 ? 0.0 : x
+      @panorama.origin_x = x < 0.0 ? 0.0 : x
     else
-      @panorama.ox = $game_map.display_x / ($game_map.pan_onetoone ? 4 : 8)
+      @panorama.origin_x = $game_map.display_x / ($game_map.pan_onetoone ? 4 : 8)
     end
     if $game_map.clamped_y
       y = ($game_player.real_y.to_f / (($game_map.height - 1) * 128)) * (@panorama.bitmap.height * $game_map.pan_zoom - Graphics.height) 
-      @panorama.oy = y < 0.0 ? 0.0 : y
+      @panorama.origin_y = y < 0.0 ? 0.0 : y
     else
-      @panorama.oy = $game_map.pan_offset_y + $game_map.display_y / ($game_map.pan_onetoone ? 4 : 8)
+      @panorama.origin_y = $game_map.pan_offset_y + $game_map.display_y / ($game_map.pan_onetoone ? 4 : 8)
     end
-    @panorama.zoom_x = @panorama.zoom_y = $game_map.pan_zoom
-    @panorama.zoom_x = @panorama.zoom_y = $game_map.pan_zoom * 2 if @panorama_name == "green_water" && !Settings[:water]
+    @panorama.scale_x = @panorama.scale_y = $game_map.pan_zoom
+    @panorama.scale_x = @panorama.scale_y = $game_map.pan_zoom * 2 if @panorama_name == "green_water" && !Settings[:water]
     # Animate panorama
     if $game_map.pan_animate
       @pan_animate_timer = (@pan_animate_timer + 1) % 16
@@ -310,22 +310,22 @@ class Spriteset_Map
       end
     end
 
-    @panorama.ox += $game_map.pan_move_offset
-    @panorama.oy += $game_map.pan_move_offset
+    @panorama.origin_x += $game_map.pan_move_offset
+    @panorama.origin_y += $game_map.pan_move_offset
 
     if $game_map.pan_fade_animate && @panorama2 != nil && !((@panorama_name == "green_water" || @panorama_name == "dark_water") && Settings[:water])
       @panorama2.opacity += 3
-      @panorama2.ox = @panorama.ox
-      @panorama2.oy = @panorama.oy
-      @panorama2.zoom_x = @panorama2.zoom_y = $game_map.pan_zoom
-      @panorama2.zoom_x = @panorama2.zoom_y = $game_map.pan_zoom * 2 if @panorama_name == "green_water" && !Settings[:water]
+      @panorama2.origin_x = @panorama.origin_x
+      @panorama2.origin_y = @panorama.origin_y
+      @panorama2.scale_x = @panorama2.scale_y = $game_map.pan_zoom
+      @panorama2.scale_x = @panorama2.scale_y = $game_map.pan_zoom * 2 if @panorama_name == "green_water" && !Settings[:water]
       if @panorama2.opacity >= 255
         @panorama2.opacity = 255
         @panorama.dispose
         @panorama = @panorama2
-        @panorama.z = -1000
+        @panorama.order = -1000
         @panorama2 = Plane.new(@viewport_bg)
-        @panorama2.z = -999
+        @panorama2.order = -999
         @panorama2.opacity = 0
         @pan_frame_index = (@pan_frame_index + 1) % 3
         @panorama2.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
@@ -365,12 +365,12 @@ class Spriteset_Map
     # Update fog plane
     @fog.visible = Settings[:fog]
     if Settings[:fog]
-      @fog.zoom_x = $game_map.fog_zoom / 100.0
-      @fog.zoom_y = $game_map.fog_zoom / 100.0
+      @fog.scale_x = $game_map.fog_zoom / 100.0
+      @fog.scale_y = $game_map.fog_zoom / 100.0
       @fog.opacity = $game_map.fog_opacity
       @fog.blend_type = $game_map.fog_blend_type
-      @fog.ox = $game_map.display_x / 4 + $game_map.fog_ox
-      @fog.oy = $game_map.display_y / 4 + $game_map.fog_oy
+      @fog.origin_x = $game_map.display_x / 4 + $game_map.fog_ox
+      @fog.origin_y = $game_map.display_y / 4 + $game_map.fog_oy
       @fog.tone = $game_map.fog_tone
     end
     # Update character sprites
@@ -381,10 +381,10 @@ class Spriteset_Map
       # based on its current width and height
       # no point in updating the sprite if offscreen
       # this greatly increases performance on larger maps
-      elsif ((sprite.character.real_x + (sprite.ox*4) > $game_map.display_x - 128) &&
-             (sprite.character.real_x - (sprite.ox*4) < $game_map.display_x + ((Graphics.width / 32.0).ceil * 128)) &&
-             (sprite.character.real_y + (sprite.oy*4) > ($game_map.display_y) - 128) &&
-             (sprite.character.real_y - (sprite.oy*4) < ($game_map.display_y) + (Graphics.height / 32.0).ceil * 128))
+      elsif ((sprite.character.real_x + (sprite.origin_x*4) > $game_map.display_x - 128) &&
+             (sprite.character.real_x - (sprite.origin_x*4) < $game_map.display_x + ((Graphics.width / 32.0).ceil * 128)) &&
+             (sprite.character.real_y + (sprite.origin_y*4) > ($game_map.display_y) - 128) &&
+             (sprite.character.real_y - (sprite.origin_y*4) < ($game_map.display_y) + (Graphics.height / 32.0).ceil * 128))
         sprite.update
       else
         sprite.update_fast
@@ -398,8 +398,8 @@ class Spriteset_Map
     # Update weather graphic
     @weather.type = $game_screen.weather_type
     @weather.max = $game_screen.weather_max
-    @weather.ox = $game_map.display_x / 4
-    @weather.oy = $game_map.display_y / 4
+    @weather.origin_x = $game_map.display_x / 4
+    @weather.origin_y = $game_map.display_y / 4
     @weather.update
     # Update picture sprites
     @picture_sprites.each do |sprite|
@@ -413,8 +413,8 @@ class Spriteset_Map
     @timer_sprite.update
     # Set screen color tone and shake position
     @viewport.tone = $game_screen.tone + $game_map.ambient
-    @viewport.ox = $game_screen.shake
-    @viewport_lights.ox = $game_screen.shake
+    @viewport.origin_x = $game_screen.shake
+    @viewport_lights.origin_x = $game_screen.shake
     # Set screen flash color
     @viewport_flash.color = $game_screen.flash_color
     # Update viewports

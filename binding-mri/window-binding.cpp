@@ -132,8 +132,8 @@ void windowBindingInit(){
 	INIT_PROP_BIND( Window, Y,               "y"                );
 	INIT_PROP_BIND( Window, Width,           "width"            );
 	INIT_PROP_BIND( Window, Height,          "height"           );
-	INIT_PROP_BIND( Window, OX,              "ox"               );
-	INIT_PROP_BIND( Window, OY,              "oy"               );
+	INIT_PROP_BIND( Window, OX,              "origin_x"         );
+	INIT_PROP_BIND( Window, OY,              "origin_y"         );
 	INIT_PROP_BIND( Window, Opacity,         "opacity"          );
 	INIT_PROP_BIND( Window, BackOpacity,     "back_opacity"     );
 	INIT_PROP_BIND( Window, ContentsOpacity, "contents_opacity" );

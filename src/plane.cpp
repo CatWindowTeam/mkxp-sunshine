@@ -153,8 +153,8 @@ Plane::Plane(Viewport *viewport) : ViewportElement(viewport){
 DEF_ATTR_RD_SIMPLE(Plane, Bitmap,    Bitmap*, p->bitmap)
 DEF_ATTR_RD_SIMPLE(Plane, OX,        int,     p->ox)
 DEF_ATTR_RD_SIMPLE(Plane, OY,        int,     p->oy)
-DEF_ATTR_RD_SIMPLE(Plane, ZoomX,     float,   p->zoomX)
-DEF_ATTR_RD_SIMPLE(Plane, ZoomY,     float,   p->zoomY)
+DEF_ATTR_RD_SIMPLE(Plane, ScaleX,    float,   p->zoomX)
+DEF_ATTR_RD_SIMPLE(Plane, ScaleY,    float,   p->zoomY)
 DEF_ATTR_RD_SIMPLE(Plane, BlendType, int,     p->blendType)
 
 DEF_ATTR_SIMPLE(Plane, SrcRect,   Rect&,  *p->srcRect)
@@ -196,7 +196,7 @@ void Plane::setOY(int value){
 	p->quadSourceDirty = true;
 }
 
-void Plane::setZoomX(float value){
+void Plane::setScaleX(float value){
 	guardDisposed();
 	if (p->zoomX == value)
 	        return;
@@ -205,7 +205,7 @@ void Plane::setZoomX(float value){
 	p->quadSourceDirty = true;
 }
 
-void Plane::setZoomY(float value){
+void Plane::setScaleY(float value){
 	guardDisposed();
 	if (p->zoomY == value)
 	        return;

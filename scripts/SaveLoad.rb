@@ -48,21 +48,21 @@ def save
   while i > 0
     #delete save5.bk if it exists
     if File.exist?(Oneshot::SAVE_PATH + "/save_backups/save" + i.to_s + ".bk")
-	  File.delete(Oneshot::SAVE_PATH + "/save_backups/save" + i.to_s + ".bk")
-	end
+      File.delete(Oneshot::SAVE_PATH + "/save_backups/save" + i.to_s + ".bk")
+    end
     #delete p-settings5.bk if it exists
     if File.exist?(Oneshot::SAVE_PATH + "/save_backups/p-settings" + i.to_s + ".bk")
-	  File.delete(Oneshot::SAVE_PATH + "/save_backups/p-settings" + i.to_s + ".bk")
-	end
+      File.delete(Oneshot::SAVE_PATH + "/save_backups/p-settings" + i.to_s + ".bk")
+    end
 
 	#rename save4.bk to save5.bk if save4.bk exists
     if File.exist?(Oneshot::SAVE_PATH + "/save_backups/save" + (i-1).to_s + ".bk")
-	  File.rename(Oneshot::SAVE_PATH + "/save_backups/save" + (i-1).to_s + ".bk", Oneshot::SAVE_PATH + "/save_backups/save" + i.to_s + ".bk" )
-	end
+      File.rename(Oneshot::SAVE_PATH + "/save_backups/save" + (i-1).to_s + ".bk", Oneshot::SAVE_PATH + "/save_backups/save" + i.to_s + ".bk" )
+    end
 	#rename p-settings4.bk to p-settings5.bk if save4.bk exists
     if File.exist?(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i-1).to_s + ".bk")
-	  File.rename(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i-1).to_s + ".bk", Oneshot::SAVE_PATH + "/save_backups/p-settings" + i.to_s + ".bk" )
-	end
+      File.rename(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i-1).to_s + ".bk", Oneshot::SAVE_PATH + "/save_backups/p-settings" + i.to_s + ".bk" )
+    end
 	
     i -= 1
   end
@@ -163,31 +163,31 @@ def load(filename)
 end
 
 def load_perma_flags
-	begin
+  begin
       read_perma_flags(PERMA_FLAGS_NAME)
-	rescue TypeError, ArgumentError => e
-	  Logger.Error "oops: #{e.message}"
-	  EdText.err("p-settings.dat corrupt. Attempting to load backup.")
-	  (1..6).each do |i|
-	    if !File.exist?(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i).to_s + ".bk")
-	      EdText.err("All p-settings backups corrupt!  Deleting corrupt p-settings file and shutting down.")
-		  File.delete(PERMA_FLAGS_NAME)
-          Oneshot.allow_exit true
-          Kernel.abort("All p-settings backups corrupt!  Deleting corrupt p-settings file and shutting down.")
-		  break
-		end
-	    begin
-	      read_perma_flags(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i).to_s + ".bk")
-		  break
-	    rescue TypeError, ArgumentError => e2
-	      Logger.Error "oops: #{e2.message}"
-	      EdText.err("p-settings" + (i).to_s + ".bk corrupt. Attempting to load backup.")
-		end
-	  end
-	end
-	
+  rescue TypeError, ArgumentError => e
+    Logger.Error "oops: #{e.message}"
+    EdText.err("p-settings.dat corrupt. Attempting to load backup.")
+    (1..6).each do |i|
+      if !File.exist?(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i).to_s + ".bk")
+        EdText.err("All p-settings backups corrupt!  Deleting corrupt p-settings file and shutting down.")
+        File.delete(PERMA_FLAGS_NAME)
+        Oneshot.allow_exit true
+        Kernel.abort("All p-settings backups corrupt!  Deleting corrupt p-settings file and shutting down.")
+        break
+      end
+      begin
+        read_perma_flags(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i).to_s + ".bk")
+        break
+      rescue TypeError, ArgumentError => e2
+        Logger.Error "oops: #{e2.message}"
+        EdText.err("p-settings" + (i).to_s + ".bk corrupt. Attempting to load backup.")
+      end
+    end
+  end
 end
 
+# TODO: use custom class or etc instead of game variables and game switches
 def read_perma_flags(filename)
   return false if !FileTest.exist?(filename)
   perma_flags = nil

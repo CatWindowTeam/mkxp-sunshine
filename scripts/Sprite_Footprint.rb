@@ -5,10 +5,10 @@ class Sprite_Footprint < Sprite
     @real_x = x * 4 * 32
     @real_y = y * 4 * 32
 
-    self.zoom_x = 2
-    self.zoom_y = 2
-    self.ox = 8
-    self.oy = 16
+    self.scale_x = 2
+    self.scale_y = 2
+    self.origin_x = 8
+    self.origin_y = 16
     self.bitmap = RPG::Cache.misc('footprints')
     self.src_rect.set(0, 16 * (direction / 2 - 1), 16, 16)
     update

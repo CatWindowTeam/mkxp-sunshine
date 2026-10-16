@@ -9,11 +9,11 @@ class Sprite_MapText < Sprite
 
     self.bitmap = Bitmap.new(200, 24)
     if (Language::FONT_WESTERN == Font.default_name)
-      self.zoom_x = 2
-      self.zoom_y = 2
+      self.scale_x = 2
+      self.scale_y = 2
     else
-      self.zoom_x = 1.5
-      self.zoom_y = 1.5
+      self.scale_x = 1.5
+      self.scale_y = 1.5
     end
 
 	#calculate text width
@@ -38,8 +38,8 @@ class Sprite_MapText < Sprite
 	self.bitmap.draw_text(0,0, width, 24, text)
 
     self.src_rect.set(0, 0, width, 24)
-    self.oy = 24
-    self.ox = width/2
+    self.origin_y = 24
+    self.origin_x = width/2
 
     update
   end

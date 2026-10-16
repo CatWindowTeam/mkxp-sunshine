@@ -29,7 +29,7 @@ class Window_MainMenu < Window_Selectable
     (0...@item_max).each do |i|
       draw_item(i, normal_color)
     end
-    self.z = 9998
+    self.order = 9998
   end
   #--------------------------------------------------------------------------
   # * Draw Item

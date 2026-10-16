@@ -51,8 +51,8 @@ public:
 	DECL_ATTR( Y,            int     )
 	DECL_ATTR( OX,           int     )
 	DECL_ATTR( OY,           int     )
-	DECL_ATTR( ZoomX,        float   )
-	DECL_ATTR( ZoomY,        float   )
+	DECL_ATTR( ScaleX,       float   )
+	DECL_ATTR( ScaleY,       float   )
 	DECL_ATTR( Angle,        float   )
 	DECL_ATTR( MirrorX,      bool    )
 	DECL_ATTR( MirrorY,      bool    )
@@ -69,11 +69,11 @@ public:
 	DECL_ATTR( WavePhase,    float   )
 	DECL_ATTR( Obscured,     bool    )
 	DECL_ATTR( Shader,       int     )
-	// 3D test shit
+	// 3D shit
 	DECL_ATTR( PerspectiveMode,      bool  )
-	DECL_ATTR( PerspectiveZ,         int   )
-	DECL_ATTR( PerspectiveRotationX, float )
-	DECL_ATTR( PerspectiveRotationY, float )
+	DECL_ATTR( Z,         int   )
+	DECL_ATTR( RotationX, float )
+	DECL_ATTR( RotationY, float )
 
 	void initDynAttribs();
 

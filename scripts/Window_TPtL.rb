@@ -25,7 +25,7 @@ class Window_TPtL < Window_Selectable
       ix += 1
     end
     
-    self.z = 9998
+    self.order = 9998
   end
 
   def sort

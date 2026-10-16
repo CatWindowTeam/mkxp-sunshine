@@ -88,10 +88,10 @@ void Scene::composite(){
 }
 
 
-SceneElement::SceneElement(Scene &scene, int z, int spriteY)
+SceneElement::SceneElement(Scene &scene, int order, int spriteY)
     : link(this),
       creationStamp(shState->genTimeStamp()),
-      z(z),
+      order(order),
       visible(true),
       scene(&scene),
       spriteY(spriteY)
@@ -113,19 +113,19 @@ void SceneElement::setScene(Scene &scene){
 	onGeometryChange(scene.getGeometry());
 }
 
-int SceneElement::getZ() const{
+int SceneElement::getOrder() const{
 	aboutToAccess();
 
-	return z;
+	return order;
 }
 
-void SceneElement::setZ(int value){
+void SceneElement::setOrder(int value){
 	aboutToAccess();
 
-	if (z == value)
+	if (order == value)
 		return;
 
-	z = value;
+	order = value;
 	scene->reinsert(*this);
 }
 
@@ -146,8 +146,8 @@ bool SceneElement::operator<(const SceneElement &o) const{
 	 * If two Z values are equal, the later created object
 	 * has priority */
 
-	if (z <= o.z){
-		if (z == o.z){
+	if (order <= o.order){
+		if (order == o.order){
 			return (creationStamp < o.creationStamp);
 		}
 

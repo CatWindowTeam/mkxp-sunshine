@@ -54,7 +54,7 @@ begin
   viewport = Viewport.new()
   time = 0.0
   debug = Sprite.new(viewport)
-  debug.z = 10
+  debug.order = 10
   debug.bitmap = Bitmap.new(Graphics.width, Graphics.height)
   while true
   	score += 1
@@ -66,7 +66,7 @@ begin
     sprite.y_r = Graphics.height / 2
     sprite.direction_x = Math.sin(time / 60.0)
     sprite.direction_y = Math.cos(time / 60.0)
-    sprite.z = -time
+    sprite.order = -time
     sprite.opacity = rand(1..100)
     sprite.blend_type = rand(1..3)
     sprite.shader = Shader::WorldMachine

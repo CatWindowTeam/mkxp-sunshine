@@ -19,10 +19,10 @@ class Credits_Message
     Language.register_text_sprite(self.class.name + "_contents", @contents)
     @contents.font.size = 16
     @sprite_text.bitmap = @contents
-    @sprite_bg.z = 0
-    @sprite_text.z = 1
-    @sprite_text.zoom_x = @sprite_text.zoom_y = 2
-    @viewport.z = 9999
+    @sprite_bg.order = 0
+    @sprite_text.order = 1
+    @sprite_text.scale_x = @sprite_text.scale_y = 2
+    @viewport.order = 9999
     @viewport.visible = false
 
     @sprite_bg.opacity = 0

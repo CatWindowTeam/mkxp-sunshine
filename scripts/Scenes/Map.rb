@@ -15,7 +15,7 @@ class Scene_Map
     @in_game_timer.y = 8;
     @in_game_timer.bitmap = Bitmap.new(140, 30)
     @in_game_timer.bitmap.fill_rect(0, 0, 140, 30, Color.new(0, 0, 0))
-    @in_game_timer.z = 10001
+    @in_game_timer.order = 10001
     @in_game_timer.visible = $game_temp.igt_timer_visible
     
     # Make sprite set
@@ -34,17 +34,17 @@ class Scene_Map
     @item_icon = Sprite.new
     @item_icon.x = Graphics.width - 64
     @item_icon.y = Graphics.height - 64
-    @item_icon.z = 9000
-    @item_icon.zoom_x = 2.0
-    @item_icon.zoom_y = 2.0
+    @item_icon.order = 9000
+    @item_icon.scale_x = 2.0
+    @item_icon.scale_y = 2.0
     @item_id = 0
     # Make item flash (for clover)
     @item_icon_flash = Sprite.new
     @item_icon_flash.x = Graphics.width - 64
     @item_icon_flash.y = Graphics.height - 64
-    @item_icon_flash.z = 10000
-    @item_icon_flash.zoom_x = 2.0
-    @item_icon_flash.zoom_y = 2.0
+    @item_icon_flash.order = 10000
+    @item_icon_flash.scale_x = 2.0
+    @item_icon_flash.scale_y = 2.0
     @item_icon_flash.opacity = 0
     @item_icon_flash_fadein = true
     @item_icon_flash_wait = 100
@@ -57,7 +57,7 @@ class Scene_Map
     @blackfade.bitmap = Bitmap.new(Graphics.width, Graphics.height)
     @blackfade.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0))
     @blackfade.visible = false
-    @blackfade.z = 9999
+    @blackfade.order = 9999
     color = GamepadMapColors::COLORS[$game_map.map_id] || GamepadMapColors::SUN
     Input.set_led(color.red, color.green, color.blue)
     
@@ -213,8 +213,8 @@ class Scene_Map
         else
           @item_icon.bitmap = RPG::Cache.icon(name)
         end
-        @item_icon.zoom_x = 2.0
-        @item_icon.zoom_y = 2.0
+        @item_icon.scale_x = 2.0
+        @item_icon.scale_y = 2.0
 	  
         if @item_id == 58 #clover
           @item_icon_flash.bitmap = RPG::Cache.icon($data_items[@item_id].icon_name + "2")

@@ -50,6 +50,7 @@ DEF_PROP_OBJ_VAL(Sprite, Color,  Modulate,"modulate")
 
 DEF_PROP_I(Sprite, X)
 DEF_PROP_I(Sprite, Y)
+DEF_PROP_I(Sprite, Z)
 DEF_PROP_I(Sprite, OX)
 DEF_PROP_I(Sprite, OY)
 DEF_PROP_I(Sprite, BushDepth)
@@ -60,13 +61,12 @@ DEF_PROP_I(Sprite, WaveAmp)
 DEF_PROP_I(Sprite, WaveLength)
 DEF_PROP_I(Sprite, WaveSpeed)
 DEF_PROP_I(Sprite, Shader)
-DEF_PROP_I(Sprite, PerspectiveZ)
-DEF_PROP_F(Sprite, ZoomX)
-DEF_PROP_F(Sprite, ZoomY)
+DEF_PROP_F(Sprite, ScaleX)
+DEF_PROP_F(Sprite, ScaleY)
 DEF_PROP_F(Sprite, Angle)
 DEF_PROP_F(Sprite, WavePhase)
-DEF_PROP_F(Sprite, PerspectiveRotationX)
-DEF_PROP_F(Sprite, PerspectiveRotationY)
+DEF_PROP_F(Sprite, RotationX)
+DEF_PROP_F(Sprite, RotationY)
 DEF_PROP_B(Sprite, MirrorX)
 DEF_PROP_B(Sprite, MirrorY)
 DEF_PROP_B(Sprite, Obscured)
@@ -112,37 +112,42 @@ void spriteBindingInit(){
 
 	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(spriteInitialize), -1);
 
-	INIT_PROP_BIND( Sprite, Bitmap,       "bitmap"        );
-	INIT_PROP_BIND( Sprite, SrcRect,      "src_rect"      );
-	INIT_PROP_BIND( Sprite, X,            "x"             );
-	INIT_PROP_BIND( Sprite, Y,            "y"             );
-	INIT_PROP_BIND( Sprite, OX,           "ox"            );
-	INIT_PROP_BIND( Sprite, OY,           "oy"            );
-	INIT_PROP_BIND( Sprite, ZoomX,        "zoom_x"        );
-	INIT_PROP_BIND( Sprite, ZoomY,        "zoom_y"        );
-	INIT_PROP_BIND( Sprite, Angle,        "angle"         );
-	INIT_PROP_BIND( Sprite, MirrorX,      "mirror_x"      );
-	INIT_PROP_BIND( Sprite, MirrorY,      "mirror_y"      );
-	INIT_PROP_BIND( Sprite, BushDepth,    "bush_depth"    );
-	INIT_PROP_BIND( Sprite, Opacity,      "opacity"       );
-	INIT_PROP_BIND( Sprite, BlendType,    "blend_type"    );
-	INIT_PROP_BIND( Sprite, Color,        "color"         );
-	INIT_PROP_BIND( Sprite, Tone,         "tone"          );
-	INIT_PROP_BIND( Sprite, Modulate,     "modulate"      );
-	INIT_PROP_BIND( Sprite, Obscured,     "obscured"      );
-	INIT_PROP_BIND( Sprite, Shader,       "shader"        );
-	INIT_PROP_BIND( Sprite, Smooth,       "smooth"        );
-	INIT_PROP_BIND( Sprite, PerspectiveMode,      "pm");
-	INIT_PROP_BIND( Sprite, PerspectiveZ,         "pz");
-	INIT_PROP_BIND( Sprite, PerspectiveRotationX, "rx");
-	INIT_PROP_BIND( Sprite, PerspectiveRotationY, "ry");
+	INIT_PROP_BIND( Sprite, Bitmap,          "bitmap"    );
+	INIT_PROP_BIND( Sprite, SrcRect,         "src_rect"  );
+	INIT_PROP_BIND( Sprite, X,               "x"         );
+	INIT_PROP_BIND( Sprite, Y,               "y"         );
+	INIT_PROP_BIND( Sprite, Z,               "z"         );
+	INIT_PROP_BIND( Sprite, OX,              "origin_x"  );
+	INIT_PROP_BIND( Sprite, OY,              "origin_y"  );
+	INIT_PROP_BIND( Sprite, ScaleX,          "scale_x"   );
+	INIT_PROP_BIND( Sprite, ScaleY,          "scale_y"   );
+	INIT_PROP_BIND( Sprite, MirrorX,         "mirror_x"  );
+	INIT_PROP_BIND( Sprite, MirrorY,         "mirror_y"  );
+	INIT_PROP_BIND( Sprite, BushDepth,       "bush_depth");
+	INIT_PROP_BIND( Sprite, Opacity,         "opacity"   );
+	INIT_PROP_BIND( Sprite, BlendType,       "blend_type");
+	INIT_PROP_BIND( Sprite, Color,           "color"     );
+	INIT_PROP_BIND( Sprite, Tone,            "tone"      );
+	INIT_PROP_BIND( Sprite, Modulate,        "modulate"  );
+	INIT_PROP_BIND( Sprite, Obscured,        "obscured"  );
+	INIT_PROP_BIND( Sprite, Shader,          "shader"    );
+	INIT_PROP_BIND( Sprite, Smooth,          "smooth"    );
+	INIT_PROP_BIND( Sprite, PerspectiveMode, "perspective");
+	INIT_PROP_BIND( Sprite, RotationX,       "rot_x"     );
+	INIT_PROP_BIND( Sprite, RotationY,       "rot_y"     );
+	INIT_PROP_BIND( Sprite, Angle,           "rot_z"     );
+	// bush
+	INIT_PROP_BIND( Sprite, BushOpacity, "bush_opacity" );
+	INIT_PROP_BIND( Sprite, WaveAmp,     "wave_amp"    );
+	INIT_PROP_BIND( Sprite, WaveLength,  "wave_length" );
+	INIT_PROP_BIND( Sprite, WaveSpeed,   "wave_speed"  );
+	INIT_PROP_BIND( Sprite, WavePhase,   "wave_phase"  );
 
 	rb_define_method(klass, "width", RUBY_METHOD_FUNC(spriteWidth), 0);
 	rb_define_method(klass, "height", RUBY_METHOD_FUNC(spriteHeight), 0);
 
-	INIT_PROP_BIND( Sprite, BushOpacity, "bush_opacity" );
-	INIT_PROP_BIND( Sprite, WaveAmp,    "wave_amp"    );
-	INIT_PROP_BIND( Sprite, WaveLength, "wave_length" );
-	INIT_PROP_BIND( Sprite, WaveSpeed,  "wave_speed"  );
-	INIT_PROP_BIND( Sprite, WavePhase,  "wave_phase"  );
+	// legacy
+	rb_define_alias(klass, "angle", "rot_z");
+	rb_define_alias(klass, "pm", "perspective");
+
 }

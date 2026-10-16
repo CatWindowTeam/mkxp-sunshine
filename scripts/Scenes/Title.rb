@@ -23,54 +23,25 @@ class Scene_Title
     $data_common_events = load_data("Data/CommonEvents.rxdata")
     $data_system        = load_data("Data/System.rxdata")
  
-    Language.initialize_database
-
-    $game_temp = Game_Temp.new
     new_game
-    $game_system = Game_System.new
-	
-    Settings.load! # loading settings
-
-    load_perma_flags
+    
+    Language.initialize_database
+    Settings.load!
     Oneshot.allow_exit true
-	
-    @window_settings_title = Window_Settings.new
-
-    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    load_perma_flags
 
     # Make title graphic
     @old_setting = Settings[:mainmenu_background] 
     
-    @sprite = Sprite.new(@viewport)
-    @badend_sprite = Sprite.new(@viewport)
-	
-    # chinese has its own special title screen so check for it
-    translation_name = "#{$persistent.langcode}/#{$data_system.title_name}"
-    if File.exist?("Graphics/Titles/#{translation_name}.png")
-      @sprite.bitmap = RPG::Cache.title(translation_name)
-    else
-	  @sprite.bitmap = RPG::Cache.title($data_system.title_name)
-    end
-
-    @sprite.x = Graphics.width / 2
-    @sprite.y = Graphics.height / 2
-    px = (Graphics.width / 1920.0)
-    py = (Graphics.height / 1080.0)
-    @sprite.ox = @sprite.bitmap.width / 2 * (0.5 * (1.0 - px) + px)
-    @sprite.oy = @sprite.bitmap.height / 2 * (1.3 * (1.0 - py) + py)
+    @window_settings_title = Window_Settings.new
+    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     
-    # check for debug file to add debug items
-    if Settings[:debug]
-      $game_party.gain_item(54, 1) # debug save
-        $game_party.gain_item(82, 1) # plight skip
-      $game_party.gain_item(81, 1) # George reroler
-    end 
-
-    @sprite.zoom_x = @sprite.zoom_y =
-    @badend_sprite.zoom_x = @badend_sprite.zoom_y = 2.0
-
-    redraw_bgs
-    update_visibility
+    @badend_sprite = Sprite.new(@viewport)
+    @background_sprite = Sprite.new(@viewport)
+    @background_sprite.x = Graphics.width / 2
+    @background_sprite.y = Graphics.height / 2
+    @background_sprite.scale_x = @background_sprite.scale_y =
+    @badend_sprite.scale_x = @badend_sprite.scale_y = 2.0
 
     # Create/render menu options
     @menu = Sprite.new(@viewport)
@@ -94,11 +65,35 @@ class Scene_Title
     # Make cursor graphic
     @cursor = Sprite.new(@viewport)
     @cursor.bitmap = RPG::Cache.menu('cursor')
-    @cursor.zoom_x = @cursor.zoom_y = 2
+    @cursor.scale_x = @cursor.scale_y = 2
     @cursor.z += 2
     @cursor.x = Graphics.width - MENU_X - 12
     @cursor.y = Graphics.height - MENU_Y + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2 - 3
 	
+    # chinese has its own special title screen so check for it
+    translation_name = "#{$persistent.langcode}/#{$data_system.title_name}"
+    if File.exist?("Graphics/Titles/#{translation_name}.png")
+      @background_sprite.bitmap = RPG::Cache.title(translation_name)
+    else
+	  @background_sprite.bitmap = RPG::Cache.title($data_system.title_name)
+    end
+
+    # check for debug file to add debug items
+    if Settings[:debug]
+      $game_party.gain_item(54, 1) # debug save
+        $game_party.gain_item(82, 1) # plight skip
+      $game_party.gain_item(81, 1) # George reroler
+    end
+    
+    # init update
+    redraw_bgs
+    update_visibility
+
+    px = (Graphics.width / 1920.0)
+    py = (Graphics.height / 1080.0)
+    @background_sprite.origin_x = @background_sprite.bitmap.width / 2 * (0.5 * (1.0 - px) + px)
+    @background_sprite.origin_y = @background_sprite.bitmap.height / 2 * (1.3 * (1.0 - py) + py)
+
     # Initialize cursor position
     @cursor_pos = 0.0
 
@@ -111,12 +106,12 @@ class Scene_Title
       @cursor.x = w - MENU_X - 12
       @cursor.y = ((h - MENU_Y).to_f + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2.0 + ENTRY_HEIGHT * @cursor_pos - 3)
       
-      @sprite.x = w / 2
-      @sprite.y = h / 2
+      @background_sprite.x = w / 2
+      @background_sprite.y = h / 2
       px = (Graphics.width / 1920.0)
       py = (Graphics.height / 1080.0)
-      @sprite.ox = @sprite.bitmap.width / 2 * (0.5 * (1.0 - px) + px)
-      @sprite.oy = @sprite.bitmap.height / 2 * (1.3 * (1.0 - py) + py)
+      @background_sprite.origin_x = @background_sprite.bitmap.width / 2 * (0.5 * (1.0 - px) + px)
+      @background_sprite.origin_y = @background_sprite.bitmap.height / 2 * (1.3 * (1.0 - py) + py)
 
       redraw_bgs
       update_visibility
@@ -148,8 +143,8 @@ class Scene_Title
     Graphics.freeze
     # Dispose of title graphic
     @update_connection.disconnect
-    @sprite.bitmap.dispose
-    @sprite.dispose
+    @background_sprite.bitmap.dispose
+    @background_sprite.dispose
     @badend_sprite.bitmap.dispose
     @badend_sprite.dispose
     @menu.bitmap.dispose
@@ -203,29 +198,29 @@ class Scene_Title
     end
     @badend_sprite.bitmap = RPG::Cache.title("badend")
 
-    @badend_sprite.ox = @badend_sprite.bitmap.width / 2
-    @badend_sprite.oy = @badend_sprite.bitmap.height / 2
+    @badend_sprite.origin_x = @badend_sprite.bitmap.width / 2
+    @badend_sprite.origin_y = @badend_sprite.bitmap.height / 2
     @badend_sprite.x = Graphics.width / 2
     @badend_sprite.y = Graphics.height / 2
   end
 
   def update_visibility
     if File.exist?("badend.lock")
-      @sprite.visible = false
+      @background_sprite.visible = false
       @badend_sprite.visible = true
       Audio.bgm_play("Audio/BGM/MyBurdenIsDead")
     else
       case Settings[:mainmenu_background]
       when 0
-        @sprite.visible = true
+        @background_sprite.visible = true
         @badend_sprite.visible = false
         $game_system.bgm_play($data_system.title_bgm)
       when 1
-        @sprite.visible = false
+        @background_sprite.visible = false
         @badend_sprite.visible = true
         Audio.bgm_play("Audio/BGM/MyBurdenIsDead")
       when 2
-        @sprite.visible = false
+        @background_sprite.visible = false
         @badend_sprite.visible = false
         Audio.bgm_stop
       end
@@ -312,6 +307,7 @@ class Scene_Title
     # Reset frame count for measuring play time
     Graphics.frame_count = 0
     # Make each type of game object
+    $game_temp          = Game_Temp.new
     $game_system        = Game_System.new
     $game_switches      = Game_Switches.new
     $game_switches[400] = Graphics.width > 1000
@@ -373,5 +369,31 @@ class Scene_Title
     redraw_menu
     redraw_debug
     @window_settings_title&.redraw_all
+  end
+
+  private
+
+  class Animated
+    def initialize
+      atlas = RPG::Cache.title("tower")
+      
+      @viewport = Viewport.new()
+      
+      @wall_left = Sprite.new(@viewport)
+      @wall_left.bitmap = Bitmap.new(96, 240)
+      @wall_left.bitmap.stretch_blt(Rect.new(0, 0, 96, 240), atlas, Rect.new(192, 0, 96, 240))
+      @wall_center = Sprite.new(@viewport)
+      @wall_center.bitmap = Bitmap.new(96, 240)
+      @wall_center.bitmap.stretch_blt(Rect.new(0, 0, 96, 240), atlas, Rect.new(288, 0, 96, 240))
+      @wall_right = Sprite.new(@viewport)
+      @wall_right.bitmap = Bitmap.new(96, 240)
+      @wall_right.bitmap.stretch_blt(Rect.new(0, 0, 96, 240), atlas, Rect.new(384, 0, 96, 240))
+
+      @floor = Sprite.new(@viewport)
+      @floor.bitmap = Bitmap.new(192, 192)
+      @floor.bitmap.stretch_blt(Rect.new(0, 0, 192, 192), atlas, Rect.new(0, 0, 192, 192))
+
+      atlas.dispose
+    end
   end
 end

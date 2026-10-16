@@ -8,12 +8,12 @@ class Window_Settings
 
   def initialize
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 9998
+    @viewport.order = 9998
     @bg = Sprite.new(@viewport)
     @bg.bitmap = Bitmap.new(1, 1)
     @bg.bitmap.fill_rect(0, 0, 1, 1, Color.new(0, 0, 0, 196))
-    @bg.zoom_x = Graphics.width
-    @bg.zoom_y = Graphics.height
+    @bg.scale_x = Graphics.width
+    @bg.scale_y = Graphics.height
     @title = Sprite.new(@viewport)
     @title.bitmap = Bitmap.new(320, 20)
     @title.bitmap.font.size = 20
@@ -29,8 +29,8 @@ class Window_Settings
       if self.visible
         @viewport.rect.width = w
         @viewport.rect.height = h
-        @bg.zoom_x = w
-        @bg.zoom_y = h
+        @bg.scale_x = w
+        @bg.scale_y = h
         #@bg.bitmap.dispose
         #@bg.bitmap = Bitmap.new(w, h)
         #@bg.bitmap.fill_rect(0, 0, w, h, Color.new(0, 0, 0, 196))

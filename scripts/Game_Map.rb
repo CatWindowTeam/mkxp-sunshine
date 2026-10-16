@@ -106,6 +106,8 @@ class Game_Map
   def setup(map_id)
     # Put map ID in @map_id memory
     @map_id = map_id
+    # Clear old light
+    $light.clear_lights_no_signal
     # Load map from file and set @map
     @map = load_data(sprintf("Data/Map%03d.rxdata", @map_id))
     # set tile set information in opening instance variables

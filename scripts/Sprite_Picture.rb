@@ -58,29 +58,29 @@ class Sprite_Picture < Sprite
     self.visible = true
     # Set transfer starting point
     if @picture.origin == 0
-      self.ox = 0
-      self.oy = 0
+      self.origin_x = 0
+      self.origin_y = 0
       # Set sprite coordinates
       self.x = @picture.x
       self.y = @picture.y
     else
-      self.ox = self.bitmap.width / 2
-      self.oy = self.bitmap.height / 2
+      self.origin_x = self.bitmap.width / 2
+      self.origin_y = self.bitmap.height / 2
       # Set sprite coordinates
       self.x = Graphics.width / 2 + @picture.x
       self.y = Graphics.height / 2 + @picture.y
     end
-    self.z = @picture.number
+    self.order = @picture.number
     # Set zoom rate, opacity level, and blend method
-    self.zoom_x = @picture.zoom_x / 100.0
-    self.zoom_y = @picture.zoom_y / 100.0
+    self.scale_x = @picture.zoom_x / 100.0
+    self.scale_y = @picture.zoom_y / 100.0
     self.opacity = @picture.opacity
     self.blend_type = @picture.blend_type
     # Set rotation angle and color tone
-    self.angle = @picture.angle
+    self.rot_z = @picture.angle
     self.tone = @picture.tone
 
-    @picture.width = self.width * self.zoom_x
-    @picture.height = self.height * self.zoom_y
+    @picture.width = self.width * self.scale_x
+    @picture.height = self.height * self.scale_y
   end
 end
