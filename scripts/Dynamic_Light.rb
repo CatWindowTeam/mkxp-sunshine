@@ -90,9 +90,6 @@ class DynamicLight
       $light.update_static_lights = []
     end
 
-
-    puts $game_map.display_y
-
     # clear all npc light
     @light_sprite.clear_dynamic_sources()
     

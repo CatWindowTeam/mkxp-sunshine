@@ -44,6 +44,22 @@ struct Vec2{
 	}
 };
 
+struct Vec3{
+	float x, y, z;
+
+	Vec3()
+	    : x(0), y(0), z(0)
+	{}
+
+	Vec3(float x, float y, float z)
+	    : x(x), y(y), z(z)
+	{}
+
+	bool operator==(const Vec3 &other) const{
+		return (x == other.x && y == other.y && z == other.z);
+	}
+};
+
 struct Vec4{
 	float x, y, z, w;
 

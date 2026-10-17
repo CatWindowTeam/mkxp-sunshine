@@ -52,10 +52,9 @@
 class Transform{
 public:
 	Transform()
-	    : scale(1, 1),
-	      rotation(0),
-		  perspectiveZ(0),
-		  perspectiveRotation(0, 0),
+	    : position(0, 0, 0),
+	      rotation(0, 0, 0),
+		  scale(1, 1),
 	      dirty(true)
 	{
 		SDL_memset(matrix, 0, sizeof(matrix));
@@ -64,14 +63,12 @@ public:
 		matrix[15] = 1;
 	}
 
-	Vec2 &getPosition()            { return position;            }
+	Vec3 &getPosition()            { return position;            }
+	Vec3 &getRotation()            { return rotation;            }
 	Vec2 &getOrigin()              { return origin;              }
 	Vec2 &getScale()               { return scale;               }
 	Vec2 &getGlobalScale()         { return globalScale;         }
-	Vec2 &getPerspectiveRotation() { return perspectiveRotation; }
-	float getRotation()            { return rotation;            }
-	float getGlobalRotation()      { return globalRotation;      }
-	float getPerspectiveZ()        { return perspectiveZ;        }
+	Vec3 &getGlobalRotation()      { return globalRotation;      }
 	bool getPerspectiveMode()      { return perspectiveMode;     }
 
 	Vec2i getPositionI() const{
@@ -87,13 +84,8 @@ public:
 		dirty = true;
 	}
 
-	void setPosition(const Vec2 &value){
+	void setPosition(const Vec3 &value){
 		position = value;
-		dirty = true;
-	}
-
-	void setPerspectiveZ(float value) {
-		perspectiveZ = value;
 		dirty = true;
 	}
 
@@ -107,17 +99,12 @@ public:
 		dirty = true;
 	}
 
-	void setRotation(float value){
+	void setRotation(const Vec3 &value){
 		rotation = value;
 		dirty = true;
 	}
 
-	void setPerspectiveRotation(const Vec2 &value){
-		perspectiveRotation = value;
-		dirty = true;
-	}
-
-	void setGlobalRotation(float value){
+	void setGlobalRotation(const Vec3 &value){
 		globalRotation = value;
 		dirty = true;
 	}
@@ -143,15 +130,15 @@ public:
 
 private:
 	void updateMatrix(){
-    	if (rotation >= 360 || rotation < -360)
-    	    rotation = (float)SDL_fmod(rotation, 360);
+    	if (rotation.z >= 360 || rotation.z < -360)
+    	    rotation.z = (float)SDL_fmod(rotation.z, 360);
 		
-    	if (globalRotation >= 360 || globalRotation < -360)
-    	    globalRotation = (float)SDL_fmod(globalRotation, 360);
+    	if (globalRotation.z >= 360 || globalRotation.z < -360)
+    	    globalRotation.z = (float)SDL_fmod(globalRotation.z, 360);
 		if (!perspectiveMode) {
 			
     		// object rotation cos and sin
-    		float angle = rotation * PI / 180.0f;
+    		float angle = rotation.z * PI / 180.0f;
     		float cosine = SDL_cos(angle);
     		float sine   = SDL_sin(angle);
 			
@@ -173,7 +160,7 @@ private:
     		         * globalScale.y;
 			
     		// viewport rotation cos and sin
-    		float globalAngle = globalRotation * PI / 180.0f;
+    		float globalAngle = globalRotation.z * PI / 180.0f;
     		float gc = SDL_cos(globalAngle);
     		float gs = SDL_sin(globalAngle);
 			
@@ -207,15 +194,23 @@ private:
 			matrix[14] = -1;
 			matrix[15] = 1;
 		}else{
-    		if (perspectiveRotation.x >= 360 || perspectiveRotation.x < -360)
-    		    perspectiveRotation.x = (float)SDL_fmod(perspectiveRotation.x, 360);
+    		if (rotation.x >= 360 || rotation.x < -360)
+    		    rotation.x = (float)SDL_fmod(rotation.x, 360);
 				
-    		if (perspectiveRotation.y >= 360 || perspectiveRotation.y < -360)
-    		    perspectiveRotation.y = (float)SDL_fmod(perspectiveRotation.y, 360);
+    		if (rotation.y >= 360 || rotation.y < -360)
+    		    rotation.y = (float)SDL_fmod(rotation.y, 360);
 
-			float rx = perspectiveRotation.x * PI / 180.0f;
-			float ry = perspectiveRotation.y * PI / 180.0f;
-			float rz = rotation * PI / 180.0f;
+    		if (globalRotation.x >= 360 || globalRotation.x < -360)
+    		    globalRotation.x = (float)SDL_fmod(globalRotation.x, 360);
+				
+    		if (globalRotation.y >= 360 || globalRotation.y < -360)
+    		    globalRotation.y = (float)SDL_fmod(globalRotation.y, 360);
+
+			// local rotation
+
+			float rx = rotation.x * PI / 180.0f;
+			float ry = rotation.y * PI / 180.0f;
+			float rz = rotation.z * PI / 180.0f;
 			
 			float cx = SDL_cos(rx);
 			float sx = SDL_sin(rx);
@@ -238,6 +233,8 @@ private:
     		float m21 = cy * sx;
     		float m22 = cx * cy;
 
+			// local scale
+
     		m00 *= scale.x;
     		m10 *= scale.x;
     		m20 *= scale.x;
@@ -245,30 +242,51 @@ private:
     		m01 *= scale.y;
     		m11 *= scale.y;
     		m21 *= scale.y;
+
+			// global rotation
+
+			float grx = globalRotation.x * PI / 180.0f;
+			float gry = globalRotation.y * PI / 180.0f;
+			float grz = globalRotation.z * PI / 180.0f;
 			
-			float globalAngle = globalRotation * PI / 180.0f;
-    		float gc = SDL_cos(globalAngle);
-    		float gs = SDL_sin(globalAngle);
-
-    		// Rotate X/Y basis around Z
+			float gcx = SDL_cos(grx);
+			float gsx = SDL_sin(grx);
 			
-    		float r00 = m00 * gc - m01 * gs;
-    		float r01 = m00 * gs + m01 * gc;
+			float gcy = SDL_cos(gry);
+			float gsy = SDL_sin(gry);
+			
+			float gcz = SDL_cos(grz);
+			float gsz = SDL_sin(grz);
+			
+			float g00 = gcy * gcz;
+			float g01 = gcz * gsx * gsy - gcx * gsz;
+			float g02 = gsx * gsz + gcx * gcz * gsy;
 
-    		float r10 = m10 * gc - m11 * gs;
-    		float r11 = m10 * gs + m11 * gc;
+			float g10 = gcy * gsz;
+			float g11 = gcx * gcz + gsx * gsy * gsz;
+			float g12 = gcx * gsy * gsz - gcz * gsx;
 
-    		float r20 = m20 * gc - m21 * gs;
-    		float r21 = m20 * gs + m21 * gc;
+			float g20 = -gsy;
+			float g21 = gcy * gsx;
+			float g22 = gcx * gcy;
 
-    		m00 = r00;
-    		m01 = r01;
+			float a00 = m00, a01 = m01, a02 = m02;
+			float a10 = m10, a11 = m11, a12 = m12;
+			float a20 = m20, a21 = m21, a22 = m22;
 
-    		m10 = r10;
-    		m11 = r11;
+			m00 = a00 * g00 + a01 * g01 + a02 * g02;
+			m01 = a00 * g10 + a01 * g11 + a02 * g12;
+			m02 = a00 * g20 + a01 * g21 + a02 * g22;
+			
+			m10 = a10 * g00 + a11 * g01 + a12 * g02;
+			m11 = a10 * g10 + a11 * g11 + a12 * g12;
+			m12 = a10 * g20 + a11 * g21 + a12 * g22;
 
-    		m20 = r20;
-    		m21 = r21;
+			m20 = a20 * g00 + a21 * g01 + a22 * g02;
+			m21 = a20 * g10 + a21 * g11 + a22 * g12;
+			m22 = a20 * g20 + a21 * g21 + a22 * g22;
+
+			// global scale
 
 			m00 *= globalScale.x;
     		m10 *= globalScale.x;
@@ -277,6 +295,8 @@ private:
 			m01 *= globalScale.y;
 			m11 *= globalScale.y;
 			m21 *= globalScale.y;
+
+			// offsets
 
 		    float tx =    position.x - (m00 * origin.x + m01 * origin.y) + offset.x;
 		    float ty =    position.y - (m10 * origin.x + m11 * origin.y) + offset.y;
@@ -304,16 +324,14 @@ private:
 		}
 	}
 
-	Vec2 position;
+	Vec3 position;
+	Vec3 rotation;
 	Vec2 origin;
 	Vec2 scale;
-	float rotation;
-	float globalRotation;
+	Vec3 globalRotation;
 
 	// 3D moments lol
 	float perspectiveZ;
-	// X and Y, Z is just rotation
-	Vec2 perspectiveRotation;
 	bool perspectiveMode = false;
 
 	/* Silently added to position */

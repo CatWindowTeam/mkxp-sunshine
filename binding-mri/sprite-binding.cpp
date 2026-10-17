@@ -63,10 +63,10 @@ DEF_PROP_I(Sprite, WaveSpeed)
 DEF_PROP_I(Sprite, Shader)
 DEF_PROP_F(Sprite, ScaleX)
 DEF_PROP_F(Sprite, ScaleY)
-DEF_PROP_F(Sprite, Angle)
-DEF_PROP_F(Sprite, WavePhase)
 DEF_PROP_F(Sprite, RotationX)
 DEF_PROP_F(Sprite, RotationY)
+DEF_PROP_F(Sprite, RotationZ)
+DEF_PROP_F(Sprite, WavePhase)
 DEF_PROP_B(Sprite, MirrorX)
 DEF_PROP_B(Sprite, MirrorY)
 DEF_PROP_B(Sprite, Obscured)
@@ -135,7 +135,7 @@ void spriteBindingInit(){
 	INIT_PROP_BIND( Sprite, PerspectiveMode, "perspective");
 	INIT_PROP_BIND( Sprite, RotationX,       "rot_x"     );
 	INIT_PROP_BIND( Sprite, RotationY,       "rot_y"     );
-	INIT_PROP_BIND( Sprite, Angle,           "rot_z"     );
+	INIT_PROP_BIND( Sprite, RotationZ,       "rot_z"     );
 	// bush
 	INIT_PROP_BIND( Sprite, BushOpacity, "bush_opacity" );
 	INIT_PROP_BIND( Sprite, WaveAmp,     "wave_amp"    );
@@ -145,9 +145,4 @@ void spriteBindingInit(){
 
 	rb_define_method(klass, "width", RUBY_METHOD_FUNC(spriteWidth), 0);
 	rb_define_method(klass, "height", RUBY_METHOD_FUNC(spriteHeight), 0);
-
-	// legacy
-	rb_define_alias(klass, "angle", "rot_z");
-	rb_define_alias(klass, "pm", "perspective");
-
 }

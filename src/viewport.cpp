@@ -40,9 +40,8 @@ struct ViewportPrivate{
 	IntRect screenRect;
 	int isOnScreen;
 
-	double scaleX;
-	double scaleY;
-	double rotation;
+	double scaleX, scaleY;
+	double rotationX, rotationY, rotationZ;
 
 	EtcTemps tmp;
 
@@ -53,7 +52,9 @@ struct ViewportPrivate{
 	      tone(&tmp.tone),
 	      scaleX(1.0),
 	      scaleY(1.0),
-	      rotation(0.0),
+	      rotationX(0.0),
+	      rotationY(0.0),
+	      rotationZ(0.0),
 	      isOnScreen(false)
 	{
 		rect->set(x, y, width, height);
@@ -127,7 +128,9 @@ DEF_ATTR_RD_SIMPLE(Viewport, OX, int, geometry.orig.x)
 DEF_ATTR_RD_SIMPLE(Viewport, OY, int, geometry.orig.y)
 DEF_ATTR_RD_SIMPLE(Viewport, ScaleX,   double, p->scaleX)
 DEF_ATTR_RD_SIMPLE(Viewport, ScaleY,   double, p->scaleY)
-DEF_ATTR_RD_SIMPLE(Viewport, Rotation, double, p->rotation)
+DEF_ATTR_RD_SIMPLE(Viewport, RotationX, double, p->rotationX)
+DEF_ATTR_RD_SIMPLE(Viewport, RotationY, double, p->rotationY)
+DEF_ATTR_RD_SIMPLE(Viewport, RotationZ, double, p->rotationZ)
 
 DEF_ATTR_SIMPLE(Viewport, Rect,  Rect&,  *p->rect)
 DEF_ATTR_SIMPLE(Viewport, Color, Color&, *p->color)
@@ -169,12 +172,30 @@ void Viewport::setScaleY(double value){
 	notifyGeometryChange();
 }
 
-void Viewport::setRotation(double value){
+void Viewport::setRotationX(double value){
 	guardDisposed();
-	if (p->rotation == value)
+	if (p->rotationX == value)
 		return;
 
-	p->rotation = value;
+	p->rotationX = value;
+	notifyGeometryChange();
+}
+
+void Viewport::setRotationY(double value){
+	guardDisposed();
+	if (p->rotationY == value)
+		return;
+
+	p->rotationY = value;
+	notifyGeometryChange();
+}
+
+void Viewport::setRotationZ(double value){
+	guardDisposed();
+	if (p->rotationZ == value)
+		return;
+
+	p->rotationZ = value;
 	notifyGeometryChange();
 }
 

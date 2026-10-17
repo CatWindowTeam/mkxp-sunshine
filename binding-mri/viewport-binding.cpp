@@ -71,7 +71,9 @@ DEF_PROP_I(Viewport, OX)
 DEF_PROP_I(Viewport, OY)
 DEF_PROP_F(Viewport, ScaleX)
 DEF_PROP_F(Viewport, ScaleY)
-DEF_PROP_F(Viewport, Rotation)
+DEF_PROP_F(Viewport, RotationX)
+DEF_PROP_F(Viewport, RotationY)
+DEF_PROP_F(Viewport, RotationZ)
 
 void viewportBindingInit(){
 	VALUE klass = rb_define_class("Viewport", rb_cObject);
@@ -81,12 +83,14 @@ void viewportBindingInit(){
 	sceneElementBindingInit<Viewport>(klass);
 	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(viewportInitialize), -1);
 
-	INIT_PROP_BIND( Viewport, Rect,     "rect"    );
-	INIT_PROP_BIND( Viewport, OX,       "origin_x");
-	INIT_PROP_BIND( Viewport, OY,       "origin_y");
-	INIT_PROP_BIND( Viewport, ScaleX,   "scale_x" );
-	INIT_PROP_BIND( Viewport, ScaleY,   "scale_y" );
-	INIT_PROP_BIND( Viewport, Rotation, "rotation");
-	INIT_PROP_BIND( Viewport, Color,    "color"   );
-	INIT_PROP_BIND( Viewport, Tone,     "tone"    );
+	INIT_PROP_BIND( Viewport, Rect,      "rect"    );
+	INIT_PROP_BIND( Viewport, OX,        "origin_x");
+	INIT_PROP_BIND( Viewport, OY,        "origin_y");
+	INIT_PROP_BIND( Viewport, ScaleX,    "scale_x" );
+	INIT_PROP_BIND( Viewport, ScaleY,    "scale_y" );
+	INIT_PROP_BIND( Viewport, RotationX, "rot_x"   );
+	INIT_PROP_BIND( Viewport, RotationY, "rot_y"   );
+	INIT_PROP_BIND( Viewport, RotationZ, "rot_z"   );
+	INIT_PROP_BIND( Viewport, Color,     "color"   );
+	INIT_PROP_BIND( Viewport, Tone,      "tone"    );
 }

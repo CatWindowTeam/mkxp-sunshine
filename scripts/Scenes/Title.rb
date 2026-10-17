@@ -392,6 +392,12 @@ class Scene_Title
       @floor = Sprite.new(@viewport)
       @floor.bitmap = Bitmap.new(192, 192)
       @floor.bitmap.stretch_blt(Rect.new(0, 0, 192, 192), atlas, Rect.new(0, 0, 192, 192))
+      @floor.origin_x = @floor.origin_y = 96
+
+      @wall_left.perspective = @wall_center.perspective = @wall_right.perspective =
+      @floor.perspective = true
+
+      @floor.rot_x = 90
 
       atlas.dispose
     end

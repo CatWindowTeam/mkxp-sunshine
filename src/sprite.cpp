@@ -174,7 +174,7 @@ struct SpritePrivate{
 		/* If sprite is zoomed/rotated, just opt out for now
 		 * for simplicity's sake */
 		const Vec2 &scale = trans.getScale();
-		if (scale.x != 1 || scale.y != 1 || trans.getRotation() != 0){
+		if (scale.x != 1 || scale.y != 1 || trans.getRotation().z != 0){
 			isVisible = true;
 			return;
 		}
@@ -285,11 +285,14 @@ Sprite::~Sprite(){
 DEF_ATTR_RD_SIMPLE(Sprite, Bitmap,       Bitmap*, p->bitmap)
 DEF_ATTR_RD_SIMPLE(Sprite, X,            int,     p->trans.getPosition().x)
 DEF_ATTR_RD_SIMPLE(Sprite, Y,            int,     p->trans.getPosition().y)
+DEF_ATTR_RD_SIMPLE(Sprite, Z,            int,     p->trans.getPosition().z)
 DEF_ATTR_RD_SIMPLE(Sprite, OX,           int,     p->trans.getOrigin().x)
 DEF_ATTR_RD_SIMPLE(Sprite, OY,           int,     p->trans.getOrigin().y)
 DEF_ATTR_RD_SIMPLE(Sprite, ScaleX,       float,   p->trans.getScale().x)
 DEF_ATTR_RD_SIMPLE(Sprite, ScaleY,       float,   p->trans.getScale().y)
-DEF_ATTR_RD_SIMPLE(Sprite, Angle,        float,   p->trans.getRotation())
+DEF_ATTR_RD_SIMPLE(Sprite, RotationX,    float,   p->trans.getRotation().x)
+DEF_ATTR_RD_SIMPLE(Sprite, RotationY,    float,   p->trans.getRotation().y)
+DEF_ATTR_RD_SIMPLE(Sprite, RotationZ,    float,   p->trans.getRotation().z)
 DEF_ATTR_RD_SIMPLE(Sprite, MirrorX,      bool,    p->mirrorX)
 DEF_ATTR_RD_SIMPLE(Sprite, MirrorY,      bool,    p->mirrorY)
 DEF_ATTR_RD_SIMPLE(Sprite, BushDepth,    int,     p->bushDepth)
@@ -302,9 +305,6 @@ DEF_ATTR_RD_SIMPLE(Sprite, WaveSpeed,    int,     p->wave.speed)
 DEF_ATTR_RD_SIMPLE(Sprite, WavePhase,    float,   p->wave.phase)
 // 3D shit
 DEF_ATTR_RD_SIMPLE(Sprite, PerspectiveMode, bool,  p->trans.getPerspectiveMode())
-DEF_ATTR_RD_SIMPLE(Sprite, Z,               int,   p->trans.getPerspectiveZ())
-DEF_ATTR_RD_SIMPLE(Sprite, RotationX,       float, p->trans.getPerspectiveRotation().x)
-DEF_ATTR_RD_SIMPLE(Sprite, RotationY,       float, p->trans.getPerspectiveRotation().y)
 
 DEF_ATTR_SIMPLE(Sprite, BushOpacity,  int,        p->bushOpacity)
 DEF_ATTR_SIMPLE(Sprite, Opacity,      int,        p->opacity)
@@ -337,7 +337,7 @@ void Sprite::setX(int value){
 	if (p->trans.getPosition().x == value)
 		return;
 
-	p->trans.setPosition(Vec2(value, getY()));
+	p->trans.setPosition(Vec3(value, getY(), getZ()));
 }
 
 void Sprite::setY(int value){
@@ -345,7 +345,15 @@ void Sprite::setY(int value){
 	if (p->trans.getPosition().y == value)
 		return;
 
-	p->trans.setPosition(Vec2(getX(), value));
+	p->trans.setPosition(Vec3(getX(), value, getZ()));
+}
+
+void Sprite::setZ(int value){
+	guardDisposed();
+	if (p->trans.getPosition().z == value)
+		return;
+
+	p->trans.setPosition(Vec3(getX(), getY(), value));
 }
 
 void Sprite::setOX(int value){
@@ -381,12 +389,28 @@ void Sprite::setScaleY(float value){
 	p->recomputeBushDepth();
 }
 
-void Sprite::setAngle(float value){
+void Sprite::setRotationX(float value){
 	guardDisposed();
-	if (p->trans.getRotation() == value)
+	if (p->trans.getRotation().x == value)
 		return;
 
-	p->trans.setRotation(value);
+	p->trans.setRotation(Vec3(value, getRotationY(), getRotationZ()));
+}
+
+void Sprite::setRotationY(float value){
+	guardDisposed();
+	if (p->trans.getRotation().y == value)
+		return;
+
+	p->trans.setRotation(Vec3(getRotationX(), value, getRotationZ()));
+}
+
+void Sprite::setRotationZ(float value){
+	guardDisposed();
+	if (p->trans.getRotation().z == value)
+		return;
+
+	p->trans.setRotation(Vec3(getRotationX(), getRotationY(), value));
 }
 
 void Sprite::setMirrorX(bool mirrored){
@@ -442,30 +466,6 @@ void Sprite::setPerspectiveMode(bool value){
 		return;
 
 	p->trans.setPerspectiveMode(value);
-}
-
-void Sprite::setZ(int value){
-	guardDisposed();
-	if (p->trans.getPerspectiveZ() == value)
-		return;
-
-	p->trans.setPerspectiveZ(value);
-}
-
-void Sprite::setRotationX(float value){
-	guardDisposed();
-	if (p->trans.getPerspectiveRotation().x == value)
-		return;
-
-	p->trans.setPerspectiveRotation(Vec2(value, p->trans.getPerspectiveRotation().y));
-}
-
-void Sprite::setRotationY(float value){
-	guardDisposed();
-	if (p->trans.getPerspectiveRotation().y == value)
-		return;
-
-	p->trans.setPerspectiveRotation(Vec2(p->trans.getPerspectiveRotation().x, value));
 }
 
 #define DEF_WAVE_SETTER(Name, name, type) \
@@ -584,10 +584,10 @@ void Sprite::onGeometryChange(const Scene::Geometry &geo){
 	Viewport* viewport = ViewportElement::getViewport();
 	if (viewport) {
 		p->trans.setGlobalScale(Vec2(viewport->getScaleX(), viewport->getScaleY()));
-		p->trans.setGlobalRotation(viewport->getRotation());
+		p->trans.setGlobalRotation(Vec3(viewport->getRotationX(), viewport->getRotationY(), viewport->getRotationZ()));
 	}else{
 		p->trans.setGlobalScale(Vec2(1.0, 1.0));
-		p->trans.setGlobalRotation(0);
+		p->trans.setGlobalRotation(Vec3(0.0, 0.0, 0.0));
 	}
 
 	p->sceneRect.setSize(geo.rect.size());

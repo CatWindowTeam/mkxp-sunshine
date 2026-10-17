@@ -66,7 +66,7 @@ class Scene_Load < Scene_File
   #--------------------------------------------------------------------------
   def read_save_data(file)
     # Read character data for drawing save file
-    characters = Marshal.load(file)
+    _ = Marshal.load(file)
     # Read frame count for measuring play time
     Graphics.frame_count = Marshal.load(file)
     # Read each type of game object
@@ -83,7 +83,7 @@ class Scene_Load < Scene_File
     $game_followers     = Marshal.load(file)
     $game_oneshot       = Marshal.load(file)
     $game_fasttravel    = Marshal.load(file)
-	$game_temp.footstep_sfx = Marshal.load(file)
+    $game_temp.footstep_sfx = Marshal.load(file)
 
     # If magic number is different from when saving
     # (if editing was added with editor)
@@ -95,7 +95,7 @@ class Scene_Load < Scene_File
     # Refresh party members
     $game_party.refresh
 
-	f_prev = $game_player
+    f_prev = $game_player
     $game_followers.each do |f|
       f.leader = f_prev
       f.moveto($game_player.x, $game_player.y)

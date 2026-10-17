@@ -619,7 +619,7 @@ void Bitmap::radialBlur(int angle, int divisions){
 
 	Transform trans;
 	trans.setOrigin(Vec2(_width / 2.0f, _height / 2.0f));
-	trans.setPosition(Vec2(_width / 2.0f, _height / 2.0f));
+	trans.setPosition(Vec3(_width / 2.0f, _height / 2.0f, 0.0f));
 
 	p->render.pushBlendMode(BlendAddition);
 	p->render.useEffect(SHADER_simpleMatrix);
@@ -627,7 +627,7 @@ void Bitmap::radialBlur(int angle, int divisions){
 	p->render.setTextureSmooth(p->target.tex, true);
 	p->pushSetViewport();
 	for (int i = 0; i < divisions; ++i){
-		trans.setRotation(baseAngle + i*angleStep);
+		trans.setRotation(Vec3(0.0f, 0.0f, baseAngle + i*angleStep));
 		p->render.setMatrix(trans.getMatrix());
 		qArray.draw();
 	}
