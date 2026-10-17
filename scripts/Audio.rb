@@ -1,5 +1,8 @@
 # Legacy shit
 module Audio
+    attr_reader :music_group
+    attr_reader :sounds_group
+
     @music_group = self.create_group
     @sounds_group = self.create_group
 

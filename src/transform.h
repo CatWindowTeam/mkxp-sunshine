@@ -136,7 +136,7 @@ private:
     	if (globalRotation.z >= 360 || globalRotation.z < -360)
     	    globalRotation.z = (float)SDL_fmod(globalRotation.z, 360);
 		if (!perspectiveMode) {
-			
+			#pragma region 2D Matrix
     		// object rotation cos and sin
     		float angle = rotation.z * PI / 180.0f;
     		float cosine = SDL_cos(angle);
@@ -188,9 +188,11 @@ private:
 			matrix[11] = 0;
     		matrix[12] = tx;
     		matrix[13] = ty;
-			matrix[14] = -1;
+			matrix[14] = 0;
 			matrix[15] = 1;
+			#pragma endregion
 		}else{
+			#pragma region 3D Matrix
     		if (rotation.x >= 360 || rotation.x < -360)
     		    rotation.x = (float)SDL_fmod(rotation.x, 360);
 				
@@ -271,17 +273,17 @@ private:
 			float a10 = m10, a11 = m11, a12 = m12;
 			float a20 = m20, a21 = m21, a22 = m22;
 
-			m00 = a00 * g00 + a01 * g01 + a02 * g02;
-			m01 = a00 * g10 + a01 * g11 + a02 * g12;
-			m02 = a00 * g20 + a01 * g21 + a02 * g22;
+			m00 = g00 * a00 + g01 * a10 + g02 * a20;
+			m01 = g00 * a01 + g01 * a11 + g02 * a21;
+			m02 = g00 * a02 + g01 * a12 + g02 * a22;
 			
-			m10 = a10 * g00 + a11 * g01 + a12 * g02;
-			m11 = a10 * g10 + a11 * g11 + a12 * g12;
-			m12 = a10 * g20 + a11 * g21 + a12 * g22;
+			m10 = g10 * a00 + g11 * a10 + g12 * a20;
+			m11 = g10 * a01 + g11 * a11 + g12 * a21;
+			m12 = g10 * a02 + g11 * a12 + g12 * a22;
 
-			m20 = a20 * g00 + a21 * g01 + a22 * g02;
-			m21 = a20 * g10 + a21 * g11 + a22 * g12;
-			m22 = a20 * g20 + a21 * g21 + a22 * g22;
+			m20 = g20 * a00 + g21 * a10 + g22 * a20;
+			m21 = g20 * a01 + g21 * a11 + g22 * a21;
+			m22 = g20 * a02 + g21 * a12 + g22 * a22;
 
 			// global scale
 
@@ -295,9 +297,17 @@ private:
 
 			// offsets
 
-		    float tx =    position.x - (m00 * origin.x + m01 * origin.y + m02 * origin.z) + offset.x;
-		    float ty =    position.y - (m10 * origin.x + m11 * origin.y + m12 * origin.z) + offset.y;
-		    float tz = -perspectiveZ - (m20 * origin.x + m21 * origin.y + m22 * origin.z) + offset.z;
+			float px =  position.x + offset.x;
+			float py =  position.y + offset.y;
+			float pz = -position.z - offset.z;
+
+			float globalX = g00 * px + g01 * py + g02 * pz;
+			float globalY = g10 * px + g11 * py + g12 * pz;
+			float globalZ = g20 * px + g21 * py + g22 * pz;
+
+			float tx = globalX - (m00 * origin.x + m01 * origin.y + m02 * origin.z);
+			float ty = globalY - (m10 * origin.x + m11 * origin.y + m12 * origin.z);
+			float tz = globalZ - (m20 * origin.x + m21 * origin.y + m22 * origin.z);
 
 			matrix[0] = m00;
 			matrix[1] = m10;
@@ -318,6 +328,7 @@ private:
 			matrix[13] = ty;
 			matrix[14] = tz;
 			matrix[15] = 1;
+			#pragma endregion
 		}
 	}
 
@@ -327,8 +338,6 @@ private:
 	Vec2 scale;
 	Vec3 globalRotation;
 
-	// 3D moments lol
-	float perspectiveZ;
 	bool perspectiveMode = false;
 
 	/* Silently added to position */

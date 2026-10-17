@@ -38,9 +38,9 @@ public:
 		/* Position and size relative to parent */
 		IntRect rect;
 		/* Origin of contents */
-		Vec3i orig;
+		Vec3 orig;
 		Vec3i offset() const{
-			return Vec3i(rect.pos().x, rect.pos().y, 0) - orig;
+			return Vec3i(rect.pos().x, rect.pos().y, 0) - Vec3i(orig);
 		}
 	};
 

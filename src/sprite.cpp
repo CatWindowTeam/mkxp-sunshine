@@ -162,7 +162,7 @@ struct SpritePrivate{
 		if (!opacity)
 			return;
 
-		if (wave.active){
+		if (wave.active || trans.getPerspectiveMode()){
 			/* Don't do expensive wave bounding box
 			 * calculations */
 			isVisible = true;

@@ -9,6 +9,74 @@ class Scene_Title
   MENU_Y = 100
   ENTRY_HEIGHT = 25
   SDLVer = ""
+
+  class BG_Particle
+    DISTANCE = 600.0
+
+    def dist(x1, y1, x2, y2)
+      x = x1 - x2
+      y = y1 - y2
+      Math.sqrt(x*x + y*y)
+    end
+
+    def initialize(viewport, bitmap)
+      @sprite = Sprite.new(viewport)
+      @sprite.bitmap = bitmap
+      @sprite.smooth = true
+      @sprite.origin_x = 1
+      @sprite.origin_y = 1
+      @sprite.scale_x = 32
+      @sprite.scale_y = 32
+      @sprite.x = -Graphics.width/2 + rand(0..Graphics.width)
+      @sprite.y = -Graphics.height/2 + rand(0..Graphics.height)
+      @sprite.z = viewport.origin_z
+      @sprite.perspective = true
+      @sprite.rot_z = rand(-180..180)
+      @sprite.opacity = 0
+      @sprite.order = -1
+
+      @rot_speed = rand(-20..20) / 40.0
+      @speed_x = rand(-10..10) / 70.0
+      @speed_y = rand(-10..10) / 70.0
+      @pos_x = @sprite.x
+      @pos_y = @sprite.y
+
+      @timer = 0
+    end
+
+    def dispose
+      @sprite.dispose
+    end
+
+    def disposed?
+      @sprite.disposed?
+    end
+
+    def update
+      return if disposed?
+
+      @pos_x += @speed_x
+      @pos_y += @speed_y
+      @sprite.x = @pos_x
+      @sprite.y = @pos_y
+      @sprite.rot_z += @rot_speed
+      
+      dist = dist(@pos_x, @pos_y, -Graphics.width/4, 0)
+      #173,37,74
+      #34,5,41
+      if dist < DISTANCE
+        @sprite.color.set(lerp(173, 34, dist / DISTANCE), lerp(37, 5, dist / DISTANCE), lerp(74, 41, dist / DISTANCE))
+      else
+        dist -= DISTANCE
+        @sprite.color.set(lerp(34, 0, dist / DISTANCE), lerp(5, 0, dist / DISTANCE), lerp(41, 0, dist / DISTANCE))
+      end
+
+      @timer += 1
+
+      @sprite.opacity += @timer > 512 ? -2 : 2
+      @sprite.dispose if @sprite.opacity <= 0
+    end
+  end
   
   #--------------------------------------------------------------------------
   # * Main Processing
@@ -31,17 +99,70 @@ class Scene_Title
     load_perma_flags
 
     # Make title graphic
-    @old_setting = Settings[:mainmenu_background] 
     
     @window_settings_title = Window_Settings.new
+    @bg_viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+
+    @animated = TowerAnimation.new(@bg_viewport, @viewport)
     
-    @badend_sprite = Sprite.new(@viewport)
-    @background_sprite = Sprite.new(@viewport)
-    @background_sprite.x = Graphics.width / 2
-    @background_sprite.y = Graphics.height / 2
-    @background_sprite.scale_x = @background_sprite.scale_y =
+    @badend_sprite = Sprite.new(@bg_viewport)
     @badend_sprite.scale_x = @badend_sprite.scale_y = 2.0
+    @badend_sprite.visible = false
+
+    # main bg
+    
+    @background_sprite = Sprite.new(@bg_viewport)
+    @background_sprite.bitmap = RPG::Cache.title("normal_bg")
+    @background_sprite.scale_x = 2.2
+    @background_sprite.scale_y = 2.0
+    @background_sprite.perspective = true
+    @background_sprite.z = @bg_viewport.origin_z
+    @background_sprite.order = -2
+
+    @background_sprite_shadow = Sprite.new(@bg_viewport)
+    @background_sprite_shadow.bitmap = RPG::Cache.title("normal_back_shadow")
+    @background_sprite_shadow.scale_x = @background_sprite_shadow.scale_y = 2.0
+    @background_sprite_shadow.perspective = true
+    @background_sprite_shadow.z = @bg_viewport.origin_z
+
+    @background_sprite_water_back = Sprite.new(@bg_viewport)
+    @background_sprite_water_back.bitmap = Bitmap.new(412, 388)
+    @background_sprite_water_back.bitmap.stretch_blt(Rect.new(0, 0, 412, 388), RPG::Cache.title("tower"), Rect.new(0, 240, 412, 388))
+    @background_sprite_water_back.scale_x = @background_sprite_water_back.scale_y = 2.0
+    @background_sprite_water_back.perspective = true
+    @background_sprite_water_back.z = @bg_viewport.origin_z
+    @background_sprite_water_back.origin_x = 206
+    @background_sprite_water_back.origin_y = 194
+    @background_sprite_water_back.rot_x = 90
+    #@background_sprite_water_back.smooth = true
+
+    @background_sprite_water_light = Sprite.new(@bg_viewport)
+    @background_sprite_water_light.bitmap = RPG::Cache.title("normal_water_light")
+    @background_sprite_water_light.scale_x = @background_sprite_water_light.scale_y = 2.0
+    @background_sprite_water_light.perspective = true
+    @background_sprite_water_light.z = @bg_viewport.origin_z
+    @background_sprite_water_light.blend_type = 1
+
+    @background_sprite_niko = Sprite.new(@bg_viewport)
+    @background_sprite_niko.bitmap = RPG::Cache.title("normal_niko")
+    @background_sprite_niko.scale_x = @background_sprite_niko.scale_y = 2.0
+    @background_sprite_niko.perspective = true
+    @background_sprite_niko.z = @bg_viewport.origin_z
+
+    @background_sprite_light = Sprite.new(@bg_viewport)
+    @background_sprite_light.bitmap = RPG::Cache.title("normal_light")
+    @background_sprite_light.scale_x = @background_sprite_light.scale_y = 2.0
+    @background_sprite_light.perspective = true
+    @background_sprite_light.z = @bg_viewport.origin_z
+    @background_sprite_light.blend_type = 1
+
+    # main bg paricles
+    
+    @particles = []
+    @particle_bitmap = Bitmap.new(2, 2)
+    @particle_bitmap.fill_rect(0, 0, 2, 1, Color.new(255, 255, 255))
+    @particle_bitmap.fill_rect(0, 1, 2, 1, Color.new(255, 255, 255, 0))
 
     # Create/render menu options
     @menu = Sprite.new(@viewport)
@@ -71,12 +192,12 @@ class Scene_Title
     @cursor.y = Graphics.height - MENU_Y + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2 - 3
 	
     # chinese has its own special title screen so check for it
-    translation_name = "#{$persistent.langcode}/#{$data_system.title_name}"
-    if File.exist?("Graphics/Titles/#{translation_name}.png")
-      @background_sprite.bitmap = RPG::Cache.title(translation_name)
-    else
-	  @background_sprite.bitmap = RPG::Cache.title($data_system.title_name)
-    end
+    #translation_name = "#{$persistent.langcode}/#{$data_system.title_name}"
+    #if File.exist?("Graphics/Titles/#{translation_name}.png")
+    #  @background_sprite.bitmap = RPG::Cache.title(translation_name)
+    #else
+    #  @background_sprite.bitmap = RPG::Cache.title($data_system.title_name)
+    #end
 
     # check for debug file to add debug items
     if Settings[:debug]
@@ -87,12 +208,6 @@ class Scene_Title
     
     # init update
     redraw_bgs
-    update_visibility
-
-    px = (Graphics.width / 1920.0)
-    py = (Graphics.height / 1080.0)
-    @background_sprite.origin_x = @background_sprite.bitmap.width / 2 * (0.5 * (1.0 - px) + px)
-    @background_sprite.origin_y = @background_sprite.bitmap.height / 2 * (1.3 * (1.0 - py) + py)
 
     # Initialize cursor position
     @cursor_pos = 0.0
@@ -100,21 +215,19 @@ class Scene_Title
     @update_connection = Graphics.viewport_resized do |w, h|
       @viewport.rect.width = w
       @viewport.rect.height = h
+      @bg_viewport.rect.width = w
+      @bg_viewport.rect.height = h
       
+      @bg_viewport.origin_x = -Graphics.width / 2
+      @bg_viewport.origin_y = -Graphics.height / 2
+      @bg_viewport.origin_z = 200
+
       @menu.x = w - MENU_X
       @menu.y = h - MENU_Y
       @cursor.x = w - MENU_X - 12
       @cursor.y = ((h - MENU_Y).to_f + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2.0 + ENTRY_HEIGHT * @cursor_pos - 3)
-      
-      @background_sprite.x = w / 2
-      @background_sprite.y = h / 2
-      px = (Graphics.width / 1920.0)
-      py = (Graphics.height / 1080.0)
-      @background_sprite.origin_x = @background_sprite.bitmap.width / 2 * (0.5 * (1.0 - px) + px)
-      @background_sprite.origin_y = @background_sprite.bitmap.height / 2 * (1.3 * (1.0 - py) + py)
 
       redraw_bgs
-      update_visibility
     end
 
     # Stop playing ME and BGS
@@ -143,18 +256,42 @@ class Scene_Title
     Graphics.freeze
     # Dispose of title graphic
     @update_connection.disconnect
+
+    @animated.dispose if !@animated.disposed?
+
     @background_sprite.bitmap.dispose
     @background_sprite.dispose
+    @background_sprite_shadow.bitmap.dispose
+    @background_sprite_shadow.dispose
+    @background_sprite_water_back.bitmap.dispose
+    @background_sprite_water_back.dispose
+    @background_sprite_water_light.bitmap.dispose
+    @background_sprite_water_light.dispose
+    @background_sprite_niko.bitmap.dispose
+    @background_sprite_niko.dispose
+    @background_sprite_light.bitmap.dispose
+    @background_sprite_light.dispose
+
     @badend_sprite.bitmap.dispose
     @badend_sprite.dispose
+
     @menu.bitmap.dispose
     @menu.dispose
+
     @cursor.bitmap.dispose
     @cursor.dispose
+
     @debug.bitmap.dispose
     @debug.dispose
+    
+    @particle_bitmap.dispose
+    @particles.each { |particle| particle.dispose }
+
     @viewport.dispose
+    @bg_viewport.dispose
+
     @window_settings_title.dispose
+
     Audio.bgm_fade(60)
     Graphics.transition(60)
     # Run automatic change for BGM and BGS set with map
@@ -193,6 +330,26 @@ class Scene_Title
   end
 
   def redraw_bgs
+    px = (Graphics.width / 1920.0)
+    py = (Graphics.height / 1080.0)
+    
+    @background_sprite.origin_x =
+    @background_sprite_shadow.origin_x =
+    @background_sprite_water_light.origin_x =
+    @background_sprite_niko.origin_x =
+    @background_sprite_light.origin_x =
+    @background_sprite_niko.bitmap.width / 2 * (0.5 * (1.0 - px) + px)
+
+    @background_sprite.origin_y =
+    @background_sprite_shadow.origin_y =
+    @background_sprite_water_light.origin_y =
+    @background_sprite_niko.origin_y =
+    @background_sprite_light.origin_y =
+    @background_sprite_niko.bitmap.height / 2 * (1.3 * (1.0 - py) + py)
+
+    @background_sprite_water_back.x = @background_sprite_niko.origin_x - 400
+    @background_sprite_water_back.y = @background_sprite_niko.origin_y + 50
+
     if @badend_sprite.bitmap
       @badend_sprite.bitmap.dispose
     end
@@ -203,39 +360,27 @@ class Scene_Title
     @badend_sprite.x = Graphics.width / 2
     @badend_sprite.y = Graphics.height / 2
   end
-
-  def update_visibility
-    if File.exist?("badend.lock")
-      @background_sprite.visible = false
-      @badend_sprite.visible = true
-      Audio.bgm_play("Audio/BGM/MyBurdenIsDead")
-    else
-      case Settings[:mainmenu_background]
-      when 0
-        @background_sprite.visible = true
-        @badend_sprite.visible = false
-        $game_system.bgm_play($data_system.title_bgm)
-      when 1
-        @background_sprite.visible = false
-        @badend_sprite.visible = true
-        Audio.bgm_play("Audio/BGM/MyBurdenIsDead")
-      when 2
-        @background_sprite.visible = false
-        @badend_sprite.visible = false
-        Audio.bgm_stop
-      end
-    end
-  end
   #--------------------------------------------------------------------------
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
-    if @old_setting != Settings[:mainmenu_background] 
-      @old_setting = Settings[:mainmenu_background]
-      update_visibility
-    end
-
     @debug.visible = Settings[:debug_text_scene_title] || false # if undefined don't render
+
+    @background_sprite_water_back.rot_y += 0.04
+
+    @particles.delete_if { |particle| particle.disposed? }
+    @particles << BG_Particle.new(@bg_viewport, @particle_bitmap)
+    @particles << BG_Particle.new(@bg_viewport, @particle_bitmap)
+    @particles << BG_Particle.new(@bg_viewport, @particle_bitmap)
+    @particles.each { |particle| particle.update }
+    #puts @particles.length
+
+    if !@animated.animation_ended
+      @animated.update
+      return
+    elsif !@animated.disposed?
+      @animated.dispose
+    end
     
     if Input.trigger?(Input::F8)
       Graphics.fullscreen = $console = !Settings[:fullscreen]
@@ -340,7 +485,7 @@ class Scene_Title
     # Play decision SE
     Audio.se_play('Audio/SE/title_decision.wav')
     # Update map (run parallel process event)
-	Oneshot.allow_exit false
+	  Oneshot.allow_exit false
     $game_map.update
     # Switch to map screen
     $scene = Scene_Map.new
@@ -373,35 +518,240 @@ class Scene_Title
 
   private
 
-  class Animated
-    def initialize
+  class TowerAnimation
+    MAX_POS = 2005.6109999999946
+    TOWER_POS = -MAX_POS - 160
+    TOWER_Z_OFFSET = -220
+
+    attr_reader :animation_ended
+
+    def initialize(viewport, overlay_viewport)
       atlas = RPG::Cache.title("tower")
-      
-      @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+
+      @animation_ended = false
+
+      @timer = 0
+      @speed = 0.01
+      @speed_down = false
+
+      @loaded_sound = Audio.create_sound("Audio/loaded", false, Audio.sounds_group)
+
+      Graphics.fov = 40
+      @viewport = viewport
       @viewport.origin_x = -Graphics.width / 2
-      @viewport.origin_y = -Graphics.height / 2
-      
-      @wall_left = Sprite.new(@viewport)
-      @wall_left.bitmap = Bitmap.new(96, 240)
-      @wall_left.bitmap.stretch_blt(Rect.new(0, 0, 96, 240), atlas, Rect.new(192, 0, 96, 240))
-      @wall_center = Sprite.new(@viewport)
-      @wall_center.bitmap = Bitmap.new(96, 240)
-      @wall_center.bitmap.stretch_blt(Rect.new(0, 0, 96, 240), atlas, Rect.new(288, 0, 96, 240))
-      @wall_right = Sprite.new(@viewport)
-      @wall_right.bitmap = Bitmap.new(96, 240)
-      @wall_right.bitmap.stretch_blt(Rect.new(0, 0, 96, 240), atlas, Rect.new(384, 0, 96, 240))
+      @viewport.origin_y = -Graphics.height / 2 - MAX_POS
+      @viewport.origin_z = 200
+      @viewport.rot_x = -30
+
+      @overlay_viewport = overlay_viewport
+      @overlay_viewport.origin_y = -MAX_POS
+
+      @black = Sprite.new(@viewport)
+      @black.bitmap = RPG::Cache.picture("black")
+      @black.y = -MAX_POS
+      @black.origin_x = @black.bitmap.width / 2
+      @black.origin_y = @black.bitmap.height / 2
+      @black.order = 2
 
       @floor = Sprite.new(@viewport)
       @floor.bitmap = Bitmap.new(192, 192)
       @floor.bitmap.stretch_blt(Rect.new(0, 0, 192, 192), atlas, Rect.new(0, 0, 192, 192))
       @floor.origin_x = @floor.origin_y = 96
-
-      @wall_left.perspective = @wall_center.perspective = @wall_right.perspective =
-      @floor.perspective = true
-
+      @floor.y = TOWER_POS
+      @floor.z = TOWER_Z_OFFSET
       @floor.rot_x = 90
+      
+      @wall_left = Sprite.new(@viewport)
+      @wall_left.bitmap = Bitmap.new(96, 240)
+      @wall_left.bitmap.stretch_blt(Rect.new(0, 0, 96, 240), atlas, Rect.new(192, 0, 96, 240))
+      @wall_left.origin_y = 240
+      @wall_left.x = -96
+      @wall_left.y = TOWER_POS
+      @wall_left.z = TOWER_Z_OFFSET
+      @wall_left.rot_y = 90.0 - 26.57
+      @wall_left.scale_x = 1.118033989
 
-      atlas.dispose
+      @wall_center = Sprite.new(@viewport)
+      @wall_center.bitmap = Bitmap.new(96, 240)
+      @wall_center.bitmap.stretch_blt(Rect.new(0, 0, 96, 240), atlas, Rect.new(288, 0, 96, 240))
+      @wall_center.origin_x = 48
+      @wall_center.origin_y = 240
+      @wall_center.z = 96 + TOWER_Z_OFFSET
+      @wall_center.y = TOWER_POS
+
+      @wall_right = Sprite.new(@viewport)
+      @wall_right.bitmap = Bitmap.new(96, 240)
+      @wall_right.bitmap.stretch_blt(Rect.new(0, 0, 96, 240), atlas, Rect.new(384, 0, 96, 240))
+      @wall_right.origin_x = 96
+      @wall_right.origin_y = 240
+      @wall_right.x = 96
+      @wall_right.y = TOWER_POS
+      @wall_right.z = TOWER_Z_OFFSET
+      @wall_right.rot_y = -90.0 + 26.57
+      @wall_right.scale_x = 1.118033989
+
+      @mirror_wall_left = Sprite.new(@viewport)
+      @mirror_wall_left.bitmap = @wall_left.bitmap
+      @mirror_wall_left.origin_y = 240
+      @mirror_wall_left.x = -96
+      @mirror_wall_left.y = TOWER_POS
+      @mirror_wall_left.z = TOWER_Z_OFFSET
+      @mirror_wall_left.rot_y = 90.0 - 26.57
+      @mirror_wall_left.scale_x = 1.118033989
+
+      @mirror_wall_center = Sprite.new(@viewport)
+      @mirror_wall_center.bitmap = @wall_center.bitmap
+      @mirror_wall_center.origin_x = 48
+      @mirror_wall_center.origin_y = 240
+      @mirror_wall_center.z = 96 + TOWER_Z_OFFSET
+      @mirror_wall_center.y = TOWER_POS
+
+      @mirror_wall_right = Sprite.new(@viewport)
+      @mirror_wall_right.bitmap = @wall_right.bitmap
+      @mirror_wall_right.origin_x = 96
+      @mirror_wall_right.origin_y = 240
+      @mirror_wall_right.x = 96
+      @mirror_wall_right.y = TOWER_POS
+      @mirror_wall_right.z = TOWER_Z_OFFSET
+      @mirror_wall_right.rot_y = -90.0 + 26.57
+      @mirror_wall_right.scale_x = 1.118033989
+
+      @mirror_wall_left.order = @mirror_wall_center.order = @mirror_wall_right.order =
+      @mirror_wall_left.scale_y = @mirror_wall_center.scale_y = @mirror_wall_right.scale_y = -1
+
+      @pedestal = Sprite.new(@viewport)
+      @pedestal.bitmap = Bitmap.new(192, 192)
+      @pedestal.bitmap.stretch_blt(Rect.new(0, 0, 48, 32), atlas, Rect.new(144, 208, 48, 32))
+      @pedestal.origin_x = 24
+      @pedestal.origin_y = 32
+      @pedestal.y = TOWER_POS
+      @pedestal.z = TOWER_Z_OFFSET
+
+      @lamp = Sprite.new(@viewport)
+      @lamp.bitmap = Bitmap.new(32, 32)
+      @lamp.bitmap.stretch_blt(Rect.new(0, 0, 32, 32), atlas, Rect.new(0, 0, 32, 32))
+      @lamp.scale_x = @lamp.scale_y = 0.5
+      @lamp.origin_x = 16
+      @lamp.origin_y = 16
+      @lamp.blend_type = 1
+      @lamp.rot_x = 30
+      @lamp.y = TOWER_POS - 28
+      @lamp.z = TOWER_Z_OFFSET
+      #@lamp.smooth = true
+      @lamp.order = 3
+
+      @lamp_light = Sprite.new(@viewport)
+      @lamp_light.bitmap = Bitmap.new(64, 64)
+      @lamp_light.bitmap.stretch_blt(Rect.new(0, 0, 64, 64), atlas, Rect.new(416, 240, 64, 64))
+      @lamp_light.scale_x = @lamp_light.scale_y = 0.5
+      @lamp_light.origin_x = 32
+      @lamp_light.origin_y = 32
+      @lamp_light.blend_type = 1
+      @lamp_light.rot_x = 30
+      #@lamp_light.smooth = true
+      @lamp_light.y = TOWER_POS - 28
+      @lamp_light.z = TOWER_Z_OFFSET
+
+      @base_bitmap = Bitmap.new(2, 2)
+      @base_bitmap.fill_rect(0, 0, 2, 1, Color.new(10, 10, 16))
+      @base_bitmap.fill_rect(0, 1, 2, 1, Color.new(0, 0, 0))
+      
+      @front_wall_left = Sprite.new(@viewport)
+      @front_wall_left.bitmap = @base_bitmap
+      @front_wall_left.x = -96
+      @front_wall_left.y = TOWER_POS
+      @front_wall_left.z = TOWER_Z_OFFSET
+      @front_wall_left.rot_y = -90.0 + 26.57
+      @front_wall_left.scale_x = 1.118033989 * 48
+
+      @front_wall_center = Sprite.new(@viewport)
+      @front_wall_center.bitmap = @base_bitmap
+      @front_wall_center.origin_x = 1
+      @front_wall_center.z = -96 + TOWER_Z_OFFSET
+      @front_wall_center.y = TOWER_POS
+      @front_wall_center.scale_x = 48
+
+      @front_wall_right = Sprite.new(@viewport)
+      @front_wall_right.bitmap = @base_bitmap
+      @front_wall_right.x = 96
+      @front_wall_right.y = TOWER_POS
+      @front_wall_right.z = TOWER_Z_OFFSET
+      @front_wall_right.rot_y = -90.0 - 26.57
+      @front_wall_right.scale_x = 1.118033989 * 48
+
+      @front_wall_left.scale_y = @front_wall_center.scale_y = @front_wall_right.scale_y = 240
+      @front_wall_left.smooth = @front_wall_center.smooth = @front_wall_right.smooth = true
+
+      @mirror_wall_left.perspective = @mirror_wall_center.perspective = @mirror_wall_right.perspective =
+      @front_wall_left.perspective = @front_wall_center.perspective = @front_wall_right.perspective =
+      @wall_left.perspective = @wall_center.perspective = @wall_right.perspective =
+      @lamp.perspective = @lamp_light.perspective =
+      @floor.perspective = @pedestal.perspective = true
+      #@wall_left.smooth = @wall_center.smooth = @wall_right.smooth =
+      #@floor.smooth = true
+      @sum = 0.0
+      #@loaded_sound.play
+    end
+
+    def update
+      
+      if @timer == 16
+        @black.visible = false
+        @lamp.visible = false
+        @loaded_sound.play
+      end
+
+      if @timer < 32
+        @timer += 1
+        return
+      end
+
+      @viewport.origin_y += @speed * 0.1
+      @overlay_viewport.origin_y += @speed * 0.1
+
+      if @speed > 0
+        @speed += @speed_down ? -2.5 : 1.67
+      else
+        @speed = 0
+        @animation_ended = true
+      end
+
+      @sum += @speed * 0.1
+      #puts @sum
+
+      if @speed > 200
+        @speed_down = true
+        $game_system.bgm_play($data_system.title_bgm)
+      end
+
+      @viewport.rot_x = lerp(-30.0, 0.0, @sum / MAX_POS)
+    end
+
+    def disposed?
+      @floor.disposed?
+    end
+
+    def dispose
+      @floor.bitmap.dispose
+      @floor.dispose
+      
+      @wall_right.bitmap.dispose
+      @wall_center.bitmap.dispose
+      @wall_left.bitmap.dispose
+
+      @wall_right.dispose
+      @wall_center.dispose
+      @wall_left.dispose
+      
+      @mirror_wall_right.dispose
+      @mirror_wall_center.dispose
+      @mirror_wall_left.dispose
+
+      @base_bitmap.dispose
+
+      @front_wall_right.dispose
+      @front_wall_center.dispose
+      @front_wall_left.dispose
     end
   end
 end

@@ -196,6 +196,10 @@ struct Vec3i{
 	    : x(x), y(y), z(z)
 	{}
 
+	Vec3i(const Vec3 &other)
+		: x(other.x), y(other.y), z(other.z)
+	{}
+
 	explicit Vec3i(int xyz)
 	    : x(xyz), y(xyz), z(xyz)
 	{}

@@ -10,6 +10,10 @@ module Kernel
   module_function :puts
 end
 
+def lerp(a, b, t)
+  a + (b - a) * t
+end
+
 module Graphics
 # 0 - 3:2      - 720x480
 # 1 - 4:3      - 640x480 (default)

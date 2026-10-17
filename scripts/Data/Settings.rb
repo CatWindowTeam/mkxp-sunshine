@@ -33,7 +33,6 @@ module Settings
         :in_game_timer          => false,
         :language               => 0,
         :fasttravel_ui          => 0,
-        :mainmenu_background    => 0,
         :icons_style            => false,
 
         # ---------- Gameplay -----------
@@ -395,13 +394,6 @@ class Window_Settings
         :icons => [[6, 3]],
         :additional_icons => [[0, 1]],
         :values => ["Original", "WME (WIP)"]
-      },
-      {
-        :type => :enum,
-        :name => "Main Menu background",
-        :parameter => :mainmenu_background,
-        :icons => [[6, 1]],
-        :values => ["Original", "Badend", "Title Black"]
       },
       {
         :type => :custom,
