@@ -377,7 +377,9 @@ class Scene_Title
     def initialize
       atlas = RPG::Cache.title("tower")
       
-      @viewport = Viewport.new()
+      @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+      @viewport.origin_x = -Graphics.width / 2
+      @viewport.origin_y = -Graphics.height / 2
       
       @wall_left = Sprite.new(@viewport)
       @wall_left.bitmap = Bitmap.new(96, 240)

@@ -37,8 +37,9 @@ public:
 	void update();
 
 	DECL_ATTR( Rect,      Rect&  )
-	DECL_ATTR( OX,        int    )
-	DECL_ATTR( OY,        int    )
+	DECL_ATTR( OriginX,   int    )
+	DECL_ATTR( OriginY,   int    )
+	DECL_ATTR( OriginZ,   int    )
 	DECL_ATTR( ScaleX,    double )
 	DECL_ATTR( ScaleY,    double )
 	DECL_ATTR( RotationX, double )

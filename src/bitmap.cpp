@@ -618,7 +618,7 @@ void Bitmap::radialBlur(int angle, int divisions){
 	p->render.clear();
 
 	Transform trans;
-	trans.setOrigin(Vec2(_width / 2.0f, _height / 2.0f));
+	trans.setOrigin(Vec3(_width / 2.0f, _height / 2.0f, 0.0f));
 	trans.setPosition(Vec3(_width / 2.0f, _height / 2.0f, 0.0f));
 
 	p->render.pushBlendMode(BlendAddition);

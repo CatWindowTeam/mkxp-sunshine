@@ -32,7 +32,6 @@ struct LightMapPrivate{
 	Quad quad;
 	Rect *srcRect;
 	IntRect sceneRect;
-	Vec2i sceneOrig;
 
 	/* Would this sprite be visible on
 	 * the screen if drawn? */
@@ -323,7 +322,6 @@ void LightMap::draw(){
 
 void LightMap::onGeometryChange(const Scene::Geometry &geo){
 	p->sceneRect.setSize(geo.rect.size());
-	p->sceneOrig = geo.orig;
 }
 
 void LightMap::releaseResources(){

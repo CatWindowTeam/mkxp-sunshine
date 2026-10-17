@@ -65,18 +65,18 @@ public:
 
 	Vec3 &getPosition()            { return position;            }
 	Vec3 &getRotation()            { return rotation;            }
-	Vec2 &getOrigin()              { return origin;              }
+	Vec3 &getOrigin()              { return origin;              }
 	Vec2 &getScale()               { return scale;               }
 	Vec2 &getGlobalScale()         { return globalScale;         }
 	Vec3 &getGlobalRotation()      { return globalRotation;      }
 	bool getPerspectiveMode()      { return perspectiveMode;     }
 
-	Vec2i getPositionI() const{
-		return Vec2i(position.x, position.y);
+	Vec3i getPositionI() const{
+		return Vec3i(position.x, position.y, position.z);
 	}
 
-	Vec2i getOriginI() const{
-		return Vec2i(origin.x, origin.y);
+	Vec3i getOriginI() const{
+		return Vec3i(origin.x, origin.y, origin.z);
 	}
 
 	void setPerspectiveMode(bool mode) {
@@ -89,7 +89,7 @@ public:
 		dirty = true;
 	}
 
-	void setOrigin(const Vec2 &value){
+	void setOrigin(const Vec3 &value){
 		origin = value;
 		dirty = true;
 	}
@@ -109,7 +109,7 @@ public:
 		dirty = true;
 	}
 
-	void setGlobalOffset(const Vec2i &value){
+	void setGlobalOffset(const Vec3i &value){
 		offset = value;
 		dirty = true;
 	}
@@ -153,11 +153,8 @@ private:
     		float c =  sys * globalScale.x;
     		float d =  syc * globalScale.y;
 			
-    		float tx = (-origin.x * sxc - origin.y * sys + position.x)
-    		         * globalScale.x;
-			
-    		float ty = ( origin.x * sxs - origin.y * syc + position.y)
-    		         * globalScale.y;
+    		float tx = (-origin.x * sxc - origin.y * sys + position.x) * globalScale.x;
+    		float ty = ( origin.x * sxs - origin.y * syc + position.y) * globalScale.y;
 			
     		// viewport rotation cos and sin
     		float globalAngle = globalRotation.z * PI / 180.0f;
@@ -298,9 +295,9 @@ private:
 
 			// offsets
 
-		    float tx =    position.x - (m00 * origin.x + m01 * origin.y) + offset.x;
-		    float ty =    position.y - (m10 * origin.x + m11 * origin.y) + offset.y;
-		    float tz = -perspectiveZ - (m20 * origin.x + m21 * origin.y);
+		    float tx =    position.x - (m00 * origin.x + m01 * origin.y + m02 * origin.z) + offset.x;
+		    float ty =    position.y - (m10 * origin.x + m11 * origin.y + m12 * origin.z) + offset.y;
+		    float tz = -perspectiveZ - (m20 * origin.x + m21 * origin.y + m22 * origin.z) + offset.z;
 
 			matrix[0] = m00;
 			matrix[1] = m10;
@@ -326,7 +323,7 @@ private:
 
 	Vec3 position;
 	Vec3 rotation;
-	Vec2 origin;
+	Vec3 origin;
 	Vec2 scale;
 	Vec3 globalRotation;
 
@@ -335,7 +332,7 @@ private:
 	bool perspectiveMode = false;
 
 	/* Silently added to position */
-	Vec2i offset;
+	Vec3i offset;
 	/* Silently added to scale */
 	Vec2 globalScale;
 

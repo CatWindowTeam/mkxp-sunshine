@@ -777,7 +777,7 @@ void Window::draw(){
 }
 
 void Window::onGeometryChange(const Scene::Geometry &geo){
-	p->sceneOffset = geo.offset();
+	p->sceneOffset = Vec2i(geo.offset().x, geo.offset().y);
 }
 
 void Window::setOrder(int value){

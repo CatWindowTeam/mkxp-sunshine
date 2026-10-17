@@ -58,6 +58,18 @@ struct Vec3{
 	bool operator==(const Vec3 &other) const{
 		return (x == other.x && y == other.y && z == other.z);
 	}
+
+	bool operator!=(const Vec3 &other) const{
+		return (x != other.x || y != other.y || z != other.z);
+	}
+
+	bool operator==(const float &other) const{
+		return (x == other && y == other && z == other);
+	}
+
+	bool operator!=(const float &other) const{
+		return (x != other || y != other || z != other);
+	}
 };
 
 struct Vec4{
@@ -169,6 +181,85 @@ struct Vec2i{
 
 	operator Vec2() const{
 		return Vec2(x, y);
+	}
+};
+
+
+struct Vec3i{
+	int x, y, z;
+
+	Vec3i()
+	    : x(0), y(0), z(0)
+	{}
+
+	Vec3i(int x, int y, int z)
+	    : x(x), y(y), z(z)
+	{}
+
+	explicit Vec3i(int xyz)
+	    : x(xyz), y(xyz), z(xyz)
+	{}
+
+	bool operator==(const Vec3i &other) const{
+		return x == other.x && y == other.y && z == other.z;
+	}
+
+	bool operator!=(const Vec3i &other) const{
+		return !(*this == other);
+	}
+
+	Vec3i &operator+=(const Vec3i &value){
+		x += value.x;
+		y += value.y;
+		z += value.z;
+
+		return *this;
+	}
+
+	Vec3i &operator-=(const Vec3i &value){
+		x -= value.x;
+		y -= value.y;
+		z -= value.z;
+
+		return *this;
+	}
+
+	Vec3i operator+(const Vec3i &value) const{
+		return Vec3i(x + value.x, y + value.y, z + value.z);
+	}
+
+	Vec3i operator-(const Vec3i &value) const{
+		return Vec3i(x - value.x, y - value.y, z - value.z);
+	}
+
+	template<typename T>
+	Vec3i operator*(T value) const{
+		return Vec3i(x * value, y * value, z * value);
+	}
+
+	template<typename T>
+	Vec3i operator/(T value) const{
+		return Vec3i(x / value, y / value, z / value);
+	}
+
+	Vec3i operator%(int value) const{
+		return Vec3i(x % value, y % value, z % value);
+	}
+
+	Vec3i operator&(unsigned value) const{
+		return Vec3i(x & value, y & value, z & value);
+	}
+
+	Vec3i operator-() const{
+		return Vec3i(-x, -y, -z);
+	}
+
+	Vec3i operator!() const{
+		return Vec3i(!x, !y, !z);
+	}
+
+	operator Vec3() const{
+		return Vec3(x, y, z);
 	}
 };
 

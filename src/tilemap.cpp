@@ -787,7 +787,7 @@ struct TilemapPrivate {
 	}
 
 	void updateMapViewport(){
-		const Vec2i combOrigin = origin + elem.sceneGeo.orig;
+		const Vec2i combOrigin = origin + Vec2i(elem.sceneGeo.orig.x, elem.sceneGeo.orig.y);
 		const Vec2i mvpPos = getTilePos(combOrigin);
 		if (mvpPos != viewpPos){
 			viewpPos = mvpPos;

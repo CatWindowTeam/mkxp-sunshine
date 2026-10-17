@@ -52,7 +52,7 @@ struct SpritePrivate{
 	NormValue opacity;
 	BlendType blendType;
 	IntRect sceneRect;
-	Vec2i sceneOrig;
+	Vec3i sceneOrig;
 
 	/* Would this sprite be visible on
 	 * the screen if drawn? */
@@ -174,13 +174,14 @@ struct SpritePrivate{
 		/* If sprite is zoomed/rotated, just opt out for now
 		 * for simplicity's sake */
 		const Vec2 &scale = trans.getScale();
-		if (scale.x != 1 || scale.y != 1 || trans.getRotation().z != 0){
+		if (scale.x != 1 || scale.y != 1 || trans.getRotation() != 0){
 			isVisible = true;
 			return;
 		}
 
 		IntRect self;
-		self.setPos(trans.getPositionI() - (trans.getOriginI() + sceneOrig));
+		Vec3i pos = trans.getPositionI() - (trans.getOriginI() + sceneOrig);
+		self.setPos(Vec2i(pos.x, pos.y));
 		self.w = bitmap->width();
 		self.h = bitmap->height();
 
@@ -286,8 +287,9 @@ DEF_ATTR_RD_SIMPLE(Sprite, Bitmap,       Bitmap*, p->bitmap)
 DEF_ATTR_RD_SIMPLE(Sprite, X,            int,     p->trans.getPosition().x)
 DEF_ATTR_RD_SIMPLE(Sprite, Y,            int,     p->trans.getPosition().y)
 DEF_ATTR_RD_SIMPLE(Sprite, Z,            int,     p->trans.getPosition().z)
-DEF_ATTR_RD_SIMPLE(Sprite, OX,           int,     p->trans.getOrigin().x)
-DEF_ATTR_RD_SIMPLE(Sprite, OY,           int,     p->trans.getOrigin().y)
+DEF_ATTR_RD_SIMPLE(Sprite, OriginX,      int,     p->trans.getOrigin().x)
+DEF_ATTR_RD_SIMPLE(Sprite, OriginY,      int,     p->trans.getOrigin().y)
+DEF_ATTR_RD_SIMPLE(Sprite, OriginZ,      int,     p->trans.getOrigin().z)
 DEF_ATTR_RD_SIMPLE(Sprite, ScaleX,       float,   p->trans.getScale().x)
 DEF_ATTR_RD_SIMPLE(Sprite, ScaleY,       float,   p->trans.getScale().y)
 DEF_ATTR_RD_SIMPLE(Sprite, RotationX,    float,   p->trans.getRotation().x)
@@ -356,20 +358,28 @@ void Sprite::setZ(int value){
 	p->trans.setPosition(Vec3(getX(), getY(), value));
 }
 
-void Sprite::setOX(int value){
+void Sprite::setOriginX(int value){
 	guardDisposed();
 	if (p->trans.getOrigin().x == value)
 		return;
 
-	p->trans.setOrigin(Vec2(value, getOY()));
+	p->trans.setOrigin(Vec3(value, getOriginY(), getOriginZ()));
 }
 
-void Sprite::setOY(int value){
+void Sprite::setOriginY(int value){
 	guardDisposed();
 	if (p->trans.getOrigin().y == value)
 		return;
 
-	p->trans.setOrigin(Vec2(getOX(), value));
+	p->trans.setOrigin(Vec3(getOriginX(), value, getOriginZ()));
+}
+
+void Sprite::setOriginZ(int value){
+	guardDisposed();
+	if (p->trans.getOrigin().z == value)
+		return;
+
+	p->trans.setOrigin(Vec3(getOriginX(), getOriginY(), value));
 }
 
 void Sprite::setScaleX(float value){

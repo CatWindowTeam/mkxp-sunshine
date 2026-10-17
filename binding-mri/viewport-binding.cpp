@@ -67,8 +67,9 @@ DEF_PROP_OBJ_VAL(Viewport, Rect,  Rect,  "rect")
 DEF_PROP_OBJ_VAL(Viewport, Color, Color, "color")
 DEF_PROP_OBJ_VAL(Viewport, Tone,  Tone,  "tone")
 
-DEF_PROP_I(Viewport, OX)
-DEF_PROP_I(Viewport, OY)
+DEF_PROP_I(Viewport, OriginX)
+DEF_PROP_I(Viewport, OriginY)
+DEF_PROP_I(Viewport, OriginZ)
 DEF_PROP_F(Viewport, ScaleX)
 DEF_PROP_F(Viewport, ScaleY)
 DEF_PROP_F(Viewport, RotationX)
@@ -84,8 +85,9 @@ void viewportBindingInit(){
 	rb_define_method(klass, "initialize", RUBY_METHOD_FUNC(viewportInitialize), -1);
 
 	INIT_PROP_BIND( Viewport, Rect,      "rect"    );
-	INIT_PROP_BIND( Viewport, OX,        "origin_x");
-	INIT_PROP_BIND( Viewport, OY,        "origin_y");
+	INIT_PROP_BIND( Viewport, OriginX,   "origin_x");
+	INIT_PROP_BIND( Viewport, OriginY,   "origin_y");
+	INIT_PROP_BIND( Viewport, OriginZ,   "origin_z");
 	INIT_PROP_BIND( Viewport, ScaleX,    "scale_x" );
 	INIT_PROP_BIND( Viewport, ScaleY,    "scale_y" );
 	INIT_PROP_BIND( Viewport, RotationX, "rot_x"   );

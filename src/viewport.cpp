@@ -124,8 +124,9 @@ void Viewport::update(){
 	Flashable::update();
 }
 
-DEF_ATTR_RD_SIMPLE(Viewport, OX, int, geometry.orig.x)
-DEF_ATTR_RD_SIMPLE(Viewport, OY, int, geometry.orig.y)
+DEF_ATTR_RD_SIMPLE(Viewport, OriginX, int, geometry.orig.x)
+DEF_ATTR_RD_SIMPLE(Viewport, OriginY, int, geometry.orig.y)
+DEF_ATTR_RD_SIMPLE(Viewport, OriginZ, int, geometry.orig.z)
 DEF_ATTR_RD_SIMPLE(Viewport, ScaleX,   double, p->scaleX)
 DEF_ATTR_RD_SIMPLE(Viewport, ScaleY,   double, p->scaleY)
 DEF_ATTR_RD_SIMPLE(Viewport, RotationX, double, p->rotationX)
@@ -136,7 +137,7 @@ DEF_ATTR_SIMPLE(Viewport, Rect,  Rect&,  *p->rect)
 DEF_ATTR_SIMPLE(Viewport, Color, Color&, *p->color)
 DEF_ATTR_SIMPLE(Viewport, Tone,  Tone&,  *p->tone)
 
-void Viewport::setOX(int value){
+void Viewport::setOriginX(int value){
 	guardDisposed();
 	if (geometry.orig.x == value)
 		return;
@@ -145,12 +146,21 @@ void Viewport::setOX(int value){
 	notifyGeometryChange();
 }
 
-void Viewport::setOY(int value){
+void Viewport::setOriginY(int value){
 	guardDisposed();
 	if (geometry.orig.y == value)
 		return;
 
 	geometry.orig.y = value;
+	notifyGeometryChange();
+}
+
+void Viewport::setOriginZ(int value){
+	guardDisposed();
+	if (geometry.orig.z == value)
+		return;
+
+	geometry.orig.z = value;
 	notifyGeometryChange();
 }
 

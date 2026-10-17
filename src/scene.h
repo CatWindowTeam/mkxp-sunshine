@@ -38,9 +38,9 @@ public:
 		/* Position and size relative to parent */
 		IntRect rect;
 		/* Origin of contents */
-		Vec2i orig;
-		Vec2i offset() const{
-			return rect.pos() - orig;
+		Vec3i orig;
+		Vec3i offset() const{
+			return Vec3i(rect.pos().x, rect.pos().y, 0) - orig;
 		}
 	};
 
@@ -75,7 +75,7 @@ protected:
 
 class SceneElement{
 public:
-	SceneElement(Scene &scene, int z = 0, int spriteY = 0);
+	SceneElement(Scene &scene, int order = 0, int spriteY = 0);
 	virtual ~SceneElement();
 
 	void setScene(Scene &scene);

@@ -51,8 +51,9 @@ DEF_PROP_OBJ_VAL(Sprite, Color,  Modulate,"modulate")
 DEF_PROP_I(Sprite, X)
 DEF_PROP_I(Sprite, Y)
 DEF_PROP_I(Sprite, Z)
-DEF_PROP_I(Sprite, OX)
-DEF_PROP_I(Sprite, OY)
+DEF_PROP_I(Sprite, OriginX)
+DEF_PROP_I(Sprite, OriginY)
+DEF_PROP_I(Sprite, OriginZ)
 DEF_PROP_I(Sprite, BushDepth)
 DEF_PROP_I(Sprite, BushOpacity)
 DEF_PROP_I(Sprite, Opacity)
@@ -117,8 +118,9 @@ void spriteBindingInit(){
 	INIT_PROP_BIND( Sprite, X,               "x"         );
 	INIT_PROP_BIND( Sprite, Y,               "y"         );
 	INIT_PROP_BIND( Sprite, Z,               "z"         );
-	INIT_PROP_BIND( Sprite, OX,              "origin_x"  );
-	INIT_PROP_BIND( Sprite, OY,              "origin_y"  );
+	INIT_PROP_BIND( Sprite, OriginX,         "origin_x"  );
+	INIT_PROP_BIND( Sprite, OriginY,         "origin_y"  );
+	INIT_PROP_BIND( Sprite, OriginZ,         "origin_z"  );
 	INIT_PROP_BIND( Sprite, ScaleX,          "scale_x"   );
 	INIT_PROP_BIND( Sprite, ScaleY,          "scale_y"   );
 	INIT_PROP_BIND( Sprite, MirrorX,         "mirror_x"  );
