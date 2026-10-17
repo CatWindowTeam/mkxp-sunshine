@@ -35,7 +35,7 @@ class Scene_Title
       @sprite.opacity = 0
       @sprite.order = -1
 
-      @rot_speed = rand(-20..20) / 40.0
+      @rot_speed = rand(-20..20) / 80.0
       @speed_x = rand(-10..10) / 70.0
       @speed_y = rand(-10..10) / 70.0
       @pos_x = @sprite.x
@@ -61,7 +61,7 @@ class Scene_Title
       @sprite.y = @pos_y
       @sprite.rot_z += @rot_speed
       
-      dist = dist(@pos_x, @pos_y, -Graphics.width/4, 0)
+      dist = dist(@pos_x, @pos_y, -Graphics.width/6, 0)
       #173,37,74
       #34,5,41
       if dist < DISTANCE
@@ -101,8 +101,15 @@ class Scene_Title
     # Make title graphic
     
     @window_settings_title = Window_Settings.new
+
     @bg_viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @bg_viewport.origin_x = -Graphics.width / 2
+    @bg_viewport.origin_y = -Graphics.height / 2
+    @bg_viewport.origin_z = 200
+    
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+
+    Graphics.fov = 40
 
     @animated = TowerAnimation.new(@bg_viewport, @viewport)
     
@@ -536,7 +543,6 @@ class Scene_Title
 
       @loaded_sound = Audio.create_sound("Audio/loaded", false, Audio.sounds_group)
 
-      Graphics.fov = 40
       @viewport = viewport
       @viewport.origin_x = -Graphics.width / 2
       @viewport.origin_y = -Graphics.height / 2 - MAX_POS
@@ -694,6 +700,24 @@ class Scene_Title
     end
 
     def update
+      if disposed?
+        return
+      end
+      if Input.pressed_key != nil || !Settings[:start_animation]
+        if @timer < 16
+          @loaded_sound.play
+        end
+
+        @speed = 0
+        @animation_ended = true
+        @timer = 32
+        $game_system.bgm_play($data_system.title_bgm)
+
+        @viewport.origin_y = -Graphics.height / 2
+        @viewport.rot_x = 0
+        @overlay_viewport.origin_y = 0
+        return
+      end
       
       if @timer == 16
         @black.visible = false
@@ -732,6 +756,8 @@ class Scene_Title
     end
 
     def dispose
+      @black.dispose
+      
       @floor.bitmap.dispose
       @floor.dispose
       
@@ -746,6 +772,14 @@ class Scene_Title
       @mirror_wall_right.dispose
       @mirror_wall_center.dispose
       @mirror_wall_left.dispose
+
+      @pedestal.bitmap.dispose
+      @pedestal.dispose
+
+      @lamp.bitmap.dispose
+      @lamp.dispose
+      @lamp_light.bitmap.dispose
+      @lamp_light.dispose
 
       @base_bitmap.dispose
 

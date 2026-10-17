@@ -33,6 +33,7 @@ module Settings
         :in_game_timer          => false,
         :language               => 0,
         :fasttravel_ui          => 0,
+        :start_animation        => true,
         :icons_style            => false,
 
         # ---------- Gameplay -----------
@@ -394,6 +395,11 @@ class Window_Settings
         :icons => [[6, 3]],
         :additional_icons => [[0, 1]],
         :values => ["Original", "WME (WIP)"]
+      },
+      {
+        :type => :bool,
+        :name => "Start menu animation",
+        :parameter => :start_animation
       },
       {
         :type => :custom,

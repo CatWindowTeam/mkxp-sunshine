@@ -61,7 +61,7 @@ class Game_System
   #--------------------------------------------------------------------------
   def bgm_fade(time)
     @playing_bgm = nil
-    Audio.bgm_fade(time * 1000)
+    Audio.bgm_fade(time * 60)
   end
   #--------------------------------------------------------------------------
   # * Background Music Memory
@@ -94,7 +94,7 @@ class Game_System
   #--------------------------------------------------------------------------
   def bgs_fade(time)
     @playing_bgs = nil
-    Audio.bgs_fade(time * 1000)
+    Audio.bgs_fade(time * 60)
   end
   #--------------------------------------------------------------------------
   # * Background Sound Memory
