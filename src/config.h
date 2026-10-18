@@ -23,7 +23,7 @@ struct Config {
 
     int fixedFramerate = 0;
     bool frameSkip = true;
-    bool syncToRefreshrate = true;
+    bool syncToRefreshrate = false;
     std::string renderer = "auto";
     bool renderStats = false;
     std::string sdlRenderDriver;
