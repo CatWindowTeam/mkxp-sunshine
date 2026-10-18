@@ -421,7 +421,7 @@ class Scene_Title
         end
       end
       if update_cursor
-        Audio.se_play('Audio/SE/title_cursor.wav', 40)
+        Audio.se_play('Audio/SE/title_cursor', 40)
       end
       
       # Handle confirmation
@@ -490,7 +490,7 @@ class Scene_Title
     # Reset frame count for measuring play time
     Graphics.frame_count = 0
     # Play decision SE
-    Audio.se_play('Audio/SE/title_decision.wav')
+    Audio.se_play('Audio/SE/title_decision')
     # Update map (run parallel process event)
 	  Oneshot.allow_exit false
     $game_map.update
@@ -502,7 +502,7 @@ class Scene_Title
   #--------------------------------------------------------------------------
   def command_shutdown
     # Play decision SE
-    Audio.se_play('Audio/SE/title_decision.wav')
+    Audio.se_play('Audio/SE/title_decision')
     # Fade out BGM, BGS, and ME
     Audio.bgm_fade(800)
     Audio.bgs_fade(800)

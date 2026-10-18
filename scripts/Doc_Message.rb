@@ -255,7 +255,7 @@ class Doc_Message
         refresh
         @viewport.visible = true
         @fade_in = true
-        Audio.se_play("Audio/SE/page.wav", Audio.sfx_volume)
+        Audio.se_play("Audio/SE/page")
       end
     end
 
