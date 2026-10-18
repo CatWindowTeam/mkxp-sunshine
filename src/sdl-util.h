@@ -25,7 +25,6 @@ struct AtomicFlag{
 	operator bool() const {
 		return SDL_GetAtomicInt(&atom);
 	}
-
 private:
 	mutable SDL_AtomicInt atom;
 };
@@ -84,25 +83,14 @@ private:
 
 class SDLRWStream{
 public:
-	SDLRWStream(const char *filename, const char *mode)
-	    : ops(SDL_IOFromFile(filename, mode)),
-	      buf(ops),
-	      s(&buf)
-	{}
-
+	SDLRWStream(const char *filename, const char *mode) : ops(SDL_IOFromFile(filename, mode)), buf(ops), s(&buf){}
 	~SDLRWStream(){
-		if (ops)
+		if(ops){
 			SDL_CloseIO(ops);
+		}
 	}
-
-	operator bool() const noexcept {
-		return ops != 0;
-	}
-
-	std::istream &stream() noexcept {
-		return s;
-	}
-
+	operator bool() const { return ops != 0; }
+	std::istream &stream() { return s; }
 private:
 	SDL_IOStream *ops;
 	SDLRWBuf<> buf;

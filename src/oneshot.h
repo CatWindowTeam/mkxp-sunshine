@@ -1,6 +1,4 @@
-#ifndef ONESHOT_H
-#define ONESHOT_H
-
+#pragma once
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -70,14 +68,10 @@ public:
 
 	//Dirty flag for obscured texture
 	bool obscuredDirty;
-
 	#ifdef unix_like
 		std::string desktopEnv;
 	#endif
-
 private:
 	OneshotPrivate *p;
 	RGSSThreadData &threadData;
 };
-
-#endif // ONESHOT_H

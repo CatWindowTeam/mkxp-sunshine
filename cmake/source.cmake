@@ -39,7 +39,7 @@ set(EMBEDDED_INPUT
 	assets/crash.png
 	assets/noise.png
 	assets/the_modded_machine.png
-	binding-mruby/module_rpg1.rb
+	binding-mri/module_rpg1.rb
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
