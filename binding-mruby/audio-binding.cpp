@@ -25,8 +25,7 @@
 #include "exception.h"
 
 #define DEF_PLAY_STOP(entity) \
-	MRB_FUNCTION(audio_##entity##Play) \
-	{ \
+	MRB_FUNCTION(audio_##entity##Play){ \
 		char *filename; \
 		mrb_int volume = 100; \
 		mrb_int pitch = 100; \
@@ -34,16 +33,14 @@
 		GUARD_EXC( shState->audio().entity##Play(filename, volume, pitch); ) \
 		return mrb_nil_value(); \
 	} \
-	MRB_FUNCTION(audio_##entity##Stop) \
-	{ \
+	MRB_FUNCTION(audio_##entity##Stop){ \
 		MRB_FUN_UNUSED_PARAM; \
 		shState->audio().entity##Stop(); \
 		return mrb_nil_value(); \
 	}
 
 #define DEF_FADE(entity) \
-MRB_FUNCTION(audio_##entity##Fade) \
-{ \
+MRB_FUNCTION(audio_##entity##Fade){ \
 	mrb_int time; \
 	mrb_get_args(mrb, "i", &time); \
 	shState->audio().entity##Fade(time); \
@@ -57,7 +54,6 @@ MRB_FUNCTION(audio_##entity##Fade) \
 DEF_PLAY_STOP_FADE( bgm )
 DEF_PLAY_STOP_FADE( bgs )
 DEF_PLAY_STOP_FADE( me  )
-
 DEF_PLAY_STOP( se  )
 
 
@@ -73,14 +69,11 @@ DEF_PLAY_STOP( se  )
 	BIND_FADE(entity)
 
 
-void
-audioBindingInit(mrb_state *mrb)
-{
+void audioBindingInit(mrb_state *mrb){
 	RClass *module = mrb_define_module(mrb, "Audio");
 
 	BIND_PLAY_STOP_FADE( bgm )
 	BIND_PLAY_STOP_FADE( bgs )
 	BIND_PLAY_STOP_FADE( me  )
-
 	BIND_PLAY_STOP( se )
 }

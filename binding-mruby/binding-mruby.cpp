@@ -20,7 +20,6 @@
 */
 
 #include "binding.h"
-
 #include <mruby.h>
 #include <mruby/string.h>
 #include <mruby/array.h>
@@ -29,22 +28,17 @@
 #include <mruby/compile.h>
 #include <mruby/proc.h>
 #include <mruby/dump.h>
-
 #include <stdio.h>
 #include <zlib.h>
-
 #include <string>
-
 #include <SDL_messagebox.h>
 #include <SDL_rwops.h>
 #include <SDL_timer.h>
-
 #include "sharedstate.h"
 #include "texpool.h"
 #include "eventthread.h"
 #include "filesystem.h"
 #include "exception.h"
-
 #include "binding-util.h"
 #include "binding-types.h"
 #include "mrb-ext/marshal.h"
@@ -52,22 +46,21 @@
 static void mrbBindingExecute();
 static void mrbBindingTerminate();
 static void mrbBindingReset();
+static void mrbBindingGC();
 
-ScriptBinding scriptBindingImpl =
-{
+ScriptBinding scriptBindingImpl = {
     mrbBindingExecute,
     mrbBindingTerminate,
-    mrbBindingReset
+    mrbBindingReset,
+    mrbBindingGC
 };
 
 ScriptBinding *scriptBinding = &scriptBindingImpl;
-
 
 void fileBindingInit(mrb_state *);
 void timeBindingInit(mrb_state *);
 void marshalBindingInit(mrb_state *);
 void kernelBindingInit(mrb_state *);
-
 void tableBindingInit(mrb_state *);
 void etcBindingInit(mrb_state *);
 void fontBindingInit(mrb_state *);
@@ -77,16 +70,14 @@ void planeBindingInit(mrb_state *);
 void viewportBindingInit(mrb_state *);
 void windowBindingInit(mrb_state *);
 void tilemapBindingInit(mrb_state *);
-
 void inputBindingInit(mrb_state *);
 void audioBindingInit(mrb_state *);
 void graphicsBindingInit(mrb_state *);
 
 /* From module_rpg.c */
-extern const uint8_t mrbModuleRPG[];
+//extern const uint8_t mrbModuleRPG[];
 
-static void mrbBindingInit(mrb_state *mrb)
-{
+static void mrbBindingInit(mrb_state *mrb){
 	int arena = mrb_gc_arena_save(mrb);
 
 	/* Init standard classes */
@@ -112,73 +103,15 @@ static void mrbBindingInit(mrb_state *mrb)
 	graphicsBindingInit(mrb);
 
 	/* Load RPG module */
-	mrb_load_irep(mrb, mrbModuleRPG);
-
-	/* Load global constants */
-	mrb_define_global_const(mrb, "MKXP", mrb_true_value());
-
-	mrb_value debug = rb_bool_new(shState->config().editor.debug);
-	if (rgssVer == 1)
-		mrb_define_global_const(mrb, "DEBUG", debug);
-	else if (rgssVer >= 2)
-		mrb_define_global_const(mrb, "TEST", debug);
-
-	mrb_define_global_const(mrb, "BTEST", mrb_bool_value(shState->config().editor.battleTest));
-
+	// mrb_load_irep(mrb, mrbModuleRPG);
 	mrb_gc_arena_restore(mrb, arena);
 }
 
-static mrb_value
-mkxpTimeOp(mrb_state *mrb, mrb_value)
-{
-	mrb_int iterations = 1;
-	const char *opName = "";
-	mrb_value block;
-
-	mrb_get_args(mrb, "|iz&", &iterations, &opName, &block);
-
-	Uint64 start = SDL_GetPerformanceCounter();
-
-	for (int i = 0; i < iterations; ++i)
-		mrb_yield(mrb, block, mrb_nil_value());
-
-	Uint64 diff = SDL_GetPerformanceCounter() - start;
-	double avg = (double) diff / iterations;
-
-	double sec = avg / SDL_GetPerformanceFrequency();
-	float ms = sec * 1000;
-
-	printf("<%s> [%f ms]\n", opName, ms);
-	fflush(stdout);
-
-	return mrb_float_value(mrb, ms);
-}
-
-static const char *
-mrbValueString(mrb_value value)
-{
+static const char *mrbValueString(mrb_value value){
 	return mrb_string_p(value) ? RSTRING_PTR(value) : 0;
 }
 
-static void
-showExcMessageBox(mrb_state *mrb, mrb_value exc)
-{
-	/* Display actual exception in a message box */
-	mrb_value mesg = mrb_funcall(mrb, exc, "message", 0);
-	mrb_value line = mrb_attr_get(mrb, exc, mrb_intern_lit(mrb, "line"));
-	mrb_value file = mrb_attr_get(mrb, exc, mrb_intern_lit(mrb, "file"));
-	const char *excClass = mrb_class_name(mrb, mrb_class(mrb, exc));
-
-	char msgBoxText[512];
-	snprintf(msgBoxText, sizeof(msgBoxText), "Script '%s' line %d: %s occured.\n\n%s",
-	         mrbValueString(file), mrb_fixnum(line), excClass, mrbValueString(mesg));
-
-	shState->eThread().showMessageBox(msgBoxText, SDL_MESSAGEBOX_ERROR);
-}
-
-static void
-checkException(mrb_state *mrb)
-{
+static void checkException(mrb_state *mrb){
 	if (!mrb->exc)
 		return;
 
@@ -190,25 +123,15 @@ checkException(mrb_state *mrb)
 		showExcMessageBox(mrb, exc);
 }
 
-
-static void
-showError(const std::string &msg)
-{
-	shState->eThread().showMessageBox(msg.c_str());
-}
-
-static void
-runCustomScript(mrb_state *mrb, mrbc_context *ctx, const char *filename)
-{
+//GOVNO, надо свою абасрацкию движка
+static void runCustomScript(mrb_state *mrb, mrbc_context *ctx, const char *filename){
 	/* Execute custom script */
 	FILE *f = fopen(filename, "rb");
 
-	if (!f)
-	{
+	if (!f){
 		static char buffer[256];
 		snprintf(buffer, sizeof(buffer), "Unable to open script '%s'", filename);
 		showError(buffer);
-
 		return;
 	}
 
@@ -222,52 +145,38 @@ runCustomScript(mrb_state *mrb, mrbc_context *ctx, const char *filename)
 	fclose(f);
 }
 
-static void
-runMrbFile(mrb_state *mrb, const char *filename)
-{
+static void runMrbFile(mrb_state *mrb, const char *filename){
 	/* Execute compiled script */
 	FILE *f = fopen(filename, "rb");
 
-	if (!f)
-	{
+	if (!f){
 		static char buffer[256];
 		snprintf(buffer, sizeof(buffer), "Unable to open compiled script '%s'", filename);
 		showError(buffer);
-
 		return;
 	}
 
 	mrb_irep *irep = mrb_read_irep_file(mrb, f);
-
-	if (!irep)
-	{
+	if (!irep){
 		static char buffer[256];
 		snprintf(buffer, sizeof(buffer), "Unable to read compiled script '%s'", filename);
 		showError(buffer);
-
 		return;
 	}
 
 	RProc *proc = mrb_proc_new(mrb, irep);
 	mrb_run(mrb, proc, mrb_top_self(mrb));
-
 	fclose(f);
 }
 
-static void
-runRMXPScripts(mrb_state *mrb, mrbc_context *ctx)
-{
-	const std::string &scriptPack = shState->rtData().config.game.scripts;
-
-	if (scriptPack.empty())
-	{
-		showError("No game scripts specified (missing Game.ini?)");
+static void runRMXPScripts(mrb_state *mrb, mrbc_context *ctx){
+	if (conf.game.scripts.empty()){
+		WarnMsg("No game scripts specified (missing Game.ini?)");
 		return;
 	}
 
-	if (!shState->fileSystem().exists(scriptPack.c_str()))
-	{
-		showError(std::string("Unable to open '") + scriptPack + "'");
+	if (!shState->fileSystem().exists(scriptPack.c_str())){
+		WarnMsg(std::string("Unable to open '") + scriptPack + "'");
 		return;
 	}
 
@@ -276,35 +185,27 @@ runRMXPScripts(mrb_state *mrb, mrbc_context *ctx)
 	SDL_RWops ops;
 
 	shState->fileSystem().openReadRaw(ops, scriptPack.c_str());
-
 	mrb_value scriptArray = mrb_nil_value();
 	std::string readError;
 
-	try
-	{
+	try{
 		scriptArray = marshalLoadInt(scriptMrb, &ops);
-	}
-	catch (const Exception &e)
-	{
+	}catch(const Exception &e){
 		readError = std::string(": ") + e.msg;
 	}
 
 	SDL_RWclose(&ops);
-
-	if (!mrb_array_p(scriptArray))
-	{
-		showError(std::string("Failed to read script data") + readError);
+	if (!mrb_array_p(scriptArray)){
+		WarnMsg(std::string("Failed to read script data") + readError);
 		mrb_close(scriptMrb);
 		return;
 	}
 
 	int scriptCount = mrb_ary_len(scriptMrb, scriptArray);
-
 	std::string decodeBuffer;
 	decodeBuffer.resize(0x1000);
 
-	for (int i = 0; i < scriptCount; ++i)
-	{
+	for (int i = 0; i < scriptCount; ++i){
 		mrb_value script = mrb_ary_entry(scriptArray, i);
 
 		mrb_value scriptChksum = mrb_ary_entry(script, 0);
@@ -316,34 +217,23 @@ runRMXPScripts(mrb_state *mrb, mrbc_context *ctx)
 		int result = Z_OK;
 		unsigned long bufferLen;
 
-		while (true)
-		{
-			unsigned char *bufferPtr =
-			        reinterpret_cast<unsigned char*>(const_cast<char*>(decodeBuffer.c_str()));
-			unsigned char *sourcePtr =
-			        reinterpret_cast<unsigned char*>(RSTRING_PTR(scriptString));
+		while (true){
+			unsigned char *bufferPtr = reinterpret_cast<unsigned char*>(const_cast<char*>(decodeBuffer.c_str()));
+			unsigned char *sourcePtr = reinterpret_cast<unsigned char*>(RSTRING_PTR(scriptString));
 
 			bufferLen = decodeBuffer.length();
-
-			result = uncompress(bufferPtr, &bufferLen,
-			                    sourcePtr, RSTRING_LEN(scriptString));
-
+			result = uncompress(bufferPtr, &bufferLen, sourcePtr, RSTRING_LEN(scriptString));
 			bufferPtr[bufferLen] = '\0';
-
 			if (result != Z_BUF_ERROR)
 				break;
 
 			decodeBuffer.resize(decodeBuffer.size()*2);
 		}
 
-		if (result != Z_OK)
-		{
+		if (result != Z_OK){
 			static char buffer[256];
-			snprintf(buffer, sizeof(buffer), "Error decoding script %d: '%s'",
-			         i, RSTRING_PTR(scriptName));
-
-			showError(buffer);
-
+			snprintf(buffer, sizeof(buffer), "Error decoding script %d: '%s'", i, RSTRING_PTR(scriptName));
+			WarnMsg(buffer);
 			break;
 		}
 
@@ -354,9 +244,7 @@ runRMXPScripts(mrb_state *mrb, mrbc_context *ctx)
 
 		/* Execute code */
 		mrb_load_nstring_cxt(mrb, decodeBuffer.c_str(), bufferLen, ctx);
-
 		mrb_gc_arena_restore(mrb, ai);
-
 		if (mrb->exc)
 			break;
 	}
@@ -364,18 +252,12 @@ runRMXPScripts(mrb_state *mrb, mrbc_context *ctx)
 	mrb_close(scriptMrb);
 }
 
-static void mrbBindingExecute()
-{
+static void mrbBindingExecute(){
 	mrb_state *mrb = mrb_open();
-
 	shState->setBindingData(mrb);
 
 	MrbData mrbData(mrb);
 	mrb->ud = &mrbData;
-
-	mrb_define_module_function(mrb, mrb->kernel_module, "time_op",
-	                           mkxpTimeOp, MRB_ARGS_OPT(2) | MRB_ARGS_BLOCK());
-
 	mrbBindingInit(mrb);
 
 	mrbc_context *ctx = mrbc_context_new(mrb);
@@ -383,13 +265,9 @@ static void mrbBindingExecute()
 
 	const Config &conf = shState->rtData().config;
 	const std::string &customScript = conf.customScript;
-//	const std::string &mrbFile = conf.mrbFile;
-	(void) runMrbFile; // FIXME mrbFile support on ice for now
 
 	if (!customScript.empty())
 		runCustomScript(mrb, ctx, customScript.c_str());
-//	else if (!mrbFile.empty())
-//		runMrbFile(mrb, mrbFile.c_str());
 	else
 		runRMXPScripts(mrb, ctx);
 
@@ -402,15 +280,13 @@ static void mrbBindingExecute()
 	mrb_close(mrb);
 }
 
-static void mrbBindingTerminate()
-{
+static void mrbBindingTerminate(){
 	mrb_state *mrb = static_cast<mrb_state*>(shState->bindingData());
 	MrbData *data = static_cast<MrbData*>(mrb->ud);
 
 	mrb_raise(mrb, data->exc[Shutdown], "");
 }
 
-static void mrbBindingReset()
-{
+static void mrbBindingReset(){
 	// No idea how to do this with mruby yet
 }
