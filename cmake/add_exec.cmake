@@ -25,7 +25,7 @@ elseif(VITA)
                 	${MAIN_SOURCE}
                 	${BINDING_HEADERS}
                 	${BINDING_SOURCE}
-                	${EMBEDDED_SOURCE})
+                	${EMBEDDED_SOURCE})	
 else()
 	set(APP_TARGET ${PROJECT_NAME})
 	add_executable(${APP_TARGET} MACOSX_BUNDLE WIN32

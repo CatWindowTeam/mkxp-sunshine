@@ -6,11 +6,11 @@ option(NATIVE "Use native instructions,for local use only" OFF)
 option(STATIC "Build more static build" OFF)
 option(USE_OPENGL_ES2 "GLES2_HEADER define" OFF)
 set(VERSION_STRING "0.1.3" CACHE STRING "Version string")
-set(BINDING_PATH "binding-mri" CACHE STRING "Binding to use")
+set(BINDING "cruby" CACHE STRING "Binding to use")
 set(VITASDK_PATH "/usr/local/vitasdk" CACHE STRING "VitaSDK path")
+option(DEVBUILD "Developoment build" OFF)
 option(TERMUX "Build for TERMUX" OFF)
 option(VITA "Build for Playstation Vita" OFF)
-option(PSP "Build for PlayStation Portable" OFF)
 option(CODE_ANAL "Code analysis" OFF)
 option(ROBIN_MAP_VENDORED "Use robin-map from git submodule" OFF)
 set(SUNSHINE_ASSETS_PATH "SunshineAssets" CACHE STRING "Path to SunshineAssets")
@@ -29,7 +29,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #code analysis
 if(CODE_ANAL)
 	#tools
-	set(CMAKE_CXX_CLANG_TIDY clang-tidy;-checks=clang-analyzer-core-*,clang-analyzer-cplusplus-*,clang-analyzer-deadcode.*,clang-analyzer-security.*,bugprone-*,performance-*,misc-unused-parameters,misc-unused-using-decls,modernize-use-nullptr,modernize-use-override,modernize-use-emplace,modernize-make-unique,modernize-make-shared,readability-container-size-empty,readability-redundant-string-cstr,readability-simplify-boolean-expr,readability-use-anyofallof;--quiet)
+	set(CMAKE_CXX_CLANG_TIDY clang-tidy)
 	set(CMAKE_CXX_CPPCHECK
 	    cppcheck;
 	    --enable=warning,performance,portability;
@@ -81,7 +81,9 @@ if(USE_OPENGL_ES2)
 	add_definitions(-DGLES2_HEADER)
 endif()
 
-add_definitions(-DRUBY_DONT_SUBST)
+if(DEVBUILD)
+	set(VERSION_STRING "${VERSION_STRING}-dev" FORCE)
+endif()
 add_definitions(-DVERSION_STRING="${VERSION_STRING}")
 
 if(RENDER_SIMPLE)

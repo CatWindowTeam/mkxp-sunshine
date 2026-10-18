@@ -1,7 +1,6 @@
 include(FindPackageHandleStandardArgs)
 find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)
-find_package(Ruby 3.3 COMPONENTS Interpreter Development REQUIRED)
 if(NOT TARGET SDL3::SDL3)
 	find_package(SDL3 CONFIG REQUIRED)
 endif()
@@ -21,7 +20,6 @@ if(NOT PSP AND NOT PS2)
 		find_package(SDL3_net REQUIRED)
 	endif()
 	target_compile_definitions(${APP_TARGET} PRIVATE JOURNAL_ENABLED=1)
-	target_include_directories(${APP_TARGET} PRIVATE SDL3_net::SDL3_net)
 	target_link_libraries(${APP_TARGET} PRIVATE SDL3_net::SDL3_net)
 endif()
 
@@ -54,9 +52,9 @@ target_include_directories(${APP_TARGET} PRIVATE
 	${SDL_INCLUDE_DIRS}
 	${PIXMAN_INCLUDE_DIR}
 	${SIGC2_INCLUDE_DIRS}
-	${Ruby_INCLUDE_DIRS}
 	${PHYSFS_INCLUDE_DIR}
-	${ZLIB_INCLUDE_DIRS})
+	${ZLIB_INCLUDE_DIRS}
+	${BINDING_INCLUDE})
 target_link_directories(${APP_TARGET} PRIVATE ${SIGC2_LIBRARY_DIRS})
 
 target_link_libraries(${APP_TARGET} PRIVATE
@@ -64,11 +62,9 @@ target_link_libraries(${APP_TARGET} PRIVATE
 	SDL3_mixer::SDL3_mixer
 	SDL3_ttf::SDL3_ttf
 	SDL3::SDL3
+	ZLIB::ZLIB
 	${PHYSFS_LIBRARY}
 	${PIXMAN_LIBRARY}
 	${SIGC2_LIBRARIES}
 	${PLATFORM_LIBRARIES}
-	${Ruby_LIBRARIES}
-	ZLIB::ZLIB)
-
-message(STATUS "PHYSFS_INCLUDE_DIR=${PHYSFS_INCLUDE_DIR}")
+	${BINDING_LIBRARY})

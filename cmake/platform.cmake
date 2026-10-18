@@ -1,10 +1,9 @@
 # Platform specific bullshit
 if(NOT VITA AND NOT PSP AND NOT PS2 AND NOT ANDROID)
-	set_target_properties(${APP_TARGET} PROPERTIES
-    	BUILD_RPATH "$ORIGIN"
-    	INSTALL_RPATH "$ORIGIN"
-	)
+	set_target_properties(${APP_TARGET} PROPERTIES BUILD_RPATH "$ORIGIN" INSTALL_RPATH "$ORIGIN")
 endif()
+
+set(API_ONESHOT_EXTENSIONS_XFCE_ENABLED OFF)
 
 function(detect_de_pkgs)
 	find_package(PkgConfig REQUIRED)
@@ -14,16 +13,13 @@ function(detect_de_pkgs)
     	    message(STATUS "libxfconf-0 FOUND!")
     	    target_compile_definitions(${APP_TARGET} PRIVATE API_ONESHOT_EXTENSIONS_XFCE=1)
     	    list(APPEND PLATFORM_LIBRARIES PkgConfig::XFCE)
+    	    set(API_ONESHOT_EXTENSIONS_XFCE_ENABLED ON PARENT_SCOPE)
     	else()
     	    message(WARNING "libxfconf-0 NOT FOUND!")
-    	    target_compile_definitions(${APP_TARGET} PRIVATE API_ONESHOT_EXTENSIONS_XFCE=0)
-    	    set(API_ONESHOT_EXTENSIONS_XFCE OFF)
     	endif()
     endif()
     pkg_check_modules(GIO REQUIRED IMPORTED_TARGET gio-2.0)
-    target_link_libraries(${APP_TARGET} PRIVATE
-        PkgConfig::GIO
-    )
+    target_link_libraries(${APP_TARGET} PRIVATE PkgConfig::GIO)
 endfunction()
 
 set(UNIX_SYSTEMS

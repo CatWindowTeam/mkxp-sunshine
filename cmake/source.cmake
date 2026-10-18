@@ -3,8 +3,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/xxd.cmake)
 # recursive search instead of hardcored list
 file(GLOB_RECURSE MAIN_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h*")
 file(GLOB_RECURSE MAIN_SOURCE CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c*")
-file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${BINDING_PATH}/*.h*")
-file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${BINDING_PATH}/*.c*")
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/binding.cmake)
 set(EMBEDDED_INPUT
 	shader/common.h
 	shader/transSimple.frag
@@ -40,7 +39,7 @@ set(EMBEDDED_INPUT
 	assets/crash.png
 	assets/noise.png
 	assets/the_modded_machine.png
-	binding-mri/module_rpg1.rb
+	binding-mruby/module_rpg1.rb
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
