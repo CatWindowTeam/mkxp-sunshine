@@ -384,7 +384,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title){
 
 	// Show messagebox
 	#ifdef windows
-		qPlaySoundW(MAKEINTRESOURCEW(sound), NULL, SND_ALIAS_ID | SND_ASYNC);
+		PlaySoundW(MAKEINTRESOURCEW(sound), NULL, SND_ALIAS_ID | SND_ASYNC);
 	#endif
 	int button;
 
