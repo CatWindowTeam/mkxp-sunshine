@@ -30,7 +30,7 @@
 #include <physfs.h>
 #include <cstdio>
 #include <unistd.h>
-#ifdef windows
+#ifdef _WIN32
 	#include <windows.h>
 #endif
 #include <string>
