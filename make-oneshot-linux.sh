@@ -7,7 +7,7 @@ make -j$(nproc)
 cd ..
 
 cd journal/
-cmake . -B build/
+cmake . -B build/ -DSTATIC=OFF
 cd build
 make -j$(nproc)
 cd ../../
