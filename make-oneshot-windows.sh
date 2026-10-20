@@ -67,7 +67,7 @@ cleanup() {
 make_journal() {
   cd "$ROOTDIR/journal"
 
-  cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release
+  cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DSTATIC=OFF
   cmake --build $BUILD_DIR
 }
 
