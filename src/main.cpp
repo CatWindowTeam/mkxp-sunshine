@@ -30,7 +30,8 @@
 #include <physfs.h>
 #include <cstdio>
 #include <unistd.h>
-#ifdef _WIN32
+#include "define.h"
+#ifdef windows
 	#include <windows.h>
 #endif
 #include <string>
@@ -48,7 +49,6 @@
 #include "i18n.h"
 #include "sunshine.h"
 #include "modloader.h"
-#include "define.h"
 #include "meow.h"
 #include "binding.h"
 #include "icon.png.xxd"
