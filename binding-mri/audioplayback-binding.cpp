@@ -63,7 +63,7 @@ static VALUE rb_playbackLengthNormalized(VALUE self) {
 
 static VALUE rb_playbackAddTag(int argc, VALUE *argv, VALUE self) {
     char* c_str;
-    rb_get_args(argc, argv, c_str RB_ARG_END);
+    rb_get_args(argc, argv, "z", &c_str RB_ARG_END);
     PLAYBACK
     pb->addTag(c_str);
 
@@ -137,7 +137,7 @@ static VALUE rb_playbackGetPitch(VALUE self){
 
 static VALUE rb_playbackSetStartSample(VALUE self, VALUE sample) {
     PLAYBACK
-    pb->startSample = sample;
+    pb->startSample = NUM2LONG(sample);
     return Qnil;
 }
 
@@ -148,7 +148,7 @@ static VALUE rb_playbackGetStartSample(VALUE self) {
 
 static VALUE rb_playbackSetMaxSample(VALUE self, VALUE samples) {
     PLAYBACK
-    pb->maxSample = samples;
+    pb->maxSample = NUM2LONG(samples);
     return Qnil;
 }
 
@@ -191,7 +191,7 @@ static VALUE rb_playbackFadeIn(int argc, VALUE *argv, VALUE self) {
             double volume;
             double pitch = 1.0f;
             rb_get_args(argc, argv, "fif|f", &time, &loops, &volume, &pitch RB_ARG_END);
-            pb->fadeIn(time, loops, volume, loops);
+            pb->fadeIn(time, loops, volume, pitch);
             break;
         }
     }

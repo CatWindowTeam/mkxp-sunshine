@@ -231,10 +231,10 @@ bool AudioPlayback::fadeIn(double time, int loops, float volume, float pitch, fl
     
     p_volume = volume;
     p_pitch = pitch;
-    update();
-    //MIX_SetTrack3DPosition();
     if (p_group)
         MIX_SetTrackGroup(p_track, p_group->mixGroup);
+    update();
+    //MIX_SetTrack3DPosition();
 
     return fadeIn(time, loops);
 }
