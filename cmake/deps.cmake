@@ -23,7 +23,9 @@ if(NOT PSP AND NOT PS2)
 	target_link_libraries(${APP_TARGET} PRIVATE SDL3_net::SDL3_net)
 endif()
 
-find_package(PhysFS REQUIRED)
+find_path(PHYSFS_INCLUDE_DIR NAMES physfs.h)
+find_library(PHYSFS_LIBRARY NAMES physfs)
+find_package_handle_standard_args(PhysFS DEFAULT_MSG PHYSFS_LIBRARY PHYSFS_INCLUDE_DIR)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 #wtf is this?
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
