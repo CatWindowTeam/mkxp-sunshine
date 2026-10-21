@@ -115,10 +115,6 @@ void LoggerInit();
 
 static VALUE mriPrint(int argc, VALUE *argv, VALUE self);
 static VALUE mkxpPuts(int argc, VALUE *argv, VALUE self);
-static VALUE mkxpRawKeyStates(VALUE self);
-static VALUE mkxpMouseInWindow(VALUE self);
-static VALUE mriRgssMain(VALUE self);
-static VALUE mriRgssStop(VALUE self);
 static VALUE _kernelCaller(VALUE self);
 
 // TODO: find the reason why Symbol doesn't have some methods
@@ -164,13 +160,10 @@ static void mriBindingInit(){
 	ProfilerInit();
 	PhysFS_binding_init();
 	LoggerInit();
-
-	rb_define_module_function(rb_mKernel, "rgss_main", RUBY_METHOD_FUNC(mriRgssMain), 0);
-	rb_define_module_function(rb_mKernel, "rgss_stop", RUBY_METHOD_FUNC(mriRgssStop), 0);
 	rb_define_module_function(rb_mKernel, "print", RUBY_METHOD_FUNC(mriPrint), -1);
 	rb_define_alias(rb_singleton_class(rb_mKernel), "_mkxp_kernel_caller_alias", "caller");
 	rb_define_module_function(rb_mKernel, "caller", RUBY_METHOD_FUNC(_kernelCaller), 0);
-	
+
 	char *script = (char*)SDL_malloc(binding_mri_module_rpg1_rb_len + 1);
 	SDL_memcpy(script, binding_mri_module_rpg1_rb, binding_mri_module_rpg1_rb_len);
 	script[binding_mri_module_rpg1_rb_len] = '\0';
@@ -178,7 +171,7 @@ static void mriBindingInit(){
 	int state = 0;
 	rb_eval_string_protect(script, &state);
 	SDL_free(script);
-	
+
 	if (state) {
 	    VALUE exc = rb_errinfo();
 	    if (!NIL_P(exc)) {
@@ -188,7 +181,6 @@ static void mriBindingInit(){
 	        if (RB_TYPE_P(bt, RUBY_T_ARRAY)) {
 	            for (long i = 0; i < RARRAY_LEN(bt); ++i) {
 	                VALUE line = rb_ary_entry(bt, i);
-	
 	                Debug() << "\t" << StringValueCStr(line);
 	            }
 	        }
@@ -199,8 +191,6 @@ static void mriBindingInit(){
 
 	VALUE mod = rb_define_module("MKXP");
 	rb_define_module_function(mod, "puts", RUBY_METHOD_FUNC(mkxpPuts), -1);
-	rb_define_module_function(mod, "raw_key_states", RUBY_METHOD_FUNC(mkxpRawKeyStates), 0);
-	rb_define_module_function(mod, "mouse_in_window", RUBY_METHOD_FUNC(mkxpMouseInWindow), 0);
 }
 
 static void printP(int argc, VALUE *argv, const char *convMethod, const char *sep){
@@ -212,7 +202,6 @@ static void printP(int argc, VALUE *argv, const char *convMethod, const char *se
 		if (i < argc)
 			rb_str_buf_cat2(dispString, sep);
 	}
-	
 	shState->eThread().showMessageBox(RSTRING_PTR(dispString));
 }
 
@@ -228,57 +217,11 @@ static VALUE mkxpPuts(int argc, VALUE *argv, VALUE self){
 	return Qnil;
 }
 
-static VALUE mkxpRawKeyStates(VALUE self){
-	VALUE str = rb_str_new(0, sizeof(EventThread::keyStates));
-	SDL_memcpy(RSTRING_PTR(str), EventThread::keyStates, sizeof(EventThread::keyStates));
-	return str;
-}
-
-static VALUE mkxpMouseInWindow(VALUE self){
-	return rb_bool_new(EventThread::mouseState.inWindow);
-}
-
-static VALUE rgssMainCb(VALUE block){
-	rb_funcall2(block, rb_intern("call"), 0, 0);
-	return Qnil;
-}
-
-static VALUE rgssMainRescue(VALUE arg, VALUE exc){
-	VALUE *excRet = (VALUE*) arg;
-	*excRet = exc;
-	return Qnil;
-}
-
 static void processReset(){
 	shState->graphics().reset();
 	shState->audio().reset();
 	shState->rtData().rqReset.clear();
 	shState->graphics().repaintWait(shState->rtData().rqResetFinish, false);
-}
-
-static VALUE rgssMainCb_wrapper(VALUE data){ return rgssMainCb(data); }
-static VALUE rgssMainRescue_wrapper(VALUE data, VALUE ex){ return rgssMainRescue(data, ex); }
-static VALUE mriRgssMain(VALUE self){
-	while (true){
-		VALUE exc = Qnil;
-		rb_rescue2(rgssMainCb_wrapper, rb_block_proc(), rgssMainRescue_wrapper, (VALUE)&exc, rb_eException, (VALUE)0);
-		if (NIL_P(exc))
-			break;
-
-		if (rb_obj_class(exc) == getRbData()->exc[Reset]){
-			processReset();
-		}else{
-			rb_exc_raise(exc);
-		}
-	}
-
-	return Qnil;
-}
-
-static VALUE mriRgssStop(VALUE self){
-	while (true)
-		shState->graphics().update();
-	return Qnil;
 }
 
 static VALUE _kernelCaller(VALUE self){
@@ -360,7 +303,6 @@ static void runRMXPScripts(BacktraceData &btData){
 		return;
 	}
 
-	rb_gv_set("$RGSS_SCRIPTS", scriptArray);
 	long scriptCount = RARRAY_LEN(scriptArray);
 	std::string decodeBuffer;
 	decodeBuffer.resize(0x1000);

@@ -7,5 +7,6 @@ set(ARCH_RELEASE
 	-mno-shstk
 	-fcf-protection=none
 	-mno-record-return
-	-mno-retpoline)
+	-mno-retpoline
+	-mno-ibt)
 set(ARCH_DEBUG "")

@@ -510,11 +510,15 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 		PHYSFS_enumerate(dir, openReadEnumCB, &data);
 	}
 
-	if (data.physfsError)
+	if (data.physfsError){
+		Debug() << data.physfsError;
 		throw Exception(Exception::PHYSFSError, "PhysFS: %s", data.physfsError);
+	}
 
-	if (data.matchCount == 0)
+	if (data.matchCount == 0){
+		Debug() << "AAAA";
 		throw Exception(Exception::NoFileError, "%s", filename);
+	}
 }
 
 void FileSystem::openReadRaw(SDL_IOStream* &stream, const char *filename){
