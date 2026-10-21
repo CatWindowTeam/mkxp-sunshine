@@ -40,33 +40,23 @@
 #include "sunshine.h"
 #include "config.h"
 
-#ifndef _MSC_VER
-	#include <unistd.h>
-#endif
-
 SharedState *SharedState::instance = 0;
 
 struct SharedStatePrivate{
 	void *bindingData;
 	SDL_Window *sdlWindow;
 	Scene *screen;
-
 	RubyDispatcher rubyDispatcher;
 	MainDispatcher mainDispatcher;
-
 	FileSystem fileSystem;
-
 	EventThread &eThread;
 	RGSSThreadData &rtData;
 
 	std::unique_ptr<IRender> render;
-
 	TexPool texPool;
-
 	Graphics graphics;
 	Input input;
 	Audio audio;
-
 	Oneshot oneshot;
 	Sunshine sunshine;
 	#ifdef STEAM
@@ -75,15 +65,11 @@ struct SharedStatePrivate{
 
 	SharedFontState fontState;
 	Font *defaultFont;
-
 	TexHandle globalTex;
 	int globalTexW, globalTexH;
 	bool globalTexDirty;
-
 	RenderTarget gpTexFBO;
-
 	RenderTarget atlasTex;
-
 	Quad gpQuad;
 
 	unsigned int stampCounter;
@@ -130,7 +116,6 @@ void SharedState::initInstance(RGSSThreadData *threadData){
 	/* Font depends on SharedState existing */
 	SharedState::instance = 0;
 	Font *defaultFont = 0;
-
 	try{
 		SharedState::instance = new SharedState(threadData);
 		Font::initDefaults(instance->p->fontState);
@@ -148,7 +133,6 @@ void SharedState::initInstance(RGSSThreadData *threadData){
 
 void SharedState::finiInstance(){
 	delete SharedState::instance->p->defaultFont;
-
 	delete SharedState::instance;
 }
 
@@ -157,8 +141,7 @@ void SharedState::setScreen(Scene &screen){
 }
 
 #define GSATT(type, lower) \
-	type SharedState :: lower() const \
-	{ \
+	type SharedState::lower() const{ \
 		return p->lower; \
 	}
 
@@ -216,7 +199,6 @@ void SharedState::ensureTexSize(int minW, int minH, Vec2i &currentSizeOut){
 
 RenderTarget &SharedState::gpTexFBO(int minW, int minH){
 	bool needResize = false;
-
 	if (minW > p->gpTexFBO.width){
 		p->gpTexFBO.width = findNextPow2(minW);
 		needResize = true;
@@ -236,7 +218,6 @@ RenderTarget &SharedState::gpTexFBO(int minW, int minH){
 
 void SharedState::requestAtlasTex(int w, int h, RenderTarget &out){
 	RenderTarget tex;
-
 	if (w == p->atlasTex.width && h == p->atlasTex.height){
 		tex = p->atlasTex;
 		p->atlasTex = RenderTarget();
@@ -253,7 +234,6 @@ void SharedState::releaseAtlasTex(RenderTarget &tex){
 		return;
 
 	p->render->destroyRenderTarget(p->atlasTex);
-
 	p->atlasTex = tex;
 }
 

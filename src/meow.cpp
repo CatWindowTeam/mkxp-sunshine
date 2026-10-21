@@ -19,7 +19,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <cstdlib>
 #include <iostream>
 
 #ifdef mkxp_android

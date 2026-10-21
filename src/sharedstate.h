@@ -24,7 +24,6 @@
 #include "signals/signal.h"
 #include "signals/rubydispatcher.h"
 #include "signals/maindispatcher.h"
-
 #define shState SharedState::instance
 
 struct SharedStatePrivate;
@@ -98,7 +97,6 @@ struct SharedState{
 	void ensureTexSize(int minW, int minH, Vec2i &currentSizeOut);
 
 	RenderTarget &gpTexFBO(int minW, int minH);
-
 	Quad &gpQuad() const;
 
 	/* Basically just a simple "TexPool"

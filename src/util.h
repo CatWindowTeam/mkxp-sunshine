@@ -78,7 +78,6 @@ inline bool readFile(const char *path, std::string &out){
 	out.resize(back+size);
 	size_t read = fread(&out[back], 1, size, f);
 	fclose(f);
-
 	if (read != (size_t) size)
 		out.resize(back+read);
 

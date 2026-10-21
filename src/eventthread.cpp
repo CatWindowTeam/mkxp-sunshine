@@ -37,7 +37,6 @@
 #include "oneshot.h"
 #include "meow.h"
 #include "config.h"
-#include <cstdio>
 #include <map>
 #include <iostream>
 #include "binding.h"

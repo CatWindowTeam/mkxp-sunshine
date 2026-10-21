@@ -1,4 +1,4 @@
-set(ARCH_COMMON -march=generic32 -mtune=generic -m32)
+set(ARCH_COMMON "")
 set(ARCH_RELEASE
 	-mnoreturn-no-callee-saved-registers
 	-mindirect-branch=keep

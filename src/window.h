@@ -22,12 +22,10 @@
 #pragma once
 #include "viewport.h"
 #include "disposable.h"
-
 #include "util.h"
 
 class Bitmap;
 struct Rect;
-
 struct WindowPrivate;
 
 class Window : public ViewportElement, public Disposable{
@@ -54,7 +52,6 @@ public:
 	DECL_ATTR( ContentsOpacity, int     )
 
 	void initDynAttribs();
-
 private:
 	WindowPrivate *p;
 
@@ -62,9 +59,7 @@ private:
 	void onGeometryChange(const Scene::Geometry &);
 	void setOrder(int value);
 	void setVisible(bool value);
-
 	void onViewportChange();
-
 	void releaseResources();
 	const char *klassName() const { return "window"; }
 

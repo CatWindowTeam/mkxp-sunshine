@@ -26,7 +26,6 @@
 #include "quad.h"
 #include "graphics.h"
 #include "signals/signal.h"
-
 #include <SDL3/SDL_rect.h>
 
 struct ViewportPrivate{
@@ -87,7 +86,6 @@ struct ViewportPrivate{
 	bool needsEffectRender(bool flashing){
 		bool rectEffective = !rect->isEmpty();
 		bool colorToneEffective = color->hasEffect() || tone->hasEffect() || flashing;
-
 		return (rectEffective && colorToneEffective && isOnScreen);
 	}
 };

@@ -22,7 +22,7 @@ check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error LANGUAGES CXX)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/source.cmake)
 # add_executable
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_exec.cmake)
-# platform specific tweaks
+# platform specific deps and tweaks
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/platform.cmake)
 # tweak compiler and linker for optimization
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/compiler_tweaks.cmake)

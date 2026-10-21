@@ -20,18 +20,15 @@
 */
 
 #include "window.h"
-
 #include "viewport.h"
 #include "sharedstate.h"
 #include "bitmap.h"
 #include "etc.h"
 #include "etc-internal.h"
 #include "tilequad.h"
-
 #include "quad.h"
 #include "quadarray.h"
 #include "texpool.h"
-
 #include "signals/signal.h"
 
 template<typename T>
@@ -112,11 +109,8 @@ static elementsN(pauseAniAlpha);
  * bigger arrays */
 struct QuadChunk {
 	Vertex *vert;
-	int count; /* In quads */
-
-	QuadChunk()
-	    : vert(0), count(0)
-	{}
+	int count; // In quads
+	QuadChunk() : vert(0), count(0) {}
 
 	void setAlpha(float value){
 		for (int i = 0; i < count*4; ++i)
@@ -178,20 +172,16 @@ struct WindowPrivate {
 	bool baseVertDirty;
 	bool opacityDirty;
 	bool baseTexDirty;
-
 	ColorQuadArray baseQuadArray;
 
 	/* Used when opacity < 255 */
 	RenderTarget baseTex;
 	bool useBaseTex;
-
 	QuadChunk backgroundVert;
-
 	Quad baseTexQuad;
 
 	struct WindowControls : public ViewportElement{
 		WindowPrivate *p;
-
 		WindowControls(WindowPrivate *p, Viewport *viewport = 0) : ViewportElement(viewport), p(p) {
 			setOrder(2);
 		}
@@ -372,7 +362,6 @@ struct WindowPrivate {
 
 		shState->texPool().release(baseTex);
 		baseTex = shState->texPool().request(newW, newH);
-
 		baseTexDirty = true;
 	}
 
@@ -651,13 +640,11 @@ void Window::setWindowskin(Bitmap *value){
 
 void Window::setContents(Bitmap *value){
 	guardDisposed();
-
 	if (p->contents == value)
 		return;
 
 	p->contents = value;
 	p->controlsVertDirty = true;
-
 	if (nullOrDisposed(value))
 		return;
 
@@ -667,7 +654,6 @@ void Window::setContents(Bitmap *value){
 
 void Window::setStretch(bool value){
 	guardDisposed();
-
 	if (value == p->bgStretch)
 		return;
 
@@ -677,7 +663,6 @@ void Window::setStretch(bool value){
 
 void Window::setActive(bool value){
 	guardDisposed();
-
 	if (p->active == value)
 		return;
 
@@ -687,7 +672,6 @@ void Window::setActive(bool value){
 
 void Window::setPause(bool value){
 	guardDisposed();
-
 	if (p->pause == value)
 		return;
 
@@ -699,7 +683,6 @@ void Window::setPause(bool value){
 
 void Window::setWidth(int value){
 	guardDisposed();
-
 	if (p->size.x == value)
 		return;
 
@@ -709,7 +692,6 @@ void Window::setWidth(int value){
 
 void Window::setHeight(int value){
 	guardDisposed();
-
 	if (p->size.y == value)
 		return;
 
@@ -719,7 +701,6 @@ void Window::setHeight(int value){
 
 void Window::setOX(int value){
 	guardDisposed();
-
 	if (p->contentsOffset.x == value)
 		return;
 
@@ -729,7 +710,6 @@ void Window::setOX(int value){
 
 void Window::setOY(int value){
 	guardDisposed();
-
 	if (p->contentsOffset.y == value)
 		return;
 
@@ -739,7 +719,6 @@ void Window::setOY(int value){
 
 void Window::setOpacity(int value){
 	guardDisposed();
-
 	if (p->opacity == value)
 		return;
 
@@ -749,7 +728,6 @@ void Window::setOpacity(int value){
 
 void Window::setBackOpacity(int value){
 	guardDisposed();
-
 	if (p->backOpacity == value)
 		return;
 
@@ -759,7 +737,6 @@ void Window::setBackOpacity(int value){
 
 void Window::setContentsOpacity(int value){
 	guardDisposed();
-
 	if (p->contentsOpacity == value)
 		return;
 

@@ -1,7 +1,6 @@
 #ifdef STEAM
 #include "steam.h"
 #include "debugwriter.h"
-
 #include <map>
 #include <SDL3/SDL.h>
 #include "steamshim/steamshim_child.h"
@@ -67,7 +66,6 @@ static std::string steamToIsoLang(const char *steamLang){
 /* SteamPrivate */
 struct SteamPrivate{
 	std::map<std::string, bool> achievements;
-
 	std::string userName;
 	std::string lang;
 
@@ -123,10 +121,7 @@ struct SteamPrivate{
 };
 
 /* Steam */
-Steam::Steam()
-    : p(new SteamPrivate())
-{}
-
+Steam::Steam() : p(new SteamPrivate()) {}
 Steam::~Steam(){
 	delete p;
 }
@@ -151,3 +146,4 @@ bool Steam::isUnlocked(const char *name){
 	return p->isAchievementSet(name);
 }
 #endif
+
