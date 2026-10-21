@@ -44,7 +44,8 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 			-mno-speculative-load-hardening
 			-fzero-call-used-regs=skip
                 	-fzero-init-padding-bits=standard
-			-fno-threadsafe-statics)
+			-fno-threadsafe-statics
+			-mno-lvi-hardening)
 		target_compile_options(${APP_TARGET} PRIVATE ${OPTIONS_RELEASE_UNSAFE})
 	endif()
 endif()
