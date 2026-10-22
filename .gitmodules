@@ -6,13 +6,13 @@
 	url = https://github.com/CLIUtils/CLI11.git
 [submodule "external/SDL"]
 	path = external/SDL
-	url = https://github.com/libsdl-org/SDL.git
+	url = https://github.com/libsdl-org/SDL
 [submodule "external/SDL_image"]
 	path = external/SDL_image
-	url = https://github.com/libsdl-org/SDL_image.git
+	url = https://github.com/libsdl-org/SDL_image
 [submodule "external/SDL_net"]
 	path = external/SDL_net
-	url = https://github.com/libsdl-org/SDL_net.git
+	url = https://github.com/libsdl-org/SDL_net
 [submodule "external/SDL_ttf"]
 	path = external/SDL_ttf
 	url = https://github.com/libsdl-org/SDL_ttf.git
