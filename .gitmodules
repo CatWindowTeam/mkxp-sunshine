@@ -15,7 +15,7 @@
 	url = https://github.com/libsdl-org/SDL_net
 [submodule "external/SDL_ttf"]
 	path = external/SDL_ttf
-	url = https://github.com/libsdl-org/SDL_ttf.git
+	url = https://github.com/libsdl-org/SDL_ttf
 [submodule "external/ZLIB"]
 	path = external/ZLIB
 	url = https://github.com/madler/zlib

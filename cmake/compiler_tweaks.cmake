@@ -11,12 +11,13 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 		-fno-ident
 		-ffunction-sections
 		-fdata-sections
-		-fomit-frame-pointer
 		-fno-rtti
 		-ffp-contract=fast
 		-fno-unwind-tables
 		-fno-asynchronous-unwind-tables
-		-fdelete-dead-exceptions)
+		-fdelete-dead-exceptions
+		-fwhole-program-vtables
+		-fvirtual-function-elimination)
 
 	check_linker_option(OPTIONS_LINKER_RELEASE
 		-Wl,-O3
@@ -28,7 +29,8 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 		-Wl,--build-id=none
 		-Wl,--as-needed
 		-Wl,--no-insert-timestamp
-		-Wl,--no-whole-archive)
+		-Wl,--no-whole-archive
+		-Wl,-z,start-stop-gc)
 
 	if(UNSAFE_OPTIMIZATIONS)
 		check_option(OPTIONS_RELEASE_UNSAFE

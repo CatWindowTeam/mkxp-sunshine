@@ -11,7 +11,9 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 		-fno-unwind-tables
 		-fno-asynchronous-unwind-tables
 		-fdelete-dead-exceptions
-		-flto)
+		-flto=full
+		-fwhole-program-vtables
+		-fvirtual-function-elimination)
 
 	if(UNSAFE_OPTIMIZATIONS)
 		check_option(OPTIONS_RELEASE_UNSAFE
