@@ -19,7 +19,6 @@ inline std::vector<std::string> modloader_logs = {};
 inline int loglevel = 3;
 
 inline bool show_crash_screen = false;
-inline bool is_privacy_crashdump_enabled = false;
 inline char crash_message[1024] = "";
 void crash(Exception::Type t, const char *fmt, ...);
 void ErrorMsg(const char *fmt, ...);

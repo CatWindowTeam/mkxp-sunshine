@@ -1,5 +1,5 @@
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/check.cmake)
-include(cmake/arch_compiler_tweaks.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/arch_compiler_tweaks.cmake)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	check_option(OPTIONS_DEBUG
@@ -13,10 +13,11 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 		-fdata-sections
 		-fomit-frame-pointer
 		-fno-rtti
-		-ffp-contract=fast)
-	check_option(OPTIONS_RELEASE_WINDOWS_INCOMPATIBLE
+		-ffp-contract=fast
 		-fno-unwind-tables
-		-fno-asynchronous-unwind-tables)
+		-fno-asynchronous-unwind-tables
+		-fdelete-dead-exceptions)
+
 	check_linker_option(OPTIONS_LINKER_RELEASE
 		-Wl,-O3
 		-Wl,--gc-sections
@@ -25,25 +26,27 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 		-Wl,--strip-all
 		-Wl,--relax
 		-Wl,--build-id=none
-		-Wl,--as-needed)
+		-Wl,--as-needed
+		-Wl,--no-insert-timestamp
+		-Wl,--no-whole-archive)
 
 	if(UNSAFE_OPTIMIZATIONS)
 		check_option(OPTIONS_RELEASE_UNSAFE
 			-fstrub=disable
-                	-fno-stack-clash-protection
-                	-fno-stack-protector
-                	-fvtable-verify=none
-                	-fno-enforce-eh-specs
-                	-fno-harden-compares
-                	-fno-harden-conditional-branches
-                	-fno-harden-control-flow-redundancy
-                	-fno-hardcfr-check-exceptions
-                	-fno-hardcfr-check-returning-calls
-                	-fhardcfr-check-noreturn-calls=never
-                	-fno-stack-check
+            -fno-stack-clash-protection
+            -fno-stack-protector
+            -fvtable-verify=none
+            -fno-enforce-eh-specs
+            -fno-harden-compares
+            -fno-harden-conditional-branches
+            -fno-harden-control-flow-redundancy
+            -fno-hardcfr-check-exceptions
+            -fno-hardcfr-check-returning-calls
+            -fhardcfr-check-noreturn-calls=never
+			-fno-stack-check
 			-mno-speculative-load-hardening
 			-fzero-call-used-regs=skip
-                	-fzero-init-padding-bits=standard
+			-fzero-init-padding-bits=standard
 			-fno-threadsafe-statics
 			-mno-lvi-hardening)
 		target_compile_options(${APP_TARGET} PRIVATE ${OPTIONS_RELEASE_UNSAFE})
@@ -58,7 +61,3 @@ target_compile_options(${APP_TARGET} PRIVATE
     "$<$<CONFIG:Release>:${OPTIONS_RELEASE}>"
     "$<$<CONFIG:Release>:${ARCH_RELEASE_OPTIONS}>"
 )
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	target_compile_options(${APP_TARGET} PRIVATE "$<$<CONFIG:Release>:${OPTIONS_RELEASE_WINDOWS_INCOMPATIBLE}>")
-endif()
-

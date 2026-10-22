@@ -854,10 +854,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 	float txtAlpha = fontColor.norm.w;
 
 	SDL_Surface *txtSurf;
-	if (conf.solidFonts)
-		txtSurf = TTF_RenderText_Solid(font, str, SDL_strlen(str), c);
-	else
-		txtSurf = TTF_RenderText_Blended(font, str, SDL_strlen(str), c);
+	txtSurf = TTF_RenderText_Blended(font, str, SDL_strlen(str), c);
 
 	p->ensureFormat(txtSurf, SDL_PIXELFORMAT_ABGR8888);
 
@@ -873,10 +870,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 		SDL_Surface *outline;
 		/* set the next font render to render the outline */
 		TTF_SetFontOutline(font, OUTLINE_SIZE);
-		if (conf.solidFonts)
-			outline = TTF_RenderText_Solid(font, str, SDL_strlen(str), co);
-		else
-			outline = TTF_RenderText_Blended(font, str, SDL_strlen(str), co);
+		outline = TTF_RenderText_Blended(font, str, SDL_strlen(str), co);
 
 		p->ensureFormat(outline, SDL_PIXELFORMAT_ABGR8888);
 		SDL_Rect outRect = {OUTLINE_SIZE, OUTLINE_SIZE, txtSurf->w, txtSurf->h};

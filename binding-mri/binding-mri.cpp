@@ -109,7 +109,6 @@ void steamBindingInit();
 void shaderBindingInit();
 void keybindingsBindingInit();
 void lightmapBindingInit();
-void ProfilerInit();
 void PhysFS_binding_init();
 void LoggerInit();
 
@@ -157,7 +156,6 @@ static void mriBindingInit(){
 	ModLoaderBindingInit();
 	keybindingsBindingInit();
 	lightmapBindingInit();
-	ProfilerInit();
 	PhysFS_binding_init();
 	LoggerInit();
 	rb_define_module_function(rb_mKernel, "print", RUBY_METHOD_FUNC(mriPrint), -1);
@@ -437,15 +435,6 @@ static void mriBindingExecute(){
 	ruby_init_loadpath();
 	ruby_options(4, ruby_argv);
 	rb_enc_set_default_external(rb_enc_from_encoding(rb_utf8_encoding()));
-	if (!conf.rubyLoadpaths.empty()){
-		/* Setup custom load paths */
-		VALUE lpaths = rb_gv_get("$:");
-		for (size_t i = 0; i < conf.rubyLoadpaths.size(); ++i){
-			std::string &path = conf.rubyLoadpaths[i];
-			VALUE pathv = rb_str_new(path.c_str(), path.size());
-			rb_ary_push(lpaths, pathv);
-		}
-	}
 	RbData *rbData = new RbData();
 	shState->setBindingData(rbData);
 	BacktraceData btData;

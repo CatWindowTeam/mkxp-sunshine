@@ -77,25 +77,6 @@ module Settings
         $game_switches[253] = value != 0
       end
 
-      WALLPAPER_MODES = ["normal", "fallback", "disbled"]
-      def wallpaper_mode(value)
-        Sunshine.wallpaper_mode = WALLPAPER_MODES[value]
-      end
-
-      # -------------------------------------------- Advanced --------------------------------------------
-      def crashlog_privacy(value)
-        Sunshine.crash_privacy = value
-      end
-      
-      # --------------------------------------------- Debug ----------------------------------------------
-      def shutdown_dbus_on_quit(value)
-        Sunshine.set_sdl_hint("SDL_HINT_SHUTDOWN_DBUS_ON_QUIT", value ? "1" : "0")
-      end
-
-      def profiler(value)
-        Profiler.set(value)
-      end
-
 	  def log_level(value)
 		Logger.log_level=value
 	  end

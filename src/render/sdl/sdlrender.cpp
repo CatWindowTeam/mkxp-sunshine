@@ -31,9 +31,6 @@ SDLRender::SDLRender(const Config &conf, SDL_Renderer *renderer)
 	if (maxTexSize <= 0 || SDL_strcmp(SDL_GetRendererName(renderer), "software") == 0)
 		maxTexSize = std::max(maxTexSize, 16384);
 
-	if (conf.maxTextureSize > 0)
-		maxTexSize = conf.maxTextureSize;
-
 	const char *rendererName = SDL_GetRendererName(renderer);
 	apiNameStr = rendererName ? rendererName : "unknown";
 
@@ -688,11 +685,7 @@ public:
 	SDLRenderContext(SDL_Window *window){
 		SDL_PropertiesID props = SDL_CreateProperties();
 		SDL_SetPointerProperty(props, SDL_PROP_RENDERER_CREATE_WINDOW_POINTER, window);
-
-		if (!conf.sdlRenderDriver.empty())
-			SDL_SetStringProperty(props, SDL_PROP_RENDERER_CREATE_NAME_STRING, conf.sdlRenderDriver.c_str());
-
-		SDL_SetNumberProperty(props, SDL_PROP_RENDERER_CREATE_PRESENT_VSYNC_NUMBER, (conf.syncToRefreshrate && conf.fixedFramerate == 0) ? 1 : 0);
+		SDL_SetNumberProperty(props, SDL_PROP_RENDERER_CREATE_PRESENT_VSYNC_NUMBER, conf.syncToRefreshrate ? 1 : 0);
 
 		renderer = SDL_CreateRendererWithProperties(props);
 		SDL_DestroyProperties(props);
@@ -729,8 +722,8 @@ IRender *createSDLRender(const Config &conf){
 }
 
 bool sdlProbe(SDL_Window *window){
-	SDL_Renderer *probe = SDL_CreateRenderer(window, conf.sdlRenderDriver.empty() ? 0 : conf.sdlRenderDriver.c_str());
-	if (!probe)
+	SDL_Renderer *probe = SDL_CreateRenderer(window, 0);
+	if(!probe)
 		return false;
 
 	SDL_DestroyRenderer(probe);
