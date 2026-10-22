@@ -1,9 +1,6 @@
 [submodule "external/robin-map"]
 	path = external/robin-map
 	url = https://github.com/Tessil/robin-map
-[submodule "CLI11"]
-	path = CLI11
-	url = https://github.com/CLIUtils/CLI11.git
 [submodule "external/CLI11"]
 	path = external/CLI11
 	url = https://github.com/CLIUtils/CLI11.git
