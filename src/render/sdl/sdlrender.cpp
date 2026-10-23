@@ -674,11 +674,8 @@ void SDLRender::swapWindow(SDL_Window *){
 	renderStatsEndSwap();
 }
 
-void SDLRender::suspendContext(SDL_Window *){
-}
-
-void SDLRender::resumeContext(SDL_Window *){
-}
+void SDLRender::suspendContext(SDL_Window *){}
+void SDLRender::resumeContext(SDL_Window *){}
 
 class SDLRenderContext : public IRenderContext{
 public:
@@ -690,7 +687,7 @@ public:
 		renderer = SDL_CreateRendererWithProperties(props);
 		SDL_DestroyProperties(props);
 
-		if (!renderer)
+		if(!renderer)
 			throw Exception(Exception::MKXPError, "Failed to create SDL renderer: %s", SDL_GetError());
 
 		Debug() << "[SDLRender] driver:" << SDL_GetRendererName(renderer);
