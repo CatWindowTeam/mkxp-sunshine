@@ -34,8 +34,9 @@ module Settings
         :language               => 0,
         :fasttravel_ui          => 0,
         :icons_style            => false,
-        :static_title            => false,
+        :static_title           => false,
         :start_animation        => true,
+        :title_particles        => true,
 
         # ---------- Gameplay -----------
         :movement               => 0,
@@ -432,12 +433,21 @@ class Window_Settings
       {
         :type => :bool,
         :name => "Static Title",
-        :parameter => :static_title
+        :parameter => :static_title,
+        :icons => [[6, 1]],
+        :additional_icons => [[3, 0]]
       },
       {
         :type => :bool,
         :name => "Start Title Animation",
-        :parameter => :start_animation
+        :parameter => :start_animation,
+        :icons => [[6, 1]],
+      },
+      {
+        :type => :bool,
+        :name => "Title Background Particles",
+        :parameter => :title_particles,
+        :icons => [[6, 1]],
       },
     ],
     "Gameplay" => [

@@ -210,7 +210,7 @@ class Scene_Title
           update_cursor = true
         end
       elsif Input.trigger?(Input::DOWN)
-        if @cursor_pos < $game_switches[160] && $game_switches[152] ? 3 : 2
+        if @cursor_pos < (($game_switches[160] && $game_switches[152]) ? 3 : 2)
           @cursor_pos += 1
           update_cursor = true
         end

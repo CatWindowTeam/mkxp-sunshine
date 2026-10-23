@@ -33,8 +33,10 @@ begin
   save unless $game_switches[99] || ($game_system.map_interpreter.running? || !$scene.is_a?(Scene_Map))
 rescue Errno::ENOENT => e
   Sunshine.SetCrashScreenData "#{e.message}"
+  puts "#{e.message}"
 rescue StandardError => e
   Sunshine.SetCrashScreenData "#{e.class}: #{e.message}"
+  puts "#{e.class}: #{e.message}"
   e.backtrace.each do |line|
     puts line
   end

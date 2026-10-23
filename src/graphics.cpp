@@ -558,9 +558,9 @@ struct GraphicsPrivate{
 
 Graphics::Graphics(RGSSThreadData *data, IRender &render){
 	p = new GraphicsPrivate(data, render);
-	p->fpsLimiter.disabled = true;
 	if (conf.syncToRefreshrate){
 		p->frameRate = data->refreshRate;
+		p->fpsLimiter.disabled = true;
 	}
 }
 

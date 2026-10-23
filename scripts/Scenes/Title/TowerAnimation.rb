@@ -2,9 +2,10 @@
 
 class Scene_Title
   class TowerAnimation
-    MAX_POS = 2005.6109999999946
+    MAX_POS = 1552.9040000000055
     TOWER_POS = -MAX_POS - 160
     TOWER_Z_OFFSET = -220
+    PARTICLES_COUNT = 2000
 
     class BG_Particle < Sprite
       DISTANCE = 600.0
@@ -15,7 +16,7 @@ class Scene_Title
         Math.sqrt(x*x + y*y)
       end
 
-      def initialize(viewport, bitmap)
+      def initialize(viewport, bitmap, timer)
         super(viewport)
         @viewport = viewport
         self.bitmap = bitmap
@@ -24,41 +25,37 @@ class Scene_Title
         self.origin_y = 1
         self.scale_x = 32
         self.scale_y = 32
-        init
+        init(timer)
       end
 
       def update
         return if disposed?
+        if !Settings[:title_particles]
+          self.opacity = 0
+          return
+        end
 
         @pos_x += @speed_x
         @pos_y += @speed_y
         self.x = @pos_x
         self.y = @pos_y
         self.rot_z += @rot_speed
-
-        dist = dist(@pos_x, @pos_y, -Graphics.width/6, 0)
         #173,37,74
         #34,5,41
-        if dist < DISTANCE
-          self.color.set(lerp(173, 34, dist / DISTANCE), lerp(37, 5, dist / DISTANCE), lerp(74, 41, dist / DISTANCE))
-        else
-          dist -= DISTANCE
-          self.color.set(lerp(34, 0, dist / DISTANCE), lerp(5, 0, dist / DISTANCE), lerp(41, 0, dist / DISTANCE))
-        end
-
+        update_color
+        
         @timer += 1
 
+        init(0) if self.opacity <= 0
         self.opacity += @timer > 512 ? -2 : 2
-        init if self.opacity <= 0
       end
 
-      def init
+      def init(timer)
         self.x = -Graphics.width/2 + rand(0..Graphics.width)
         self.y = -Graphics.height/2 + rand(0..Graphics.height)
-        self.z = @viewport.origin_z
-        self.perspective = true
+        #self.z = @viewport.origin_z
+        #self.perspective = true
         self.rot_z = rand(-180..180)
-        self.opacity = 0
         self.order = -1
 
         @rot_speed = rand(-20..20) / 80.0
@@ -67,7 +64,19 @@ class Scene_Title
         @pos_x = self.x
         @pos_y = self.y
 
-        @timer = 0
+        update_color
+
+        @timer = -timer
+      end
+
+      def update_color
+        dist = dist(@pos_x, @pos_y, -Graphics.width/6, 0)
+        if dist < DISTANCE
+          self.color.set(lerp(173, 34, dist / DISTANCE), lerp(37, 5, dist / DISTANCE), lerp(74, 41, dist / DISTANCE))
+        else
+          dist -= DISTANCE
+          self.color.set(lerp(34, 0, dist / DISTANCE), lerp(5, 0, dist / DISTANCE), lerp(41, 0, dist / DISTANCE))
+        end
       end
     end
 
@@ -146,7 +155,7 @@ class Scene_Title
       @particle_bitmap.fill_rect(0, 1, 2, 1, Color.new(255, 255, 255, 0))
 
       (0...2000).each do |i|
-        @particles << BG_Particle.new(@viewport, @particle_bitmap)
+        @particles << BG_Particle.new(@viewport, @particle_bitmap, i)
       end
 
       # tower
@@ -306,8 +315,7 @@ class Scene_Title
       @viewport.rect.height = Graphics.height
       
       @viewport.origin_x = -Graphics.width / 2
-      @viewport.origin_y = -Graphics.height / 2
-      @viewport.origin_z = 200
+      @viewport.origin_y = -Graphics.height / 2 - MAX_POS + @distance
 
       px = (Graphics.width / 1920.0)
       py = (Graphics.height / 1080.0)
@@ -331,11 +339,11 @@ class Scene_Title
     end
 
     def update
-      @background_sprite_water_back.rot_y += 0.04
+      @background_sprite_water_back.rot_y -= 0.04
       @particles.each { |particle| particle.update }
 
       return if tower_disposed?
-      if Input.pressed_key != nil || !Settings[:start_animation]
+      if (!@speed_down && Input.pressed_key != nil) || !Settings[:start_animation]
         if @timer < 16
           @loaded_sound.play
         end
@@ -358,26 +366,25 @@ class Scene_Title
         @loaded_sound.play
       end
 
-      if @timer < 32
+      if @timer < 48
         @timer += 1
         return
       end
 
-      @viewport.origin_y += @speed * 0.1
-      @overlay_viewport.origin_y += @speed * 0.1
-
       if @speed > 0
-        @speed += @speed_down ? -2.5 : 1.67
+        @speed += @speed_down ? -5.0 : 7.0
       elsif !@animation_ended
         @speed = 0
         @animation_ended = true
         dispose_tower
       end
 
+      @viewport.origin_y += @speed * 0.1
+      @overlay_viewport.origin_y += @speed * 0.1
       @distance += @speed * 0.1
-      #puts @distance
+      puts @distance
 
-      if @speed > 200
+      if @speed > 300
         @speed_down = true
         $game_system.bgm_play($data_system.title_bgm)
       end

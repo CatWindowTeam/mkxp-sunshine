@@ -9,7 +9,7 @@ class Scene_Title
       self.bitmap = RPG::Cache.title("badend")
       self.order = -2
       self.scale_x = self.scale_y = 2.0
-      $game_system.bgm_play($data_system.title_bgm)
+      Audio.bgm_play("Audio/BGM/MyBurdenIsDead")
     end
 
     def redraw_bgs
