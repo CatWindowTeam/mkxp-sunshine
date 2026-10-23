@@ -13,7 +13,9 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 		-fdelete-dead-exceptions
 		-flto=full
 		-fwhole-program-vtables
-		-fvirtual-function-elimination)
+		-fvirtual-function-elimination
+		-ffast-math
+		-ffp-contract=fast)
 
 	if(UNSAFE_OPTIMIZATIONS)
 		check_option(OPTIONS_RELEASE_UNSAFE

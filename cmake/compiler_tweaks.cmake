@@ -30,7 +30,8 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 		-Wl,--as-needed
 		-Wl,--no-insert-timestamp
 		-Wl,--no-whole-archive
-		-Wl,-z,start-stop-gc)
+		-Wl,-z,start-stop-gc
+		-Wl,--no-eh-frame-hdr)
 
 	if(UNSAFE_OPTIMIZATIONS)
 		check_option(OPTIONS_RELEASE_UNSAFE
