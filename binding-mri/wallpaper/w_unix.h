@@ -70,6 +70,7 @@
 	}
 
 	static void execCommand(const std::string& c){
+		Debug() << c;
 		int status = std::system(c.c_str());
 		if(status != 0) {
 			Debug() << "Failed to exec " << c;

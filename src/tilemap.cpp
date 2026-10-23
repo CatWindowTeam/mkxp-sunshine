@@ -799,8 +799,8 @@ struct TilemapPrivate {
 	}
 
 	void prepare(){
-		if (!verifyResources()){
-			if (tilemapReady)
+		if(!verifyResources()){
+			if(tilemapReady)
 				hideElements();
 			tilemapReady = false;
 			return;
@@ -839,11 +839,7 @@ struct TilemapPrivate {
 	}
 };
 
-GroundLayer::GroundLayer(TilemapPrivate *p, Viewport *viewport)
-    : ViewportElement(viewport, 0),
-      quadCount(0),
-      p(p)
-{
+GroundLayer::GroundLayer(TilemapPrivate *p, Viewport *viewport) : ViewportElement(viewport, 0), quadCount(0), p(p){
 	onGeometryChange(scene->getGeometry());
 }
 
@@ -923,13 +919,11 @@ void ZLayer::finiUpdateZ(ZLayer *prev){
 }
 
 void Tilemap::Autotiles::set(int i, Bitmap *bitmap){
-	if (!p)
+	if(!p)
 		return;
-
-	if (i < 0 || i > autotileCount-1)
+	if(i < 0 || i > autotileCount-1)
 		return;
-
-	if (p->autotiles[i] == bitmap)
+	if(p->autotiles[i] == bitmap)
 		return;
 
 	p->autotiles[i] = bitmap;
@@ -942,10 +936,9 @@ void Tilemap::Autotiles::set(int i, Bitmap *bitmap){
 }
 
 Bitmap *Tilemap::Autotiles::get(int i) const{
-	if (!p)
+	if(!p)
 		return 0;
-
-	if (i < 0 || i > autotileCount-1)
+	if(i < 0 || i > autotileCount-1)
 		return 0;
 
 	return p->autotiles[i];

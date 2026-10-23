@@ -1,7 +1,6 @@
 #include <ruby.h>
 #include <ruby/util.h>
-#include <SDL3/SDL_version.h>
-#include <SDL3/SDL_hints.h>
+#include <SDL3/SDL_revision.h>
 #include "config.h"
 #include "sunshine.h"
 #include "sharedstate.h"
@@ -62,9 +61,7 @@ static VALUE int_times(VALUE self) {
 void SunshineBindingInit(){
     VALUE module = rb_define_module("Sunshine");
 	//SDL versions, for debug info in main menu and other shi idkkkkkkkk
-    rb_const_set(module, rb_intern("SDLVersion_major"), INT2NUM(SDL_MAJOR_VERSION));
-    rb_const_set(module, rb_intern("SDLVersion_minor"), INT2NUM(SDL_MINOR_VERSION));
-    rb_const_set(module, rb_intern("SDLVersion_micro"), INT2NUM(SDL_MICRO_VERSION));
+    rb_const_set(module, rb_intern("SDL"), rb_str_new_cstr(SDL_REVISION));
 	rb_const_set(module, rb_intern("VERSION"), rb_str_new_cstr(VERSION_STRING));
 	rb_const_set(module, rb_intern("RENDERER"), rb_str_new_cstr(conf.renderer.c_str()));
 	rb_const_set(module, rb_intern("RENDER_API"), rb_str_new_cstr(shState->render().apiName()));

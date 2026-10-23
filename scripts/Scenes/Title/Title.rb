@@ -1,18 +1,8 @@
-#==============================================================================
-# ** Scene_Title
-#------------------------------------------------------------------------------
-#  This class performs title screen processing.
-#==============================================================================
-
 class Scene_Title
   MENU_X = 150
   MENU_Y = 100
   ENTRY_HEIGHT = 25
-  SDLVer = "Unknown"
-  
-  #--------------------------------------------------------------------------
-  # * Main Processing
-  #--------------------------------------------------------------------------
+
   def main
     # Load database
     $data_actors        = load_data("Data/Actors.rxdata")
@@ -72,14 +62,6 @@ class Scene_Title
     @cursor.z += 2
     @cursor.x = Graphics.width - MENU_X - 12
     @cursor.y = Graphics.height - MENU_Y + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2 - 3
-	
-    # chinese has its own special title screen so check for it
-    #translation_name = "#{$persistent.langcode}/#{$data_system.title_name}"
-    #if File.exist?("Graphics/Titles/#{translation_name}.png")
-    #  @background_sprite.bitmap = RPG::Cache.title(translation_name)
-    #else
-    #  @background_sprite.bitmap = RPG::Cache.title($data_system.title_name)
-    #end
 
     # check for debug file to add debug items
     if Settings[:debug]
@@ -167,14 +149,10 @@ class Scene_Title
     end
 
     @debug.bitmap.clear
-    @debug.bitmap.draw_text(0, 0, 400, ENTRY_HEIGHT, "Ruby #{RUBY_VERSION}")
-    @debug.bitmap.draw_text(0, ENTRY_HEIGHT, 400, ENTRY_HEIGHT, "SDL #{Sunshine::SDLVersion_major}.#{Sunshine::SDLVersion_minor}.#{Sunshine::SDLVersion_micro}")
-    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 2, 400, ENTRY_HEIGHT, "Sunshine #{Sunshine::VERSION}")
-    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 3, 400, ENTRY_HEIGHT, "Render backend: #{Sunshine::RENDERER}")
-    @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 4, 400, ENTRY_HEIGHT, "Render API: #{Sunshine::RENDER_API}")
+    @debug.bitmap.draw_text(0, ENTRY_HEIGHT, 400, ENTRY_HEIGHT, "SunshineEngine v#{Sunshine::VERSION}")
     if ModLoader::IS_ENABLED
-      @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 5, 400, ENTRY_HEIGHT, tr("Mods loaded: ") + ModLoader::COUNT.to_s)
-      @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 6, 400, ENTRY_HEIGHT, tr("PreloadScripts loaded: ") + ModLoader::PRELOAD_SCRIPTS_COUNT.to_s)
+      @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 2, 400, ENTRY_HEIGHT, tr("Mods loaded: ") + ModLoader::COUNT.to_s)
+      @debug.bitmap.draw_text(0, ENTRY_HEIGHT * 3, 400, ENTRY_HEIGHT, tr("PreloadScripts loaded: ") + ModLoader::PRELOAD_SCRIPTS_COUNT.to_s)
     end
   end
 
@@ -184,9 +162,8 @@ class Scene_Title
     @viewport.rect.width = Graphics.width
     @viewport.rect.height = Graphics.height
   end
-  #--------------------------------------------------------------------------
-  # * Frame Update
-  #--------------------------------------------------------------------------
+
+  # Frame Update
   def update
     @debug.visible = Settings[:debug_text_scene_title] || false # if undefined don't render
 
@@ -239,9 +216,8 @@ class Scene_Title
       end
     end
   end
-  #--------------------------------------------------------------------------
+
   # * initialize a new game
-  #--------------------------------------------------------------------------
   def new_game
     # Reset frame count for measuring play time
     Graphics.frame_count = 0
@@ -270,9 +246,7 @@ class Scene_Title
     # Refresh player
     $game_player.refresh
   end
-  #--------------------------------------------------------------------------
-  # * Command: Continue
-  #--------------------------------------------------------------------------
+
   def command_continue
     # Reset frame count for measuring play time
     Graphics.frame_count = 0
@@ -284,9 +258,7 @@ class Scene_Title
     # Switch to map screen
     $scene = Scene_Map.new
   end
-  #--------------------------------------------------------------------------
-  # * Command: Shutdown
-  #--------------------------------------------------------------------------
+
   def command_shutdown
     # Play decision SE
     Audio.se_play('Audio/SE/title_decision')

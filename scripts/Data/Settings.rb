@@ -225,7 +225,7 @@ class Window_Settings
         :type => :enum,
         :name => "Scaling mode",
         :parameter => :scaling_mode,
-        :values => ["Nearest Neighbor", "Smooth(old)"],
+        :values => ["Nearest Neighbor", "Smooth"],
         :icons => [[2, 2]],
       },
       {
@@ -761,12 +761,6 @@ class Window_Settings
       },
       {
         :type => :bool,
-        :name => "Draw debug text in main menu",
-        :parameter => :debug_text_scene_title,
-        :icons => [[1, 0]],
-      },
-      {
-        :type => :bool,
         :name => "Show debug text",
         :parameter => :debug_text,
         :icons => [[1, 0]],
@@ -810,6 +804,14 @@ class Window_Settings
         :action => Proc.new { raise "Test" },
         :icons => [[1, 0]],
       },
+	  { :type => :sep, :name => "Info"},
+	  { :type => :base, :name => "Ruby #{RUBY_VERSION}" },
+	  { :type => :base, :name => "#{Sunshine::SDL}" },
+	  { :type => :base, :name => "SunshineEngine v#{Sunshine::VERSION}" },
+	  { :type => :base, :name => "Render backend: #{Sunshine::RENDERER}" },
+	  { :type => :base, :name => "Render API: #{Sunshine::RENDER_API}" },
+	  { :type => :base, :name => "Mods loaded: #{ModLoader::COUNT}" },
+	  { :type => :base, :name => "PreloadScripts loaded: #{ModLoader::PRELOAD_SCRIPTS_COUNT}" },
     ],
     "Mods" => [
       {
