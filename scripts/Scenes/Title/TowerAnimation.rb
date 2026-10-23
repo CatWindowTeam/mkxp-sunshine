@@ -382,7 +382,7 @@ class Scene_Title
       @viewport.origin_y += @speed * 0.1
       @overlay_viewport.origin_y += @speed * 0.1
       @distance += @speed * 0.1
-      puts @distance
+      #puts @distance
 
       if @speed > 300
         @speed_down = true
