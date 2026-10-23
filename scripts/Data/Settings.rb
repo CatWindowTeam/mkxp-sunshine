@@ -33,8 +33,9 @@ module Settings
         :in_game_timer          => false,
         :language               => 0,
         :fasttravel_ui          => 0,
-        :start_animation        => true,
         :icons_style            => false,
+        :static_title            => false,
+        :start_animation        => true,
 
         # ---------- Gameplay -----------
         :movement               => 0,
@@ -397,11 +398,6 @@ class Window_Settings
         :values => ["Original", "WME (WIP)"]
       },
       {
-        :type => :bool,
-        :name => "Start menu animation",
-        :parameter => :start_animation
-      },
-      {
         :type => :custom,
         :name => "Icons Style",
         :parameter => :icons_style,
@@ -435,7 +431,18 @@ class Window_Settings
             @settings_content.redraw_all
           }
         }
-      }
+      },
+      { :type => :sep, :name => "Title" },
+      {
+        :type => :bool,
+        :name => "Static Title",
+        :parameter => :static_title
+      },
+      {
+        :type => :bool,
+        :name => "Start Title Animation",
+        :parameter => :start_animation
+      },
     ],
     "Gameplay" => [
       { :type => :sep, :name => "Vanilla" },

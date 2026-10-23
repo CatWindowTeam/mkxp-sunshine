@@ -26,4 +26,5 @@ Remorked light system
 Added Render backends: gl-mkxp, simple, GPU
 Improved VAO support in gl-mkxp
 Rewrited cmake configuration
-sway support added
+Sway support added
+Added title screen animation
