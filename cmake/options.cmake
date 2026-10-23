@@ -16,7 +16,7 @@ option(ROBIN_MAP_VENDORED "Use robin-map from git submodule" OFF)
 set(SUNSHINE_ASSETS_PATH "SunshineAssets" CACHE STRING "Path to SunshineAssets")
 option(API_ONESHOT_EXTENSIONS "Enable API extensions specific to Oneshot mods" ON)
 option(API_ONESHOT_EXTENSIONS_XFCE "Support for wallpaper setter for xfce4, libxfconf required " ON)
-set(CPU_OPT_PROFILE "none" CACHE STRING "CPU Optimization profile")
+option(CPU_OPT_PROFILE "none" CACHE STRING "CPU Optimization profile")
 option(RENDER_SIMPLE "Build with simple render backend" ON)
 option(RENDER_GPU "Build with GPU render backend" ON)
 option(RENDER_GL_MKXP "Build with gl-mkxp render backend" ON)
@@ -31,15 +31,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(CODE_ANAL)
 	#tools
 	set(CMAKE_CXX_CLANG_TIDY clang-tidy)
-	set(CMAKE_CXX_CPPCHECK
-	    cppcheck;
-	    --enable=warning,performance,portability;
-	    --std=c++20;
-	    --inline-suppr;
-	    --suppress=missingIncludeSystem;
-	    -q
-	)
-	set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE include-what-you-use)
 	check_option(WARNS -Wdouble-promotion
 			-Wduplicate-decl-specifier
 			-Wformat=2

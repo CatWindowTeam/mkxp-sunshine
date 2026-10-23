@@ -516,8 +516,8 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 	}
 
 	if (data.matchCount == 0){
-		Debug() << "AAAA";
-		throw Exception(Exception::NoFileError, "%s", filename);
+		Debug() << filename;
+		throw Exception(Exception::NoFileError, filename);
 	}
 }
 
