@@ -2,7 +2,6 @@
 	#define CLI11_DISABLE_EXTRA_VALIDATORS 1
 #endif
 #include <SDL3/SDL_filesystem.h>
-#include <SDL3/SDL_messagebox.h>
 #include <SDL3/SDL_system.h>
 #include <SDL3/SDL_stdinc.h>
 #include "config.h"
@@ -29,33 +28,22 @@ void Config::read(int argc, char* argv[]) {
 		commonDataPath = prefPath("CatWindowTeam", "Sunshine");
 	#endif
 
-
 	CLI::App a{"Engine of Sunshine"};
 	argv = a.ensure_utf8(argv);
 	a.add_option("-d,--debug", debugMode, "Debug mode");
-	a.add_option("-f,--fullscreen", fullscreen, "Start game in fullscreen mode but Game Scripts"
-												"can just enforce window mode so this exists only for debuging");
 	a.add_option("--renderer", renderer, "Rendering backend: auto, gpu, gl-mkxp or simple. auto tries gpu, then gl-mkxp, then simple");
-    a.add_option("--sdlRenderDriver", sdlRenderDriver, "SDL render driver name for the sdl backend, empty for automatic choice");
 	a.add_option("--fixedAspectRatio", fixedAspectRatio, "Preserve game screen aspect ratio, as opposed to stretch-to-fill");
-    a.add_option("--Windows.Alloc_console", Windows_AllocConsole, "Create new console window with debug output, windows only");
 	a.add_option("--width", defScreenW, "Window width");
 	a.add_option("--height", defScreenH, "Window height");
-	a.add_option("--fixedFramerate", fixedFramerate, "Enforce a static frame rate");
-	a.add_option("--frameSkip", frameSkip, "Don't draw frames when behind. Can be overriden by game scripts");
 	a.add_option("--syncToRefreshrate", syncToRefreshrate, "Use a fixed framerate that is approx. equal to the "
 															"native screen refresh rate. This is different from "
 															"'fixedFramerate' because the actual frame rate is "
 															"reported back to the game, ensuring correct timers."
 															"If the screen refresh rate cannot be determined, this option is force-disabled");
-	a.add_option("--solidFonts", solidFonts, "Don't use alpha blending when rendering text");
 	a.add_option("--subImageFix", subImageFix, "Work around buggy graphics drivers which don't properly synchronize texture access, " 
 												  "most apparent when text doesn't show up or the map tileset doesn't render at all");
 	a.add_option("--enableBlitting", enableBlitting, "framebuffer blitting if the driver is capable of it. Some drivers carry buggy"
 													   "implementations of this functionality, so disabling it can be used as a workaround");
-	a.add_option("--maxTextureSize", maxTextureSize, "Limit the maximum size (width, height) of most textures mkxp will create"
-														"(exceptions are rendering backbuffers and similar). If set to 0, the hardware maximum is used."
-														"This is useful for recording traces that can be played back on machines with lower specs.");
 	a.add_option("--gameFolder", gameFolder, "Game Folder path");
 	a.add_option("--renderStats", renderStats, "Print render statistics once per second");
 	a.add_option("--allowSymlinks", allowSymlinks, "Allow symlinks for game assets to be followed");
@@ -78,7 +66,6 @@ void Config::read(int argc, char* argv[]) {
        	a.parse(argc, argv);
     }catch (const CLI::ParseError &e) {
     	if(e.get_exit_code() == 0){
-    		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Help", a.help().c_str(), NULL);
     		Debug() << a.help();
     	}else{
     		WarnMsg("Failed to parse config or command line arguments! Error: %s", e.what());

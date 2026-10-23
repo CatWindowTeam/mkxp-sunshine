@@ -179,7 +179,7 @@ GPURender::GPURender(const Config &conf, SDL_GPUDevice *device, SDL_Window *wind
       dummy(0),
       target(0),
       targetId(0),
-      maxTexSize(conf.maxTextureSize > 0 ? conf.maxTextureSize : 16384),
+      maxTexSize(16384),
       vertexBuffer(0),
       vertexCapacity(0),
       indexBuffer(0),
@@ -1315,7 +1315,7 @@ public:
 		}
 
 		SDL_GPUPresentMode mode = SDL_GPU_PRESENTMODE_VSYNC;
-		if (!(conf.syncToRefreshrate && conf.fixedFramerate == 0) && SDL_WindowSupportsGPUPresentMode(device, window, SDL_GPU_PRESENTMODE_IMMEDIATE))
+		if(!conf.syncToRefreshrate && SDL_WindowSupportsGPUPresentMode(device, window, SDL_GPU_PRESENTMODE_IMMEDIATE))
 			mode = SDL_GPU_PRESENTMODE_IMMEDIATE;
 
 		SDL_SetGPUSwapchainParameters(device, window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR, mode);

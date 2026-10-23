@@ -142,7 +142,7 @@ int main(int argc, char *argv[]){
 	#endif
 
 	#if windows
-		if(conf.Windows_AllocConsole == true){
+		if(conf.debugMode == true){
     			AllocConsole();
     			freopen("CONOUT$", "w", stdout);
     			freopen("CONOUT$", "w", stderr);

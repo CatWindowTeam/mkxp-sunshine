@@ -52,4 +52,3 @@ build/
 .rubocop_todo.yml
 test.py
 sunshine.zip
-external/*

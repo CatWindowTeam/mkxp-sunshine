@@ -47,7 +47,6 @@ module Settings
         :twm_shader_footprint   => true,
         :disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already => false,
         # qmq ^
-        :wallpaper_mode         => 0,
 
         # ---------- Advanced -----------
         :crashlog_privacy       => false,
@@ -68,9 +67,6 @@ module Settings
         :debug_text             => false,
         :debug_picture_names    => false,
         :debug_lightmap         => false,
-        :shutdown_dbus_on_quit  => false,
-        :profiler               => false,
-      # :test_preset            => 1,
       }
       reset_controls!
     end
@@ -486,13 +482,6 @@ class Window_Settings
         :parameter => :true_memory_mode
       },
       {
-        :type => :enum,
-        :name => "Wallpaper Mode",
-        :icons => [[7, 2]],
-        :parameter => :wallpaper_mode,
-        :values => ["Normal", "Fallback", "Disabled"]
-      },
-      {
         :type => :bool,
         :name => "Freeware Mode",
         :icons => [[3, 4]],
@@ -782,18 +771,6 @@ class Window_Settings
         :type => :bool,
         :name => "Debug lightmap",
         :parameter => :debug_lightmap,
-        :icons => [[1, 0]],
-      },
-      {
-        :type => :bool,
-        :name => "SDL_HINT_SHUTDOWN_DBUS_ON_QUIT",
-        :parameter => :shutdown_dbus_on_quit,
-        :icons => [[1, 0]],
-      },
-      {
-        :type => :bool,
-        :name => "Profiler",
-        :parameter => :profiler,
         :icons => [[1, 0]],
       },
       :sep,

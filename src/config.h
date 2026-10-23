@@ -7,7 +7,6 @@ struct Config {
     bool debugMode = false;
     bool fullscreen = false;
     bool fixedAspectRatio = true;
-    bool Windows_AllocConsole = false;
     bool smoothScaling = false;
 
     #ifdef vita
@@ -21,21 +20,14 @@ struct Config {
     #endif
     const char* windowTitle = "Oneshot: Sunshine";
 
-    int fixedFramerate = 0;
     bool frameSkip = true;
     bool syncToRefreshrate = false;
     std::string renderer = "auto";
     bool renderStats = false;
-    std::string sdlRenderDriver;
-
-    bool solidFonts = false;
     bool subImageFix = false;
     bool enableBlitting = true;
-    int maxTextureSize = 0;
     bool allowSymlinks = false;
     bool pathCache = true;
-
-    std::string wallpaperMode = "normal";
     std::string journal_address = "127.0.0.1";
     int journal_port = 23821;
 
@@ -47,7 +39,6 @@ struct Config {
     bool useScriptNames = false;
 
     std::vector<std::string> fontSubs;
-    std::vector<std::string> rubyLoadpaths;
 
     struct {
         std::string scripts = "Data/xScripts.rxdata";

@@ -110,8 +110,5 @@
 		scissorTest.init(false);
 		scissorBox.init(IntRect(0, 0, conf.defScreenW, conf.defScreenH));
 		program.init(0);
-		if(conf.maxTextureSize > 0){
-			caps.maxTexSize = conf.maxTextureSize;
-		}
 	}
 #endif

@@ -558,13 +558,9 @@ struct GraphicsPrivate{
 
 Graphics::Graphics(RGSSThreadData *data, IRender &render){
 	p = new GraphicsPrivate(data, render);
+	p->fpsLimiter.disabled = true;
 	if (conf.syncToRefreshrate){
 		p->frameRate = data->refreshRate;
-		p->fpsLimiter.disabled = true;
-	}else if (conf.fixedFramerate > 0){
-		p->fpsLimiter.setDesiredFPS(conf.fixedFramerate);
-	}else if (conf.fixedFramerate < 0){
-		p->fpsLimiter.disabled = true;
 	}
 }
 
@@ -716,9 +712,6 @@ DEF_ATTR_SIMPLE(Graphics, FrameCount, int, p->frameCount)
 void Graphics::setFrameRate(int value){
 	p->frameRate = clamp(value, 10, 120);
 	if (conf.syncToRefreshrate)
-		return;
-
-	if (conf.fixedFramerate > 0)
 		return;
 
 	p->fpsLimiter.setDesiredFPS(p->frameRate);
