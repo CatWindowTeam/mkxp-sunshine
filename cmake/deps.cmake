@@ -19,6 +19,7 @@ target_compile_definitions(${APP_TARGET}
 target_include_directories(${APP_TARGET} 
 							PRIVATE
 							src
+							external/robin-map/include
 							${SIGC2_INCLUDE_DIRS}
 							${PIXMAN_INCLUDE_DIR}
 							${BINDING_INCLUDE})

@@ -1,6 +1,16 @@
+
 if(BINDING STREQUAL "mruby")
-    set(BINDING_LIBRARY external/mruby/build/lib_only/lib/libmruby.a)
-    set(BINDING_INCLUDE external/mruby/include)
+	if(MRUBY_AUTOBUILD)
+		execute_process(COMMAND "${CMAKE_SOURCE_DIR}/cmake/mruby.sh" "${CMAKE_SOURCE_DIR}")
+	endif()
+    file(GLOB_RECURSE BINDING_LIBRARY LIST_DIRECTORIES FALSE "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby/build/*/lib/libmruby.a")
+
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby/include")
+    	set(BINDING_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby/include")
+    else()
+    	message(FATAL_ERROR "Failed to find MRuby includes")
+    endif()
+
     file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/binding-${BINDING}/*.h*")
     file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/binding-${BINDING}/*.c*")
 elseif(BINDING STREQUAL "cruby")

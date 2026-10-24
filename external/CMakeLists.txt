@@ -11,7 +11,7 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 		-fno-unwind-tables
 		-fno-asynchronous-unwind-tables
 		-fdelete-dead-exceptions
-		-flto=full
+		-flto
 		-fwhole-program-vtables
 		-fvirtual-function-elimination
 		-ffast-math
