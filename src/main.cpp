@@ -28,6 +28,8 @@
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_video.h>
 #include <physfs.h>
+#include <unistd.h>
+#include "SDL3/SDL_events.h"
 #include "define.h"
 #ifdef windows
 	#include <windows.h>
@@ -218,6 +220,7 @@ int main(int argc, char *argv[]){
 			windowError = SDL_GetError();
 			Debug() << "Render backend unavailable:" << backends[i] << windowError;
 			SDL_DestroyWindow(candidate);
+			SDL_FlushEvents(SDL_EventType::SDL_EVENT_FIRST, SDL_EventType::SDL_EVENT_LAST);
 		}
 	}
 
