@@ -351,13 +351,14 @@ class Scene_Title
         @speed = 0
         @animation_ended = true
         @timer = 32
+        @distance = MAX_POS
         $game_system.bgm_play($data_system.title_bgm)
 
         @viewport.origin_y = -Graphics.height / 2
         @viewport.rot_x = 0
         @overlay_viewport.origin_y = 0
         dispose_tower
-        return
+        return true
       end
       
       if @timer == 16

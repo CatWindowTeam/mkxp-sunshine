@@ -167,7 +167,7 @@ class Scene_Title
   def update
     @debug.visible = Settings[:debug_text_scene_title] || false # if undefined don't render
 
-    @background.update
+    return if @background.update
     
     if Input.trigger?(Input::F8)
       Graphics.fullscreen = $console =
