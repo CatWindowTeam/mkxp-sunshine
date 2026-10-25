@@ -265,7 +265,7 @@ class Game_Character
       return 0
     end
     # Get screen coordinates from real coordinates and map display position
-    z = (@real_y - $game_map.display_y + 3) / 4 + 32 + @z
+    z = (@real_y - $game_map.display_y - 3).ceil / 4 + 32 + @z
     # If tile
     if @tile_id > 0
       # Add tile priority * 32

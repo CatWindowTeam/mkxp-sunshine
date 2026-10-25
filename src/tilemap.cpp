@@ -242,7 +242,7 @@ struct TilemapPrivate {
 		bool animated;
 		/* Animation state */
 		uint8_t frameIdx;
-		uint8_t aniIdx;
+		float aniIdx;
 	} tiles;
 
 	FlashMap flashMap;
@@ -966,9 +966,10 @@ void Tilemap::update(){
 	if (!p->tiles.animated)
 		return;
 
-	p->tiles.frameIdx = atAnimation[p->tiles.aniIdx];
-	if (++p->tiles.aniIdx >= atAnimationN)
-		p->tiles.aniIdx = 0;
+	p->tiles.frameIdx = atAnimation[static_cast<u_int8_t>(p->tiles.aniIdx)];
+	p->tiles.aniIdx += shState->graphics().deltaTime() * 60.0f;
+	if (p->tiles.aniIdx >= atAnimationN)
+		p->tiles.aniIdx = 0.0;
 }
 
 Tilemap::Autotiles &Tilemap::getAutotiles(){

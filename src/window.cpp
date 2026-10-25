@@ -434,7 +434,7 @@ struct WindowPrivate {
 		/* Pause animation */
 		if (pause){
 			pauseAniVert.vert = &vert[i*4];
-			i += Quad::setTexPosRect(&vert[i*4], pauseAniSrc[pauseAniQuad[static_cast<int>(pauseAniQuadIdx)]],
+			i += Quad::setTexPosRect(&vert[i*4], pauseAniSrc[pauseAniQuad[static_cast<uint8_t>(pauseAniQuadIdx)]],
 			                         FloatRect((size.x - 16) / 2, size.y - 16, 16, 16));
 		}
 
@@ -563,7 +563,7 @@ struct WindowPrivate {
 
 		if (pause && pauseAniVert.vert){
 			float alpha = pauseAniAlpha[pauseAniAlphaIdx] / 255.0f;
-			FloatRect frameRect = pauseAniSrc[pauseAniQuad[static_cast<int>(pauseAniQuadIdx)]];
+			FloatRect frameRect = pauseAniSrc[pauseAniQuad[static_cast<uint8_t>(pauseAniQuadIdx)]];
 			pauseAniVert.setAlpha(alpha/* * opacity.norm*/);
 			Quad::setTexRect(pauseAniVert.vert, frameRect);
 			updateArray = true; 
