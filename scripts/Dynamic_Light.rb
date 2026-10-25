@@ -57,10 +57,10 @@ class DynamicLight
     @light_sprite.scale = 2 ** Settings[:light_scale]
     @light_sprite.smooth = Settings[:light_smooth]
     @light_sprite.snap_to_map = Settings[:light_snap]
-    @light_sprite.camera_x = $game_map.display_x / 4
-    @light_sprite.camera_y = $game_map.display_y / 4
-    @light_sprite.tilemap_offset_x = ($game_map.display_x / 128) * 32 - $game_map.display_x / 4
-    @light_sprite.tilemap_offset_y = ($game_map.display_y / 128) * 32 - $game_map.display_y / 4
+    @light_sprite.camera_x = $game_map.display_x.to_i / 4
+    @light_sprite.camera_y = $game_map.display_y.to_i / 4
+    @light_sprite.tilemap_offset_x = ($game_map.display_x.to_i / 128) * 32 - $game_map.display_x.to_i / 4
+    @light_sprite.tilemap_offset_y = ($game_map.display_y.to_i / 128) * 32 - $game_map.display_y.to_i / 4
 
     if $light.update_clear_lights
       @light_sprite.clear_static_sources()
