@@ -41,13 +41,6 @@ public:
 		return *this;
 	}
 
-	template<typename T>
-	Debug &operator<<(const std::vector<T> &v){
-		for (size_t i = 0; i < v.size(); ++i)
-			buf << v[i] << " ";
-		return *this;
-	}
-
 	~Debug() {
 		#ifdef mkxp_android
 			#ifdef TERMUX

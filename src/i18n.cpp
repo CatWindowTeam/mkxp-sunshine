@@ -135,14 +135,13 @@ void loadLanguageMetadata() {
 }
 
 int getFontSize() {
-	for (int i = 0; i < MAX_LANGUAGES; i++) {
+	for(int i = 0; i < MAX_LANGUAGES; i++) {
 		LanguageFontAndSize* metadata = languageMetadata[i];
-		if (metadata && SDL_strcmp(currentLocale, metadata->lang_code) == 0) {
+		if(metadata && SDL_strcmp(currentLocale, metadata->lang_code) == 0) {
 			return metadata->size;
 		}
 	}
 
-	// default to 12?
 	return 12;
 }
 
@@ -153,8 +152,7 @@ char* getFontName() {
 			return metadata->font_name;
 		}
 	}
-
-	// default to terminus?
+	
 	return "Terminus (TTF)";
 }
 

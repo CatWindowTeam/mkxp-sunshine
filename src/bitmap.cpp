@@ -889,11 +889,9 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 	default:
 	case Left :
 		break;
-
 	case Center :
 		alignX += (rect.w - txtSurf->w) / 2;
 		break;
-
 	case Right :
 		alignX += rect.w - txtSurf->w;
 		break;
