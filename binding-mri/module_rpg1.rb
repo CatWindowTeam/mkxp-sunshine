@@ -14,6 +14,10 @@ def lerp(a, b, t)
   a + (b - a) * t
 end
 
+def delta_lerp(a, b, t)
+  lerp(a, b, 1.0 - ((1.0 - t) ** Graphics.scaled_delta))
+end
+
 module Graphics
 # 0 - 3:2      - 720x480
 # 1 - 4:3      - 640x480 (default)
@@ -58,6 +62,10 @@ module Graphics
         return path
       end
     end
+  end
+
+  def self.scaled_delta
+    self.delta_time * 60.0
   end
 end
 

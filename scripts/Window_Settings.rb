@@ -23,6 +23,7 @@ class Window_Settings
     @title.opacity = 0
     Language.register_text_sprite(self.class.name + "_title", @title)
 
+
     @resized = false
 
     @update_connection = Graphics.viewport_resized do |w, h|
@@ -43,11 +44,13 @@ class Window_Settings
 
     init_content
 
-	  @left_hold_timer = 0
-	  @right_hold_timer = 0
+    self.opacity = 0.0
 
-	  @up_hold_timer = 0
-	  @down_hold_timer = 0
+	  @left_hold_timer = 0.0
+	  @right_hold_timer = 0.0
+
+	  @up_hold_timer = 0.0
+	  @down_hold_timer = 0.0
 
     @visible = self.visible = false
   end
@@ -145,18 +148,16 @@ class Window_Settings
     end
 
     if @fade_in
-      self.opacity += 20
-      @title.opacity += 20
-      if self.opacity == 255
+      self.opacity += 20 * Graphics.scaled_delta
+      if self.opacity >= 255
         @fade_in = false
       end
       return
     end
 
     if @fade_out
-      self.opacity -= 20
-      @title.opacity -= 20
-      if self.opacity == 0
+      self.opacity -= 20 * Graphics.scaled_delta
+      if self.opacity <= 0
         @fade_out = false
         self.visible = false
       end
@@ -189,27 +190,27 @@ class Window_Settings
 
     # hold timers
   	if Input.press?(Input::LEFT)
-  	  @left_hold_timer += 1
+  	  @left_hold_timer += Graphics.scaled_delta
   	else
-  	  @left_hold_timer = 0
+  	  @left_hold_timer = 0.0
   	end
 
   	if Input.press?(Input::RIGHT)
-  	  @right_hold_timer += 1
+  	  @right_hold_timer += Graphics.scaled_delta
   	else
-  	  @right_hold_timer = 0
+  	  @right_hold_timer = 0.0
   	end
 
   	if Input.press?(Input::UP)
-  	  @up_hold_timer += 1
+  	  @up_hold_timer += Graphics.scaled_delta
   	else
-  	  @up_hold_timer = 0
+  	  @up_hold_timer = 0.0
   	end
 
   	if Input.press?(Input::DOWN)
-  	  @down_hold_timer += 1
+  	  @down_hold_timer += Graphics.scaled_delta
   	else
-  	  @down_hold_timer = 0
+  	  @down_hold_timer = 0.0
   	end
 
     #parameters navigation
@@ -254,10 +255,12 @@ class Window_Settings
     @visible = val
   end
   def opacity=(val)
-    @bg.opacity = val
-    @content.opacity = val
+    @opacity = val.clamp(0.0, 255.0)
+    @bg.opacity = @opacity
+    @content.opacity = @opacity
+    @title.opacity = @opacity
   end
   def opacity
-    @bg.opacity
+    @opacity
   end
 end

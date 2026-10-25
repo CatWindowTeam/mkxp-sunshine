@@ -37,7 +37,7 @@ class Game_Picture
     @zoom_y = 100.0
     @opacity = 255.0
     @blend_type = 1
-    @duration = 0
+    @duration = 0.0
     @target_x = @x
     @target_y = @y
     @target_zoom_x = @zoom_x
@@ -104,7 +104,7 @@ class Game_Picture
   #     blend_type : blend method
   #--------------------------------------------------------------------------
   def move(duration, origin, x, y, zoom_x, zoom_y, opacity, blend_type)
-    @duration = duration
+    @duration = duration.to_f
     @origin = origin
     @target_x = x.to_f
     @target_y = y.to_f
@@ -127,7 +127,7 @@ class Game_Picture
   #--------------------------------------------------------------------------
   def start_tone_change(tone, duration)
     @tone_target = tone.clone
-    @tone_duration = duration
+    @tone_duration = duration.to_f
     if @tone_duration == 0
       @tone = @tone_target.clone
     end
@@ -142,29 +142,33 @@ class Game_Picture
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
-    if @duration >= 1
+    if @duration > 0
       d = @duration
-      @x = (@x * (d - 1) + @target_x) / d
-      @y = (@y * (d - 1) + @target_y) / d
-      @zoom_x = (@zoom_x * (d - 1) + @target_zoom_x) / d
-      @zoom_y = (@zoom_y * (d - 1) + @target_zoom_y) / d
-      @opacity = (@opacity * (d - 1) + @target_opacity) / d
-      @duration -= 1
+      @duration -= Graphics.scaled_delta
+      scale = (1.0 - @duration / d)
+      @x += (@target_x - @x) * scale
+      @y += (@target_y - @y) * scale
+      @zoom_x += (@target_zoom_x - @zoom_x) * scale
+      @zoom_y += (@target_zoom_y - @zoom_y) * scale
+      @opacity += (@target_opacity - @opacity) * scale
     end
-    if @tone_duration >= 1
+    if @tone_duration > 0
       d = @tone_duration
-      @tone.red = (@tone.red * (d - 1) + @tone_target.red) / d
-      @tone.green = (@tone.green * (d - 1) + @tone_target.green) / d
-      @tone.blue = (@tone.blue * (d - 1) + @tone_target.blue) / d
-      @tone.gray = (@tone.gray * (d - 1) + @tone_target.gray) / d
-      @tone_duration -= 1
+      @tone_duration -= Graphics.scaled_delta
+      scale = (1.0 - @tone_duration / d)
+      @tone.red += (@tone_target.red - @tone.red) * scale
+      @tone.green += (@tone_target.greem - @tone.green) * scale
+      @tone.blue += (@tone_target.blue - @tone.nlue) * scale
+      @tone.gray += (@tone_target.gray - @tone.gray) * scale
     end
     if @rotate_speed != 0
-      @angle += @rotate_speed / 2.0
+      @angle += @rotate_speed / 2.0 * Graphics.scaled_delta
       while @angle < 0
         @angle += 360
       end
-      @angle %= 360
+      while @angle > 360
+        @angle -= 360
+      end
     end
   end
 end

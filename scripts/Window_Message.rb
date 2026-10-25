@@ -34,6 +34,8 @@ class Window_Message < Window_Selectable
     @fade_in = false
     @fade_out = false
     @opaque = true # set to false if we're not rendering the window bg
+    @opacity = 0.0
+    @contents_opacity = 0.0
 
     @text_pause = 0
     @blip = 0
@@ -222,9 +224,27 @@ class Window_Message < Window_Selectable
   # * Tick: render a new character to the message box
   #--------------------------------------------------------------------------
   def tick
+    @text_timer ||= 0.0
+    @text_timer += Graphics.scaled_delta
+    
+    return if @text_timer < 1
     return if @text_pause > 0
     # Don't do anything if we're done
     return if !@drawing_text
+    
+    @text_timer -= 1
+
+    if @blip >= BLIP_TIME
+      #april fools
+      if ($game_temp.message_face != nil && ((CTime.month == 4 && CTime.day == 1) or Settings[:enforce_april_fools]) && $game_temp.message_face.start_with?("niko"))
+        Audio.se_play("Audio/SE/cat_2", 50, rand(100..125)) unless @text.empty?
+      else
+        Audio.se_play("Audio/SE/#{@blipsound}", 50) unless @text.empty?
+      end
+      @blip = 0
+    else
+      @blip += 1
+    end
 	
     autoMash = (Input.press?(Input::R) && $game_switches[253]) || (Settings[:debug] && Input.press?(Input::DEBUGACTION))
 
@@ -256,7 +276,7 @@ class Window_Message < Window_Selectable
       # \|
       if c == "\002"
         # Pause
-        @text_pause = autoMash ? 0 : 10*4
+        @text_pause = autoMash ? 0 : 40
         return
       end
       if c == "\003"
@@ -348,9 +368,13 @@ class Window_Message < Window_Selectable
 
     # Handle fade-out effect
     if @fade_out
-      self.opacity -= 48
-      self.contents_opacity -= 48*2
+      @opacity -= 48 * Graphics.scaled_delta
+      @contents_opacity -= 96 * Graphics.scaled_delta
+      self.opacity = @opacity
+      self.contents_opacity = @contents_opacity
       if self.opacity == 0
+        @opacity = 0
+        @contents_opacity = 0
         @fade_out = false
         self.visible = false
         self.contents.clear
@@ -361,12 +385,16 @@ class Window_Message < Window_Selectable
 
     # Handle fade-in effect
     if @fade_in
-      self.opacity += 48 if @opaque
-      self.contents_opacity += 48
+      @opacity += 48 * Graphics.scaled_delta if @opaque
+      @contents_opacity += 48 * Graphics.scaled_delta
+      self.opacity = @opacity
+      self.contents_opacity = @contents_opacity
       if @input_number_window != nil
         @input_number_window.contents_opacity += 48
       end
       if self.contents_opacity == 255
+        @opacity = 255
+        @contents_opacity = 255
         @fade_in = false
         @drawing_text = true
         $game_temp.message_window_showing = true
@@ -403,21 +431,8 @@ class Window_Message < Window_Selectable
     # Update message text
     if @drawing_text
       if @text_pause > 0
-        @text_pause -= 1
+        @text_pause -= Graphics.scaled_delta
       else
-        if @blip >= BLIP_TIME
-        #april fools
-          if ($game_temp.message_face != nil && ((CTime.month == 4 && CTime.day == 1) or Settings[:enforce_april_fools]) && $game_temp.message_face.start_with?("niko"))
-            niko_sounds = ["cat_2"]
-            @blipsound = niko_sounds[rand(niko_sounds.length)]
-            Audio.se_play("Audio/SE/#{@blipsound}", 50, rand(100..125)) unless @text.empty?
-          else
-            Audio.se_play("Audio/SE/#{@blipsound}", 50) unless @text.empty?
-          end
-          @blip = 0
-        else
-          @blip += 1
-        end
         tick
       end
       if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL) || (Input.press?(Input::R) && $game_switches[253]) || Input.press?(Input::DEBUGACTION) && Settings[:debug]

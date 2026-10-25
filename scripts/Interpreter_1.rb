@@ -179,7 +179,7 @@ class Interpreter
       # If waiting
       if @wait_count > 0
         # Decrease wait count
-        @wait_count -= 1
+        @wait_count -= 1 * Graphics.scaled_delta
         return
       end
       # If a call flag is set for each type of screen

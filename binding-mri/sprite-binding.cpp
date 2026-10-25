@@ -48,12 +48,6 @@ DEF_PROP_OBJ_VAL(Sprite, Color,  Color,   "color")
 DEF_PROP_OBJ_VAL(Sprite, Tone,   Tone,    "tone")
 DEF_PROP_OBJ_VAL(Sprite, Color,  Modulate,"modulate")
 
-DEF_PROP_I(Sprite, X)
-DEF_PROP_I(Sprite, Y)
-DEF_PROP_I(Sprite, Z)
-DEF_PROP_I(Sprite, OriginX)
-DEF_PROP_I(Sprite, OriginY)
-DEF_PROP_I(Sprite, OriginZ)
 DEF_PROP_I(Sprite, BushDepth)
 DEF_PROP_I(Sprite, BushOpacity)
 DEF_PROP_I(Sprite, Opacity)
@@ -62,6 +56,12 @@ DEF_PROP_I(Sprite, WaveAmp)
 DEF_PROP_I(Sprite, WaveLength)
 DEF_PROP_I(Sprite, WaveSpeed)
 DEF_PROP_I(Sprite, Shader)
+DEF_PROP_F(Sprite, X)
+DEF_PROP_F(Sprite, Y)
+DEF_PROP_F(Sprite, Z)
+DEF_PROP_F(Sprite, OriginX)
+DEF_PROP_F(Sprite, OriginY)
+DEF_PROP_F(Sprite, OriginZ)
 DEF_PROP_F(Sprite, ScaleX)
 DEF_PROP_F(Sprite, ScaleY)
 DEF_PROP_F(Sprite, RotationX)
@@ -138,7 +138,7 @@ void spriteBindingInit(){
 	INIT_PROP_BIND( Sprite, RotationX,       "rot_x"     );
 	INIT_PROP_BIND( Sprite, RotationY,       "rot_y"     );
 	INIT_PROP_BIND( Sprite, RotationZ,       "rot_z"     );
-	// bush
+	// bush (bruh)
 	INIT_PROP_BIND( Sprite, BushOpacity, "bush_opacity" );
 	INIT_PROP_BIND( Sprite, WaveAmp,     "wave_amp"    );
 	INIT_PROP_BIND( Sprite, WaveLength,  "wave_length" );

@@ -2,13 +2,18 @@ class Window_Settings
   class SliderParameter < IntParameter
     TYPE = :slider
 
-    def initialize(settings_content, screen_id, position, name: "", additional_icons: [], icons: [], parameter: nil, init_value: 0, min: 0, max: 100)
+    def initialize(settings_content, screen_id, position, name: "", additional_icons: [], icons: [], parameter: nil, init_value: 0, min: 0, max: 100, use_percentages: true)
+      @use_percentages = use_percentages
       super(settings_content, screen_id, position, name: name, additional_icons: additional_icons, icons: icons, parameter: parameter, init_value: init_value, min: min, max: max)
     end
 
     def get_display_value()
-      percent = (self.value - @min_value) * 100 / @max_value
-      percent.to_s + "%" 
+      if @use_percentages
+        percent = (self.value - @min_value) * 100 / @max_value
+        return percent.to_s + "%"
+      else
+        self.value.to_s
+      end
     end
 
     def redraw()

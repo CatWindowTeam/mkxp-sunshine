@@ -112,7 +112,7 @@
 	}
 #endif
 
-static VALUE graphicsUpdate(VALUE self){
+static VALUE graphicsUpdate(VALUE){
 	shState->graphics().update();
 	#ifdef mkxp_android
 		androidSetTouchControlsVisible(androidShouldShowTouchControls());
@@ -121,7 +121,11 @@ static VALUE graphicsUpdate(VALUE self){
 	return Qnil;
 }
 
-static VALUE graphicsFreeze(VALUE self){
+static VALUE graphicsDeltaTime(VALUE){
+	return rb_float_new(shState->graphics().deltaTime());
+}
+
+static VALUE graphicsFreeze(VALUE){
 	shState->graphics().freeze();
 	return Qnil;
 }
@@ -243,7 +247,6 @@ DEF_GRA_PROP_I(Brightness)
 DEF_GRA_PROP_B(Fullscreen)
 DEF_GRA_PROP_B(ShowCursor)
 DEF_GRA_PROP_B(Smooth)
-DEF_GRA_PROP_B(Frameskip)
 
 #define INIT_GRA_PROP_BIND(PropName, prop_name_s) \
 { \
@@ -312,8 +315,6 @@ void graphicsBindingInit(){
 	rb_define_module_function(module, "window_moved", RUBY_METHOD_FUNC(graphicsWindowMoved), 0);
 	rb_define_module_function(module, "window_resized", RUBY_METHOD_FUNC(graphicsWindowResized), 0);
 	rb_define_module_function(module, "viewport_resized", RUBY_METHOD_FUNC(graphicsViewportResized), 0);
-	rb_define_module_function(module, "fov", RUBY_METHOD_FUNC(graphicsGetFOV), 0);
-	rb_define_module_function(module, "fov=", RUBY_METHOD_FUNC(graphicsSetFOV), 1);
 
 	// Functions
 	rb_define_module_function(module, "x", RUBY_METHOD_FUNC(graphicsPosX), 0);
@@ -327,10 +328,13 @@ void graphicsBindingInit(){
 	rb_define_module_function(module, "resize_screen", RUBY_METHOD_FUNC(graphicsResizeScreen), -1);
 	rb_define_module_function(module, "move_screen", RUBY_METHOD_FUNC(graphicsMoveScreen), -1);
 	rb_define_module_function(module, "update", RUBY_METHOD_FUNC(graphicsUpdate), 0);
+	rb_define_module_function(module, "delta_time", RUBY_METHOD_FUNC(graphicsDeltaTime), 0);
 	rb_define_module_function(module, "freeze", RUBY_METHOD_FUNC(graphicsFreeze), 0);
 	rb_define_module_function(module, "transition", RUBY_METHOD_FUNC(graphicsTransition), -1);
 	rb_define_module_function(module, "frame_reset", RUBY_METHOD_FUNC(graphicsFrameReset), 0);
 	rb_define_module_function(module, "vsync_mode=", RUBY_METHOD_FUNC(graphicsSetVsync), -1);
+	rb_define_module_function(module, "fov", RUBY_METHOD_FUNC(graphicsGetFOV), 0);
+	rb_define_module_function(module, "fov=", RUBY_METHOD_FUNC(graphicsSetFOV), 1);
 	rb_define_module_function(module, "__reset__", RUBY_METHOD_FUNC(graphicsReset), 0);
 
 	// Variables
@@ -340,6 +344,5 @@ void graphicsBindingInit(){
 	INIT_GRA_PROP_BIND( Fullscreen, "fullscreen"  );
 	INIT_GRA_PROP_BIND( ShowCursor, "show_cursor" );
 	INIT_GRA_PROP_BIND( Smooth,     "smooth"      );
-	INIT_GRA_PROP_BIND( Frameskip,  "frameskip"   );
 	rb_define_const(module, "RESOLUTION_OVERRIDDEN", rb_bool_new(conf.resolutionOverridden));
 }

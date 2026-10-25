@@ -25,6 +25,10 @@ class Window_Selectable < Window_Base
     @column_max = 1
     @index = -1
 
+    @cursor_x = 0.0
+    @cursor_y = 0.0
+    @content_y = 0.0
+
     @content_pos = 0
   end
   #--------------------------------------------------------------------------
@@ -125,7 +129,9 @@ class Window_Selectable < Window_Base
     x = @index % @column_max * (cursor_width + 32)
     y = @index / @column_max * 32 - self.origin_y
     # Update cursor rectangle
-    self.cursor_rect.set(x * 0.8 + self.cursor_rect.x * 0.2, y * 0.8 + self.cursor_rect.y * 0.2, cursor_width, 32)
+    @cursor_x = delta_lerp(@cursor_x, x, 0.65)
+    @cursor_y = delta_lerp(@cursor_y, y, 0.65)
+    self.cursor_rect.set(@cursor_x, @cursor_y, cursor_width, 32)
   end
   #--------------------------------------------------------------------------
   # * Frame Update
@@ -134,7 +140,8 @@ class Window_Selectable < Window_Base
     super
     # If cursor is movable
     if self.active and @item_max > 0 and @index >= 0
-      self.origin_y = self.origin_y * 0.2 + @content_pos * 0.8
+      @content_y = delta_lerp(@content_y, @content_pos, 0.67)
+      self.origin_y = @content_y
 
       new = (@index - Input.wheel_y.round).clamp(0, @item_max - 1)
       if new != @index

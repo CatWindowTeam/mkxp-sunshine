@@ -23,6 +23,8 @@ class Window_MainMenu < Window_Selectable
     @fade_in = false
     @fade_out = false
 
+    @opacity = 0
+
     # Render menu
     self.contents = Bitmap.new(width - 32, 32)
     Language.register_text_sprite(self.class.name + "_contents", self.contents)
@@ -83,9 +85,11 @@ class Window_MainMenu < Window_Selectable
         @fade_in = false
         @fade_out = true
       else
-        self.opacity += 48
-        self.contents_opacity += 48
+        @opacity += 48 * Graphics.scaled_delta
+        self.opacity = @opacity
+        self.contents_opacity = @opacity
         if self.contents_opacity >= 255
+          @opacity = 255
           @fade_in = false
         end
         return
@@ -94,12 +98,14 @@ class Window_MainMenu < Window_Selectable
 
     # Handle fade-out effect
     if @fade_out
-      self.opacity -= 48
-      self.contents_opacity -= 48
+        @opacity -= 48 * Graphics.scaled_delta
+        self.opacity = @opacity
+        self.contents_opacity = @opacity
       if self.contents_opacity <= 0
         @fade_out = false
         self.visible = false
         self.active = false
+        @opacity = 0
       end
       return
     end

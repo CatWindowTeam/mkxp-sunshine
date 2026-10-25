@@ -20,6 +20,7 @@ class Ed_Message
     @viewport.visible = false
 
     # Sprite visibility
+    @opacity = 0
     @sprite_bg.opacity = 0
     @sprite_text.opacity = 0
 
@@ -171,8 +172,9 @@ class Ed_Message
   def update
     # Handle fade-out effect
     if @fade_out
-      @sprite_bg.opacity -= 20
-      @sprite_text.opacity -= 20
+      @opacity -= 20 * Graphics.scaled_delta
+      @sprite_bg.opacity = @opacity
+      @sprite_text.opacity = @opacity
       if @sprite_bg.opacity == 0
         @fade_out = false
         @fade_out_text = false
@@ -184,8 +186,9 @@ class Ed_Message
 
     # Handle fade-in effect
     if @fade_in
-      @sprite_bg.opacity += 20
-      @sprite_text.opacity += 20
+      @opacity += 20 * Graphics.scaled_delta
+      @sprite_bg.opacity = @opacity
+      @sprite_text.opacity = @opacity
       if @sprite_text.opacity == 255
         @fade_in = false
         $game_temp.message_window_showing = true
@@ -216,7 +219,8 @@ class Ed_Message
 
     # Handle fade-out text effect
     if @fade_out_text
-      @sprite_text.opacity -= 40
+      @opacity -= 40 * Graphics.scaled_delta
+      @sprite_text.opacity = @opacity
       if @sprite_text.opacity == 0
         @fade_out_text = false
         @fade_in_text = true
@@ -227,7 +231,8 @@ class Ed_Message
 
     # Handle fade-in text effect
     if @fade_in_text
-      @sprite_text.opacity += 40
+      @opacity += 40 * Graphics.scaled_delta
+      @sprite_text.opacity = @opacity
       if @sprite_text.opacity == 255
         @fade_in_text = false
       end

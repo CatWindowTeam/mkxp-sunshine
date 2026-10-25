@@ -12,9 +12,10 @@ module Settings
         # ------------ Video ------------
         :fullscreen             => false,
         :resolution             => 0,
+        :limit_fps              => false,
+        :max_fps                => 60,
         :graphics_preset        => 4,
         :colorblind             => false,
-        :frameskip              => true,
         :twm_shader             => true,
         :fog                    => true,
         :light                  => true,
@@ -222,17 +223,24 @@ class Window_Settings
         :icons => [[1, 2]],
       },
       {
+        :type => :bool,
+        :name => "Limit FPS",
+        :parameter => :limit_fps
+      },
+      {
+        :type => :slider,
+        :name => "Max FPS",
+        :parameter => :max_fps,
+        :min => 5,
+        :max => 360,
+        :use_percentages => false
+      },
+      {
         :type => :enum,
         :name => "Scaling mode",
         :parameter => :scaling_mode,
         :values => ["Nearest Neighbor", "Smooth"],
         :icons => [[2, 2]],
-      },
-      {
-        :type => :bool,
-        :name => "Frameskip",
-        :parameter => :frameskip,
-        :icons => [[5, 3]],
       },
       {
         :type => :enum,
@@ -348,7 +356,8 @@ class Window_Settings
         :additional_icons => [[1, 1]],
         :icons => [[4, 1]],
         :min => 0,
-        :max => 30
+        :max => 30,
+        :use_percentages => false
       },
       {
         :type => :slider,
@@ -357,7 +366,8 @@ class Window_Settings
         :additional_icons => [[0, 1], [1, 1]],
         :icons => [[4, 2]],
         :min => 0,
-        :max => 80
+        :max => 80,
+        :use_percentages => false
       },
       {
         :type => :bool,

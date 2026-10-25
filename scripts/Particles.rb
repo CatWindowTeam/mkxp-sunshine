@@ -90,10 +90,11 @@ class Particle_Firefly < Particle
   end
 
   def update
-    self.x += @vx
-    self.y += @vy
+    self.x += @vx * Graphics.scaled_delta
+    self.y += @vy * Graphics.scaled_delta
     self.opacity = Math.sin((@phase / @wavelength.to_f) * Math::PI) * 255
-    @phase = (@phase + 1) % @wavelength
+    @phase += Graphics.scaled_delta
+    @phase = 0 if @phase > @wavelength
   end
 end
 
@@ -113,8 +114,8 @@ class ParticleLayer
     map_x = $game_map.display_x / 4
     map_y = $game_map.display_y / 4
     @particles.each do |p|
-      p.x += @last_map_x - map_x
-      p.y += @last_map_y - map_y
+      p.x += (@last_map_x - map_x)
+      p.y += (@last_map_y - map_y)
       p.update
     end
     @last_map_x = map_x
@@ -147,17 +148,17 @@ class Particle_Shrimp < Particle
     when 0..1
       @angle += rand(-TAU / 8..TAU / 8)
     when 2
-      @speed += rand(1.0..5.0)
+      @speed += rand(1.0..5.0) * Graphics.scaled_delta
       @speed = 5.0 if @speed > 5.0
     when 3..4
-      @speed -= rand(1.0..2.0)
+      @speed -= rand(1.0..2.0) * Graphics.scaled_delta
       @speed = 0.2 if @speed < 0.2
     else
       # no-op
     end
     vx = Math.cos(@angle) * @speed
     vy = Math.sin(@angle) * @speed
-    self.x += vx
-    self.y += vy
+    self.x += vx * Graphics.scaled_delta
+    self.y += vy * Graphics.scaled_delta
   end
 end

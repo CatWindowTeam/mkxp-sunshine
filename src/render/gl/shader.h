@@ -72,7 +72,7 @@ public:
 	void applyPerspectiveProj();
 
 	void setTexSize(const Vec2i &value);
-	void setTranslation(const Vec2i &value);
+	void setTranslation(const Vec2 &value);
 	void setTime(const float value);
 
 protected:

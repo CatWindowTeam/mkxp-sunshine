@@ -67,6 +67,8 @@ class Spriteset_Map
     # Make panorama plane
     @panorama = Plane.new(@viewport_bg)
     @panorama.order = -1000
+    @pan_opacity = 255.0
+    @pan2_opacity = 0.0
 
     if $game_map.pan_fade_animate
       @panorama2 = Plane.new(@viewport_bg)
@@ -285,7 +287,7 @@ class Spriteset_Map
     @tilemap.update
     # Update panorama plane
     if $game_map.always_moving
-      $game_map.pan_move_offset += 0.25
+      $game_map.pan_move_offset += 0.25 * Graphics.scaled_delta
     end
     if $game_map.clamped_x
       x = ($game_player.real_x.to_f / (($game_map.width  - 1) * 128)) * (@panorama.bitmap.width * $game_map.pan_zoom - Graphics.width) 
@@ -303,18 +305,20 @@ class Spriteset_Map
     @panorama.scale_x = @panorama.scale_y = $game_map.pan_zoom * 2 if @panorama_name == "green_water" && !Settings[:water]
     # Animate panorama
     if $game_map.pan_animate
-      @pan_animate_timer = (@pan_animate_timer + 1) % 16
+      @pan_animate_timer += Graphics.scaled_delta
       @panorama.src_rect.width = @panorama.src_rect.height
-      if @pan_animate_timer == 0
+      if @pan_animate_timer >= 16
+        @pan_animate_timer = 0
         @panorama.src_rect.x = (@panorama.src_rect.x + @panorama.src_rect.height) % @panorama.bitmap.width
       end
     end
 
-    @panorama.origin_x += $game_map.pan_move_offset
-    @panorama.origin_y += $game_map.pan_move_offset
+    @panorama.origin_x += $game_map.pan_move_offset * Graphics.scaled_delta
+    @panorama.origin_y += $game_map.pan_move_offset * Graphics.scaled_delta
 
     if $game_map.pan_fade_animate && @panorama2 != nil && !((@panorama_name == "green_water" || @panorama_name == "dark_water") && Settings[:water])
-      @panorama2.opacity += 3
+      @pan2_opacity += 3 * Graphics.scaled_delta
+      @panorama2.opacity = @pan2_opacity
       @panorama2.origin_x = @panorama.origin_x
       @panorama2.origin_y = @panorama.origin_y
       @panorama2.scale_x = @panorama2.scale_y = $game_map.pan_zoom
@@ -327,6 +331,7 @@ class Spriteset_Map
         @panorama2 = Plane.new(@viewport_bg)
         @panorama2.order = -999
         @panorama2.opacity = 0
+        @pan2_opacity = 0
         @pan_frame_index = (@pan_frame_index + 1) % 3
         @panorama2.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
       end
@@ -360,7 +365,7 @@ class Spriteset_Map
       @panorama2&.opacity = 0
     end
 
-	Graphics.frame_reset if frame_reset
+    Graphics.frame_reset if frame_reset
 	
     # Update fog plane
     @fog.visible = Settings[:fog]

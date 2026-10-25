@@ -25,6 +25,7 @@
 #include "keybindings.h"
 #include "util.h"
 #include "define.h"
+#include "graphics.h"
 
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_mouse.h>
@@ -295,7 +296,7 @@ struct InputPrivate {
 	ButtonState *statesOld;
 
 	Input::ButtonCode repeating;
-	unsigned int repeatCount;
+	float repeatCount;
 
 	bool triedExit;
 
@@ -793,12 +794,13 @@ void Input::update(){
 
 	/* Check if repeating key is still pressed */
 	if (p->getState(p->repeating).pressed){
-		p->repeatCount++;
+		p->repeatCount += shState->graphics().deltaTime() * 60.0f;
 
-		bool repeated;
-		repeated = p->repeatCount >= 15 && ((p->repeatCount+1) % 4) == 0;
+		bool repeated = p->repeatCount >= 15; 
+		if (repeated)
+			p->repeatCount = 11;
 
-		p->getState(p->repeating).repeated |= repeated;
+		p->getState(p->repeating).repeated = repeated;
 
 		return;
 	}

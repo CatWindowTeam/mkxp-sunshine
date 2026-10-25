@@ -106,8 +106,8 @@ DEF_PROP_OBJ_REF(Tilemap, Table,    Priorities, "priorities")
 DEF_PROP_B(Tilemap, Visible)
 DEF_PROP_B(Tilemap, BetterWater)
 DEF_PROP_B(Tilemap, Wrapping)
-DEF_PROP_I(Tilemap, OX)
-DEF_PROP_I(Tilemap, OY)
+DEF_PROP_F(Tilemap, OX)
+DEF_PROP_F(Tilemap, OY)
 
 void tilemapBindingInit(){
 	VALUE klass = rb_define_class("TilemapAutotiles", rb_cObject);

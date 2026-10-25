@@ -47,6 +47,9 @@ class Doc_Message
     @sprite_scroll_down.opacity = 0
     @sprite_scroll_up.opacity = 0
 
+    @bg_opacity = 0
+    @text_opacity = 0
+
     @y_offset = 0
     @scroll_limit = 0
 
@@ -152,9 +155,9 @@ class Doc_Message
     # Prepare renderer
     @contents.clear
     @contents.font.color = Color.new(100, 92, 255, 255)
-	if $game_switches[124] == true
-	  @contents.font.color = Color.new(255, 92, 100, 255)
-	end
+    if $game_switches[124] == true
+      @contents.font.color = Color.new(255, 92, 100, 255)
+    end
     x = 0
     y = 1
 
@@ -190,8 +193,10 @@ class Doc_Message
   def update
     # Handle fade-out effect
     if @fade_out
-      @sprite_text.opacity -= 18
-      @sprite_bg.opacity -= 22
+      @text_opacity -= 18 * Graphics.scaled_delta
+      @sprite_text.opacity = @text_opacity
+      @bg_opacity -= 22 * Graphics.scaled_delta
+      @sprite_bg.opacity = @bg_opacity
       if @sprite_text.opacity <= 0
         @sprite_text.opacity = 0
         @sprite_bg.opacity = 0
@@ -203,8 +208,10 @@ class Doc_Message
 
     # Handle fade-in effect
     if @fade_in
-      @sprite_text.opacity += 18
-      @sprite_bg.opacity += 22
+      @text_opacity += 18 * Graphics.scaled_delta
+      @sprite_text.opacity = @text_opacity
+      @bg_opacity += 22 * Graphics.scaled_delta
+      @sprite_bg.opacity = @bg_opacity
       if @sprite_text.opacity >= 180
         @sprite_text.opacity = 180
         @sprite_bg.opacity = 220

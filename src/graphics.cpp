@@ -410,9 +410,13 @@ struct GraphicsPrivate{
 	unsigned int frameCount;
 	int brightness;
 	bool smooth;
+	uint64_t lastTick;
+	uint64_t freq;
+	double deltaTime;
 
 	FPSLimiter fpsLimiter;
 
+	bool firstUpdate;
 	bool frozen;
 	RenderTarget frozenScene;
 	Quad screenQuad;
@@ -433,7 +437,11 @@ struct GraphicsPrivate{
 	      frameRate(DEF_FRAMERATE),
 	      frameCount(0),
 	      brightness(255),
+		  lastTick(SDL_GetPerformanceCounter()),
+		  freq(SDL_GetPerformanceFrequency()),
+		  deltaTime(0),
 	      fpsLimiter(frameRate),
+		  firstUpdate(true),
 	      frozen(false)
 	{
 		recalculateScreenSize(rtData);
@@ -554,6 +562,12 @@ struct GraphicsPrivate{
 
 		fpsLimiter.resetFrameAdjust();
 	}
+	
+	void updateDeltaTime(){
+		uint64_t now = SDL_GetPerformanceCounter();
+		deltaTime = static_cast<double>((now - lastTick)) / static_cast<double>(freq);
+		lastTick = now;
+	}
 };
 
 Graphics::Graphics(RGSSThreadData *data, IRender &render){
@@ -572,32 +586,29 @@ void Graphics::update(bool limitFps){
 	// TODO: move this to ruby thread update, idk where it is
 	shState->rubyDispatcher().process(); // <-'
 
+	if (p->firstUpdate){
+		p->lastTick = SDL_GetPerformanceCounter();
+		p->firstUpdate = false;
+	}
+
 	p->checkShutDownReset();
 	p->checkSyncLock();
 	if (p->frozen)
 		return;
 
 	if (limitFps){
-		if (p->fpsLimiter.frameSkipRequired()){
-			if (conf.frameSkip){
-				/* Skip frame */
-				p->fpsLimiter.delay();
-				++p->frameCount;
-				p->threadData->ethread->notifyFrame();
-				return;
-			}else{
-				/* Just reset frame adjust counter */
-				p->fpsLimiter.resetFrameAdjust();
-			}
-		}
-	}else{
+		if (p->fpsLimiter.frameSkipRequired())
+			/* Just reset frame adjust counter */
+			p->fpsLimiter.resetFrameAdjust();
+	}
+	else
 		if (!p->fpsLimiter.frameSkipRequired())
 			return;
-	}
 
 	p->checkResize();
 	p->redrawScreen();
 	p->scPos = shState->rtData().ethread->getWindowPosition();
+	p->updateDeltaTime();
 }
 
 void Graphics::freeze(){
@@ -649,7 +660,7 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 
 	p->render.pushBlend(false);
 
-	for (int i = 0; i < duration; ++i){
+	for (float i = 0; i < duration; i += p->deltaTime * 60.0f){
 		shState->input().update();
 
 		/* We need to clean up transMap properly before
@@ -669,7 +680,7 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 
 		p->checkSyncLock();
 
-		const float prog = i * (1.0f / duration);
+		const float prog = i / duration;
 
 		p->render.useEffect(transMap ? SHADER_trans : SHADER_simpleTrans);
 		p->render.setProg(prog);
@@ -692,6 +703,7 @@ void Graphics::transition(unsigned int duration, const char *filename, int vague
 		p->metaBlitBufferFlippedScaled();
 		p->render.endBlit();
 		p->swapBuffers();
+		p->updateDeltaTime();
 	}
 
 	p->render.popBlend();
@@ -710,7 +722,7 @@ DEF_ATTR_RD_SIMPLE(Graphics, FrameRate, int, p->frameRate)
 DEF_ATTR_SIMPLE(Graphics, FrameCount, int, p->frameCount)
 
 void Graphics::setFrameRate(int value){
-	p->frameRate = clamp(value, 10, 120);
+	p->frameRate = clamp(value, 5, 99999);
 	if (conf.syncToRefreshrate)
 		return;
 
@@ -718,7 +730,7 @@ void Graphics::setFrameRate(int value){
 }
 
 void Graphics::wait(unsigned int duration){
-	for (int i = 0; i < duration; ++i){
+	for (float i = 0; i < duration; i += p->deltaTime * 60.0f){
 		p->checkShutDownReset();
 		p->redrawScreen();
 	}
@@ -730,7 +742,7 @@ void Graphics::fadeout(unsigned int duration){
 	float curr = p->brightness;
 	float diff = 255.0f - curr;
 
-	for (int i = duration-1; i > -1; --i){
+	for (float i = duration - 1; i >= 0; i -= p->deltaTime * 60.0f){
 		setBrightness(diff + (curr / duration) * i);
 		if (p->frozen){
 			p->render.beginBlitScreen(p->scSize);
@@ -742,6 +754,7 @@ void Graphics::fadeout(unsigned int duration){
 		}else{
 			update();
 		}
+		p->updateDeltaTime();
 	}
 }
 
@@ -751,7 +764,7 @@ void Graphics::fadein(unsigned int duration){
 	float curr = p->brightness;
 	float diff = 255.0f - curr;
 
-	for (int i = 1; i <= duration; ++i){
+	for (float i = 0; i < duration; i += p->deltaTime * 60.0f){
 		setBrightness(curr + (diff / duration) * i);
 		if (p->frozen){
 			p->render.beginBlitScreen(p->scSize);
@@ -763,6 +776,7 @@ void Graphics::fadein(unsigned int duration){
 		}else{
 			update();
 		}
+		p->updateDeltaTime();
 	}
 }
 
@@ -790,6 +804,10 @@ int Graphics::width() const{
 
 int Graphics::height() const{
 	return p->scRes.y;
+}\
+
+double Graphics::deltaTime() const{
+	return p->deltaTime;
 }
 
 void Graphics::moveScreen(int x, int y){
@@ -884,14 +902,6 @@ Scene *Graphics::getScreen() const{
 
 bool Graphics::getSmooth() const{
 	return conf.smoothScaling;
-}
-
-bool Graphics::getFrameskip() const{
-	return conf.frameSkip;
-}
-
-void Graphics::setFrameskip(bool value){
-	conf.frameSkip = value;
 }
 
 void Graphics::repaintWait(const AtomicFlag &exitCond, bool checkReset){

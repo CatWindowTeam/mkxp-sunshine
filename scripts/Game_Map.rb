@@ -288,8 +288,8 @@ class Game_Map
   def scroll_down(distance)
     return if @display_y_fix
 
-    @display_y = [@display_y + distance, (self.height - Graphics.height / 32.0).round * 128].min
-    @display_y = @display_y.clamp((@display_clip_top * 128.0).to_i, (@display_clip_bottom * 128.0).to_i - Graphics.height * 4)
+    @display_y = [@display_y + distance, (self.height - Graphics.height / 32.0) * 128].min
+    @display_y = @display_y.clamp(@display_clip_top * 128.0, @display_clip_bottom * 128.0 - Graphics.height * 4)
   end
   #--------------------------------------------------------------------------
   # * Scroll Left
@@ -299,7 +299,7 @@ class Game_Map
     return if @display_x_fix
     
     @display_x = [@display_x - distance, 0].max
-    @display_x = @display_x.clamp((@display_clip_left * 128.0).to_i, (@display_clip_right * 128.0).to_i - Graphics.width * 4)
+    @display_x = @display_x.clamp(@display_clip_left * 128.0, @display_clip_right * 128.0 - Graphics.width * 4)
   end
   #--------------------------------------------------------------------------
   # * Scroll Right
@@ -308,8 +308,8 @@ class Game_Map
   def scroll_right(distance)
     return if @display_x_fix
     
-  	@display_x = [@display_x + distance, (self.width - (Graphics.width / 32.0).round) * 128].min
-    @display_x = @display_x.clamp((@display_clip_left * 128.0).to_i, (@display_clip_right * 128.0).to_i - Graphics.width * 4)
+  	@display_x = [@display_x + distance, (self.width - (Graphics.width / 32.0)) * 128].min
+    @display_x = @display_x.clamp(@display_clip_left * 128.0, @display_clip_right * 128.0 - Graphics.width * 4)
   end
   #--------------------------------------------------------------------------
   # * Scroll Up
@@ -319,7 +319,7 @@ class Game_Map
     return if @display_y_fix
 
    	@display_y = [@display_y - distance, 0].max
-    @display_y = @display_y.clamp((@display_clip_top * 128.0).to_i, (@display_clip_bottom * 128.0).to_i - Graphics.height * 4)
+    @display_y = @display_y.clamp(@display_clip_top * 128.0, @display_clip_bottom * 128.0 - Graphics.height * 4)
   end
   #--------------------------------------------------------------------------
   # * Determine Valid Coordinates
@@ -548,8 +548,8 @@ class Game_Map
       c.update
     end
     # Manage fog scrolling
-    @fog_ox -= @fog_sx / 8.0
-    @fog_oy -= @fog_sy / 8.0
+    @fog_ox -= @fog_sx / 8.0 * Graphics.scaled_delta
+    @fog_oy -= @fog_sy / 8.0 * Graphics.scaled_delta
     # Manage change in fog color tone
     if @fog_tone_duration >= 1
       d = @fog_tone_duration

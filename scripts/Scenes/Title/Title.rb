@@ -179,7 +179,7 @@ class Scene_Title
 
     # Handle cursor movement
     if !@window_settings_title.visible
-      @cursor.y = ((Graphics.height - MENU_Y).to_f + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2.0 + ENTRY_HEIGHT * @cursor_pos - 3) * 0.65 + @cursor.y.to_f * 0.35
+      @cursor.y = delta_lerp(@cursor.y.to_f, (Graphics.height - MENU_Y).to_f + (ENTRY_HEIGHT - @cursor.bitmap.height) / 2.0 + ENTRY_HEIGHT * @cursor_pos - 3, 0.65)
       update_cursor = false
       if Input.trigger?(Input::UP)
         if @cursor_pos > 0

@@ -2,7 +2,7 @@
 
 class Scene_Title
   class TowerAnimation
-    MAX_POS = 1552.9040000000055
+    MAX_POS = 1550
     TOWER_POS = -MAX_POS - 160
     TOWER_Z_OFFSET = -220
     PARTICLES_COUNT = 2000
@@ -35,19 +35,21 @@ class Scene_Title
           return
         end
 
-        @pos_x += @speed_x
-        @pos_y += @speed_y
+        @pos_x += @speed_x * Graphics.scaled_delta
+        @pos_y += @speed_y * Graphics.scaled_delta
         self.x = @pos_x
         self.y = @pos_y
-        self.rot_z += @rot_speed
+        self.rot_z += @rot_speed * Graphics.scaled_delta
         #173,37,74
         #34,5,41
         update_color
         
-        @timer += 1
+        @timer += Graphics.scaled_delta
 
-        init(0) if self.opacity <= 0
-        self.opacity += @timer > 512 ? -2 : 2
+        @opacity += (@timer > 512 ? -2 : 2) * Graphics.scaled_delta
+        @opacity = 255.0 if @opacity > 255.0
+        init(0) if @opacity <= 0
+        self.opacity = @opacity
       end
 
       def init(timer)
@@ -57,6 +59,8 @@ class Scene_Title
         #self.perspective = true
         self.rot_z = rand(-180..180)
         self.order = -1
+        self.opacity = 0
+        @opacity = 0
 
         @rot_speed = rand(-20..20) / 80.0
         @speed_x = rand(-10..10) / 70.0
@@ -339,7 +343,7 @@ class Scene_Title
     end
 
     def update
-      @background_sprite_water_back.rot_y -= 0.04
+      @background_sprite_water_back.rot_y -= 0.04 * Graphics.scaled_delta
       @particles.each { |particle| particle.update }
 
       return if tower_disposed?
@@ -350,7 +354,7 @@ class Scene_Title
 
         @speed = 0
         @animation_ended = true
-        @timer = 32
+        @timer = 48
         @distance = MAX_POS
         $game_system.bgm_play($data_system.title_bgm)
 
@@ -361,28 +365,29 @@ class Scene_Title
         return true
       end
       
-      if @timer == 16
+      if !@splash_skipped && @timer >= 16
         @black.visible = false
         @lamp.visible = false
         @loaded_sound.play
+        @splash_skipped = true
       end
 
       if @timer < 48
-        @timer += 1
+        @timer += Graphics.scaled_delta
         return
       end
 
       if @speed > 0
-        @speed += @speed_down ? -5.0 : 7.0
+        @speed += (@speed_down ? -5.0 : 7.0) * Graphics.scaled_delta
       elsif !@animation_ended
         @speed = 0
         @animation_ended = true
         dispose_tower
       end
 
-      @viewport.origin_y += @speed * 0.1
-      @overlay_viewport.origin_y += @speed * 0.1
-      @distance += @speed * 0.1
+      @viewport.origin_y += @speed * 0.1 * Graphics.scaled_delta
+      @overlay_viewport.origin_y += @speed * 0.1 * Graphics.scaled_delta
+      @distance += @speed * 0.1 * Graphics.scaled_delta
       #puts @distance
 
       if @speed > 300

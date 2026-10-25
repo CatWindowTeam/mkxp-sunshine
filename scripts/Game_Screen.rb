@@ -97,22 +97,32 @@ class Game_Screen
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
-    if @tone_duration >= 1
+    if @tone_duration > 0
       d = @tone_duration
-      @tone.red = (@tone.red * (d - 1) + @tone_target.red) / d
-      @tone.green = (@tone.green * (d - 1) + @tone_target.green) / d
-      @tone.blue = (@tone.blue * (d - 1) + @tone_target.blue) / d
-      @tone.gray = (@tone.gray * (d - 1) + @tone_target.gray) / d
-      @tone_duration -= 1
+      @tone_duration -= Graphics.scaled_delta
+      scale = (1.0 - @tone_duration / d)
+      @tone.red += (@tone_target.red - @tone.red) * scale
+      @tone.green += (@tone_target.green - @tone.green) * scale
+      @tone.blue += (@tone_target.blue - @tone.blue) * scale
+      @tone.gray += (@tone_target.gray - @tone.gray) * scale
+    else
+      @tone.red = @tone_target.red
+      @tone.green = @tone_target.green
+      @tone.blue = @tone_target.blue
+      @tone.gray = @tone_target.gray
+      @tone_duration = 0
     end
-    if @flash_duration >= 1
+    if @flash_duration > 0
       d = @flash_duration
-      @flash_color.alpha = @flash_color.alpha * (d - 1) / d
-      @flash_duration -= 1
+      @flash_duration -= Graphics.scaled_delta
+      @flash_color.alpha -= @flash_color.alpha * (1.0 - @flash_duration / d)
+    else
+      @flash_color.alpha = 0
+      @flash_duration = 0
     end
-    if @shake_duration >= 1 or @shake != 0
+    if @shake_duration >= 1 || @shake != 0
       delta = (@shake_power * @shake_speed * @shake_direction) / 10.0
-      if @shake_duration <= 1 and @shake * (@shake + delta) < 0
+      if @shake_duration <= 1 && @shake * (@shake + delta) < 0
         @shake = 0
       else
         @shake += delta
@@ -123,14 +133,14 @@ class Game_Screen
       if @shake < - @shake_power * 2
         @shake_direction = 1
       end
-      if @shake_duration >= 1
-        @shake_duration -= 1
+      if @shake_duration > 0
+        @shake_duration -= Graphics.scaled_delta
       end
     end
-    if @weather_duration >= 1
+    if @weather_duration > 0
       d = @weather_duration
       @weather_max = (@weather_max * (d - 1) + @weather_max_target) / d
-      @weather_duration -= 1
+      @weather_duration -= Graphics.scaled_delta
       if @weather_duration == 0
         @weather_type = @weather_type_target
       end

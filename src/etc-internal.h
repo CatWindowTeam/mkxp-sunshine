@@ -40,7 +40,51 @@ struct Vec2{
 	{}
 
 	bool operator==(const Vec2 &other) const{
-		return (x == other.x && y == other.y);
+		return x == other.x && y == other.y;
+	}
+
+	bool operator!=(const Vec2 &other) const{
+		return !(*this == other);
+	}
+
+	Vec2 &operator+=(const Vec2 &value){
+		x += value.x;
+		y += value.y;
+
+		return *this;
+	}
+
+	Vec2 &operator-=(const Vec2 &value){
+		x -= value.x;
+		y -= value.y;
+
+		return *this;
+	}
+
+	Vec2 operator+(const Vec2 &value) const{
+		return Vec2(x + value.x, y + value.y);
+	}
+
+	Vec2 operator-(const Vec2 &value) const{
+		return Vec2(x - value.x, y - value.y);
+	}
+
+	template<typename T>
+	Vec2 operator*(T value) const{
+		return Vec2(x * value, y * value);
+	}
+
+	template<typename T>
+	Vec2 operator/(T value) const{
+		return Vec2(x / value, y / value);
+	}
+
+	Vec2 operator-() const{
+		return Vec2(-x, -y);
+	}
+
+	Vec2 operator!() const{
+		return Vec2(!x, !y);
 	}
 };
 
@@ -121,6 +165,10 @@ struct Vec2i{
 
 	explicit Vec2i(int xy)
 	    : x(xy), y(xy)
+	{}
+
+	Vec2i(Vec2 vec)
+		: x(vec.x), y(vec.y)
 	{}
 
 	bool operator==(const Vec2i &other) const{

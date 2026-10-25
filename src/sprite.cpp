@@ -284,12 +284,12 @@ Sprite::~Sprite(){
 }
 
 DEF_ATTR_RD_SIMPLE(Sprite, Bitmap,       Bitmap*, p->bitmap)
-DEF_ATTR_RD_SIMPLE(Sprite, X,            int,     p->trans.getPosition().x)
-DEF_ATTR_RD_SIMPLE(Sprite, Y,            int,     p->trans.getPosition().y)
-DEF_ATTR_RD_SIMPLE(Sprite, Z,            int,     p->trans.getPosition().z)
-DEF_ATTR_RD_SIMPLE(Sprite, OriginX,      int,     p->trans.getOrigin().x)
-DEF_ATTR_RD_SIMPLE(Sprite, OriginY,      int,     p->trans.getOrigin().y)
-DEF_ATTR_RD_SIMPLE(Sprite, OriginZ,      int,     p->trans.getOrigin().z)
+DEF_ATTR_RD_SIMPLE(Sprite, X,            float,   p->trans.getPosition().x)
+DEF_ATTR_RD_SIMPLE(Sprite, Y,            float,   p->trans.getPosition().y)
+DEF_ATTR_RD_SIMPLE(Sprite, Z,            float,   p->trans.getPosition().z)
+DEF_ATTR_RD_SIMPLE(Sprite, OriginX,      float,   p->trans.getOrigin().x)
+DEF_ATTR_RD_SIMPLE(Sprite, OriginY,      float,   p->trans.getOrigin().y)
+DEF_ATTR_RD_SIMPLE(Sprite, OriginZ,      float,   p->trans.getOrigin().z)
 DEF_ATTR_RD_SIMPLE(Sprite, ScaleX,       float,   p->trans.getScale().x)
 DEF_ATTR_RD_SIMPLE(Sprite, ScaleY,       float,   p->trans.getScale().y)
 DEF_ATTR_RD_SIMPLE(Sprite, RotationX,    float,   p->trans.getRotation().x)
@@ -334,7 +334,7 @@ void Sprite::setBitmap(Bitmap *bitmap){
 	p->wave.dirty = true;
 }
 
-void Sprite::setX(int value){
+void Sprite::setX(float value){
 	guardDisposed();
 	if (p->trans.getPosition().x == value)
 		return;
@@ -342,7 +342,7 @@ void Sprite::setX(int value){
 	p->trans.setPosition(Vec3(value, getY(), getZ()));
 }
 
-void Sprite::setY(int value){
+void Sprite::setY(float value){
 	guardDisposed();
 	if (p->trans.getPosition().y == value)
 		return;
@@ -350,7 +350,7 @@ void Sprite::setY(int value){
 	p->trans.setPosition(Vec3(getX(), value, getZ()));
 }
 
-void Sprite::setZ(int value){
+void Sprite::setZ(float value){
 	guardDisposed();
 	if (p->trans.getPosition().z == value)
 		return;
@@ -358,7 +358,7 @@ void Sprite::setZ(int value){
 	p->trans.setPosition(Vec3(getX(), getY(), value));
 }
 
-void Sprite::setOriginX(int value){
+void Sprite::setOriginX(float value){
 	guardDisposed();
 	if (p->trans.getOrigin().x == value)
 		return;
@@ -366,7 +366,7 @@ void Sprite::setOriginX(int value){
 	p->trans.setOrigin(Vec3(value, getOriginY(), getOriginZ()));
 }
 
-void Sprite::setOriginY(int value){
+void Sprite::setOriginY(float value){
 	guardDisposed();
 	if (p->trans.getOrigin().y == value)
 		return;
@@ -374,7 +374,7 @@ void Sprite::setOriginY(int value){
 	p->trans.setOrigin(Vec3(getOriginX(), value, getOriginZ()));
 }
 
-void Sprite::setOriginZ(int value){
+void Sprite::setOriginZ(float value){
 	guardDisposed();
 	if (p->trans.getOrigin().z == value)
 		return;

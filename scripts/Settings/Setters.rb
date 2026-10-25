@@ -37,13 +37,17 @@ module Settings
           Graphics.resize_screen(new_width, new_height)
         end
       end
+
+      def limit_fps(value)
+        Graphics.frame_rate = value ? Settings[:max_fps] : 99999
+      end
+
+      def max_fps(value)
+        Graphics.frame_rate = Settings[:limit_fps] ? value : 99999
+      end
       
       def colorblind(value)
         $game_switches[252] = value
-      end
-
-      def frameskip(value)
-        Graphics.frameskip = value
       end
 
       def scaling_mode(value)

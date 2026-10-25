@@ -172,23 +172,23 @@ class Game_Player < Game_Character
     @center_x = ((Graphics.width / 2) - 16) * 4   # Center screen x-coordinate * 4
     @center_y = ((Graphics.height / 2) - 16) * 4   # Center screen y-coordinate * 4
     if (@center_x != old_center_x)
-      $game_map.display_x = @real_x - @center_x
+      $game_map.display_x = @real_x.to_i - @center_x
     end
     if (@center_y != old_center_y)
-      $game_map.display_y = @real_y - @center_y
+      $game_map.display_y = @real_y.to_i - @center_y
     end
     # Remember whether or not moving in local variables
     last_moving = moving?
     # If moving, event running, move route forcing, and message window
     # display are all not occurring
-    unless $game_system.map_interpreter.running? or @move_route_forcing or
-           $game_temp.message_window_showing or $game_temp.menus_visible
+    unless $game_system.map_interpreter.running? || @move_route_forcing ||
+           $game_temp.message_window_showing || $game_temp.menus_visible
       # Adjust move speed
-	  if $game_switches[251] == false
+      if $game_switches[251] == false
         @move_speed = Input.press?(Input::RUN) ? 4 : 3
-	  else
+      else
         @move_speed = Input.press?(Input::RUN) ? 3 : 4
-	  end
+      end
       unless moving?
         # Move player in the direction the directional button is being pressed
         case Input.dir4
@@ -219,7 +219,7 @@ class Game_Player < Game_Character
     super
     # Emit footsteps
     if moving? || last_real_x != @real_x || last_real_y != @real_y
-      @footstep_timer += 1
+      @footstep_timer += 1 * Graphics.scaled_delta
       if (@move_speed <= 3 && @footstep_timer >= 16) || (@move_speed >= 4 && @footstep_timer >= 12)
         emit_footstep
         @footstep_timer = 0

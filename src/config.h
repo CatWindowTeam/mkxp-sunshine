@@ -20,7 +20,6 @@ struct Config {
     #endif
     const char* windowTitle = "Oneshot: Sunshine";
 
-    bool frameSkip = true;
     bool syncToRefreshrate = false;
     std::string renderer = "auto";
     bool renderStats = false;

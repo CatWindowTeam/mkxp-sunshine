@@ -203,7 +203,7 @@ struct TilemapPrivate {
 	bool visible;
 	bool betterWater;
 	bool wrapping;
-	Vec2i origin;
+	Vec2 origin;
 	Vec2i dispPos;
 
 	/* Tile atlas */
@@ -787,7 +787,7 @@ struct TilemapPrivate {
 	}
 
 	void updateMapViewport(){
-		const Vec2i combOrigin = origin + Vec2i(elem.sceneGeo.orig.x, elem.sceneGeo.orig.y);
+		const Vec2 combOrigin = origin + Vec2(elem.sceneGeo.orig.x, elem.sceneGeo.orig.y);
 		const Vec2i mvpPos = getTilePos(combOrigin);
 		if (mvpPos != viewpPos){
 			viewpPos = mvpPos;
@@ -984,8 +984,8 @@ DEF_ATTR_RD_SIMPLE(Tilemap, Priorities, Table*, p->priorities)
 DEF_ATTR_RD_SIMPLE(Tilemap, Visible, bool, p->visible)
 DEF_ATTR_SIMPLE(Tilemap, BetterWater, bool, p->betterWater)
 DEF_ATTR_SIMPLE(Tilemap, Wrapping, bool, p->wrapping)
-DEF_ATTR_RD_SIMPLE(Tilemap, OX, int, p->origin.x)
-DEF_ATTR_RD_SIMPLE(Tilemap, OY, int, p->origin.y)
+DEF_ATTR_RD_SIMPLE(Tilemap, OX, float, p->origin.x)
+DEF_ATTR_RD_SIMPLE(Tilemap, OY, float, p->origin.y)
 
 void Tilemap::setTileset(Bitmap *value){
 	guardDisposed();
@@ -1049,7 +1049,7 @@ void Tilemap::setVisible(bool value){
 		p->elem.zlayers[i]->setVisible(value);
 }
 
-void Tilemap::setOX(int value){
+void Tilemap::setOX(float value){
 	guardDisposed();
 	if (p->origin.x == value)
 		return;
@@ -1058,7 +1058,7 @@ void Tilemap::setOX(int value){
 	p->mapViewportDirty = true;
 }
 
-void Tilemap::setOY(int value){
+void Tilemap::setOY(float value){
 	guardDisposed();
 	if (p->origin.y == value)
 		return;

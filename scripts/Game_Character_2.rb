@@ -36,8 +36,12 @@ class Game_Character
     # If waiting
     if @wait_count > 0
       # Reduce wait count
-      @wait_count -= 1
-      return
+      @wait_count -= Graphics.scaled_delta
+      if @wait_count < 0
+        @wait_count = 0
+      else
+        return
+      end
     end
     # If move route is forced
     if @move_route_forcing
@@ -68,7 +72,7 @@ class Game_Character
   #--------------------------------------------------------------------------
   def update_jump
     # Reduce jump count by 1
-    @jump_count -= 1
+    @jump_count -= Graphics.scaled_delta
     # Calculate new coordinates
     @real_x = (@real_x * @jump_count + @x * 128) / (@jump_count + 1)
     @real_y = (@real_y * @jump_count + @y * 128) / (@jump_count + 1)
@@ -78,7 +82,7 @@ class Game_Character
   #--------------------------------------------------------------------------
   def update_move
     # Convert map coordinates from map move speed into move distance
-    distance = 2 ** @move_speed
+    distance = 2 ** @move_speed * Graphics.scaled_delta
     # If logical coordinates are further down than real coordinates
     if @y * 128 > @real_y
       # Move down
@@ -102,14 +106,14 @@ class Game_Character
     # If move animation is ON
     if @walk_anime
       # Increase animation count by 1.5
-      @anime_count += 1.5
+      @anime_count += 1.5 * Graphics.scaled_delta
     # If move animation is OFF, and stop animation is ON
     elsif @step_anime
       # Increase animation count by 1
-      @anime_count += 1
+      @anime_count += 1 * Graphics.scaled_delta
     end
     # Wrap position
-    if @x * 128 == @real_x && @y * 128 == @real_y
+    if @x * 128 == @real_x.to_i && @y * 128 == @real_y.to_i
       @x %= $game_map.width
       @y %= $game_map.height
       @real_x = @x * 128
@@ -123,17 +127,17 @@ class Game_Character
     # If stop animation is ON
     if @step_anime
       # Increase animation count by 1
-      @anime_count += 1
+      @anime_count += Graphics.scaled_delta
     # If stop animation is OFF, but current pattern is different from original
     elsif @pattern != @original_pattern
       # Increase animation count by 1.5
-      @anime_count += 1.5
+      @anime_count += 1.5 * Graphics.scaled_delta
     end
     # When waiting for event execution, or not locked
     # * If lock deals with event execution coming to a halt
     unless @starting or lock?
       # Increase stop count by 1
-      @stop_count += 1
+      @stop_count += Graphics.scaled_delta
     end
   end
   #--------------------------------------------------------------------------
@@ -157,11 +161,8 @@ class Game_Character
     # Get difference in player coordinates
     sx = @x - $game_player.x
     sy = @y - $game_player.y
-    # Get absolute value of difference
-    abs_sx = sx > 0 ? sx : -sx
-    abs_sy = sy > 0 ? sy : -sy
     # If separated by 20 or more tiles matching up horizontally and vertically
-    if abs_sx + abs_sy >= 20
+    if sx.abs + sy.abs >= 20
       # Random
       move_random
       return
@@ -254,7 +255,7 @@ class Game_Character
       # If waiting
       if command.code == 15
         # Set wait count
-        @wait_count = command.parameters[0] * 2 - 1
+        @wait_count = command.parameters[0] * 2.0 - 1.0
         @move_route_index += 1
         return
       end

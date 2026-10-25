@@ -29,7 +29,6 @@ class Game_Character
   attr_accessor :animation_id             # animation ID
   attr_accessor :transparent              # transparent flag
   attr_accessor :shader
-  attr_accessor :light_ignore_transition
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
@@ -73,7 +72,6 @@ class Game_Character
     @custom_flags = []
     @sprite = nil;
     @shader = Shader::Sprite
-    @light_ignore_transition = false
     @mirror_x = false
     @mirror_y = false
   end
@@ -90,7 +88,7 @@ class Game_Character
   #--------------------------------------------------------------------------
   def jumping?
     # A jump is occurring if jump count is larger than 0
-    return @jump_count > 0
+    return @jump_count > 0 + Graphics.scaled_delta
   end
   #--------------------------------------------------------------------------
   # * Straighten Position
@@ -237,14 +235,14 @@ class Game_Character
   #--------------------------------------------------------------------------
   def screen_x
     # Get screen coordinates from real coordinates and map display position
-    return (@real_x - $game_map.display_x + 3) / 4 + 16
+    return ((@real_x - $game_map.display_x) / 4 + 16).ceil
   end
   #--------------------------------------------------------------------------
   # * Get Screen Y-Coordinates
   #--------------------------------------------------------------------------
   def screen_y
     # Get screen coordinates from real coordinates and map display position
-    y = (@real_y - $game_map.display_y + 3) / 4 + 32
+    y = ((@real_y - $game_map.display_y) / 4 + 32).ceil
     # Make y-coordinate smaller via jump count
     if @jump_count >= @jump_peak
       n = @jump_count - @jump_peak

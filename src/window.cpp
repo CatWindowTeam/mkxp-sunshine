@@ -41,9 +41,9 @@ struct Corners{
 	T tl, tr, bl, br;
 };
 
-static const IntRect backgroundSrc(0, 0, 128, 128);
+static const FloatRect backgroundSrc(0, 0, 128, 128);
 
-static const IntRect cursorSrc(128, 64, 32, 32);
+static const FloatRect cursorSrc(128, 64, 32, 32);
 
 static const IntRect pauseAniSrc[] = {
 	IntRect(160, 64, 16, 16),
@@ -72,18 +72,6 @@ static const Sides<IntRect> scrollArrowSrc = {
 	IntRect(152, 16, 16,  8),
 	IntRect(152, 40, 16,  8)
 };
-
-/* Cycling */
-static const uint8_t cursorAniAlpha[] = {
-	/* Fade out */
-	0xFF, 0xF7, 0xEF, 0xE7, 0xDF, 0xD7, 0xCF, 0xC7,
-	0xBF, 0xB7, 0xAF, 0xA7, 0x9F, 0x97, 0x8F, 0x87,
-	/* Fade in */
-	0x7F, 0x87, 0x8F, 0x97, 0x9F, 0xA7, 0xAF, 0xB7,
-	0xBF, 0xC7, 0xCF, 0xD7, 0xDF, 0xE7, 0xEF, 0xF7
-};
-
-static elementsN(cursorAniAlpha);
 
 /* Cycling */
 static const uint8_t pauseAniQuad[] = {
@@ -207,9 +195,9 @@ struct WindowPrivate {
 	QuadChunk pauseAniVert;
 	QuadChunk cursorVert;
 
-	uint8_t cursorAniAlphaIdx;
+	float cursorAniAlphaTime;
 	uint8_t pauseAniAlphaIdx;
-	uint8_t pauseAniQuadIdx;
+	float pauseAniQuadIdx;
 
 	bool controlsVertDirty;
 
@@ -231,7 +219,7 @@ struct WindowPrivate {
 	      opacityDirty(true),
 	      baseTexDirty(true),
 	      controlsElement(this, viewport),
-	      cursorAniAlphaIdx(0),
+	      cursorAniAlphaTime(0),
 	      pauseAniAlphaIdx(0),
 	      pauseAniQuadIdx(0),
 	      controlsVertDirty(true)
@@ -446,7 +434,7 @@ struct WindowPrivate {
 		/* Pause animation */
 		if (pause){
 			pauseAniVert.vert = &vert[i*4];
-			i += Quad::setTexPosRect(&vert[i*4], pauseAniSrc[pauseAniQuad[pauseAniQuadIdx]],
+			i += Quad::setTexPosRect(&vert[i*4], pauseAniSrc[pauseAniQuad[static_cast<int>(pauseAniQuadIdx)]],
 			                         FloatRect((size.x - 16) / 2, size.y - 16, 16, 16));
 		}
 
@@ -568,17 +556,17 @@ struct WindowPrivate {
 		bool updateArray = false;
 
 		if (active && cursorVert.vert){
-			float alpha = cursorAniAlpha[cursorAniAlphaIdx] / 255.0f;
-			cursorVert.setAlpha(alpha);
+			float alpha = (SDL_sin(cursorAniAlphaTime / 32.0f * PI) + 4.0f) * 0.2f;
+			cursorVert.setAlpha(alpha/* * opacity.norm*/);
 			updateArray = true;
 		}
 
 		if (pause && pauseAniVert.vert){
 			float alpha = pauseAniAlpha[pauseAniAlphaIdx] / 255.0f;
-			FloatRect frameRect = pauseAniSrc[pauseAniQuad[pauseAniQuadIdx]];
-			pauseAniVert.setAlpha(alpha);
+			FloatRect frameRect = pauseAniSrc[pauseAniQuad[static_cast<int>(pauseAniQuadIdx)]];
+			pauseAniVert.setAlpha(alpha/* * opacity.norm*/);
 			Quad::setTexRect(pauseAniVert.vert, frameRect);
-			updateArray = true;
+			updateArray = true; 
 		}
 
 		if (updateArray)
@@ -586,13 +574,13 @@ struct WindowPrivate {
 	}
 
 	void stepAnimations(){
-		if (++cursorAniAlphaIdx == cursorAniAlphaN)
-			cursorAniAlphaIdx = 0;
+		cursorAniAlphaTime += shState->graphics().deltaTime() * 60.0f;
 
 		if (pauseAniAlphaIdx < pauseAniAlphaN-1)
 			++pauseAniAlphaIdx;
 
-		if (++pauseAniQuadIdx == pauseAniQuadN)
+		pauseAniQuadIdx += shState->graphics().deltaTime() * 60.0f;
+		if (pauseAniQuadIdx >= pauseAniQuadN)
 			pauseAniQuadIdx = 0;
 	}
 };
@@ -667,7 +655,7 @@ void Window::setActive(bool value){
 		return;
 
 	p->active = value;
-	p->cursorAniAlphaIdx = 0;
+	p->cursorAniAlphaTime = 0;
 }
 
 void Window::setPause(bool value){

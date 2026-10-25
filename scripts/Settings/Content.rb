@@ -54,8 +54,8 @@ class Window_Settings
       @screen_panel_selection_sprite = Sprite.new(@viewport)
       @screen_panel_selection_sprite.bitmap = Bitmap.new(1, @offset - SCREENS_PANELS_MARGIN * 2 - SCREENS_PANELS_TOP_MARGIN)
       @screen_panel_selection_sprite.bitmap.gradient_fill_rect(0, 0, @screen_panel_selection_sprite.bitmap.width, @screen_panel_selection_sprite.bitmap.height, Color.new(255, 255, 255, 0), Color.new(255, 255, 255, 128), true)
-      @screen_panel_selection_sprite.y = SCREENS_PANELS_MARGIN + SCREENS_PANELS_TOP_MARGIN
       @screen_panel_selection_sprite.x = Graphics.width / 2
+      @screen_panel_selection_sprite.y = SCREENS_PANELS_MARGIN + SCREENS_PANELS_TOP_MARGIN
       @screen_panel_selection_sprite.blend_type = 1
 
       @switch_panels_hint_left = Sprite.new(@viewport)
@@ -159,20 +159,17 @@ class Window_Settings
     # updating
     def update()
       screen_result_pos = @screen * Graphics.width
-      if (@visible_x - screen_result_pos).abs <= 1
-        @visible_x = screen_result_pos
-      end
-      @visible_x = screen_result_pos * 0.3 + @visible_x * 0.7
-      @visible_y = @y * 0.5 + @visible_y * 0.5
+      @visible_x = delta_lerp(@visible_x, screen_result_pos, 0.3)
+      @visible_y = delta_lerp(@visible_y, @y, 0.5)
 
       # selection sprite
       selection_sprite_result_pos = @index * PARAMETER_HEIGHT + @y
       if (@selection_sprite.y - selection_sprite_result_pos).abs <= 1
         @selection_sprite.y = selection_sprite_result_pos
       end
-      @selection_sprite.y = selection_sprite_result_pos * 0.5 + @selection_sprite.y * 0.5
-      @selection_sprite.x = get_current_parameter.x * 0.5 + @selection_sprite.x * 0.5 - 4
-      @selection_sprite.scale_x = get_current_parameter.width * 0.5 + @selection_sprite.scale_x * 0.5 + 8
+      @selection_sprite.x = delta_lerp(@selection_sprite.x, get_current_parameter.x - 4, 0.5)
+      @selection_sprite.y = delta_lerp(@selection_sprite.y, selection_sprite_result_pos, 0.5)
+      @selection_sprite.scale_x = delta_lerp(@selection_sprite.scale_x, get_current_parameter.width + 8, 0.5)
 
       # update parameters
       @parameters.each do |screen_name, screen_parameters|
@@ -195,21 +192,21 @@ class Window_Settings
         if (screen_panel.x - res).abs <= 3
           screen_panel.x = res
         end
-        screen_panel.x = res * 0.3 + screen_panel.x * 0.7
+        screen_panel.x = delta_lerp(screen_panel.x, res, 0.3)
         screen_panel_offset += screen_panel.width
 
         screen_panel.opacity = ((@opacity.to_f / 255.0) * (1.0 - (screen_panel.x + 16 - (Graphics.width - screen_panel.width) / 2).abs.to_f / (PARAMETER_WIDTH / 2 - 48)) * 255.0).to_i
       end
       
-      @screen_panel_selection_sprite.scale_x = @screen_panels[@screen].width * 0.3 + @screen_panel_selection_sprite.scale_x * 0.7
-      @screen_panel_selection_sprite.x = (Graphics.width - @screen_panels[@screen].width) * 0.5 * 0.3 + @screen_panel_selection_sprite.x * 0.7
+      @screen_panel_selection_sprite.scale_x = delta_lerp(@screen_panel_selection_sprite.scale_x, @screen_panels[@screen].width, 0.3)
+      @screen_panel_selection_sprite.x = delta_lerp(@screen_panel_selection_sprite.x, (Graphics.width - @screen_panels[@screen].width) * 0.5, 0.3)
 
-      @switch_panels_hint_left.x = @switch_panels_hint_left.x * 0.8 + @target_hints_x * 0.2
-      @switch_panels_hint_right.x = @switch_panels_hint_right.x * 0.8 + @target_hints_x * 0.2
+      @switch_panels_hint_left.x = delta_lerp(@switch_panels_hint_left.x, @target_hints_x, 0.2)
+      @switch_panels_hint_right.x = delta_lerp(@switch_panels_hint_right.x, @target_hints_x, 0.2)
 
       @waiting_for_key2 = @waiting_for_key
 
-      @wait_timer = (@wait_timer + (@waiting_for_key ? 1 : -1)).clamp(0, 3)
+      @wait_timer = (@wait_timer + (@waiting_for_key ? 1 : -1) * Graphics.scaled_delta).clamp(0, 3)
     end
 
     def redraw_all

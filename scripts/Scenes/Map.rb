@@ -231,17 +231,17 @@ class Scene_Map
     @item_icon_flash.visible = @item_icon.visible
 
     if @item_icon_flash_wait > 0
-      @item_icon_flash_wait -= 1
+      @item_icon_flash_wait -= Graphics.scaled_delta
     else
       if @item_icon_flash_fadein
-        @item_icon_flash.opacity += 6
+        @item_icon_flash.opacity += 6 * Graphics.scaled_delta
         if @item_icon_flash.opacity >= 255
           @item_icon_flash.opacity = 255
           @item_icon_flash_fadein = false
           @item_icon_flash_wait = 40
         end
       else
-        @item_icon_flash.opacity -= 6
+        @item_icon_flash.opacity -= 6 * Graphics.scaled_delta
         if @item_icon_flash.opacity <= 0
           @item_icon_flash.opacity = 0
           @item_icon_flash_fadein = true

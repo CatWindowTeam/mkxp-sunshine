@@ -27,6 +27,7 @@ class Window_Item < Window_Selectable
 
     @fade_in = false
     @fade_out = false
+    @opacity = 0
 
     @help_window = Window_Help.new
   end
@@ -121,11 +122,13 @@ class Window_Item < Window_Selectable
         @fade_in = false
         @fade_out = true
       else
-        self.opacity += 48
-        self.contents_opacity += 48
-        @help_window.opacity += 48
-        @help_window.contents_opacity += 48
+        @opacity += 48 * Graphics.scaled_delta
+        self.opacity = @opacity
+        self.contents_opacity = @opacity
+        @help_window.opacity = @opacity
+        @help_window.contents_opacity = @opacity
         if self.contents_opacity == 255
+          @opacity = 255
           @fade_in = false
         end
         return
@@ -134,15 +137,17 @@ class Window_Item < Window_Selectable
 
     # Handle fade-out effect
     if @fade_out
-      self.opacity -= 48
-      self.contents_opacity -= 48
-      @help_window.opacity -= 48
-      @help_window.contents_opacity -= 48
+      @opacity -= 48 * Graphics.scaled_delta
+      self.opacity = @opacity
+      self.contents_opacity = @opacity
+      @help_window.opacity = @opacity
+      @help_window.contents_opacity = @opacity
       if self.contents_opacity == 0
         @fade_out = false
         self.visible = false
         self.active = false
         @help_window.visible = false
+        @opacity = 0
       end
       return
     end

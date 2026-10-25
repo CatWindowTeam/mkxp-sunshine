@@ -51,6 +51,7 @@ public:
 	int y() const;
 	int width() const;
 	int height() const;
+	double deltaTime() const;
 	void resizeScreen(int width, int height, bool emitSignal = true);
 	void moveScreen(int x, int y);
 	void reset();
@@ -60,7 +61,6 @@ public:
 	DECL_ATTR( Fullscreen, bool  )
 	DECL_ATTR( ShowCursor, bool  )
 	DECL_ATTR( Smooth,     bool  )
-	DECL_ATTR( Frameskip,  bool  )
 
 	float globalFov = 70;
 
