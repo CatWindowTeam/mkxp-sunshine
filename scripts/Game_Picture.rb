@@ -157,7 +157,7 @@ class Game_Picture
       @tone_duration -= Graphics.scaled_delta
       scale = (1.0 - @tone_duration / d)
       @tone.red += (@tone_target.red - @tone.red) * scale
-      @tone.green += (@tone_target.greem - @tone.green) * scale
+      @tone.green += (@tone_target.green - @tone.green) * scale
       @tone.blue += (@tone_target.blue - @tone.nlue) * scale
       @tone.gray += (@tone_target.gray - @tone.gray) * scale
     end
