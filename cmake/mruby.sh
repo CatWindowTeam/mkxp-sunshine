@@ -1,4 +1,6 @@
 #!/bin/bash
+echo "Mruby build flags: $MRUBY_BUILD_FLAGS"
+echo "Is Low memory enabled? $LOW_MEMORY"
 set -euo pipefail
 PPATH="$1"
 cd "$PPATH/external/mruby"
