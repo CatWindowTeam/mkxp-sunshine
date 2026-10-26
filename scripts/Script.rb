@@ -424,9 +424,9 @@ module Script
       else
         File.symlink "#{Dir.pwd}/#{Oneshot::JOURNAL}", "#{Oneshot::GAME_PATH}/Oneshot/#{Oneshot::JOURNAL}"
       end
-    rescue Errno::EACCES => e
+    rescue Errno::EACCES => _
       # this probably means the clover.exe already exists and is running, so no need to create it again
-    rescue Errno::EEXIST => e
+    rescue Errno::EEXIST => _
       # this means that the journal file already exists, so no need to create it again
     end
     if File.exist?("README.txt")
@@ -485,9 +485,9 @@ module Script
           end
         end
       end
-    rescue Errno::EACCES => e
+    rescue Errno::EACCES => _
       #this probably means the file already exists and is open, so no need to create it again
-    rescue Errno::EEXIST => e
+    rescue Errno::EEXIST => _
       #this probably means the file already exists, so no need to create it again
     end
   end

@@ -22,7 +22,7 @@ class Game_Character
     # * Maximum value is move speed * 1 taken from basic value 18
     if @anime_count > 18 - @move_speed * 2
       # If stop animation is OFF when stopping
-      if not @step_anime and @stop_count > 0
+      if !@step_anime && @stop_count > 0
         # Return to original pattern
         @pattern = @original_pattern
       # If stop animation is ON when moving

@@ -12,6 +12,7 @@ class Game_Player < Game_Character
   def initialize
     @center_x = ((Graphics.width / 2) - 16) * 4   # Center screen x-coordinate * 4
     @center_y = ((Graphics.height / 2) - 16) * 4   # Center screen y-coordinate * 4
+    @event_move_mode = false
     super
   end
   #--------------------------------------------------------------------------
@@ -179,43 +180,63 @@ class Game_Player < Game_Character
     end
     # Remember whether or not moving in local variables
     last_moving = moving?
+    # Remember coordinates in local variables
+    last_real_x = @real_x
+    last_real_y = @real_y
     # If moving, event running, move route forcing, and message window
     # display are all not occurring
     unless $game_system.map_interpreter.running? || @move_route_forcing ||
            $game_temp.message_window_showing || $game_temp.menus_visible
       # Adjust move speed
-      if $game_switches[251] == false
+      if !$game_switches[251]
         @move_speed = Input.press?(Input::RUN) ? 4 : 3
       else
         @move_speed = Input.press?(Input::RUN) ? 3 : 4
       end
-      unless moving?
+      if !@event_move_mode && !moving?
         # Move player in the direction the directional button is being pressed
         case Input.dir4
         when 2
-          if $game_switches[112] == false
-            move_down
-          else
-            turn_down
-          end
+          turn_down
         when 4
-          move_left
+          turn_left
         when 6
-          move_right
+          turn_right
         when 8
-          if $game_switches[112] == false
-            move_up
-          else
-            turn_up
-          end
+          turn_up
         end
+        distance = 2 ** @move_speed * Graphics.scaled_delta
+        x = (Input::press?(Input::RIGHT) ? 0.0 : -1.0) + (Input::press?(Input::LEFT) ? 0.0 : 1.0)
+        y = (Input::press?(Input::DOWN) ? 0.0 : -1.0) + (Input::press?(Input::UP) ? 0.0 : 1.0)
+        if (x.abs + y.abs != 0)
+          length = Math.sqrt(x * x + y * y)
+          smooth_move(x / length * distance, y / length * distance)
+        else
+          straighten
+        end
+        # moving from obstacle if it is too near
+        if !passable?(@x, @y, 8) && @y > ((@real_y + 64).to_i / 128)
+          # Move down
+          @real_y = @real_y + distance
+        end
+        if !passable?(@x, @y, 6) && @x < ((@real_x + 64).to_i / 128)
+          # Move left
+          @real_x = @real_x - distance
+        end
+        if !passable?(@x, @y, 4) && @x > ((@real_x + 32).to_i / 128)
+          # Move right
+          @real_x = @real_x + distance
+        end
+        if !passable?(@x, @y, 2) && @y < ((@real_y + 128).to_i / 128)
+          # Move up
+          @real_y = @real_y - distance
+        end
+      else
+        @event_move_mode = false if !moving?
       end
     else
       @move_speed = 2
     end
-    # Remember coordinates in local variables
-    last_real_x = @real_x
-    last_real_y = @real_y
     super
     # Emit footsteps
     if moving? || last_real_x != @real_x || last_real_y != @real_y
@@ -298,5 +319,126 @@ class Game_Player < Game_Character
       Audio.se_play("Audio/SE/#{name}", vol * volume, pitch)
     end
     emit_footsplash(@direction)
+  end
+
+  def update_stop
+    if !@event_move_mode
+      return
+    end
+    super
+  end
+
+  def smooth_move(x = 0, y = 0)
+    next_real_x = @real_x + x
+    next_real_y = @real_y + y
+    next_x = ((next_real_x + 64 + (x <=> 0) * 32) / 128).to_i
+    next_y = ((next_real_y + 96 + (y <=> 0) * 32) / 128).to_i
+    @real_x += x if @x == next_x || passable?(@x, @y, x > 0 ? 6 : 4)
+    @real_y += y if @y == next_y || passable?(@x, @y, y > 0 ? 2 : 8)
+    if @x != next_x || @y != next_y
+      increase_steps
+      check_event_trigger_touch(next_x, next_y)
+    end
+    if (@real_x == next_real_x && x != 0) || (@real_y == next_real_y && y != 0)
+      if @walk_anime
+        # Increase animation count by 1.5
+        @anime_count += 1.5 * Graphics.scaled_delta
+      # If move animation is OFF, and stop animation is ON
+      elsif @step_anime
+        # Increase animation count by 1
+        @anime_count += 1 * Graphics.scaled_delta
+      end
+    else
+    end
+    @x = ((@real_x + 64) / 128).to_i
+    @y = ((@real_y + 96) / 128).to_i
+    check_event_trigger_here([1, 2])
+  end
+
+  def update_move
+    # Convert map coordinates from map move speed into move distance
+    # If move animation is ON
+    distance = 2 ** @move_speed * Graphics.scaled_delta
+    if @event_move_mode
+      # If logical coordinates are further down than real coordinates
+      if @y * 128 > @real_y
+        # Move down
+        @real_y = [@real_y + distance, @y * 128].min
+      end
+      # If logical coordinates are more to the left than real coordinates
+      if @x * 128 < @real_x
+        # Move left
+        @real_x = [@real_x - distance, @x * 128].max
+      end
+      # If logical coordinates are more to the right than real coordinates
+      if @x * 128 > @real_x
+        # Move right
+        @real_x = [@real_x + distance, @x * 128].min
+      end
+      # If logical coordinates are further up than real coordinates
+      if @y * 128 < @real_y
+        # Move up
+        @real_y = [@real_y - distance, @y * 128].max
+      end
+    end
+    if @walk_anime
+      # Increase animation count by 1.5
+      @anime_count += 1.5 * Graphics.scaled_delta
+    # If move animation is OFF, and stop animation is ON
+    elsif @step_anime
+      # Increase animation count by 1
+      @anime_count += 1 * Graphics.scaled_delta
+    end
+    # Wrap position
+    if @x * 128 == @real_x.to_i && @y * 128 == @real_y.to_i
+      @x %= $game_map.width
+      @y %= $game_map.height
+      @real_x = @x * 128
+      @real_y = @y * 128
+    end
+  end
+
+  def moving?
+    return @event_move_mode && super
+  end
+
+  def move_down(turn_enabled = true)
+    @event_move_mode = true
+    super
+  end
+  
+  def move_left(turn_enabled = true)
+    @event_move_mode = true
+    super
+  end
+  
+  def move_right(turn_enabled = true)
+    @event_move_mode = true
+    super
+  end
+  
+  def move_up(turn_enabled = true)
+    @event_move_mode = true
+    super
+  end
+  
+  def move_lower_left
+    @event_move_mode = true
+    super
+  end
+  
+  def move_lower_right
+    @event_move_mode = true
+    super
+  end
+  
+  def move_upper_left
+    @event_move_mode = true
+    super
+  end
+  
+  def move_upper_right
+    @event_move_mode = true
+    super
   end
 end
