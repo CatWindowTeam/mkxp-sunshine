@@ -19,28 +19,21 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DISPOSABLEBINDING_H
-#define DISPOSABLEBINDING_H
-
+#pragma once
 #include "disposable.h"
 #include "binding-util.h"
-
 #include "mruby/array.h"
-
 #include <string.h>
 
 /* 'Children' are disposables that are disposed together
  * with their parent. Currently this is only used by Viewport
  * in RGSS1.
  * FIXME: Disable this behavior when RGSS2 or 3 */
-inline void
-disposableAddChild(mrb_state *mrb, mrb_value disp, mrb_value child)
-{
+inline void disposableAddChild(mrb_state *mrb, mrb_value disp, mrb_value child){
 	mrb_sym sym = getMrbData(mrb)->symbols[CSchildren];
 	mrb_value children = mrb_iv_get(mrb, disp, sym);
 
-	if (mrb_nil_p(children))
-	{
+	if (mrb_nil_p(children)){
 		children = mrb_ary_new(mrb);
 		mrb_iv_set(mrb, disp, sym, children);
 	}
@@ -49,12 +42,9 @@ disposableAddChild(mrb_state *mrb, mrb_value disp, mrb_value child)
 	mrb_ary_push(mrb, children, child);
 }
 
-inline void
-disposableDisposeChildren(mrb_state *mrb, mrb_value disp)
-{
+inline void disposableDisposeChildren(mrb_state *mrb, mrb_value disp){
 	MrbData *mrbData = getMrbData(mrb);
 	mrb_value children = mrb_iv_get(mrb, disp, mrbData->symbols[CSchildren]);
-
 	if (mrb_nil_p(children))
 		return;
 
@@ -63,32 +53,21 @@ disposableDisposeChildren(mrb_state *mrb, mrb_value disp)
 		                 mrbData->symbols[CS_mkxp_dispose_alias], 0, 0);
 }
 
-template<class C>
-MRB_METHOD(disposableDispose)
-{
+template<class C> MRB_METHOD(disposableDispose){
 	C *d = static_cast<C*>(DATA_PTR(self));
-
 	if (!d)
 		return mrb_nil_value();
-
 	if (d->isDisposed())
 		return mrb_nil_value();
 
-	if (rgssVer == 1)
-		disposableDisposeChildren(mrb, self);
-
+	disposableDisposeChildren(mrb, self);
 	d->dispose();
-
 	return mrb_nil_value();
 }
 
 template<class C>
-MRB_METHOD(disposableIsDisposed)
-{
-	MRB_UNUSED_PARAM;
-
+MRB_METHOD(disposableIsDisposed){
 	C *d = static_cast<C*>(DATA_PTR(self));
-
 	if (!d)
 		return mrb_true_value();
 
@@ -96,22 +75,15 @@ MRB_METHOD(disposableIsDisposed)
 }
 
 template<class C>
-static void disposableBindingInit(mrb_state *mrb, RClass *klass)
-{
+static void disposableBindingInit(mrb_state *mrb, RClass *klass){
 	mrb_define_method(mrb, klass, "dispose", disposableDispose<C>, MRB_ARGS_NONE());
 	mrb_define_method(mrb, klass, "disposed?", disposableIsDisposed<C>, MRB_ARGS_NONE());
-
 	if (rgssVer == 1)
-		mrb_alias_method(mrb, klass, getMrbData(mrb)->symbols[CS_mkxp_dispose_alias],
-		                 mrb_intern_lit(mrb, "dispose"));
+		mrb_alias_method(mrb, klass, getMrbData(mrb)->symbols[CS_mkxp_dispose_alias], mrb_intern_lit(mrb, "dispose"));
 }
 
 template<class C>
-inline void
-checkDisposed(mrb_state *mrb, mrb_value self)
-{
+inline void checkDisposed(mrb_state *mrb, mrb_value self){
 	if (mrb_test(disposableIsDisposed<C>(0, self)))
 		raiseDisposedAccess(mrb, self);
 }
-
-#endif // DISPOSABLEBINDING_H

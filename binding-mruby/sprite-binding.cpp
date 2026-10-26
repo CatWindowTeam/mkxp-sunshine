@@ -29,8 +29,7 @@
 
 DEF_TYPE(Sprite);
 
-MRB_METHOD(spriteInitialize)
-{
+MRB_METHOD(spriteInitialize){
 	Sprite *s = viewportElementInitialize<Sprite>(mrb, self);
 
 	setPrivateData(self, s, SpriteType);
@@ -41,7 +40,6 @@ MRB_METHOD(spriteInitialize)
 	wrapProperty(mrb, self, &s->getSrcRect(), CSsrc_rect, RectType);
 	wrapProperty(mrb, self, &s->getColor(), CScolor, ColorType);
 	wrapProperty(mrb, self, &s->getTone(), CStone, ToneType);
-
 	return self;
 }
 
@@ -68,35 +66,27 @@ DEF_PROP_F(Sprite, WavePhase)
 
 DEF_PROP_B(Sprite, Mirror)
 
-MRB_METHOD(spriteWidth)
-{
+MRB_METHOD(spriteWidth){
 	Sprite *s = getPrivateData<Sprite>(mrb, self);
 
 	int value = 0;
 	GUARD_EXC( value = s->getWidth(); )
-
 	return mrb_fixnum_value(value);
 }
 
-MRB_METHOD(spriteHeight)
-{
+MRB_METHOD(spriteHeight){
 	Sprite *s = getPrivateData<Sprite>(mrb, self);
 
 	int value = 0;
 	GUARD_EXC( value = s->getHeight(); )
-
 	return mrb_fixnum_value(value);
 }
 
-void
-spriteBindingInit(mrb_state *mrb)
-{
+void spriteBindingInit(mrb_state *mrb){
 	RClass *klass = defineClass(mrb, "Sprite");
-
 	disposableBindingInit     <Sprite>(mrb, klass);
 	flashableBindingInit      <Sprite>(mrb, klass);
 	viewportElementBindingInit<Sprite>(mrb, klass);
-
 	mrb_define_method(mrb, klass, "initialize", spriteInitialize, MRB_ARGS_OPT(1));
 
 	INIT_PROP_BIND( Sprite, Bitmap,    "bitmap"     );
@@ -114,17 +104,11 @@ spriteBindingInit(mrb_state *mrb)
 	INIT_PROP_BIND( Sprite, BlendType, "blend_type" );
 	INIT_PROP_BIND( Sprite, Color,     "color"      );
 	INIT_PROP_BIND( Sprite, Tone,      "tone"       );
-
-	if (rgssVer >= 2)
-	{
-	mrb_define_method(mrb, klass, "width",  spriteWidth,  MRB_ARGS_NONE());
-	mrb_define_method(mrb, klass, "height", spriteHeight, MRB_ARGS_NONE());
-
 	INIT_PROP_BIND( Sprite, WaveAmp,    "wave_amp"    );
 	INIT_PROP_BIND( Sprite, WaveLength, "wave_length" );
 	INIT_PROP_BIND( Sprite, WaveSpeed,  "wave_speed"  );
 	INIT_PROP_BIND( Sprite, WavePhase,  "wave_phase"  );
-	}
-
+	mrb_define_method(mrb, klass, "width",  spriteWidth,  MRB_ARGS_NONE());
+	mrb_define_method(mrb, klass, "height", spriteHeight, MRB_ARGS_NONE());
 	mrb_define_method(mrb, klass, "inspect", inspectObject, MRB_ARGS_NONE());
 }

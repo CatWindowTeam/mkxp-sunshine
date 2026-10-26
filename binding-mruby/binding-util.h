@@ -19,125 +19,22 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef BINDINGUTIL_H
-#define BINDINGUTIL_H
-
-#include "exception.h"
-
+#pragma once
 #include <mruby.h>
 #include <mruby/data.h>
 #include <mruby/variable.h>
 #include <mruby/class.h>
 
-#include <stdio.h>
+#define GUARD_EXC(exp){ \
+	try{ \
+		exp \
+	}catch (const std::exception& e) { \
+		mrb_raise(mrb, E_RUNTIME_ERROR, e.what()); \
+	}catch (...) { \
+		mrb_raise(mrb, E_RUNTIME_ERROR, "Unknown exception"); \
+	} \
+} \
 
-
-enum CommonSymbol
-{
-	CSfont = 0,
-	CSviewport,
-	CSbitmap,
-	CScolor,
-	CSout_color,
-	CStone,
-	CSrect,
-	CSsrc_rect,
-	CStilemap,
-	CStileset,
-	CSautotiles,
-	CSmap_data,
-	CSflash_data,
-	CSpriorities,
-	CSwindowskin,
-	CScontents,
-	CScursor_rect,
-	CSpath,
-	CSarray,
-	CSdefault_color,
-	CSdefault_out_color,
-	CSchildren,
-	CS_mkxp_dispose_alias,
-
-	CommonSymbolsMax
-};
-
-enum MrbException
-{
-	Shutdown = 0,
-	RGSS,
-	PHYSFS,
-	SDL,
-	MKXP,
-
-	ErrnoE2BIG,
-	ErrnoEACCES,
-	ErrnoEAGAIN,
-	ErrnoEBADF,
-	ErrnoECHILD,
-	ErrnoEDEADLOCK,
-	ErrnoEDOM,
-	ErrnoEEXIST,
-	ErrnoEINVAL,
-	ErrnoEMFILE,
-	ErrnoENOENT,
-	ErrnoENOEXEC,
-	ErrnoENOMEM,
-	ErrnoENOSPC,
-	ErrnoERANGE,
-	ErrnoEXDEV,
-
-	IO,
-
-	TypeError,
-	ArgumentError,
-
-	MrbExceptionsMax
-};
-
-struct MrbData
-{
-	RClass *exc[MrbExceptionsMax];
-	/* I'll leave the usage of these syms to later,
-	 * so I can measure how much of a speed difference they make */
-	mrb_sym symbols[CommonSymbolsMax];
-
-	mrb_value buttoncodeHash;
-
-	MrbData(mrb_state *mrb);
-};
-
-struct Exception;
-
-void
-raiseMrbExc(mrb_state *mrb, const Exception &exc);
-
-inline MrbData*
-getMrbData(mrb_state *mrb)
-{
-	return static_cast<MrbData*>(mrb->ud);
-}
-
-inline RClass*
-defineClass(mrb_state *mrb, const char *name)
-{
-	RClass *klass = mrb_define_class(mrb, name, mrb->object_class);
-	MRB_SET_INSTANCE_TT(klass, MRB_TT_DATA);
-
-	return klass;
-}
-
-#define GUARD_EXC(exp) \
-{ try { exp } catch (Exception &exc) { raiseMrbExc(mrb, exc); } }
-
-#define DECL_TYPE(_Type) \
-	extern const mrb_data_type _Type##Type
-
-#define DEF_TYPE(_Type) \
-	extern const mrb_data_type _Type##Type = \
-	{ \
-		#_Type, \
-		freeInstance<_Type> \
-	}
 
 #define MRB_METHOD_PUB(name) \
 	mrb_value name(mrb_state *mrb, mrb_value self)
@@ -147,20 +44,13 @@ defineClass(mrb_state *mrb, const char *name)
 #define MRB_FUNCTION(name) \
 	static mrb_value name(mrb_state *mrb, mrb_value)
 
-#define MRB_UNUSED_PARAM \
-	{ (void) mrb; (void) self; }
-
-#define MRB_FUN_UNUSED_PARAM { (void) mrb; }
-
 /* Object property which is copied by value, not reference */
 #define DEF_PROP_OBJ_VAL(Klass, PropKlass, PropName, prop_iv) \
-	MRB_METHOD(Klass##Get##PropName) \
-	{ \
+	MRB_METHOD(Klass##Get##PropName){ \
 		checkDisposed<Klass>(mrb, self); \
 		return getProperty(mrb, self, prop_iv); \
 	} \
-	MRB_METHOD(Klass##Set##PropName) \
-	{ \
+	MRB_METHOD(Klass##Set##PropName){ \
 		Klass *k = getPrivateData<Klass>(mrb, self); \
 		mrb_value propObj; \
 		PropKlass *prop; \
@@ -172,12 +62,10 @@ defineClass(mrb_state *mrb, const char *name)
 
 /* Object property which is copied by reference, with allowed NIL */
 #define DEF_PROP_OBJ_REF(Klass, PropKlass, PropName, prop_iv) \
-	MRB_METHOD(Klass##Get##PropName) \
-	{ \
+	MRB_METHOD(Klass##Get##PropName){ \
 		return getProperty(mrb, self, prop_iv); \
 	} \
-	MRB_METHOD(Klass##Set##PropName) \
-	{ \
+	MRB_METHOD(Klass##Set##PropName){ \
 		Klass *k = getPrivateData<Klass>(mrb, self); \
 		mrb_value propObj; \
 		PropKlass *prop; \
@@ -192,15 +80,13 @@ defineClass(mrb_state *mrb, const char *name)
 	}
 
 #define DEF_PROP(Klass, mrb_type, PropName, arg_type, conv_t) \
-	MRB_METHOD(Klass##Get##PropName) \
-	{ \
+	MRB_METHOD(Klass##Get##PropName){ \
 		Klass *k = getPrivateData<Klass>(mrb, self); \
 		mrb_type value = 0; \
 		GUARD_EXC( value = k->get##PropName(); ) \
 		return mrb_##conv_t##_value(value); \
 	} \
-	MRB_METHOD(Klass##Set##PropName) \
-	{ \
+	MRB_METHOD(Klass##Set##PropName){ \
 		Klass *k = getPrivateData<Klass>(mrb, self); \
 		mrb_type value; \
 		mrb_get_args(mrb, arg_type, &value); \
@@ -218,8 +104,7 @@ defineClass(mrb_state *mrb, const char *name)
 	DEF_PROP(Klass, mrb_bool, PropName, "b", bool)
 
 #define INITCOPY_FUN(Klass) \
-	MRB_METHOD(Klass##InitializeCopy) \
-	{ \
+	MRB_METHOD(Klass##InitializeCopy){ \
 		mrb_value origObj; \
 		mrb_get_args(mrb, "o", &origObj); \
 		Klass *orig = getPrivateData<Klass>(mrb, origObj); \
@@ -230,8 +115,7 @@ defineClass(mrb_state *mrb, const char *name)
 	}
 
 #define MARSH_LOAD_FUN(Klass) \
-	MRB_METHOD(Klass##Load) \
-	{ \
+	MRB_METHOD(Klass##Load){ \
 		return objectLoad<Klass>(mrb, self, Klass##Type); \
 	}
 
@@ -241,116 +125,72 @@ defineClass(mrb_state *mrb, const char *name)
 	mrb_define_method(mrb, klass, prop_name_s "=", Klass##Set##PropName, MRB_ARGS_REQ(1)); \
 }
 
-static inline mrb_value
-mrb__float_value(mrb_float f)
-{
+static inline mrb_value mrb__float_value(mrb_float f){
 	mrb_value v;
-
 	SET_FLOAT_VALUE(0, v, f);
 	return v;
 }
 
-inline mrb_sym
-getSym(mrb_state *mrb, CommonSymbol sym)
-{
+inline mrb_sym getSym(mrb_state *mrb, CommonSymbol sym){
 	return getMrbData(mrb)->symbols[sym];
 }
 
-void
-raiseDisposedAccess(mrb_state *mrb, mrb_value self);
+void raiseDisposedAccess(mrb_state *mrb, mrb_value self);
 
 template<class C>
-inline C *
-getPrivateData(mrb_state *, mrb_value self)
-{
+inline C *getPrivateData(mrb_state *, mrb_value self){
 	C *c = static_cast<C*>(DATA_PTR(self));
-
 	return c;
 }
 
 template<typename T>
-inline T *
-getPrivateDataCheck(mrb_state *mrb, mrb_value obj, const mrb_data_type &type)
-{
+inline T *getPrivateDataCheck(mrb_state *mrb, mrb_value obj, const mrb_data_type &type){
 	void *ptr = mrb_check_datatype(mrb, obj, &type);
 	return static_cast<T*>(ptr);
 }
 
-inline void
-setPrivateData(mrb_value self, void *p, const mrb_data_type &type)
-{
+inline void setPrivateData(mrb_value self, void *p, const mrb_data_type &type){
 	DATA_PTR(self) = p;
 	DATA_TYPE(self) = &type;
 }
 
 
-inline mrb_value
-wrapObject(mrb_state *mrb, void *p, const mrb_data_type &type)
-{
+inline mrb_value wrapObject(mrb_state *mrb, void *p, const mrb_data_type &type){
 	RClass *klass = mrb_class_get(mrb, type.struct_name);
 	RData *data = mrb_data_object_alloc(mrb, klass, p, &type);
 	mrb_value obj = mrb_obj_value(data);
-
 	setPrivateData(obj, p, type);
-
 	return obj;
 }
 
-inline mrb_value
-wrapProperty(mrb_state *mrb, mrb_value self,
-             void *prop, CommonSymbol iv, const mrb_data_type &type)
-{
+inline mrb_value wrapProperty(mrb_state *mrb, mrb_value self, void *prop, CommonSymbol iv, const mrb_data_type &type){
 	mrb_value propObj = wrapObject(mrb, prop, type);
-
-	mrb_obj_iv_set(mrb,
-	               mrb_obj_ptr(self),
-	               getSym(mrb, iv),
-	               propObj);
-
+	mrb_obj_iv_set(mrb, mrb_obj_ptr(self), getSym(mrb, iv), propObj);
 	return propObj;
 }
 
-inline mrb_value
-getProperty(mrb_state *mrb, mrb_value self, CommonSymbol iv)
-{
-	return mrb_obj_iv_get(mrb,
-	                      mrb_obj_ptr(self),
-	                      getSym(mrb, iv));
+inline mrb_value getProperty(mrb_state *mrb, mrb_value self, CommonSymbol iv){
+	return mrb_obj_iv_get(mrb, mrb_obj_ptr(self), getSym(mrb, iv));
 }
 
-inline void
-setProperty(mrb_state *mrb, mrb_value self,
-            CommonSymbol iv, mrb_value propObject)
-{
-	mrb_obj_iv_set(mrb,
-	               mrb_obj_ptr(self),
-	               getSym(mrb, iv),
-	               propObject);
+inline void setProperty(mrb_state *mrb, mrb_value self, CommonSymbol iv, mrb_value propObject){
+	mrb_obj_iv_set(mrb, mrb_obj_ptr(self), getSym(mrb, iv), propObject);
 }
 
-template<typename T>
-void
-freeInstance(mrb_state *, void *instance)
-{
+template<typename T> void freeInstance(mrb_state *, void *instance){
 	delete static_cast<T*>(instance);
 }
 
-inline mrb_value
-mrb_bool_value(bool value)
-{
+inline mrb_value mrb_bool_value(bool value){
 	return value ? mrb_true_value() : mrb_false_value();
 }
 
-inline bool
-_mrb_bool(mrb_value o)
-{
+inline bool _mrb_bool(mrb_value o){
 	return mrb_test(o);
 }
 
 template<class C>
-inline mrb_value
-objectLoad(mrb_state *mrb, mrb_value self, const mrb_data_type &type)
-{
+inline mrb_value objectLoad(mrb_state *mrb, mrb_value self, const mrb_data_type &type){
 	RClass *klass = mrb_class_ptr(self);
 	char *data;
 	int data_len;
@@ -360,10 +200,7 @@ objectLoad(mrb_state *mrb, mrb_value self, const mrb_data_type &type)
 
 	RData *obj = mrb_data_object_alloc(mrb, klass, c, &type);
 	mrb_value obj_value = mrb_obj_value(obj);
-
 	return obj_value;
 }
 
 MRB_METHOD_PUB(inspectObject);
-
-#endif // BINDINGUTIL_H

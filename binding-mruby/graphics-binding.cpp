@@ -24,54 +24,36 @@
 #include "binding-util.h"
 #include "exception.h"
 
-MRB_FUNCTION(graphicsUpdate)
-{
-	MRB_FUN_UNUSED_PARAM;
-
+MRB_FUNCTION(graphicsUpdate){
 	shState->graphics().update();
-
 	return mrb_nil_value();
 }
 
-MRB_FUNCTION(graphicsFreeze)
-{
-	MRB_FUN_UNUSED_PARAM;
-
+MRB_FUNCTION(graphicsFreeze){
 	shState->graphics().freeze();
-
 	return mrb_nil_value();
 }
 
-MRB_FUNCTION(graphicsTransition)
-{
+MRB_FUNCTION(graphicsTransition){
 	mrb_int duration = 8;
 	const char *filename = "";
 	mrb_int vague = 40;
 
 	mrb_get_args(mrb, "|izi", &duration, &filename, &vague);
-
 	GUARD_EXC( shState->graphics().transition(duration, filename, vague); )
-
 	return mrb_nil_value();
 }
 
-MRB_FUNCTION(graphicsFrameReset)
-{
-	MRB_FUN_UNUSED_PARAM;
-
+MRB_FUNCTION(graphicsFrameReset){
 	shState->graphics().frameReset();
-
 	return mrb_nil_value();
 }
 
 #define DEF_GRA_PROP_I(PropName) \
-	MRB_FUNCTION(graphics##Get##PropName) \
-	{ \
-		MRB_FUN_UNUSED_PARAM; \
+	MRB_FUNCTION(graphics##Get##PropName){ \
 		return mrb_fixnum_value(shState->graphics().get##PropName()); \
 	} \
-	MRB_FUNCTION(graphics##Set##PropName) \
-	{ \
+	MRB_FUNCTION(graphics##Set##PropName){ \
 		mrb_int value; \
 		mrb_get_args(mrb, "i", &value); \
 		shState->graphics().set##PropName(value); \
@@ -79,13 +61,10 @@ MRB_FUNCTION(graphicsFrameReset)
 	}
 
 #define DEF_GRA_PROP_B(PropName) \
-	MRB_FUNCTION(graphics##Get##PropName) \
-	{ \
-		MRB_FUN_UNUSED_PARAM; \
+	MRB_FUNCTION(graphics##Get##PropName){ \
 		return mrb_bool_value(shState->graphics().get##PropName()); \
 	} \
-	MRB_FUNCTION(graphics##Set##PropName) \
-	{ \
+	MRB_FUNCTION(graphics##Set##PropName){ \
 		mrb_bool value; \
 		mrb_get_args(mrb, "b", &value); \
 		shState->graphics().set##PropName(value); \
@@ -98,14 +77,12 @@ DEF_GRA_PROP_I(FrameCount)
 DEF_GRA_PROP_B(Fullscreen)
 DEF_GRA_PROP_B(ShowCursor)
 
-#define INIT_GRA_PROP_BIND(PropName, prop_name_s) \
-{ \
+#define INIT_GRA_PROP_BIND(PropName, prop_name_s){ \
 	mrb_define_module_function(mrb, module, prop_name_s, graphics##Get##PropName, MRB_ARGS_NONE()); \
 	mrb_define_module_function(mrb, module, prop_name_s "=", graphics##Set##PropName, MRB_ARGS_REQ(1)); \
 }
 
-void graphicsBindingInit(mrb_state *mrb)
-{
+void graphicsBindingInit(mrb_state *mrb){
 	RClass *module = mrb_define_module(mrb, "Graphics");
 
 	mrb_define_module_function(mrb, module, "update", graphicsUpdate, MRB_ARGS_NONE());

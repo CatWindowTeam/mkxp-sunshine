@@ -19,16 +19,13 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FLASHABLEBINDING_H
-#define FLASHABLEBINDING_H
-
+#pragma once
 #include "flashable.h"
 #include "binding-util.h"
 #include "binding-types.h"
 
 template<class C>
-MRB_METHOD(flashableFlash)
-{
+MRB_METHOD(flashableFlash){
 	Flashable *f = getPrivateData<C>(mrb, self);
 
 	mrb_value colorObj;
@@ -38,8 +35,7 @@ MRB_METHOD(flashableFlash)
 
 	mrb_get_args(mrb, "oi", &colorObj, &duration);
 
-	if (mrb_nil_p(colorObj))
-	{
+	if (mrb_nil_p(colorObj)){
 		f->flash(0, duration);
 		return mrb_nil_value();
 	}
@@ -47,25 +43,18 @@ MRB_METHOD(flashableFlash)
 	color = getPrivateDataCheck<Color>(mrb, colorObj, ColorType);
 
 	f->flash(&color->norm, duration);
-
 	return mrb_nil_value();
 }
 
 template<class C>
-MRB_METHOD(flashableUpdate)
-{
+MRB_METHOD(flashableUpdate){
 	Flashable *f = getPrivateData<C>(mrb, self);
-
 	f->update();
-
 	return mrb_nil_value();
 }
 
 template<class C>
-static void flashableBindingInit(mrb_state *mrb, RClass *klass)
-{
+static void flashableBindingInit(mrb_state *mrb, RClass *klass){
 	mrb_define_method(mrb, klass, "flash", flashableFlash<C>, MRB_ARGS_REQ(2));
 	mrb_define_method(mrb, klass, "update", flashableUpdate<C>, MRB_ARGS_NONE());
 }
-
-#endif // FLASHABLEBINDING_H

@@ -28,29 +28,21 @@
 
 DEF_TYPE(Viewport);
 
-MRB_METHOD(viewportInitialize)
-{
+MRB_METHOD(viewportInitialize){
 	Viewport *v;
 
-	if (mrb->c->ci->argc == 1)
-	{
+	if (mrb->c->ci->argc == 1){
 		/* The rect arg is only used to init the viewport,
 		 * and does NOT replace its 'rect' property */
 		mrb_value rectObj;
 		Rect *rect;
 
 		mrb_get_args(mrb, "o", &rectObj);
-
 		rect = getPrivateDataCheck<Rect>(mrb, rectObj, RectType);
-
 		v = new Viewport(rect);
-	}
-	else
-	{
+	}else{
 		mrb_int x, y, width, height;
-
 		mrb_get_args(mrb, "iiii", &x, &y, &width, &height);
-
 		v = new Viewport(x, y, width, height);
 	}
 
@@ -62,7 +54,6 @@ MRB_METHOD(viewportInitialize)
 	wrapProperty(mrb, self, &v->getRect(),  CSrect,  RectType);
 	wrapProperty(mrb, self, &v->getColor(), CScolor, ColorType);
 	wrapProperty(mrb, self, &v->getTone(),  CStone,  ToneType);
-
 	return self;
 }
 
@@ -74,9 +65,7 @@ DEF_PROP_I(Viewport, OX)
 DEF_PROP_I(Viewport, OY)
 
 
-void
-viewportBindingInit(mrb_state *mrb)
-{
+void viewportBindingInit(mrb_state *mrb){
 	RClass *klass = defineClass(mrb, "Viewport");
 
 	disposableBindingInit  <Viewport>(mrb, klass);

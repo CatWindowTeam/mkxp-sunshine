@@ -27,17 +27,14 @@
 
 DEF_TYPE(Plane);
 
-MRB_METHOD(planeInitialize)
-{
+MRB_METHOD(planeInitialize){
 	Plane *p = viewportElementInitialize<Plane>(mrb, self);
 
 	setPrivateData(self, p, PlaneType);
-
 	p->initDynAttribs();
 
 	wrapProperty(mrb, self, &p->getColor(), CScolor, ColorType);
 	wrapProperty(mrb, self, &p->getTone(),  CStone,  ToneType);
-
 	return self;
 }
 
@@ -54,9 +51,7 @@ DEF_PROP_F(Plane, ZoomX)
 DEF_PROP_F(Plane, ZoomY)
 
 
-void
-planeBindingInit(mrb_state *mrb)
-{
+void planeBindingInit(mrb_state *mrb){
 	RClass *klass = defineClass(mrb, "Plane");
 
 	disposableBindingInit<Plane>     (mrb, klass);

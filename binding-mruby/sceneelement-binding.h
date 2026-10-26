@@ -19,72 +19,55 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCENEELEMENTBINDING_H
-#define SCENEELEMENTBINDING_H
-
+#pragma once
 #include "scene.h"
 #include "binding-util.h"
 
 template<class C>
-MRB_METHOD(sceneElementGetZ)
-{
+MRB_METHOD(sceneElementGetZ){
 	SceneElement *se = getPrivateData<C>(mrb, self);
-
 	mrb_int value = 0;
 	GUARD_EXC( value = se->getZ(); )
-
 	return mrb_fixnum_value(value);
 }
 
 template<class C>
-MRB_METHOD(sceneElementSetZ)
-{
+MRB_METHOD(sceneElementSetZ){
 	SceneElement *se = getPrivateData<C>(mrb, self);
 
 	mrb_int z;
 	mrb_get_args(mrb, "i", &z);
 
 	GUARD_EXC( se->setZ(z); )
-
 	return mrb_nil_value();
 }
 
 template<class C>
-MRB_METHOD(sceneElementGetVisible)
-{
+MRB_METHOD(sceneElementGetVisible){
 	SceneElement *se = getPrivateData<C>(mrb, self);
 
 	bool value = false;
 	GUARD_EXC( value = se->getVisible(); )
-
 	return mrb_bool_value(value);
 }
 
 template<class C>
-MRB_METHOD(sceneElementSetVisible)
-{
+MRB_METHOD(sceneElementSetVisible){
 	SceneElement *se = getPrivateData<C>(mrb, self);
-
 	mrb_value visibleObj;
 	bool visible;
 
 	mrb_get_args(mrb, "o", &visibleObj);
-
 	visible = mrb_test(visibleObj);
 
 	GUARD_EXC( se->setVisible(visible); )
-
 	return mrb_nil_value();
 }
 
 template<class C>
-void
-sceneElementBindingInit(mrb_state *mrb, RClass *klass)
-{
+void sceneElementBindingInit(mrb_state *mrb, RClass *klass){
 	mrb_define_method(mrb, klass, "z",        sceneElementGetZ<C>,       MRB_ARGS_NONE());
 	mrb_define_method(mrb, klass, "z=",       sceneElementSetZ<C>,       MRB_ARGS_REQ(1));
 	mrb_define_method(mrb, klass, "visible",  sceneElementGetVisible<C>, MRB_ARGS_NONE());
 	mrb_define_method(mrb, klass, "visible=", sceneElementSetVisible<C>, MRB_ARGS_REQ(1));
 }
-
-#endif // SCENEELEMENTBINDING_H

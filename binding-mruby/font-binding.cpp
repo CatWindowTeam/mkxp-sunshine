@@ -29,43 +29,32 @@
 
 DEF_TYPE(Font);
 
-MRB_FUNCTION(fontDoesExist)
-{
+MRB_FUNCTION(fontDoesExist){
 	const char *name = 0;
 	mrb_value nameObj;
 
 	mrb_get_args(mrb, "o", &nameObj);
-
 	if (mrb_string_p(nameObj))
 		name = mrb_string_value_cstr(mrb, &nameObj);
 
 	return mrb_bool_value(Font::doesExist(name));
 }
 
-MRB_METHOD(fontInitialize)
-{
+MRB_METHOD(fontInitialize){
 	char *name = 0;
 	mrb_int size = 0;
-
 	mrb_get_args(mrb, "|zi", &name, &size);
 
 	Font *f = new Font(name, size);
-
 	setPrivateData(self, f, FontType);
 
 	/* Wrap property objects */
 	f->initDynAttribs();
-
 	wrapProperty(mrb, self, &f->getColor(), CScolor, ColorType);
-
-	if (rgssVer >= 3)
-		wrapProperty(mrb, self, &f->getOutColor(), CSout_color, ColorType);
-
 	return self;
 }
 
-MRB_METHOD(fontInitializeCopy)
-{
+MRB_METHOD(fontInitializeCopy){
 	mrb_value origObj;
 	mrb_get_args(mrb, "o", &origObj);
 
@@ -75,24 +64,17 @@ MRB_METHOD(fontInitializeCopy)
 
 	/* Wrap property objects */
 	f->initDynAttribs();
-
 	wrapProperty(mrb, self, &f->getColor(), CScolor, ColorType);
-
-	if (rgssVer >= 3)
-		wrapProperty(mrb, self, &f->getOutColor(), CSout_color, ColorType);
-
+	
 	return self;
 }
 
-MRB_METHOD(FontGetName)
-{
+MRB_METHOD(FontGetName){
 	Font *f = getPrivateData<Font>(mrb, self);
-
 	return mrb_str_new_cstr(mrb, f->getName());
 }
 
-MRB_METHOD(FontSetName)
-{
+MRB_METHOD(FontSetName){
 	Font *f = getPrivateData<Font>(mrb, self);
 
 	mrb_value name;
@@ -116,13 +98,11 @@ DEF_PROP_OBJ_VAL(Font, Color, OutColor, CSout_color)
 
 #define DEF_KLASS_PROP(Klass, mrb_type, PropName, arg_type, conv_t) \
 	static mrb_value \
-	Klass##Get##PropName(mrb_state *, mrb_value) \
-	{ \
+	Klass##Get##PropName(mrb_state *, mrb_value){ \
 		return mrb_##conv_t##_value(Klass::get##PropName()); \
 	} \
 	static mrb_value \
-	Klass##Set##PropName(mrb_state *mrb, mrb_value) \
-	{ \
+	Klass##Set##PropName(mrb_state *mrb, mrb_value){ \
 		mrb_type value; \
 		mrb_get_args(mrb, arg_type, &value); \
 		Klass::set##PropName(value); \
@@ -135,13 +115,11 @@ DEF_KLASS_PROP(Font, mrb_bool, DefaultItalic,  "b", bool)
 DEF_KLASS_PROP(Font, mrb_bool, DefaultOutline, "b", bool)
 DEF_KLASS_PROP(Font, mrb_bool, DefaultShadow,  "b", bool)
 
-MRB_FUNCTION(FontGetDefaultName)
-{
+MRB_FUNCTION(FontGetDefaultName){
 	return mrb_str_new_cstr(mrb, Font::getDefaultName());
 }
 
-MRB_FUNCTION(FontSetDefaultName)
-{
+MRB_FUNCTION(FontSetDefaultName){
 	mrb_value nameObj;
 	mrb_get_args(mrb, "S", &nameObj);
 
@@ -150,53 +128,38 @@ MRB_FUNCTION(FontSetDefaultName)
 	return nameObj;
 }
 
-MRB_METHOD(FontGetDefaultColor)
-{
+MRB_METHOD(FontGetDefaultColor){
 	return getProperty(mrb, self, CSdefault_color);
 }
 
-MRB_METHOD(FontSetDefaultColor)
-{
-	MRB_UNUSED_PARAM;
-
+MRB_METHOD(FontSetDefaultColor){
 	mrb_value colorObj;
 	mrb_get_args(mrb, "o", &colorObj);
-
 	Color *c = getPrivateDataCheck<Color>(mrb, colorObj, ColorType);
-
 	Font::setDefaultColor(*c);
-
 	return colorObj;
 }
 
-MRB_METHOD(FontGetDefaultOutColor)
-{
+MRB_METHOD(FontGetDefaultOutColor){
 	return getProperty(mrb, self, CSdefault_out_color);
 }
 
-MRB_METHOD(FontSetDefaultOutColor)
-{
-	MRB_UNUSED_PARAM;
-
+MRB_METHOD(FontSetDefaultOutColor){
 	mrb_value colorObj;
 	mrb_get_args(mrb, "o", &colorObj);
 
 	Color *c = getPrivateDataCheck<Color>(mrb, colorObj, ColorType);
 
 	Font::setDefaultOutColor(*c);
-
 	return colorObj;
 }
 
-#define INIT_KLASS_PROP_BIND(Klass, PropName, prop_name_s) \
-{ \
+#define INIT_KLASS_PROP_BIND(Klass, PropName, prop_name_s){ \
 	mrb_define_class_method(mrb, klass, prop_name_s, Klass##Get##PropName, MRB_ARGS_NONE()); \
 	mrb_define_class_method(mrb, klass, prop_name_s "=", Klass##Set##PropName, MRB_ARGS_REQ(1)); \
 }
 
-void
-fontBindingInit(mrb_state *mrb)
-{
+void fontBindingInit(mrb_state *mrb){
 	RClass *klass = defineClass(mrb, "Font");
 
 	Font::initDefaultDynAttribs();
@@ -209,18 +172,9 @@ fontBindingInit(mrb_state *mrb)
 	INIT_KLASS_PROP_BIND(Font, DefaultBold,     "default_bold");
 	INIT_KLASS_PROP_BIND(Font, DefaultItalic,   "default_italic");
 	INIT_KLASS_PROP_BIND(Font, DefaultColor,    "default_color");
-
-	if (rgssVer >= 2)
-	{
 	INIT_KLASS_PROP_BIND(Font, DefaultShadow,   "default_shadow");
-	}
-
-	if (rgssVer >= 3)
-	{
 	INIT_KLASS_PROP_BIND(Font, DefaultOutline,  "default_outline");
 	INIT_KLASS_PROP_BIND(Font, DefaultOutColor, "default_out_color");
-	wrapProperty(mrb, mrb_obj_value(klass), &Font::getDefaultOutColor(), CSdefault_out_color, ColorType);
-	}
 
 	mrb_define_method(mrb, klass, "initialize",      fontInitialize,     MRB_ARGS_OPT(2));
 	mrb_define_method(mrb, klass, "initialize_copy", fontInitializeCopy, MRB_ARGS_REQ(1));
@@ -230,17 +184,9 @@ fontBindingInit(mrb_state *mrb)
 	INIT_PROP_BIND(Font, Bold,     "bold");
 	INIT_PROP_BIND(Font, Italic,   "italic");
 	INIT_PROP_BIND(Font, Color,    "color");
-
-	if (rgssVer >= 2)
-	{
 	INIT_PROP_BIND(Font, Shadow,   "shadow");
-	}
-
-	if (rgssVer >= 3)
-	{
 	INIT_PROP_BIND(Font, Outline,  "outline");
 	INIT_PROP_BIND(Font, OutColor, "out_color");
-	}
-
+	
 	mrb_define_method(mrb, klass, "inspect", inspectObject, MRB_ARGS_NONE());
 }

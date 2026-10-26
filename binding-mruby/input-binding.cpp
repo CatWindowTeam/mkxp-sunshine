@@ -28,35 +28,19 @@
 #include <mruby/hash.h>
 #include <string.h>
 
-MRB_FUNCTION(inputUpdate)
-{
-	MRB_FUN_UNUSED_PARAM;
-
+MRB_FUNCTION(inputUpdate){
 	shState->input().update();
-
 	return mrb_nil_value();
 }
 
-static mrb_int getButtonArg(mrb_state *mrb)
-{
+static mrb_int getButtonArg(mrb_state *mrb){
 	mrb_int num;
 	mrb_value arg;
-
 	mrb_get_args(mrb, "o", &arg);
 
-	if (mrb_fixnum_p(arg))
-	{
+	if (mrb_fixnum_p(arg)){
 		num = mrb_fixnum(arg);
-	}
-	else if (mrb_symbol_p(arg) && rgssVer >= 3)
-	{
-		mrb_value symHash = getMrbData(mrb)->buttoncodeHash;
-		mrb_value numVal = mrb_hash_fetch(mrb, symHash, arg,
-										  mrb_fixnum_value(Input::None));
-		num = mrb_fixnum(numVal);
-	}
-	else
-	{
+	}else{
 		// FIXME: RMXP allows only few more types that
 		// don't make sense (symbols in pre 3, floats)
 		num = 0;
@@ -65,64 +49,39 @@ static mrb_int getButtonArg(mrb_state *mrb)
 	return num;
 }
 
-MRB_METHOD(inputPress)
-{
-	MRB_UNUSED_PARAM;
-
+MRB_METHOD(inputPress){
 	mrb_int num = getButtonArg(mrb);
-
 	return mrb_bool_value(shState->input().isPressed(num));
 }
 
-MRB_METHOD(inputTrigger)
-{
-	MRB_UNUSED_PARAM;
-
+MRB_METHOD(inputTrigger){
 	mrb_int num = getButtonArg(mrb);
-
 	return mrb_bool_value(shState->input().isTriggered(num));
 }
 
-MRB_METHOD(inputRepeat)
-{
-	MRB_UNUSED_PARAM;
-
+MRB_METHOD(inputRepeat){
 	mrb_int num = getButtonArg(mrb);
-
 	return mrb_bool_value(shState->input().isRepeated(num));
 }
 
-MRB_FUNCTION(inputDir4)
-{
-	MRB_FUN_UNUSED_PARAM;
-
+MRB_FUNCTION(inputDir4){
 	return mrb_fixnum_value(shState->input().dir4Value());
 }
 
-MRB_FUNCTION(inputDir8)
-{
-	MRB_FUN_UNUSED_PARAM;
-
+MRB_FUNCTION(inputDir8){
 	return mrb_fixnum_value(shState->input().dir8Value());
 }
 
 /* Non-standard extensions */
-MRB_FUNCTION(inputMouseX)
-{
-	MRB_FUN_UNUSED_PARAM;
-
+MRB_FUNCTION(inputMouseX){
 	return mrb_fixnum_value(shState->input().mouseX());
 }
 
-MRB_FUNCTION(inputMouseY)
-{
-	MRB_FUN_UNUSED_PARAM;
-
+MRB_FUNCTION(inputMouseY){
 	return mrb_fixnum_value(shState->input().mouseY());
 }
 
-struct
-{
+struct{
 	const char *str;
 	Input::ButtonCode val;
 }
@@ -159,9 +118,7 @@ static buttonCodes[] =
 
 static elementsN(buttonCodes);
 
-void
-inputBindingInit(mrb_state *mrb)
-{
+void inputBindingInit(mrb_state *mrb){
 	RClass *module = mrb_define_module(mrb, "Input");
 
 	mrb_define_module_function(mrb, module, "update", inputUpdate, MRB_ARGS_NONE());

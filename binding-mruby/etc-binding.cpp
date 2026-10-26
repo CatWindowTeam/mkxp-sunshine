@@ -25,29 +25,22 @@
 #include "serializable-binding.h"
 
 #define ATTR_RW(Type, Attr, arg_type, mrb_val, arg_t_s) \
-	MRB_METHOD(Type##Get##Attr) \
-	{ \
+	MRB_METHOD(Type##Get##Attr){ \
 		Type *p = getPrivateData<Type>(mrb, self); \
-	 \
 		return mrb_##mrb_val##_value(p->get##Attr()); \
 	} \
 \
-	MRB_METHOD(Type##Set##Attr) \
-	{ \
+	MRB_METHOD(Type##Set##Attr){ \
 		Type *p = getPrivateData<Type>(mrb, self); \
-	 \
 		arg_type arg; \
 		mrb_get_args(mrb, arg_t_s, &arg); \
-	 \
 		p->set##Attr(arg); \
 		UPDATE_F \
-	 \
 		return mrb_##mrb_val##_value(arg); \
 	}
 
 #define EQUAL_FUN(Typ) \
-	MRB_METHOD(Typ##Equal) \
-	{ \
+	MRB_METHOD(Typ##Equal){ \
 		Typ *p = getPrivateData<Typ>(mrb, self); \
 		mrb_value otherObj; \
 		Typ *other; \
@@ -90,8 +83,7 @@ DEF_TYPE(Tone);
 DEF_TYPE(Rect);
 
 #define INIT_FUN(Klass, param_type, param_t_s, last_param_def) \
-	MRB_METHOD(Klass##Initialize) \
-	{ \
+	MRB_METHOD(Klass##Initialize){ \
 		param_type p1, p2, p3, p4 = last_param_def; \
 		mrb_get_args(mrb, param_t_s, &p1, &p2, &p3, &p4); \
 		Klass *k = new Klass(p1, p2, p3, p4); \
@@ -104,8 +96,7 @@ INIT_FUN(Tone, mrb_float, "fff|f", 0)
 INIT_FUN(Rect, mrb_int, "iiii", 0)
 
 #define SET_FUN(Klass, param_type, param_t_s, last_param_def) \
-	MRB_METHOD(Klass##Set) \
-	{ \
+	MRB_METHOD(Klass##Set){ \
 		param_type p1, p2, p3, p4 = last_param_def; \
 		mrb_get_args(mrb, param_t_s, &p1, &p2, &p3, &p4); \
 		Klass *k = getPrivateData<Klass>(mrb, self); \
@@ -117,41 +108,29 @@ SET_FUN(Color, mrb_float, "fff|f", 255)
 SET_FUN(Tone, mrb_float, "fff|f", 0)
 SET_FUN(Rect, mrb_int, "iiii", 0)
 
-MRB_METHOD(RectEmpty)
-{
+MRB_METHOD(RectEmpty){
 	Rect *r = getPrivateData<Rect>(mrb, self);
-
 	r->empty();
-
 	return mrb_nil_value();
 }
 
 static char buffer[64];
 
-MRB_METHOD(ColorStringify)
-{
+MRB_METHOD(ColorStringify){
 	Color *c = getPrivateData<Color>(mrb, self);
-
-	sprintf(buffer, "(%f, %f, %f, %f)", c->red, c->green, c->blue, c->alpha);
-
+	SDL_sprintf(buffer, "(%f, %f, %f, %f)", c->red, c->green, c->blue, c->alpha);
 	return mrb_str_new_cstr(mrb, buffer);
 }
 
-MRB_METHOD(ToneStringify)
-{
+MRB_METHOD(ToneStringify){
 	Tone *t = getPrivateData<Tone>(mrb, self);
-
-	sprintf(buffer, "(%f, %f, %f, %f)", t->red, t->green, t->blue, t->gray);
-
+	SDL_sprintf(buffer, "(%f, %f, %f, %f)", t->red, t->green, t->blue, t->gray);
 	return mrb_str_new_cstr(mrb, buffer);
 }
 
-MRB_METHOD(RectStringify)
-{
+MRB_METHOD(RectStringify){
 	Rect *r = getPrivateData<Rect>(mrb, self);
-
-	sprintf(buffer, "(%d, %d, %d, %d)", r->x, r->y, r->width, r->height);
-
+	SDL_sprintf(buffer, "(%d, %d, %d, %d)", r->x, r->y, r->width, r->height);
 	return mrb_str_new_cstr(mrb, buffer);
 }
 
@@ -167,8 +146,7 @@ INITCOPY_FUN(Rect)
 #define MRB_ATTR_W(Class, Attr, sym) mrb_define_method(mrb, klass, sym "=", Class##Set##Attr, MRB_ARGS_REQ(1))
 #define MRB_ATTR_RW(Class, Attr, sym) { MRB_ATTR_R(Class, Attr, sym); MRB_ATTR_W(Class, Attr, sym); }
 
-#define INIT_BIND(Klass) \
-{ \
+#define INIT_BIND(Klass){ \
 	klass = defineClass(mrb, #Klass); \
 	mrb_define_class_method(mrb, klass, "_load", Klass##Load, MRB_ARGS_REQ(1)); \
 	serializableBindingInit<Klass>(mrb, klass); \
@@ -180,8 +158,7 @@ INITCOPY_FUN(Rect)
 	mrb_define_method(mrb, klass, "inspect", Klass##Stringify, MRB_ARGS_NONE()); \
 }
 
-void etcBindingInit(mrb_state *mrb)
-{
+void etcBindingInit(mrb_state *mrb){
 	RClass *klass;
 
 	INIT_BIND(Color);

@@ -159,7 +159,6 @@ MRB_FUNCTION(kernelSrand)
 
 MRB_FUNCTION(kernelExit)
 {
-	MRB_FUN_UNUSED_PARAM;
 
 	scriptBinding->terminate();
 

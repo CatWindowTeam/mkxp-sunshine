@@ -26,24 +26,18 @@
 
 DEF_TYPE(Window);
 
-MRB_METHOD(windowInitialize)
-{
+MRB_METHOD(windowInitialize){
 	Window *w = viewportElementInitialize<Window>(mrb, self);
-
 	setPrivateData(self, w, WindowType);
 
 	w->initDynAttribs();
 	wrapProperty(mrb, self, &w->getCursorRect(), CScursor_rect, RectType);
-
 	return self;
 }
 
-MRB_METHOD(windowUpdate)
-{
+MRB_METHOD(windowUpdate){
 	Window *w = getPrivateData<Window>(mrb, self);
-
 	w->update();
-
 	return mrb_nil_value();
 }
 
@@ -66,9 +60,7 @@ DEF_PROP_I(Window, BackOpacity)
 DEF_PROP_I(Window, ContentsOpacity)
 
 
-void
-windowBindingInit(mrb_state *mrb)
-{
+void windowBindingInit(mrb_state *mrb){
 	RClass *klass = defineClass(mrb, "Window");
 
 	disposableBindingInit     <Window>(mrb, klass);
@@ -92,6 +84,5 @@ windowBindingInit(mrb_state *mrb)
 	INIT_PROP_BIND( Window, Opacity,         "opacity"          );
 	INIT_PROP_BIND( Window, BackOpacity,     "back_opacity"     );
 	INIT_PROP_BIND( Window, ContentsOpacity, "contents_opacity" );
-
 	mrb_define_method(mrb, klass, "inspect", inspectObject, MRB_ARGS_NONE());
 }

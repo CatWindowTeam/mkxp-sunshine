@@ -295,7 +295,6 @@ MRB_FUNCTION(fileRename)
 
 MRB_FUNCTION(mrbNoop)
 {
-	MRB_FUN_UNUSED_PARAM;
 
 	return mrb_nil_value();
 }
