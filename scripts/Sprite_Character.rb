@@ -19,6 +19,10 @@ class Sprite_Character
   def initialize(viewport, light_viewport, character = nil)
     @viewport = viewport
     @light_viewport = light_viewport
+    @debug_sprite = Sprite.new(viewport)
+    @debug_sprite.bitmap = Bitmap.new(32, 32)
+    @debug_sprite.bitmap.fill_rect(0, 0, 32, 32, Color.new(255, 0, 0))
+    @debug_sprite.bitmap.fill_rect(8, 8, 16, 16, Color.new(0, 0, 255))
     @sprite = RPG::Sprite.new(viewport)
     @light_sprite = RPG::Sprite.new(light_viewport)
     @light_sprite.blend_type = 1
@@ -42,6 +46,10 @@ class Sprite_Character
 
     @light_sprite.mirror_x = @sprite.mirror_x = @character.mirror_x
     @light_sprite.mirror_y = @sprite.mirror_y = @character.mirror_y
+
+    @debug_sprite.visible = Settings[:debug_text]
+    @debug_sprite.x = @character.x * 32 - $game_map.display_x / 4
+    @debug_sprite.y = @character.y * 32 - $game_map.display_y / 4
     
     dir = (@character.direction - 2) / 2
     if Settings[:debug_text] && (@last_char_name != character.character_name || dir != @old_dir) 
