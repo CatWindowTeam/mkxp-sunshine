@@ -37,7 +37,6 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <cstdlib>
 #include <filesystem>
 #include <exception>
 #include <chrono>
@@ -51,6 +50,7 @@
 #include "modloader.h"
 #include "meow.h"
 #include "binding.h"
+#include "portable.h"
 #include "icon.png.xxd"
 
 #ifdef STEAM
@@ -276,11 +276,9 @@ int main(int argc, char *argv[]){
 	SDL_GetWindowSize(win, &winW, &winH);
 	rtData.windowSizeMsg.post(Vec2i(winW, winH));
 
-	#ifdef vita
-		if (!PHYSFS_mount("app0:sunshine.zip", nullptr, 0)) {
-	    	WarnMsg("Failed to mount assets archive: %s", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		}
-	#endif
+	// Mount embeded in APK or VPK file assets archive, on Desktop don't do anyfing
+	mount_assets_archive();
+
 	/* start modloader */
 	ModLoader(win);
 	/* Load and post key bindings */

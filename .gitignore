@@ -19,29 +19,20 @@ lib/
 x64/
 Makefile*
 /oneshot
-/steamshim_parent/steamshim
 __pycache__
 /build*
 /dist
 /debug
 /release
-steamshim_parent/build/
 *.out
 object_script.*
-rpgscript.bat
-rpgscript - mklang.bat
 *.pot
 xScripts.rxdata
 .qmake.stash
 CMakeCache.txt
 CMakeFiles/
 cmake_install\.cmake
-conanbuildinfo\.cmake
-conaninfo\.txt
-conanbuildinfo\.txt
-conan_imports_manifest\.txt
 package/
-oclint/
 steamworks/
 build/
 .vscode
@@ -52,3 +43,5 @@ build/
 .rubocop_todo.yml
 test.py
 sunshine.zip
+journal/external/*
+msys2_sysroot

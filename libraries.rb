@@ -4,15 +4,16 @@ puts "copying libraries..."
 require 'fileutils'
 
 # These libraries MUST NOT be packaged with OneShot
-# or otherwise they will cause cross-distro
-# incompatibilities.
+# or otherwise they will cause incompatibilities.
 BLACKLIST = [
-  # These packaged on Manjaro cause issues on openSUSE.
-  'libc.so.6',
-  'libpthread.so.0',
-  'libdl.so.2',
-  'libm.so.6',
-  # we dont need Windows dlls
+  # Linux/*NIX
+  'libc.so',
+  'libpthread.so',
+  'libdl.so',
+  'libm.so',
+  'linux-vdso.so',
+  'libstdc++.so',
+  # Windows system dlss
   "ntdll.dll",
   "KERNEL32.DLL",
   "KERNELBASE.dll",
@@ -55,7 +56,7 @@ while line = STDIN.gets
   if line =~ / => (\/.*) \(/
     path = $1
     filename = File.basename(path)
-    next if BLACKLIST.any? { |library| filename.casecmp?(library) }
+    next if BLACKLIST.any? { |library| filename.downcase.start_with?(library.downcase) }
     path = `cygpath -w "#{path}"`.strip if ENV['MSYSTEM'] && path.start_with?("/")
     files << path
   end

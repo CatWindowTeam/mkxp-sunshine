@@ -5,12 +5,10 @@
 #include "debugwriter.h"
 #include "define.h"
 #include <SDL3/SDL.h>
+#include <SDL3_net/SDL_net.h>
 #include "config.h"
 static char lang[4] = "en";
 
-#ifdef JOURNAL_ENABLED
-
-#include <SDL3_net/SDL_net.h>
 NET_Address* addr = NULL;
 void SendRaw(const char *raw){
     if(NET_WaitUntilResolved(addr, -1) == NET_FAILURE){
@@ -99,21 +97,13 @@ static VALUE journalActive(VALUE self) {
 }
 
 
-#else
-	static VALUE journalSet(int argc, VALUE *argv, VALUE self){ return Qnil; }
-	static VALUE journalLangSet(int argc, VALUE *argv, VALUE self){ return Qnil; }
-	static VALUE journalActive(VALUE self){ return Qtrue; }
-#endif
-
 void journalBindingInit(){
-	#ifdef JOURNAL_ENABLED
-		if (!NET_Init()) {
-			Debug() << "NET_Init() failed: " << SDL_GetError();
-		}else{
-			addr = NET_ResolveHostname(conf.journal_address.c_str());
-			NET_WaitUntilResolved(addr, 1000);
-		}
-	#endif
+	if(!NET_Init()) {
+		Debug() << "NET_Init() failed: " << SDL_GetError();
+	}else{
+		addr = NET_ResolveHostname(conf.journal_address.c_str());
+		NET_WaitUntilResolved(addr, 1000);
+	}
 	VALUE module = rb_define_module("Journal");
 	rb_define_module_function(module, "set", RUBY_METHOD_FUNC(journalSet), -1);
 	rb_define_module_function(module, "setLang", RUBY_METHOD_FUNC(journalLangSet), -1);
