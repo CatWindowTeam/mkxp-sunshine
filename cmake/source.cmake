@@ -49,11 +49,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     list(APPEND MAIN_SOURCE src/mac-desktop.mm)
 endif()
 
-if(STEAM)
-	list(APPEND MAIN_HEADERS steamshim/steamshim_child.h)
-	list(APPEND MAIN_SOURCE steamshim/steamshim_child.c)
-endif()
-
 foreach(item ${EMBEDDED_INPUT})
 	ProcessWithXXD(EMBEDDED_SOURCE ${item} ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()

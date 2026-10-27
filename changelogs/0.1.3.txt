@@ -29,3 +29,5 @@ Rewrited cmake configuration
 Sway support added
 Added title screen animation
 Improved SDL versions displaying
+removd Steam support
+added LowMemory build mode
