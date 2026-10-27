@@ -50,6 +50,7 @@ void Config::read(int argc, char* argv[]) {
 	a.add_option("--pathCache", pathCache, "Index all accesible assets via their lower case path (emulates windows case insensitivity)");
 	a.add_option("--JournalAddress", journal_address, "journal_address");
 	a.add_option("--JournalPort", journal_port, "journal_port");
+	a.add_option("--JournalTimeout", journal_timeout, "journal_timeout");
 	a.add_option("--Modloader.ModsDirPath", Modloader.ModsDirPath, "Debug Mode");
 	a.add_option("--Modloader.skip_modloader_screen", Modloader.skip_modloader_screen, "Skip Modloader screen");
 	a.add_option("--gamescripts", game.scripts, "Scripts File");
