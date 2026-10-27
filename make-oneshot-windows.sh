@@ -71,28 +71,6 @@ make_journal() {
   cmake --build $BUILD_DIR
 }
 
-steam() {
-  cd "$ROOTDIR"
-  echo not implemented yet.
-  exit -1
-
-  oneshot_id=$(<steam_appid.txt)
-  STEAMWORKS_PATH=$(realpath ..)/steamworks
-
-  # Compile steamshim.
-  #echo -e "-> ${cyan}Compile steamshim...${color_reset}"
-  #cd steamshim_parent
-  #mkdir build
-  #cd build
-  #cmake -DSTEAMWORKS_PATH=${STEAMWORKS_PATH} .. > steamshim.cmake.out
-  #cp "$STEAMWORKS_PATH/redistributable_bin/linux64/libsteam_api.so" .
-  #make -j${make_threads} > steamshim.make.out
-  #cd ../..
-
-  #yes | cp steamshim_parent/build/steamshim "$ONESHOT_PATH"
-  #echo "$oneshot_id" > "$ONESHOT_PATH/steam_appid.txt"
-}
-
 check_for_deps() {
   FAILED=0
 

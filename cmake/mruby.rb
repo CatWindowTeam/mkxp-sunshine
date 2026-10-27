@@ -3,11 +3,14 @@ MRuby::Build.new do |conf|
   
   conf.build_mrbc_exec
   conf.enable_cxx_exception
-  conf.cc.cxx_compile_flag = '-O3 -fno-ident -ffunction-sections -fdata-sections -fdelete-dead-exceptions -flto -ffast-math -ffp-contract=fast'
+  conf.cc.cxx_compile_flag = ENV["MRUBY_BUILD_FLAGS"]
   conf.disable_compile_commands
   conf.disable_file_prefix_map
   conf.defines << 'MRB_MAIN_PROFILE'
   conf.defines << 'MRB_UTF8_STRING'
+  if(ENV["LOW_MEMORY"] == "ON")
+	conf.defines << 'MRB_GC_STRESS'
+  end
   conf.gem :core => 'mruby-array-ext'
   conf.gem :core => 'mruby-bin-mrbc'
   conf.gem :core => 'mruby-bin-mruby'
