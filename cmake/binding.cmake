@@ -3,17 +3,12 @@ if(BINDING STREQUAL "mruby")
 		if(UNSAFE_OPTIMIZATIONS)
 			check_option(OPTIONS_RELEASE_UNSAFE
 				-fstrub=disable
-	            -fno-stack-clash-protection
-		        -fno-stack-protector
 		        -fvtable-verify=none
 		        -fno-enforce-eh-specs
-		        -fno-harden-compares
-	            -fno-harden-conditional-branches
-		        -fno-harden-control-flow-redundancy
 		        -fno-hardcfr-check-exceptions
 	            -fno-hardcfr-check-returning-calls
 		        -fhardcfr-check-noreturn-calls=never
-				-fno-stack-check
+				-fstack-check=no
 				-mno-speculative-load-hardening
 				-fzero-call-used-regs=skip
 				-fno-threadsafe-statics
@@ -35,8 +30,10 @@ if(BINDING STREQUAL "mruby")
 					-fdelete-dead-exceptions
 					-fwhole-program-vtables
 					-fvirtual-function-elimination
-					-fshort-enums
 					-fpack-struct=1
+					-fshort-enums
+					-fshort-wchar
+					-fshort-double
 					-fconserve-stack)
 			else()
 				check_option(COMPILER_OPTIONS
