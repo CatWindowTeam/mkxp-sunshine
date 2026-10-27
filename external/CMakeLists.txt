@@ -41,7 +41,8 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 			-fshort-wchar
 			-fshort-double
 			-fpack-struct=1
-			-fconserve-stack)
+			-fconserve-stack
+			-fmerge-all-constants)
 	else()
 		check_option(OPTIONS_RELEASE
 			-O3
