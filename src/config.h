@@ -29,6 +29,7 @@ struct Config {
     bool pathCache = true;
     std::string journal_address = "127.0.0.1";
     int journal_port = 23821;
+	int journal_timeout = 500;
 
     struct {
         std::string ModsDirPath = "mods";

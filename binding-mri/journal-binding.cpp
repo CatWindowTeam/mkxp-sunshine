@@ -67,35 +67,35 @@ static VALUE journalActive(VALUE self) {
         return Qfalse;
     }
 
-    if (NET_WaitUntilConnected(socket, 5000) == NET_FAILURE) {
+    if (NET_WaitUntilConnected(socket, conf.journal_timeout) == NET_FAILURE) {
         NET_DestroyStreamSocket(socket);
         return Qfalse;
     }
 
-    if (!NET_WriteToStreamSocket(socket, ping, sizeof(ping) - 1)) {
+    if (!NET_WriteToStreamSocket(socket, ping, sizeof(ping)/* - 1*/)) { //TODO: figure out why this shit was here in the first place
         NET_DestroyStreamSocket(socket);
         return Qfalse;
     }
 
-    if (NET_WaitUntilStreamSocketDrained(socket, 5000) < 0) {
+    if (NET_WaitUntilStreamSocketDrained(socket, conf.journal_timeout) < 0) {
         NET_DestroyStreamSocket(socket);
         return Qfalse;
     }
 
     void *sockets[] = { socket };
-    if (NET_WaitUntilInputAvailable(sockets, 1, 5000) <= 0) {
+    if (NET_WaitUntilInputAvailable(sockets, 1, conf.journal_timeout) <= 0) {
         NET_DestroyStreamSocket(socket);
         return Qfalse;
     }
 
-    char response[sizeof(expectedPong) - 1] = {};
-    int received = NET_ReadFromStreamSocket(socket, response, sizeof(response) - 1);
+    char response[sizeof(expectedPong)/* - 1*/] = {}; //TODO: figure out why this shit was here in the first place x2
+    int received = NET_ReadFromStreamSocket(socket, response, sizeof(response)/* - 1*/); //TODO: figure out why this shit was here in the first place x3
     NET_DestroyStreamSocket(socket);
-    if (received != sizeof(expectedPong) - 1) {
+    if (received != sizeof(expectedPong)/* - 1*/) {  //TODO: figure out why this shit was here in the first place x4
         return Qfalse;
     }
 
-    return SDL_memcmp(response, expectedPong, sizeof(expectedPong) - 1) == 0 ? Qtrue : Qfalse;
+    return SDL_memcmp(response, expectedPong, sizeof(expectedPong)/* - 1*/) == 0 ? Qtrue : Qfalse; //TODO: figure out why this shit was here in the first place x5
 }
 
 
