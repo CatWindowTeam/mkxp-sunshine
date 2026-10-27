@@ -32,8 +32,8 @@ class Sprite_Footsplash < Sprite
   def update
     return if disposed?
 
-    self.x = (@real_x - $game_map.display_x) / 4 + 16
-    self.y = (@real_y - $game_map.display_y) / 4 + 32
+    self.x = (@real_x - $game_map.display_x).ceil / 4 + 16
+    self.y = (@real_y - $game_map.display_y).ceil / 4 + 32
 
     self.opacity -= 6
     frameIndex = 20 - (self.opacity / 13)

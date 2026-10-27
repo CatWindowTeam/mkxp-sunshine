@@ -19,8 +19,8 @@ class Sprite_Footprint < Sprite
   def update
     return if disposed?
 	
-    self.x = (@real_x - $game_map.display_x) / 4 + 16
-    self.y = (@real_y - $game_map.display_y) / 4 + 32
+    self.x = (@real_x - $game_map.display_x).ceil / 4 + 16
+    self.y = (@real_y - $game_map.display_y).ceil / 4 + 32
 
     @opacity -= 4.0 * Graphics.scaled_delta
     self.opacity = @opacity

@@ -13,6 +13,7 @@ class Game_Player < Game_Character
     @center_x = ((Graphics.width / 2) - 16) * 4   # Center screen x-coordinate * 4
     @center_y = ((Graphics.height / 2) - 16) * 4   # Center screen y-coordinate * 4
     @event_move_mode = false
+    @walk_distance = 0 # wal disnay
     super
   end
   #--------------------------------------------------------------------------
@@ -165,6 +166,7 @@ class Game_Player < Game_Character
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
+    @walk_distance ||= 0
     if (Settings[:debug] && Input::key_press?(Input::key_from_name("F6")))
       unlock
     end
@@ -210,7 +212,13 @@ class Game_Player < Game_Character
         y = (Input::press?(Input::DOWN) ? 0.0 : -1.0) + (Input::press?(Input::UP) ? 0.0 : 1.0)
         if (x.abs + y.abs != 0)
           length = Math.sqrt(x * x + y * y)
-          smooth_move(x / length * distance, y / length * distance)
+          if smooth_move(x / length * distance, y / length * distance)
+            @walk_distance += distance
+            if @walk_distance > 128
+              emit_footprint(@direction)
+              @walk_distance = 0
+            end
+          end
         else
           straighten
         end
@@ -329,17 +337,30 @@ class Game_Player < Game_Character
   end
 
   def smooth_move(x = 0, y = 0)
+    # getting new positions if move will successful
     next_real_x = @real_x + x
     next_real_y = @real_y + y
     next_x = ((next_real_x + 64 + (x <=> 0) * 32) / 128).to_i
     next_y = ((next_real_y + 96 + (y <=> 0) * 32) / 128).to_i
+
+    old_x = @x
+    old_y = @y
+    
+    # moving player
     @real_x += x if @x == next_x || passable?(@x, @y, x > 0 ? 6 : 4)
     @real_y += y if @y == next_y || passable?(@x, @y, y > 0 ? 2 : 8)
-    if @x != next_x || @y != next_y
+    @x = ((@real_x + 64) / 128).to_i
+    @y = ((@real_y + 96) / 128).to_i
+    
+    # checking for tile position is changed
+    if @x != old_x || @y != old_y
       increase_steps
       check_event_trigger_touch(next_x, next_y)
     end
+    moved = false
+    # checking for world position is changed
     if (@real_x == next_real_x && x != 0) || (@real_y == next_real_y && y != 0)
+      moved = true
       if @walk_anime
         # Increase animation count by 1.5
         @anime_count += 1.5 * Graphics.scaled_delta
@@ -348,11 +369,21 @@ class Game_Player < Game_Character
         # Increase animation count by 1
         @anime_count += 1 * Graphics.scaled_delta
       end
-    else
     end
-    @x = ((@real_x + 64) / 128).to_i
-    @y = ((@real_y + 96) / 128).to_i
+    # calling triggers
     check_event_trigger_here([1, 2])
+    moved
+  end
+
+  def emit_footprint(direction)
+    if $game_map.counter?(@x, @y) && !$game_switches[101] && !$game_switches[111]
+      $scene.new_footprint(direction, @real_x / 128, @real_y / 128, @character_name)
+    end
+  end
+  def emit_footsplash(direction)
+    if $game_map.counter?(@x, @y) && $game_switches[101] && !$game_switches[111]
+      $scene.new_footsplash(direction, @real_x / 128, @real_y / 128)
+    end
   end
 
   def update_move
