@@ -1,14 +1,11 @@
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/check.cmake)
 # Options
-option(STEAM "Build with Steam Support" OFF)
-set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 option(NATIVE "Use native instructions,for local use only" OFF)
 option(LOW_MEMORY "Build with optimizations for minimal RAM usage" OFF)
 option(USE_OPENGL_ES2 "GLES2_HEADER define" OFF)
 set(VERSION_STRING "0.1.3" CACHE STRING "Version string")
 set(BINDING "cruby" CACHE STRING "Binding to use")
 set(VITASDK_PATH "/usr/local/vitasdk" CACHE STRING "VitaSDK path")
-option(DEVBUILD "Developoment build" OFF)
 option(TERMUX "Build for TERMUX" OFF)
 option(VITA "Build for Playstation Vita" OFF)
 option(CODE_ANAL "Code analysis" OFF)
@@ -68,10 +65,6 @@ endif()
 # Use OpenGL ES2
 if(USE_OPENGL_ES2)
 	add_definitions(-DGLES2_HEADER)
-endif()
-
-if(DEVBUILD)
-	set(VERSION_STRING "${VERSION_STRING}-dev" FORCE)
 endif()
 add_definitions(-DVERSION_STRING="${VERSION_STRING}")
 

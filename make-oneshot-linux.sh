@@ -1,6 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-
 cmake . -B build/ "$@"
 cd build
 make -j$(nproc)
