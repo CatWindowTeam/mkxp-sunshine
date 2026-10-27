@@ -49,14 +49,19 @@ ScriptBinding scriptBindingImpl = {
 };
 
 ScriptBinding *scriptBinding = &scriptBindingImpl;
+mrb_state *mrb;
 
 void exceptions_binding(mrb_state *mrb);
 void SunshineBindingInit(mrb_state *mrb);
+void nikoBindingInit(mrb_state *mrb);
+void journalBindingInit(mrb_state *mrb);
 
 static void mrbBindingInit(mrb_state *mrb){
 	int arena = mrb_gc_arena_save(mrb);
 	exceptions_binding(mrb);
 	SunshineBindingInit(mrb);
+	nikoBindingInit(mrb);
+	journalBindingInit(mrb);
 	mrb_gc_arena_restore(mrb, arena);
 }
 
@@ -68,7 +73,7 @@ static void checkException(mrb_state *mrb){}
 
 static void mrbBindingExecute(){
 	try{
-		mrb_state *mrb = mrb_open();
+		mrb = mrb_open();
 		mrbBindingInit(mrb);
 		//mrb_ccontext *cxt = mrb_ccontext_new(mrb);	
 		//runRMXPScripts(mrb, ctx);
@@ -89,4 +94,6 @@ static void mrbBindingTerminate(){
 
 static void mrbBindingReset(){}
 
-static void mrbBindingGC(){}
+static void mrbBindingGC(){
+	mrb_full_gc(mrb);
+}
