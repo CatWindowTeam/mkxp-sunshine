@@ -158,7 +158,7 @@ class Game_Picture
       scale = (1.0 - @tone_duration / d)
       @tone.red += (@tone_target.red - @tone.red) * scale
       @tone.green += (@tone_target.green - @tone.green) * scale
-      @tone.blue += (@tone_target.blue - @tone.nlue) * scale
+      @tone.blue += (@tone_target.blue - @tone.blue) * scale
       @tone.gray += (@tone_target.gray - @tone.gray) * scale
     end
     if @rotate_speed != 0
