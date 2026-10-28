@@ -1,5 +1,33 @@
 MRuby::Build.new do |conf|
   conf.toolchain
+
+  if(ENV["PLATFORM"] == "DOS")
+  	# If DJGPP is not in the PATH, set this to the bin directory
+  	DJGPP_PATH = nil
+
+  	GCC = 'i586-pc-msdosdjgpp-gcc'
+  	GXX = 'i586-pc-msdosdjgpp-g++'
+  	AR  = 'i586-pc-msdosdjgpp-ar'
+
+  	conf.cc do |cc|
+  	  cc.command = DJGPP_PATH ? File.join(DJGPP_PATH, GCC) : GCC
+  	  cc.defines << 'MRB_NO_IO_PREAD_PWRITE'
+  	end
+
+  	conf.cxx do |cxx|
+  	  cxx.command = DJGPP_PATH ? File.join(DJGPP_PATH, GXX) : GXX
+  	  cxx.defines << 'MRB_NO_IO_PREAD_PWRITE'
+  	end
+
+  	conf.linker do |linker|
+  	  linker.command = DJGPP_PATH ? File.join(DJGPP_PATH, GXX) : GXX
+  	  linker.libraries = %w(m)
+  	end
+
+  	conf.archiver do |archiver|
+  	  archiver.command = DJGPP_PATH ? File.join(DJGPP_PATH, AR) : AR
+  	end
+  end
   
   conf.build_mrbc_exec
   conf.enable_cxx_exception

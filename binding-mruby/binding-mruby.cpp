@@ -78,7 +78,6 @@ static void mrbBindingExecute(){
 		//mrb_ccontext *cxt = mrb_ccontext_new(mrb);	
 		//runRMXPScripts(mrb, ctx);
 		//checkException(mrb);
-		sleep(10000);
 		//mrb_ccontext_free(mrb, cxt);
 		shState->rtData().rqTermAck.set();
 		mrb_close(mrb);

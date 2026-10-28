@@ -10,7 +10,7 @@ find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INC
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 
 # TODO: make as submodule too later
-pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
+#pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
 
 target_compile_definitions(${APP_TARGET}
 							PRIVATE

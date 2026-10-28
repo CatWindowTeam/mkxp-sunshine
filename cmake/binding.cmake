@@ -55,6 +55,7 @@ if(BINDING STREQUAL "mruby")
 		execute_process(COMMAND "${CMAKE_COMMAND}" -E env
 		        "MRUBY_BUILD_FLAGS=${_mruby_flags}"
 		        "LOW_MEMORY=${LOW_MEMORY}"
+		        "PLATFORM=${CMAKE_SYSTEM_NAME}"
 		        "${CMAKE_SOURCE_DIR}/cmake/mruby.sh"
 		        "${CMAKE_SOURCE_DIR}"
 		)
