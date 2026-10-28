@@ -20,6 +20,26 @@ static SDL_FColor fcolor(float r, float g, float b, float a){
 	return c;
 }
 
+static float clamp01(float v){
+	return std::min(std::max(v, 0.0f), 1.0f);
+}
+
+static SDL_FColor applyColorKeep(SDL_FColor c, const EffectUniforms &u){
+	const float keep = 1.0f - clamp01(u.color.w);
+	c.r *= keep * (1.0f + std::min(std::max(u.tone.x, -1.0f), 0.0f));
+	c.g *= keep * (1.0f + std::min(std::max(u.tone.y, -1.0f), 0.0f));
+	c.b *= keep * (1.0f + std::min(std::max(u.tone.z, -1.0f), 0.0f));
+	return c;
+}
+
+static SDL_FColor additiveColor(SDL_FColor c, const EffectUniforms &u){
+	const float a = clamp01(u.color.w);
+	c.r = clamp01(std::max(u.tone.x, 0.0f) + u.color.x * a);
+	c.g = clamp01(std::max(u.tone.y, 0.0f) + u.color.y * a);
+	c.b = clamp01(std::max(u.tone.z, 0.0f) + u.color.z * a);
+	return c;
+}
+
 SDLRender::SDLRender(const Config &conf, SDL_Renderer *renderer)
     : StatefulRender(conf),
       renderer(renderer),
@@ -301,6 +321,9 @@ void SDLRender::uploadGeometry(GeometryHandle geom, size_t bytes, const void *da
 }
 
 void SDLRender::uploadGeometryRange(GeometryHandle geom, size_t offset, size_t bytes, const void *data){
+	if (bytes == 0)
+		return;
+
 	std::vector<uint8_t> &buf = geometries.get(geom.id)->data;
 	if (buf.size() < offset + bytes)
 		buf.resize(offset + bytes);
@@ -545,12 +568,18 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 				break;
 
 			case SHADER_alphaSprite :
-			case SHADER_plane :
 			case SHADER_blt :
 				color = fcolor(1, 1, 1, u.opacity);
 				break;
 
+			case SHADER_plane :
+				color = applyColorKeep(fcolor(1, 1, 1, u.opacity), u);
+				break;
+
 			case SHADER_sprite :
+				color = applyColorKeep(fcolor(u.modulate.x, u.modulate.y, u.modulate.z, u.modulate.w * u.opacity), u);
+				break;
+
 			case SHADER_worldMachine :
 			case SHADER_crt :
 			case SHADER_water :
@@ -592,7 +621,18 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 		return;
 	}
 
-	submit(bound, v, blendMode(effect == SHADER_blt), false);
+	const SDL_BlendMode mode = blendMode(effect == SHADER_blt);
+	submit(bound, v, mode, false);
+
+	const bool toned = effect == SHADER_sprite || effect == SHADER_plane;
+	const bool hasAdd = u.tone.x > 0 || u.tone.y > 0 || u.tone.z > 0 || u.color.w > 0;
+
+	if (toned && hasAdd && mode != SDL_BLENDMODE_NONE){
+		for (size_t i = 0; i < v.list.size(); ++i)
+			v.list[i].color = additiveColor(v.list[i].color, u);
+
+		submit(bound, v, SDL_BLENDMODE_ADD, false);
+	}
 }
 
 void SDLRender::beginBlit(const RenderTarget &rt){

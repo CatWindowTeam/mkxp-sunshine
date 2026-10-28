@@ -778,6 +778,9 @@ void GPURender::uploadGeometryRange(GeometryHandle geom, size_t offset, size_t b
 	const size_t first = offset / stride;
 	const size_t count = bytes / stride;
 
+	if (count == 0)
+		return;
+
 	if (g.vertices.size() < first + count){
 		GpuVertex zero;
 		memset(&zero, 0, sizeof(zero));
