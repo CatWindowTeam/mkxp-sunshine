@@ -137,6 +137,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 		p->os = "haiku";
 	#elif vita
 		p->os = "vita";
+	#elif dos
+		p->os = "dos";
 	#endif
 
 	//username
@@ -161,6 +163,9 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 			}
 		}
 		p->journal = "_______.exe";
+	#elif dos
+		p->journal = "_______.COM";
+		p->userName = "Player";
 	#elif unix_like
 		// Get user's name
 		#ifdef apple

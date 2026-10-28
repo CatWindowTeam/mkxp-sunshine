@@ -27,7 +27,6 @@
 #include <mruby/compile.h>
 #include <mruby/proc.h>
 #include <mruby/dump.h>
-#include <zlib.h>
 #include <string>
 #include <SDL3/SDL_iostream.h>
 #include <unistd.h>
@@ -35,6 +34,7 @@
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "filesystem.h"
+#include "meow.h"
 
 static void mrbBindingExecute();
 static void mrbBindingTerminate();

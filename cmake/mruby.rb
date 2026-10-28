@@ -1,4 +1,12 @@
-MRuby::Build.new do |conf|
+MRuby::Build.new("host") do |conf|
+  conf.toolchain :gcc
+  conf.cc.command       = "gcc"
+  conf.cxx.command      = "g++"
+  conf.linker.command   = "g++"
+  conf.archiver.command = "ar"
+end
+
+MRuby::CrossBuild.new("sunshine")  do |conf|
   conf.toolchain
 
   if(ENV["PLATFORM"] == "DOS")
@@ -29,7 +37,7 @@ MRuby::Build.new do |conf|
   	end
   end
   
-  conf.build_mrbc_exec
+  conf.bins = []
   conf.enable_cxx_exception
   conf.cc.cxx_compile_flag = ENV["MRUBY_BUILD_FLAGS"]
   conf.disable_compile_commands
@@ -40,8 +48,6 @@ MRuby::Build.new do |conf|
 	conf.defines << 'MRB_GC_STRESS'
   end
   conf.gem :core => 'mruby-array-ext'
-  conf.gem :core => 'mruby-bin-mrbc'
-  conf.gem :core => 'mruby-bin-mruby'
   conf.gem :core => 'mruby-binding'
   conf.gem :core => 'mruby-catch'
   conf.gem :core => 'mruby-class-ext'

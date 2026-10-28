@@ -60,10 +60,10 @@ if(BINDING STREQUAL "mruby")
 		        "${CMAKE_SOURCE_DIR}"
 		)
 	endif()
-    file(GLOB_RECURSE BINDING_LIBRARY LIST_DIRECTORIES FALSE "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby/build/host/lib/libmruby.a")
+    file(GLOB_RECURSE BINDING_LIBRARY LIST_DIRECTORIES FALSE "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby/build/sunshine/lib/libmruby.a")
 
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby/build/host/include")
-    	set(BINDING_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby/build/host/include")
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby/build/sunshine/include")
+    	set(BINDING_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby/build/sunshine/include")
     else()
     	message(FATAL_ERROR "Failed to find MRuby includes")
     endif()

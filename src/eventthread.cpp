@@ -603,7 +603,7 @@ void SyncPoint::Util::unlock(bool multi){
 
 void SyncPoint::Util::waitForUnlock(){
 	SDL_LockMutex(mut);
-	while (locked)
+	while(locked)
 		SDL_WaitCondition(cond, mut);
 	SDL_UnlockMutex(mut);
 }

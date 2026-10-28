@@ -282,10 +282,9 @@ static bool readBindings(BDescVec &out, const std::string &dir){
 
 BDescVec loadBindings(){
 	BDescVec d;
-
+	
 	if (readBindings(d, conf.customDataPath))
 		return d;
-
 	if (readBindings(d, conf.commonDataPath))
 		return d;
 

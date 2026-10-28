@@ -2,22 +2,19 @@
 #include "define.h"
 
 // DJGPP doesn't work with CLI11 so lets just disable it
-#ifndef dos
-	#include "CLI11.hpp"
-	#ifdef NDEBUG
-		#define CLI11_DISABLE_EXTRA_VALIDATORS 1
-	#endif
-#endif
-
 Config conf;
 
 #ifndef dos
+	#ifdef NDEBUG
+		#define CLI11_DISABLE_EXTRA_VALIDATORS 1
+	#endif
 	#include "meow.h"
 	#include "util.h"
 	#include "debugwriter.h"
 	#include <SDL3/SDL_filesystem.h>
 	#include <SDL3/SDL_system.h>
 	#include <SDL3/SDL_stdinc.h>
+	#include "CLI/CLI.hpp"
 	
 	static std::string prefPath(const char *org, const char *app){
 		const char *path = SDL_GetPrefPath(org, app);
@@ -84,7 +81,7 @@ Config conf;
 	    resolutionOverridden = defScreenW != 640 || defScreenH != 480;
 	    #ifdef STEAM
 	    	/* Override fullscreen config if Big Picture */
-	    	if (const char *env = SDL_getenv("SteamTenfoot")){
+	    	if(const char *env = SDL_getenv("SteamTenfoot")){
 	    		if (!SDL_strcmp(env, "1"))
 	    			fullscreen = true;
 	    	}

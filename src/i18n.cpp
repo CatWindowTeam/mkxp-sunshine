@@ -2,7 +2,6 @@
 	Really hacked-together naiive implementation of gettext
 */
 #include "i18n.h"
-#include <stdlib.h>
 #include <stdio.h>
 #include <SDL3/SDL_stdinc.h>
 
@@ -23,7 +22,7 @@ struct LanguageFontAndSize {
 LanguageFontAndSize** languageMetadata = 0;
 
 const char* findtext(unsigned int msgid, const char* fallback) {
-	if (msgid >= nStr) {
+	if(msgid >= nStr) {
 		return fallback;
 	}else{
 		return strdict[msgid];
@@ -170,7 +169,7 @@ void loadLocale(const char* locale) {
 	// currently there are 52, but 100 should be plenty if we ever do add more
 	strdict = (char**)SDL_malloc(sizeof(char*) * dictSize);
 
-	sprintf(pathbuf, "Languages/internal/%s.po", locale);
+	SDL_snprintf(pathbuf, sizeof(pathbuf), "Languages/internal/%s.po", locale);
 	locfile = fopen(pathbuf, "r");
 	if (locfile) {
 		while (fgets(line, 1024, locfile)) {

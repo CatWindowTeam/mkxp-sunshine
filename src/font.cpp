@@ -23,11 +23,11 @@
 #include "sharedstate.h"
 #include "filesystem.h"
 #include "exception.h"
-#include <tsl/robin_map.h>
-#include <tsl/robin_set.h>
 #include "util.h"
 #include "config.h"
 #include "meow.h"
+#include <tsl/robin_map.h>
+#include <tsl/robin_set.h>
 #include <string>
 #include <utility>
 
@@ -36,7 +36,6 @@ typedef std::pair<std::string, int> FontKey;
 struct FontSet{
 	/* 'Regular' style */
 	std::string regular;
-
 	/* Any other styles (used in case no 'Regular' exists) */
 	std::string other;
 };

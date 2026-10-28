@@ -1,22 +1,17 @@
 #pragma once
-
 #include <sigc++/sigc++.h> 
 
 class SignalConnection{
 public:
     SignalConnection() = default;
-    SignalConnection(sigc::connection conn)
-        : connection(std::move(conn))
-    {}
+    SignalConnection(sigc::connection conn) : connection(std::move(conn)){}
  
-    void Disconnect()
-    {
+    void Disconnect(){
         if (Connected())
             connection.disconnect();
     }
 
-    bool Connected() const
-    {
+    bool Connected() const{
         return connection.connected();
     }
 

@@ -27,7 +27,6 @@ Scene::Scene() {}
 Scene::~Scene(){
 	/* Ensure elements don't unlink from a destructed Scene */
 	IntruListLink<SceneElement> *iter;
-
 	for (iter = elements.begin(); iter != elements.end(); iter = iter->next){
 		iter->data->scene = 0;
 	}
@@ -35,10 +34,8 @@ Scene::~Scene(){
 
 void Scene::insert(SceneElement &element){
 	IntruListLink<SceneElement> *iter;
-
 	for (iter = elements.begin(); iter != elements.end(); iter = iter->next){
 		SceneElement *e = iter->data;
-
 		if (element < *e){
 			elements.insertBefore(element.link, *iter);
 			return;
@@ -50,10 +47,8 @@ void Scene::insert(SceneElement &element){
 
 void Scene::insertAfter(SceneElement &element, SceneElement &after){
 	IntruListLink<SceneElement> *iter;
-
 	for (iter = &after.link; iter != elements.end(); iter = iter->next){
 		SceneElement *e = iter->data;
-
 		if (element < *e){
 			elements.insertBefore(element.link, *iter);
 			return;
@@ -70,7 +65,6 @@ void Scene::reinsert(SceneElement &element){
 
 void Scene::notifyGeometryChange(){
 	IntruListLink<SceneElement> *iter;
-
 	for (iter = elements.begin(); iter != elements.end(); iter = iter->next){
 		iter->data->onGeometryChange(geometry);
 	}
@@ -78,10 +72,8 @@ void Scene::notifyGeometryChange(){
 
 void Scene::composite(){
 	IntruListLink<SceneElement> *iter;
-
 	for (iter = elements.begin(); iter != elements.end(); iter = iter->next){
 		SceneElement *e = iter->data;
-
 		if (e->visible)
 			e->draw();
 	}
@@ -105,23 +97,18 @@ SceneElement::~SceneElement(){
 
 void SceneElement::setScene(Scene &scene){
 	unlink();
-
 	this->scene = &scene;
-
 	scene.insert(*this);
-
 	onGeometryChange(scene.getGeometry());
 }
 
 int SceneElement::getOrder() const{
 	aboutToAccess();
-
 	return order;
 }
 
 void SceneElement::setOrder(int value){
 	aboutToAccess();
-
 	if (order == value)
 		return;
 
@@ -131,13 +118,11 @@ void SceneElement::setOrder(int value){
 
 bool SceneElement::getVisible() const{
 	aboutToAccess();
-
 	return visible;
 }
 
 void SceneElement::setVisible(bool value){
 	aboutToAccess();
-
 	visible = value;
 }
 
@@ -153,7 +138,7 @@ bool SceneElement::operator<(const SceneElement &o) const{
 
 		return true;
 	}
-
+	
 	return false;
 }
 

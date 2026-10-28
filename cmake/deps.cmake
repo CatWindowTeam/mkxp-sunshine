@@ -3,18 +3,15 @@ find_package(PkgConfig REQUIRED)
 include(${CMAKE_SOURCE_DIR}/cmake/deps_config.cmake)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external)
 
-# TODO: make as submodule too later
-pkg_check_modules(SIGCPP REQUIRED sigc++-3.0)
-
 target_compile_definitions(${APP_TARGET}
 							PRIVATE
 							${DEFINES})
 							
 target_include_directories(${APP_TARGET} 
 							PRIVATE
-							src
-							external/robin-map/include
-							${SIGCPP_INCLUDE_DIRS}
+							${CMAKE_SOURCE_DIR}/src
+							${CMAKE_SOURCE_DIR}/external/robin-map/include
+							${CMAKE_SOURCE_DIR}/external/sigc
 							${BINDING_INCLUDE})
 
 target_link_libraries(${APP_TARGET}
@@ -24,9 +21,9 @@ target_link_libraries(${APP_TARGET}
 						SDL3_net::SDL3_net
 						SDL3_mixer::SDL3_mixer
 						SDL3::SDL3
-						${SIGCPP_LIBRARIES}
 						${PLATFORM_LIBRARIES}
 						${BINDING_LIBRARY}
 						CLI11::CLI11
 						ZLIB::ZLIBSTATIC
-						PhysFS::PhysFS)
+						PhysFS::PhysFS
+						"${CMAKE_BINARY_DIR}/external/sigc/sigc++/libsigc-3.0.a")

@@ -19,13 +19,14 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "bitmap.h"
 #include <SDL3/SDL.h>
-#include <SDL3_image/SDL_image.h>
-#include <SDL3_ttf/SDL_ttf.h>
+#include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_iostream.h>
+#include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
+#include "bitmap.h"
 #include "quad.h"
 #include "quadarray.h"
 #include "transform.h"
@@ -40,7 +41,7 @@
 
 #define GUARD_MEGA \
 	{ \
-		if (p->megaSurface) \
+		if(p->megaSurface) \
 			ErrorMsg(Exception::MKXPError, "Operation not supported for mega surfaces"); \
 	}
 
@@ -104,7 +105,6 @@ struct BitmapPrivate{
 		if (norm.w == 0 || norm.h == 0) return;
 		
 		std::vector<IntRect> newTainted;
-		
 		for (const IntRect& tRect : tainted) {
 			// skip rect if new rect absorbed it
 			if (norm.x <= tRect.x
@@ -191,8 +191,8 @@ struct BitmapPrivate{
 	}
 
 	bool touchesTaintedArea(const IntRect &rect){
-		for (const IntRect& t_rect : tainted)
-			if (SDL_HasRectIntersection(&rect, &t_rect)) 
+		for(const IntRect& t_rect : tainted)
+			if(SDL_HasRectIntersection(&rect, &t_rect)) 
 				return true;
 		return false;
 	}
@@ -202,7 +202,9 @@ struct BitmapPrivate{
 		render.setTexSize(Vec2i(target.width, target.height));
 	}
 
-	void bindTarget(){ render.bindRenderTarget(target); }
+	void bindTarget(){
+		render.bindRenderTarget(target);
+	}
 
 	void pushSetViewport() const{
 		render.pushViewport(IntRect(0, 0, target.width, target.height));
@@ -351,7 +353,6 @@ int Bitmap::width() const{
 
 int Bitmap::height() const{
 	guardDisposed();
-
 	if (p->megaSurface)
 		return p->megaSurface->h;
 
@@ -364,7 +365,7 @@ IntRect Bitmap::rect() const{
 }
 
 void Bitmap::blt(int x, int y, const Bitmap &source, IntRect rect, int opacity){
-	if (source.isDisposed())
+	if(source.isDisposed())
 		return;
 
 	// FIXME: RGSS allows the source rect to both lie outside
@@ -373,14 +374,13 @@ void Bitmap::blt(int x, int y, const Bitmap &source, IntRect rect, int opacity){
 	// doesn't fix anything for a direct stretch_blt call).
 
 	/* Clamp rect to source bitmap size */
-	if (rect.x + rect.w > source.width())
+	if(rect.x + rect.w > source.width())
 		rect.w = source.width() - rect.x;
 
-	if (rect.y + rect.h > source.height())
+	if(rect.y + rect.h > source.height())
 		rect.h = source.height() - rect.y;
 
-	stretchBlt(IntRect(x, y, rect.w, rect.h),
-	           source, rect, opacity);
+	stretchBlt(IntRect(x, y, rect.w, rect.h), source, rect, opacity);
 }
 
 void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const IntRect &sourceRect, int opacity) {

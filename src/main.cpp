@@ -153,12 +153,14 @@ int main(int argc, char *argv[]){
 		}
 	#endif
 
-	if(!conf.gameFolder.empty()){
-		if(chdir(conf.gameFolder.c_str()) != 0){
-			WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
-			return 0;
+	#ifndef dos
+		if(!conf.gameFolder.empty()){
+			if(chdir(conf.gameFolder.c_str()) != 0){
+				WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
+				return 0;
+			}
 		}
-	}
+	#endif
 
 	//TODO: rewrite this shit
 	#ifndef mkxp_android

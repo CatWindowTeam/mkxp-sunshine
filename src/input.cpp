@@ -26,10 +26,8 @@
 #include "util.h"
 #include "define.h"
 #include "graphics.h"
-
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_mouse.h>
-
 #include <SDL3/SDL_stdinc.h>
 #include <assert.h>
 
@@ -39,12 +37,7 @@ struct ButtonState{
 	bool pressed;
 	bool triggered;
 	bool repeated;
-
-	ButtonState()
-		: pressed(false),
-		  triggered(false),
-		  repeated(false)
-	{}
+	ButtonState() : pressed(false), triggered(false), repeated(false){}
 };
 
 struct KbBindingData{
@@ -53,24 +46,16 @@ struct KbBindingData{
 };
 
 struct Binding{
-	Binding(Input::ButtonCode target = Input::None)
-		: target(target)
-	{}
-
+	Binding(Input::ButtonCode target = Input::None) : target(target){}
 	virtual bool sourceActive() const = 0;
 	virtual bool sourceRepeatable() const = 0;
-
 	Input::ButtonCode target;
 };
 
 /* Keyboard binding */
 struct KbBinding : public Binding{
 	KbBinding() {}
-
-	KbBinding(const KbBindingData &data)
-		: Binding(data.target),
-		  source(data.source)
-	{}
+	KbBinding(const KbBindingData &data) : Binding(data.target), source(data.source){}
 
 	bool sourceActive() const{
 		/* Special case aliases */
@@ -113,11 +98,9 @@ struct GcButtonBinding : public Binding{
 struct GcAxisBinding : public Binding{
 	GcAxisBinding() {}
 
-	GcAxisBinding(uint8_t source, AxisDir dir, Input::ButtonCode target)
-	    : Binding(target),
+	GcAxisBinding(uint8_t source, AxisDir dir, Input::ButtonCode target) : Binding(target),
 	      source(source),
-	      dir(dir)
-	{}
+	      dir(dir){}
 
 	bool sourceActive() const{
 		int val = EventThread::gcState.axes[source];
