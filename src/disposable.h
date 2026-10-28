@@ -50,7 +50,7 @@ public:
 		return disposed;
 	}
 
-	Signal<void> wasDisposed;
+	Signal<void()> wasDisposed;
 
 protected:
 	void guardDisposed() const{

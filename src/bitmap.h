@@ -106,7 +106,7 @@ public:
 	/* Adds 'rect' to tainted area */
 	void taintArea(const IntRect &rect);
 
-	Signal<void> modified;
+	Signal<void()> modified;
 
 private:
 	void releaseResources();

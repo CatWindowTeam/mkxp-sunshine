@@ -1,6 +1,6 @@
 #pragma once
-#include <sigc++/connection.h>
-#include "debugwriter.h"
+
+#include <sigc++/sigc++.h> 
 
 class SignalConnection{
 public:
@@ -11,26 +11,18 @@ public:
  
     void Disconnect()
     {
-        if (&connection != nullptr)
-            //if (connection.connected())
-                connection.disconnect();
-            //else
-            //    Debug() << "Double disconnect!";
-        else
-            Debug() << "Couldn't disconnect nullptr connection!";
+        if (Connected())
+            connection.disconnect();
     }
 
     bool Connected() const
     {
-        if (&connection == nullptr)
-            Debug() << "nullptr connection!";
-            return false;
         return connection.connected();
     }
 
 private:
     sigc::connection connection;
 
-    template<typename>
+    template<typename, typename...>
     friend class Signal;
 };

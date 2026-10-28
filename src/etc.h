@@ -139,7 +139,7 @@ struct Tone : public Serializable{
 	/* Normalized (-1.0 ~ 1.0) */
 	Vec4 norm;
 
-	Signal<void> valueChanged;
+	Signal<void()> valueChanged;
 };
 
 struct Rect : public Serializable{
@@ -190,7 +190,7 @@ struct Rect : public Serializable{
 	int width;
 	int height;
 
-	Signal<void> valueChanged;
+	Signal<void()> valueChanged;
 };
 
 

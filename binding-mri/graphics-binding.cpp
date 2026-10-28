@@ -287,14 +287,12 @@ static VALUE graphicsWindowResized(VALUE self){
 static VALUE graphicsViewportResized(VALUE self){
 	RUBY_CONNECTION
 	conn->connection = shState->graphicsSignals.resized.Connect([conn](int w, int h){
-		//shState->rubyDispatcher().invoke([conn, w, h]{
-			if (NIL_P(conn->proc)){
-				Debug() << "Unable to call non-existent proc! (Graphics.viewport_resized connection, disconnecting)";
-				conn->connection.Disconnect();
-				return;
-			}
-			rb_funcall(conn->proc, rb_intern("call"), 2, INT2NUM(w), INT2NUM(h));
-		//});
+		if (!conn || NIL_P(conn->proc)){
+			Debug() << "Unable to call non-existent proc! (Graphics.viewport_resized connection, disconnecting)";
+			conn->connection.Disconnect();
+			return;
+		}
+		rb_funcall(conn->proc, rb_intern("call"), 2, INT2NUM(w), INT2NUM(h));
 	});
 	return TypedData_Wrap_Struct(rb_cRubyConnection, &rubyConnection_type, conn);
 }

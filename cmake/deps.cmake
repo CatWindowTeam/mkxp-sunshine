@@ -10,7 +10,7 @@ find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INC
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 
 # TODO: make as submodule too later
-pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
+pkg_check_modules(SIGCPP REQUIRED sigc++-3.0)
 
 target_compile_definitions(${APP_TARGET}
 							PRIVATE
@@ -20,7 +20,7 @@ target_include_directories(${APP_TARGET}
 							PRIVATE
 							src
 							external/robin-map/include
-							${SIGC2_INCLUDE_DIRS}
+							${SIGCPP_INCLUDE_DIRS}
 							${PIXMAN_INCLUDE_DIR}
 							${BINDING_INCLUDE})
 
@@ -32,7 +32,7 @@ target_link_libraries(${APP_TARGET}
 						SDL3_mixer::SDL3_mixer
 						SDL3::SDL3
 						${PIXMAN_LIBRARY}
-						${SIGC2_LIBRARIES}
+						${SIGCPP_LIBRARIES}
 						${PLATFORM_LIBRARIES}
 						${BINDING_LIBRARY}
 						CLI11::CLI11
