@@ -112,6 +112,8 @@ int main(int argc, char *argv[]){
 		SDL_SetHint(SDL_HINT_ANDROID_ALLOW_PERSISTENT_FOLDER_ACCESS, "1");
 		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "1");
 		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "1");
+	#elif dos
+		SDL_SetHint("SDL_HINT_DOS_ALLOW_DIRECT_FRAMEBUFFER", "1");
 	#endif
 
 	/* initialize SDL first */

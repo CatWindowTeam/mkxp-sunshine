@@ -28,6 +28,10 @@
 	#define haiku 1
 #endif
 
+#if SDL_PLATFORM_DOS
+	#define dos 1
+#endif
+
 #if SDL_PLATFORM_VITA
 	#define vita 1
 #endif

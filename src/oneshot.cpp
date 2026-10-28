@@ -108,6 +108,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	p->obscuredNeedToUpdate = false;
 	p->allowExit = true;
 	p->exiting = false;
+
 	//locale
 	SDL_Locale** Locale = SDL_GetPreferredLocales(NULL);
 	if(Locale == nullptr){
@@ -189,6 +190,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 		const char* path = "/sdcard/Sunshine/Documents";
 	#elif vita
 		const char* path = "ux0:/data/Sunshine";
+	#elif dos
+		const char* path = SDL_GetCurrentDirectory();
 	#else
 		const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
 		if(path == nullptr){
@@ -238,8 +241,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 				desktopEnv = "pantheon";
 			}else if(desktop.find("sway") != std::string::npos){
 				//some sway users configure XDG_DESKTOP manually
-                                desktopEnv = "sway";
-                        }
+				desktopEnv = "sway";
+			}
 		}
 		Debug() << "Desktop env: " << desktopEnv;
 	#endif
