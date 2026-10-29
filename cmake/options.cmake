@@ -27,7 +27,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #code analysis
 if(CODE_ANAL)
 	#tools
-	set(CMAKE_CXX_CLANG_TIDY clang-tidy)
 	check_option(WARNS -Wdouble-promotion
 			-Wduplicate-decl-specifier
 			-Wformat=2

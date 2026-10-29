@@ -196,7 +196,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	#elif vita
 		const char* path = "ux0:/data/Sunshine";
 	#elif dos
-		const char* path = SDL_GetCurrentDirectory();
+		const char* path = "C:\\";
 	#else
 		const char* path = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
 		if(path == nullptr){

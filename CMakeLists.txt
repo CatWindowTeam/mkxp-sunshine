@@ -1,22 +1,37 @@
 cmake_minimum_required(VERSION 3.20)
+
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message(FATAL_ERROR "In-source builds are disabled. Use: cmake -S . -B build")
 endif()
+
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release Release_LowMemory)
+
+# LSP support
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+
 project(oneshot)
+
 include(CheckIPOSupported)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/xxd.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/check.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/options.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/ports.cmake)
 
-# cmake/vita.cmake
+# cmake/ports.cmake
 ports_prepare()
 
+# LTO support
 check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error LANGUAGES CXX)
+if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	if(ipo_supported)
+	    set_property(TARGET ${APP_TARGET} PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+	else()
+	    message(WARNING "IPO/LTO is not supported: ${ipo_error}")
+	endif()
+endif()
 
 # find src, embeds and binding src
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/source.cmake)
@@ -26,14 +41,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_exec.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/platform.cmake)
 # tweak compiler and linker for optimization
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/compiler_tweaks.cmake)
-
-if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-	if(ipo_supported)
-	    set_property(TARGET ${APP_TARGET} PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
-	else()
-	    message(WARNING "IPO/LTO is not supported: ${ipo_error}")
-	endif()
-endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/deps.cmake)
 add_subdirectory(scripts)
