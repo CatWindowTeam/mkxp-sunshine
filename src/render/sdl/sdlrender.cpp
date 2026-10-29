@@ -124,7 +124,10 @@ SDLRender::SDLRender(const Config &conf, SDL_Renderer *renderer)
     : StatefulRender(conf),
       renderer(renderer),
       target(0),
-      maxTexSize(0)
+      maxTexSize(0),
+      stateValid(false),
+      appliedTarget(0),
+      appliedClipOn(false)
 {
 	SDL_PropertiesID props = SDL_GetRendererProperties(renderer);
 	maxTexSize = (int) SDL_GetNumberProperty(props, SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, 4096);
@@ -181,6 +184,7 @@ void SDLRender::createSdlTexture(SdlTexture &tex, int w, int h){
 	SDL_SetRenderDrawColorFloat(renderer, 0, 0, 0, 0);
 	SDL_RenderClear(renderer);
 	SDL_SetRenderTarget(renderer, previous);
+	stateValid = false;
 }
 
 TexHandle SDLRender::createTexture(int w, int h, PixelFormat){
@@ -195,9 +199,12 @@ void SDLRender::resizeTexture(TexHandle handle, int w, int h, PixelFormat){
 	if (!tex)
 		return;
 
+	flushIfUses(tex->texture);
+
 	if (tex->texture)
 		SDL_DestroyTexture(tex->texture);
 
+	stateValid = false;
 	createSdlTexture(*tex, w, h);
 }
 
@@ -212,9 +219,12 @@ void SDLRender::destroyTexture(TexHandle handle){
 	if (boundTexture == handle.id)
 		boundTexture = 0;
 
+	flushIfUses(tex->texture);
+
 	if (tex->texture)
 		SDL_DestroyTexture(tex->texture);
 
+	stateValid = false;
 	textures.remove(handle.id);
 }
 
@@ -244,6 +254,7 @@ void SDLRender::uploadTextureRect(TexHandle handle, int x, int y, int w, int h, 
 	if (!tex || !tex->texture || !pixels)
 		return;
 
+	flushIfUses(tex->texture);
 	renderStatsUpload((size_t) w * h * 4);
 	SDL_Rect rect = { x, y, w, h };
 
@@ -269,6 +280,7 @@ void SDLRender::uploadTextureRect(TexHandle handle, int dstX, int dstY, int w, i
 	if (!tex || !tex->texture)
 		return;
 
+	flushIfUses(tex->texture);
 	renderStatsUpload((size_t) w * h * 4);
 	SDL_Rect rect = { dstX, dstY, w, h };
 	const uint8_t *base = static_cast<const uint8_t*>(src->pixels) + (size_t) srcY * src->pitch + (size_t) srcX * 4;
@@ -310,21 +322,58 @@ int SDLRender::screenHeight(){
 	return h;
 }
 
-void SDLRender::applyState(){
-	SDL_SetRenderTarget(renderer, target ? target->texture : 0);
+void SDLRender::applyStateFor(SDL_Texture *wantTarget, const SDL_Rect &vp, bool clipOn, const SDL_Rect &box){
+	const bool targetChanged = !stateValid || wantTarget != appliedTarget;
 
-	SDL_Rect vp = viewport.current;
-	SDL_SetRenderViewport(renderer, &vp);
-
-	if (scissorTest.current){
-		SDL_Rect box = scissorBoxProp.current;
-		SDL_SetRenderClipRect(renderer, &box);
-	}else{
-		SDL_SetRenderClipRect(renderer, 0);
+	if (targetChanged){
+		SDL_SetRenderTarget(renderer, wantTarget);
+		appliedTarget = wantTarget;
 	}
+
+	if (targetChanged || memcmp(&vp, &appliedViewport, sizeof(vp)) != 0){
+		SDL_SetRenderViewport(renderer, &vp);
+		appliedViewport = vp;
+	}
+
+	if (targetChanged || clipOn != appliedClipOn || (clipOn && memcmp(&box, &appliedClip, sizeof(box)) != 0)){
+		SDL_SetRenderClipRect(renderer, clipOn ? &box : 0);
+		appliedClipOn = clipOn;
+		appliedClip = box;
+	}
+
+	stateValid = true;
+}
+
+void SDLRender::applyState(){
+	applyStateFor(target ? target->texture : 0, viewport.current, scissorTest.current, scissorBoxProp.current);
+}
+
+void SDLRender::flush(){
+	if (!batch.active)
+		return;
+
+	batch.active = false;
+	applyStateFor(batch.target, batch.viewport, batch.clipOn, batch.clip);
+
+	if (batch.src){
+		SDL_SetTextureBlendMode(batch.src, batch.mode);
+		SDL_SetTextureScaleMode(batch.src, batch.linear ? SDL_SCALEMODE_LINEAR : SDL_SCALEMODE_NEAREST);
+	}else{
+		SDL_SetRenderDrawBlendMode(renderer, batch.mode);
+	}
+
+	++renderStats.drawCalls;
+	renderStats.vertices += batch.list.size();
+	SDL_RenderGeometry(renderer, batch.src, batch.list.data(), (int) batch.list.size(), batch.indices.data(), (int) batch.indices.size());
+}
+
+void SDLRender::flushIfUses(SDL_Texture *tex){
+	if (batch.active && tex && (batch.src == tex || batch.target == tex))
+		flush();
 }
 
 void SDLRender::clear(){
+	flush();
 	applyState();
 
 	const Vec4 &c = clearColor.current;
@@ -338,6 +387,7 @@ void SDLRender::clear(){
 }
 
 void SDLRender::readTexture(SdlTexture &tex, std::vector<uint8_t> &out){
+	flush();
 	out.assign((size_t) tex.width * tex.height * 4, 0);
 
 	if (!tex.texture)
@@ -350,6 +400,7 @@ void SDLRender::readTexture(SdlTexture &tex, std::vector<uint8_t> &out){
 	SDL_SetRenderClipRect(renderer, 0);
 	SDL_Surface *surf = SDL_RenderReadPixels(renderer, &clip);
 	SDL_SetRenderTarget(renderer, previous);
+	stateValid = false;
 
 	if (!surf)
 		return;
@@ -480,24 +531,45 @@ void SDLRender::submit(SdlTexture *tex, const Vertices &v, SDL_BlendMode mode, b
 	if (mode == SDL_BLENDMODE_INVALID || v.list.empty())
 		return;
 
-	applyState();
-
-	SDL_Texture *sdlTex = 0;
+	SDL_Texture *src = 0;
+	bool linear = false;
 
 	if (tex){
 		if (!tex->texture)
 			return;
 
-		sdlTex = tex->texture;
-		SDL_SetTextureBlendMode(sdlTex, mode);
-		SDL_SetTextureScaleMode(sdlTex, (smooth || tex->smooth) ? SDL_SCALEMODE_LINEAR : SDL_SCALEMODE_NEAREST);
-	}else{
-		SDL_SetRenderDrawBlendMode(renderer, mode);
+		src = tex->texture;
+		linear = smooth || tex->smooth;
 	}
 
-	++renderStats.drawCalls;
-	renderStats.vertices += v.list.size();
-	SDL_RenderGeometry(renderer, sdlTex, v.list.data(), (int) v.list.size(), v.indices.data(), (int) v.indices.size());
+	SDL_Texture *dst = target ? target->texture : 0;
+	const SDL_Rect vp = viewport.current;
+	const bool clipOn = scissorTest.current;
+	const SDL_Rect box = scissorBoxProp.current;
+
+	const bool same = batch.active && src == batch.src && dst == batch.target && mode == batch.mode &&
+	                  linear == batch.linear && memcmp(&vp, &batch.viewport, sizeof(vp)) == 0 &&
+	                  clipOn == batch.clipOn && (!clipOn || memcmp(&box, &batch.clip, sizeof(box)) == 0);
+
+	if (!same){
+		flush();
+		batch.active = true;
+		batch.src = src;
+		batch.target = dst;
+		batch.mode = mode;
+		batch.linear = linear;
+		batch.viewport = vp;
+		batch.clipOn = clipOn;
+		batch.clip = box;
+		batch.list.clear();
+		batch.indices.clear();
+	}
+
+	const int base = (int) batch.list.size();
+	batch.list.insert(batch.list.end(), v.list.begin(), v.list.end());
+
+	for (size_t i = 0; i < v.indices.size(); ++i)
+		batch.indices.push_back(base + v.indices[i]);
 }
 
 static SDL_Vertex lerpVertex(const SDL_Vertex &a, const SDL_Vertex &b, float t){
@@ -658,7 +730,9 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 		break;
 	}
 
-	Vertices v;
+	Vertices &v = scratch;
+	v.list.clear();
+	v.indices.clear();
 	v.list.reserve(quadCount * 4);
 	v.indices.reserve(quadCount * 6);
 
@@ -815,8 +889,10 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 	const SDL_BlendMode mode = blendMode(effect == SHADER_blt);
 	submit(bound, v, mode, false);
 
-	if (cpuEffect)
+	if (cpuEffect){
+		flush();
 		SDL_DestroyTexture(processed.texture);
+	}
 
 	const bool toned = effect == SHADER_sprite || effect == SHADER_plane;
 	const bool hasAdd = u.tone.x > 0 || u.tone.y > 0 || u.tone.z > 0 || u.color.w > 0;
@@ -902,8 +978,10 @@ void SDLRender::endBlit(){
 }
 
 void SDLRender::swapWindow(SDL_Window *){
+	flush();
 	renderStatsBeginSwap();
 	SDL_SetRenderTarget(renderer, 0);
+	stateValid = false;
 	SDL_RenderPresent(renderer);
 	renderStatsEndSwap();
 }

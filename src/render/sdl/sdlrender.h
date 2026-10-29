@@ -79,6 +79,25 @@ private:
 		std::vector<int> indices;
 	};
 
+	struct Batch{
+		bool active;
+		SDL_Texture *src;
+		SDL_Texture *target;
+		SDL_BlendMode mode;
+		bool linear;
+		SDL_Rect viewport;
+		bool clipOn;
+		SDL_Rect clip;
+		std::vector<SDL_Vertex> list;
+		std::vector<int> indices;
+
+		Batch() : active(false), src(0), target(0), mode(SDL_BLENDMODE_NONE), linear(false), clipOn(false) {}
+	};
+
+	void applyStateFor(SDL_Texture *wantTarget, const SDL_Rect &vp, bool clipOn, const SDL_Rect &box);
+	void flush();
+	void flushIfUses(SDL_Texture *tex);
+
 	SdlTexture *texture(uint32_t id);
 	void createSdlTexture(SdlTexture &tex, int w, int h);
 	void applyState();
@@ -91,6 +110,13 @@ private:
 	int screenHeight();
 
 	SDL_Renderer *renderer;
+	Vertices scratch;
+	Batch batch;
+	bool stateValid;
+	SDL_Texture *appliedTarget;
+	SDL_Rect appliedViewport;
+	bool appliedClipOn;
+	SDL_Rect appliedClip;
 	HandlePool<SdlTexture> textures;
 	HandlePool<SdlGeometry> geometries;
 
