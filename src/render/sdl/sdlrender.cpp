@@ -889,11 +889,6 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 	const SDL_BlendMode mode = blendMode(effect == SHADER_blt);
 	submit(bound, v, mode, false);
 
-	if (cpuEffect){
-		flush();
-		SDL_DestroyTexture(processed.texture);
-	}
-
 	const bool toned = effect == SHADER_sprite || effect == SHADER_plane;
 	const bool hasAdd = u.tone.x > 0 || u.tone.y > 0 || u.tone.z > 0 || u.color.w > 0;
 
@@ -902,6 +897,11 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 			v.list[i].color = additiveColor(v.list[i].color, u);
 
 		submit(bound, v, SDL_BLENDMODE_ADD, false);
+	}
+
+	if (cpuEffect){
+		flush();
+		SDL_DestroyTexture(processed.texture);
 	}
 }
 
