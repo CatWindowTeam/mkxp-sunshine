@@ -1,1 +1,3 @@
 * Added APK embedded assets support 
+* Migrated from sigc++2 to sigc++3
+* Using custom functions instead of pixman

@@ -20,7 +20,6 @@
 */
 
 #include "etc.h"
-
 #include "serial-util.h"
 #include "exception.h"
 #include "meow.h"
@@ -30,14 +29,11 @@ Color::Color(double red, double green, double blue, double alpha) : red(red), gr
 	updateInternal();
 }
 
-Color::Color(const Vec4 &norm)
-	: norm(norm){
+Color::Color(const Vec4 &norm) : norm(norm){
 	updateExternal();
 }
 
-Color::Color(const Color &o)
-    : red(o.red), green(o.green), blue(o.blue), alpha(o.alpha),
-      norm(o.norm)
+Color::Color(const Color &o) : red(o.red), green(o.green), blue(o.blue), alpha(o.alpha), norm(o.norm)
 {}
 
 bool Color::operator==(const Color &o) const{
@@ -103,7 +99,6 @@ Color *Color::deserialize(const char *data, int len){
 		crash(Exception::ArgumentError, "Color: Serialized data invalid");
 
 	Color *c = new Color();
-
 	c->red   = readDouble(&data);
 	c->green = readDouble(&data);
 	c->blue  = readDouble(&data);
@@ -138,14 +133,11 @@ SDL_Color Color::toSDLColor() const{
 }
 
 
-Tone::Tone(double red, double green, double blue, double gray)
-	: red(red), green(green), blue(blue), gray(gray){
+Tone::Tone(double red, double green, double blue, double gray) : red(red), green(green), blue(blue), gray(gray){
 	updateInternal();
 }
 
-Tone::Tone(const Tone &o)
-    : red(o.red), green(o.green), blue(o.blue), gray(o.gray),
-      norm(o.norm)
+Tone::Tone(const Tone &o) : red(o.red), green(o.green), blue(o.blue), gray(o.gray), norm(o.norm)
 {}
 
 bool Tone::operator==(const Tone &o) const{
@@ -173,7 +165,6 @@ const Tone& Tone::operator=(const Tone &o){
 	norm  = o.norm;
 
 	valueChanged();
-
 	return o;
 }
 
@@ -222,7 +213,6 @@ Tone *Tone::deserialize(const char *data, int len){
 		crash(Exception::ArgumentError, "Tone: Serialized data invalid");
 
 	Tone *t = new Tone();
-
 	t->red   = readDouble(&data);
 	t->green = readDouble(&data);
 	t->blue  = readDouble(&data);
@@ -240,18 +230,9 @@ void Tone::updateInternal(){
 }
 
 
-Rect::Rect(int x, int y, int width, int height)
-    : x(x), y(y), width(width), height(height)
-{}
-
-Rect::Rect(const Rect &o)
-    : x(o.x), y(o.y),
-      width(o.width), height(o.height)
-{}
-
-Rect::Rect(const IntRect &r)
-    : x(r.x), y(r.y), width(r.w), height(r.h)
-{}
+Rect::Rect(int x, int y, int width, int height) : x(x), y(y), width(width), height(height) {}
+Rect::Rect(const Rect &o) : x(o.x), y(o.y), width(o.width), height(o.height) {}
+Rect::Rect(const IntRect &r) : x(r.x), y(r.y), width(r.w), height(r.h) {}
 
 bool Rect::operator==(const Rect &o) const{
 	return x      == o.x     &&
@@ -287,7 +268,6 @@ const Rect &Rect::operator=(const Rect &o){
 	y      = o.y;
 	width  = o.width;
 	height = o.height;
-
 	valueChanged();
 
 	return o;

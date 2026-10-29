@@ -25,6 +25,7 @@
 	#include "meow.h"
 	#include <SDL3/SDL_video.h>
 	#include <string>
+	#include <debugwriter.h>
 
 	GLFunctions gl;
 

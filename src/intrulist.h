@@ -19,24 +19,18 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef INTRULIST_H
-#define INTRULIST_H
-
+#pragma once
 template <typename T>
+
 struct IntruListLink{
 	IntruListLink<T> *prev;
 	IntruListLink<T> *next;
 	T *data;
 
-	IntruListLink(T *data)
-	    : prev(0),
-	      next(0),
-	      data(data)
-	{}
+	IntruListLink(T *data) : prev(0), next(0), data(data){}
 
 	~IntruListLink(){
-		if (prev && next)
-		{
+		if (prev && next){
 			next->prev = prev;
 			prev->next = next;
 		}
@@ -49,10 +43,7 @@ class IntruList{
 	int size;
 
 public:
-	IntruList()
-	    : root(0),
-	      size(0)
-	{
+	IntruList() : root(0), size(0){
 		root.prev = &root;
 		root.next = &root;
 	}
@@ -75,8 +66,7 @@ public:
 		size++;
 	}
 
-	void insertBefore(IntruListLink<T> &node,
-	                  IntruListLink<T> &prev){
+	void insertBefore(IntruListLink<T> &node, IntruListLink<T> &prev){
 		node.next = &prev;
 		node.prev = prev.prev;
 		prev.prev->next = &node;
@@ -102,7 +92,6 @@ public:
 		remove(root);
 		root.prev = &root;
 		root.next = &root;
-
 		size = 0;
 	}
 
@@ -130,5 +119,3 @@ public:
 		return size;
 	}
 };
-
-#endif // INTRULIST_H

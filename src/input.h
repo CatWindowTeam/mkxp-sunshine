@@ -19,11 +19,8 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 #include <vector>
-
-#ifndef INPUT_H
-#define INPUT_H
-
 struct InputPrivate;
 struct RGSSThreadData;
 struct SourceDesc;
@@ -71,16 +68,12 @@ public:
 	float wheelX();
 	float wheelY();
 	bool wheelFlipped();
-
+	
 	bool hasQuit();
 
 private:
 	Input(const RGSSThreadData &rtData);
 	~Input();
-
 	friend struct SharedStatePrivate;
-
 	InputPrivate *p;
 };
-
-#endif // INPUT_H

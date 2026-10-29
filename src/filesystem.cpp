@@ -41,7 +41,7 @@ struct SDLRWIoContext{
 	SDL_IOStream *ops;
 	std::string filename;
 	SDLRWIoContext(const char *filename) : ops(SDL_IOFromFile(filename, "r")), filename(filename){
-		if (!ops)
+		if(!ops)
 			throw Exception(Exception::SDLError, "Failed to open file: %s", SDL_GetError());
 	}
 

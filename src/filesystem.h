@@ -64,4 +64,3 @@ private:
 };
 
 extern const Uint32 SDL_RWOPS_PHYSFS;
-

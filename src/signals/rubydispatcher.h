@@ -1,17 +1,19 @@
 #pragma once
-
+#include <SDL3/SDL.h>
 #include <functional>
-#include <mutex>
 #include <queue>
 
-class RubyDispatcher{
+class RubyDispatcher {
 public:
-    RubyDispatcher() {};
+    RubyDispatcher();
+    ~RubyDispatcher();
+
+    RubyDispatcher(const RubyDispatcher&) = delete;
+    RubyDispatcher& operator=(const RubyDispatcher&) = delete;
 
     void invoke(std::function<void()> fn);
     void process();
-
 private:
-    std::mutex mutex;
+    SDL_Mutex* mutex;
     std::queue<std::function<void()>> queue;
 };

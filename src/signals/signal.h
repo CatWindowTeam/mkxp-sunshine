@@ -1,52 +1,41 @@
 #pragma once
-
-#include <sigc++/signal.h>
-
+#include <sigc++/sigc++.h> 
 #include "signalconnection.h"
 
+template<typename Result, typename... Args>
+class Signal;
+
 // мямямя
-template<typename Signature>
-class Signal
-{
+template<typename Result, typename... Args>
+class Signal<Result(Args...)>{
 public:
-    size_t listeners = 0;
-
-    template<typename Obj>
-    SignalConnection Connect(Obj& obj, void (Obj::*func)())
-    {
-        return SignalConnection(signal.connect([&obj, func](auto&&...) { (obj.*func)(); }));
-    }
-
     template<typename Obj, typename Func>
-    SignalConnection Connect(Obj& obj, Func func)
-    {
-        listeners++;
-        return SignalConnection(signal.connect(sigc::mem_fun(obj, func)));
+    SignalConnection Connect(Obj& obj, Func func){
+        if constexpr (std::is_base_of_v<sigc::trackable, Obj>)
+            return SignalConnection(signal.connect(sigc::track_object(sigc::mem_fun(obj, func), obj)));
+        else
+            return SignalConnection(signal.connect(sigc::mem_fun(obj, func)));
     }
 
     template<typename Callable>
-    SignalConnection Connect(Callable cb)
-    {
-        return SignalConnection(signal.connect(cb));
+    SignalConnection Connect(Callable cb){
+        return SignalConnection(signal.connect(std::move(cb)));
     }
 
-    template<typename... Args>
-    void Emit(Args... args)
-    {
-        signal(args...);
+    void Emit(Args... args){
+        signal(std::forward<Args>(args)...);
     }
 
-    template<typename... Args>
-    void operator()(Args... args)
-    {
-        signal(args...);
+    void operator()(Args... args){
+        signal(std::forward<Args>(args)...);
     }
 
-    void DisconnectAll()
-    {
+    void DisconnectAll(){
         signal.clear();
     }
 
 private:
-    sigc::signal<Signature> signal;
+    sigc::signal<Result(Args...)> signal;
 };
+
+class Trackable : public sigc::trackable { /* owo */ };

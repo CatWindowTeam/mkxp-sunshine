@@ -23,7 +23,7 @@
 #include "vertex.h"
 #include "render/irender.h"
 #include <vector>
-#include <stdint.h>
+#include <SDL3/SDL_stdinc.h>
 
 template<class VertexType>
 struct QuadArray{

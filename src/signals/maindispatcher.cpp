@@ -1,20 +1,26 @@
 #include "maindispatcher.h"
+#include <utility>
 
-void MainDispatcher::invoke(std::function<void()> fn){
-    std::lock_guard lock(mutex);
-    queue.push(std::move(fn));
+MainDispatcher::MainDispatcher() : mutex(SDL_CreateMutex()) {}
+
+MainDispatcher::~MainDispatcher() {
+    SDL_DestroyMutex(mutex);
 }
 
-void MainDispatcher::process(){
+void MainDispatcher::invoke(std::function<void()> fn) {
+    SDL_LockMutex(mutex);
+    queue.push(std::move(fn));
+    SDL_UnlockMutex(mutex);
+}
+
+void MainDispatcher::process() {
     std::queue<std::function<void()>> local;
 
-    {
-        std::lock_guard lock(mutex);
-        std::swap(local, queue);
-    }
+    SDL_LockMutex(mutex);
+    std::swap(local, queue);
+    SDL_UnlockMutex(mutex);
 
-    while (!local.empty())
-    {
+    while (!local.empty()) {
         local.front()();
         local.pop();
     }

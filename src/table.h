@@ -70,7 +70,7 @@ public:
     	return fallback;
 	}
 
-	Signal<void> modified;
+	Signal<void()> modified;
 
 private:
 	int xs, ys, zs;

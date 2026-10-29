@@ -34,9 +34,10 @@
 #include "sunshine.h"
 #include "signals/rubydispatcher.h"
 #include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_surface.h>
+#include <cstdint>
 #include <algorithm>
 #include <vector>
-#include <SDL3/SDL_surface.h>
 
 extern const StaticRect autotileRects[];
 typedef std::vector<SVertex> SVVector;
@@ -966,7 +967,7 @@ void Tilemap::update(){
 	if (!p->tiles.animated)
 		return;
 
-	p->tiles.frameIdx = atAnimation[static_cast<u_int8_t>(p->tiles.aniIdx)];
+	p->tiles.frameIdx = atAnimation[static_cast<std::uint8_t>(p->tiles.aniIdx)];
 	p->tiles.aniIdx += shState->graphics().deltaTime() * 60.0f;
 	if (p->tiles.aniIdx >= atAnimationN)
 		p->tiles.aniIdx = 0.0;

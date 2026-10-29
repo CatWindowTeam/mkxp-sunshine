@@ -19,11 +19,8 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ETC_TYPES_H
-#define ETC_TYPES_H
-
+#pragma once
 #include "util.h"
-
 #include <SDL3/SDL_rect.h>
 
 constexpr float PI = 3.14159265358979323846f;
@@ -31,13 +28,8 @@ constexpr float PI = 3.14159265358979323846f;
 struct Vec2{
 	float x, y;
 
-	Vec2()
-	    : x(0), y(0)
-	{}
-
-	Vec2(float x, float y)
-	    : x(x), y(y)
-	{}
+	Vec2() : x(0), y(0){}
+	Vec2(float x, float y) : x(x), y(y){}
 
 	bool operator==(const Vec2 &other) const{
 		return x == other.x && y == other.y;
@@ -50,14 +42,12 @@ struct Vec2{
 	Vec2 &operator+=(const Vec2 &value){
 		x += value.x;
 		y += value.y;
-
 		return *this;
 	}
 
 	Vec2 &operator-=(const Vec2 &value){
 		x -= value.x;
 		y -= value.y;
-
 		return *this;
 	}
 
@@ -91,13 +81,8 @@ struct Vec2{
 struct Vec3{
 	float x, y, z;
 
-	Vec3()
-	    : x(0), y(0), z(0)
-	{}
-
-	Vec3(float x, float y, float z)
-	    : x(x), y(y), z(z)
-	{}
+	Vec3() : x(0), y(0), z(0){}
+	Vec3(float x, float y, float z) : x(x), y(y), z(z){}
 
 	bool operator==(const Vec3 &other) const{
 		return (x == other.x && y == other.y && z == other.z);
@@ -119,13 +104,8 @@ struct Vec3{
 struct Vec4{
 	float x, y, z, w;
 
-	Vec4()
-	    : x(0), y(0), z(0), w(0)
-	{}
-
-	Vec4(float x, float y, float z, float w)
-	    : x(x), y(y), z(z), w(w)
-	{}
+	Vec4() : x(0), y(0), z(0), w(0){}
+	Vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
 	bool operator==(const Vec4 &other) const{
 		return (x == other.x && y == other.y && z == other.z && w == other.w);
@@ -139,13 +119,8 @@ struct Vec4{
 struct Vec4i{
 	int x, y, z, w;
 
-	Vec4i()
-	    : x(0), y(0), z(0), w(0)
-	{}
-
-	Vec4i(int x, int y, int z, int w)
-	    : x(x), y(y), z(z), w(w)
-	{}
+	Vec4i() : x(0), y(0), z(0), w(0){}
+	Vec4i(int x, int y, int z, int w) : x(x), y(y), z(z), w(w){}
 
 	bool operator==(const Vec4i &other) const{
 		return (x == other.x && y == other.y && z == other.z && w == other.w);
@@ -155,21 +130,10 @@ struct Vec4i{
 struct Vec2i{
 	int x, y;
 
-	Vec2i()
-	    : x(0), y(0)
-	{}
-
-	Vec2i(int x, int y)
-	    : x(x), y(y)
-	{}
-
-	explicit Vec2i(int xy)
-	    : x(xy), y(xy)
-	{}
-
-	Vec2i(Vec2 vec)
-		: x(vec.x), y(vec.y)
-	{}
+	Vec2i() : x(0), y(0){}
+	Vec2i(int x, int y) : x(x), y(y){}
+	explicit Vec2i(int xy) : x(xy), y(xy){}
+	Vec2i(Vec2 vec) : x(vec.x), y(vec.y){}
 
 	bool operator==(const Vec2i &other) const{
 		return x == other.x && y == other.y;
@@ -182,14 +146,12 @@ struct Vec2i{
 	Vec2i &operator+=(const Vec2i &value){
 		x += value.x;
 		y += value.y;
-
 		return *this;
 	}
 
 	Vec2i &operator-=(const Vec2i &value){
 		x -= value.x;
 		y -= value.y;
-
 		return *this;
 	}
 
@@ -236,21 +198,10 @@ struct Vec2i{
 struct Vec3i{
 	int x, y, z;
 
-	Vec3i()
-	    : x(0), y(0), z(0)
-	{}
-
-	Vec3i(int x, int y, int z)
-	    : x(x), y(y), z(z)
-	{}
-
-	Vec3i(const Vec3 &other)
-		: x(other.x), y(other.y), z(other.z)
-	{}
-
-	explicit Vec3i(int xyz)
-	    : x(xyz), y(xyz), z(xyz)
-	{}
+	Vec3i() : x(0), y(0), z(0){}
+	Vec3i(int x, int y, int z) : x(x), y(y), z(z){}
+	Vec3i(const Vec3 &other) : x(other.x), y(other.y), z(other.z){}
+	explicit Vec3i(int xyz) : x(xyz), y(xyz), z(xyz){}
 
 	bool operator==(const Vec3i &other) const{
 		return x == other.x && y == other.y && z == other.z;
@@ -264,7 +215,6 @@ struct Vec3i{
 		x += value.x;
 		y += value.y;
 		z += value.z;
-
 		return *this;
 	}
 
@@ -272,7 +222,6 @@ struct Vec3i{
 		x -= value.x;
 		y -= value.y;
 		z -= value.z;
-
 		return *this;
 	}
 
@@ -374,21 +323,10 @@ struct StaticRect { float x, y, w, h; };
 struct FloatRect{
 	float x, y, w, h;
 
-	FloatRect()
-	    : x(0), y(0), w(0), h(0)
-	{}
-
-	FloatRect(float x, float y, float w, float h)
-	    : x(x), y(y), w(w), h(h)
-	{}
-
-	FloatRect(const StaticRect &d)
-	    : x(d.x), y(d.y), w(d.w), h(d.h)
-	{}
-
-	FloatRect(const IntRect &r)
-	    : x(r.x), y(r.y), w(r.w), h(r.h)
-	{}
+	FloatRect() : x(0), y(0), w(0), h(0){}
+	FloatRect(float x, float y, float w, float h) : x(x), y(y), w(w), h(h){}
+	FloatRect(const StaticRect &d) : x(d.x), y(d.y), w(d.w), h(d.h){}
+	FloatRect(const IntRect &r) : x(r.x), y(r.y), w(r.w), h(r.h){}
 
 	operator IntRect() const{
 		return IntRect(x, y, w, h);
@@ -402,6 +340,7 @@ struct FloatRect{
 	FloatRect wFlipped() const{
 		return FloatRect(x+w, y, -w, h);
 	}
+	
 	FloatRect hFlipped() const{
 		return FloatRect(x, y+h, w, -h);
 	}
@@ -413,15 +352,8 @@ struct NormValue{
 	int unNorm;
 	float norm;
 
-	NormValue()
-	    : unNorm(0),
-	      norm(0)
-	{}
-
-	NormValue(int unNorm)
-	    : unNorm(unNorm),
-	      norm(unNorm / 255.0f)
-	{}
+	NormValue() : unNorm(0), norm(0){}
+	NormValue(int unNorm) : unNorm(unNorm), norm(unNorm / 255.0f){}
 
 	void operator =(int value){
 		unNorm = clamp(value, 0, 255);
@@ -436,5 +368,3 @@ struct NormValue{
 		return unNorm;
 	}
 };
-
-#endif // ETC_TYPES_H

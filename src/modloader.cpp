@@ -13,8 +13,6 @@
 #include <SDL3/SDL_timer.h>
 #include <SDL3_image/SDL_image.h>
 #include <physfs.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <tsl/robin_set.h>
 #include "the_modded_machine.png.xxd"
@@ -22,26 +20,12 @@ namespace fs = std::filesystem;
 static bool stop_render = false;
 const static std::size_t N = 46;
 
-static void modloader_add_to_log(const std::string data){
-	Debug() << "[MOD] " << data;
-	modloader_logs.emplace_back(data);
-}
-
 static int renderer_thread(void* data){
 	SDL_Window* win = static_cast<SDL_Window*>(data);
 	SDL_Renderer* ren = SDL_CreateRenderer(win, NULL);
-	if (ren == nullptr) {return(0);}
 	SDL_Surface* crash_img = IMG_Load_IO(SDL_IOFromConstMem(assets_the_modded_machine_png, assets_the_modded_machine_png_len), true);
-	if (crash_img == nullptr){
-		SDL_DestroyRenderer(ren);
-		return(0);
-	}
 	SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, crash_img);
 	SDL_DestroySurface(crash_img);
-	if (tex == nullptr) {
-		SDL_DestroyRenderer(ren);
-		return(0);
-	}
 
 	int index_on_screen = 10;
 	while(!stop_render){
@@ -50,11 +34,11 @@ static int renderer_thread(void* data){
 	    SDL_RenderClear(ren);
 	    SDL_RenderTexture(ren, tex, NULL, NULL);
 		SDL_SetRenderDrawColor(ren, 150, 100, 255, 255);
-		std::size_t size = modloader_logs.size();
+		std::size_t size = logs.size();
 		std::size_t n = std::min<std::size_t>(static_cast<std::size_t>(N), size);
 		std::size_t start = size > n ? (size - n) : 0;
 		for (std::size_t i = start; i < size; ++i) {
-		    SDL_RenderDebugTextFormat(ren, 10, index_on_screen, "%s", modloader_logs[i].c_str());
+		    SDL_RenderDebugTextFormat(ren, 10, index_on_screen, "%s", logs[i].c_str());
 		    index_on_screen += 10;
 		}
 	    SDL_RenderPresent(ren);
@@ -87,23 +71,22 @@ void ModLoader(SDL_Window* win){
 
             if (ext == ".zip"){
                 if(PHYSFS_mount(full.c_str(), "", 0)){
-                	std::string message = "Failed to load " + full + ", error: " + PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
-                	modloader_add_to_log(message);
+                	Debug() << "Failed to load " << full << ", error: " << PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
                 }else{
-                	modloader_add_to_log("Loaded mod " + full);
+                	Debug() << "Loaded mod " << full;
                 	mods_count++;
                 }
             }else if (ext == ".rb"){
                 preloadScripts.insert(full);
-                modloader_add_to_log("Added script " + full);
+                Debug() << "Added preload script " << full;
                 preloaded_script_count++;
             }
         }
         SDL_Delay(1000);
         stop_render = true;
-	if(!conf.Modloader.skip_modloader_screen){
+		if(!conf.Modloader.skip_modloader_screen){
         	SDL_WaitThread(render_thread_pointer, NULL);
-	}
+		}
         modloader_is_enabled = true;
     }catch (const std::exception& e) {
     	ErrorMsg(e.what());

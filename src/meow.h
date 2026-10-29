@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 inline std::vector<std::string> logs = {};
-inline std::vector<std::string> modloader_logs = {};
 
 // bcz vs code dropping fake errors
 #ifndef VERSION_STRING

@@ -19,14 +19,14 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "bitmap.h"
 #include <SDL3/SDL.h>
-#include <SDL3_image/SDL_image.h>
-#include <SDL3_ttf/SDL_ttf.h>
+#include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_iostream.h>
-#include <pixman.h>
+#include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
+#include "bitmap.h"
 #include "quad.h"
 #include "quadarray.h"
 #include "transform.h"
@@ -41,7 +41,7 @@
 
 #define GUARD_MEGA \
 	{ \
-		if (p->megaSurface) \
+		if(p->megaSurface) \
 			ErrorMsg(Exception::MKXPError, "Operation not supported for mega surfaces"); \
 	}
 
@@ -88,51 +88,113 @@ struct BitmapPrivate{
 	 * with full opacity, we can disregard any old contents
 	 * in the texture and blit to it directly, saving
 	 * ourselves the expensive blending calculation */
-	pixman_region16_t tainted;
+	std::vector<IntRect> tainted;
 
 	BitmapPrivate(Bitmap *self) : self(self), render(shState->render()), megaSurface(0), surface(0){
 		format = (SDL_PixelFormatDetails*)SDL_GetPixelFormatDetails(SDL_PixelFormat::SDL_PIXELFORMAT_ABGR8888);
 		font = &shState->defaultFont();
-		pixman_region_init(&tainted);
-	}
-
-	~BitmapPrivate(){
-		pixman_region_fini(&tainted);
 	}
 
 	void allocSurface(){
 		surface = SDL_CreateSurface(target.width, target.height, format->format);
 	}
 
-	void clearTaintedArea(){
-		pixman_region_fini(&tainted);
-		pixman_region_init(&tainted);
-	}
-
 	void addTaintedArea(const IntRect &rect){
 		IntRect norm = normalizedRect(rect);
-		pixman_region_union_rect(&tainted, &tainted, norm.x, norm.y, norm.w, norm.h);
+		
+		if (norm.w == 0 || norm.h == 0) return;
+		
+		std::vector<IntRect> newTainted;
+		for (const IntRect& tRect : tainted) {
+			// skip rect if new rect absorbed it
+			if (norm.x <= tRect.x
+			 && norm.y <= tRect.y
+			 && norm.x + norm.w >= tRect.x + tRect.w
+			 && norm.y + norm.h >= tRect.y + tRect.h)
+				continue;
+			
+			// dont add new rect if other rect absorbed it
+			if (tRect.x <= norm.x
+			 && tRect.y <= norm.y
+			 && tRect.x + tRect.w >= norm.x + norm.w
+			 && tRect.y + tRect.h >= norm.y + norm.h)
+				return;
+			
+			// trying to combine rects
+			if (norm.x == tRect.x && norm.w == tRect.w) {
+				if (norm.y + norm.h == tRect.y) {
+					norm.h += tRect.h;
+					continue;
+				}
+				if (tRect.y + tRect.h == norm.y) {
+					norm.y = tRect.y;
+					norm.h += tRect.h;
+					continue;
+				}
+			}
+			
+			if (norm.y == tRect.y && norm.h == tRect.h) {
+				if (norm.x + norm.w == tRect.x){
+					norm.w += tRect.w;
+					continue;
+				}
+				if (tRect.x + tRect.w == norm.x){
+					norm.x = tRect.x;
+					norm.w += tRect.w;
+					continue;
+				}
+			}
+		
+			newTainted.push_back(tRect);
+		}
+	
+		newTainted.push_back(norm);
+		tainted = std::move(newTainted);
 	}
 
 	void substractTaintedArea(const IntRect &rect){
 		if (!touchesTaintedArea(rect))
 			return;
 
-		pixman_region16_t m_reg;
-		pixman_region_init_rect(&m_reg, rect.x, rect.y, rect.w, rect.h);
-		pixman_region_subtract(&tainted, &m_reg, &tainted);
-		pixman_region_fini(&m_reg);
+		std::vector<IntRect> newTainted;
+		for (const IntRect& tRect : tainted){
+			IntRect intersection;
+			if (SDL_GetRectIntersection(&tRect, &rect, &intersection)){
+				// left
+				if (tRect.x < rect.x)
+					newTainted.push_back(IntRect{tRect.x, tRect.y, rect.x - tRect.x, tRect.h});
+				
+				// right
+				if (tRect.x + tRect.w > rect.x + rect.w){
+					int x = rect.x + rect.w;
+					newTainted.push_back(IntRect{x, tRect.y, tRect.x + tRect.w - x, tRect.h});
+				}
+
+				int startX = SDL_max(tRect.x, rect.x);
+				int endX = SDL_min(tRect.x + tRect.w, rect.x + rect.w);
+				int width = endX - startX;
+				
+				// top
+				if (width > 0 && tRect.y < rect.y)
+					newTainted.push_back(IntRect{startX, tRect.y, width, rect.y - tRect.y});
+				
+				// bottom
+				if (width > 0 && tRect.y + tRect.h > rect.y + rect.h){
+					int y = rect.y + rect.h;
+					newTainted.push_back(IntRect{startX, y, width, tRect.y + tRect.h - y});
+				}
+			}
+			else
+				newTainted.push_back(tRect);
+		}
+		tainted = std::move(newTainted);
 	}
 
 	bool touchesTaintedArea(const IntRect &rect){
-		pixman_box16_t box;
-		box.x1 = rect.x;
-		box.y1 = rect.y;
-		box.x2 = rect.x + rect.w;
-		box.y2 = rect.y + rect.h;
-		
-		pixman_region_overlap_t result = pixman_region_contains_rectangle(&tainted, &box);
-		return result != PIXMAN_REGION_OUT;
+		for(const IntRect& t_rect : tainted)
+			if(SDL_HasRectIntersection(&rect, &t_rect)) 
+				return true;
+		return false;
 	}
 
 	void bindTexture(){
@@ -140,7 +202,9 @@ struct BitmapPrivate{
 		render.setTexSize(Vec2i(target.width, target.height));
 	}
 
-	void bindTarget(){ render.bindRenderTarget(target); }
+	void bindTarget(){
+		render.bindRenderTarget(target);
+	}
 
 	void pushSetViewport() const{
 		render.pushViewport(IntRect(0, 0, target.width, target.height));
@@ -289,7 +353,6 @@ int Bitmap::width() const{
 
 int Bitmap::height() const{
 	guardDisposed();
-
 	if (p->megaSurface)
 		return p->megaSurface->h;
 
@@ -302,7 +365,7 @@ IntRect Bitmap::rect() const{
 }
 
 void Bitmap::blt(int x, int y, const Bitmap &source, IntRect rect, int opacity){
-	if (source.isDisposed())
+	if(source.isDisposed())
 		return;
 
 	// FIXME: RGSS allows the source rect to both lie outside
@@ -311,14 +374,13 @@ void Bitmap::blt(int x, int y, const Bitmap &source, IntRect rect, int opacity){
 	// doesn't fix anything for a direct stretch_blt call).
 
 	/* Clamp rect to source bitmap size */
-	if (rect.x + rect.w > source.width())
+	if(rect.x + rect.w > source.width())
 		rect.w = source.width() - rect.x;
 
-	if (rect.y + rect.h > source.height())
+	if(rect.y + rect.h > source.height())
 		rect.h = source.height() - rect.y;
 
-	stretchBlt(IntRect(x, y, rect.w, rect.h),
-	           source, rect, opacity);
+	stretchBlt(IntRect(x, y, rect.w, rect.h), source, rect, opacity);
 }
 
 void Bitmap::stretchBlt(const IntRect &destRect, const Bitmap &source, const IntRect &sourceRect, int opacity) {
@@ -649,7 +711,7 @@ void Bitmap::clear(){
 	p->render.pushClearColor(Vec4());
 	p->render.clear();
 	p->render.popClearColor();
-	p->clearTaintedArea();
+	p->tainted.clear();
 	p->onModified();
 }
 
@@ -681,9 +743,9 @@ Color Bitmap::getPixel(int x, int y) const{
 void Bitmap::setPixel(int x, int y, const Color &color){
 	guardDisposed();
 	GUARD_MEGA;
-    if (x < 0 || y < 0 || x >= width() || y >= height()) {
+	if (x < 0 || y < 0 || x >= width() || y >= height()) {
 		Debug() << "Invalid pixel position " << x << " " << y << " in bitmap " << width() << "x" << height();
-        return;
+		return;
 	}
 
 	uint8_t pixel[] = {
