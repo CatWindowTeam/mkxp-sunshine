@@ -11,6 +11,7 @@
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_properties.h>
 #include <algorithm>
+#include <math.h>
 #include <string.h>
 
 static SDL_Renderer *createdRenderer = 0;
@@ -40,6 +41,85 @@ static SDL_FColor additiveColor(SDL_FColor c, const EffectUniforms &u){
 	return c;
 }
 
+static float fractPart(float v){
+	return v - floorf(v);
+}
+
+static void rgbToHsv(float r, float g, float b, float &h, float &s, float &v){
+	const float mx = std::max(r, std::max(g, b));
+	const float mn = std::min(r, std::min(g, b));
+	const float d = mx - mn;
+
+	v = mx;
+	s = d / (mx + 1.0e-10f);
+	h = 0;
+
+	if (d == 0)
+		return;
+
+	if (mx == r)
+		h = fmodf((g - b) / d + 6.0f, 6.0f);
+	else if (mx == g)
+		h = (b - r) / d + 2.0f;
+	else
+		h = (r - g) / d + 4.0f;
+
+	h /= 6.0f;
+}
+
+static float hsvChannel(float h, float s, float v, float offset){
+	const float p = fabsf(fractPart(h + offset) * 6.0f - 3.0f);
+	return v * (1.0f - s + s * clamp01(p - 1.0f));
+}
+
+static void hsvToRgb(float h, float s, float v, float &r, float &g, float &b){
+	r = hsvChannel(h, s, v, 1.0f);
+	g = hsvChannel(h, s, v, 2.0f / 3.0f);
+	b = hsvChannel(h, s, v, 1.0f / 3.0f);
+}
+
+static uint8_t toByte(float v){
+	return (uint8_t) (clamp01(v) * 255.0f + 0.5f);
+}
+
+static void applyHue(std::vector<uint8_t> &px, float hueAdjust){
+	for (size_t i = 0; i < px.size(); i += 4){
+		float h, s, v, r, g, b;
+		rgbToHsv(px[i] / 255.0f, px[i+1] / 255.0f, px[i+2] / 255.0f, h, s, v);
+		hsvToRgb(h + hueAdjust, s, v, r, g, b);
+		px[i] = toByte(r);
+		px[i+1] = toByte(g);
+		px[i+2] = toByte(b);
+	}
+}
+
+static void applyGray(std::vector<uint8_t> &px, float amount){
+	for (size_t i = 0; i < px.size(); i += 4){
+		const float luma = 0.299f * px[i] + 0.587f * px[i+1] + 0.114f * px[i+2];
+
+		for (int c = 0; c < 3; ++c)
+			px[i+c] = toByte((px[i+c] + (luma - px[i+c]) * amount) / 255.0f);
+	}
+}
+
+static void applyBlur(const std::vector<uint8_t> &src, std::vector<uint8_t> &dst, int w, int h, bool vertical){
+	for (int y = 0; y < h; ++y){
+		for (int x = 0; x < w; ++x){
+			const int xa = vertical ? x : std::max(x - 1, 0);
+			const int xb = vertical ? x : std::min(x + 1, w - 1);
+			const int ya = vertical ? std::max(y - 1, 0) : y;
+			const int yb = vertical ? std::min(y + 1, h - 1) : y;
+			const uint8_t *a = &src[((size_t) ya * w + xa) * 4];
+			const uint8_t *m = &src[((size_t) y * w + x) * 4];
+			const uint8_t *b = &src[((size_t) yb * w + xb) * 4];
+			uint8_t *out = &dst[((size_t) y * w + x) * 4];
+
+			for (int c = 0; c < 4; ++c)
+				out[c] = (uint8_t) ((a[c] + m[c] + b[c] + 1) / 3);
+		}
+	}
+}
+
 SDLRender::SDLRender(const Config &conf, SDL_Renderer *renderer)
     : StatefulRender(conf),
       renderer(renderer),
@@ -53,6 +133,8 @@ SDLRender::SDLRender(const Config &conf, SDL_Renderer *renderer)
 
 	const char *rendererName = SDL_GetRendererName(renderer);
 	apiNameStr = rendererName ? rendererName : "unknown";
+
+	reverseSubtract = apiNameStr != "opengl" && apiNameStr != "software";
 
 	setActiveRender(this);
 }
@@ -284,6 +366,30 @@ void SDLRender::readTexture(SdlTexture &tex, std::vector<uint8_t> &out){
 	SDL_DestroySurface(conv);
 }
 
+SDL_Texture *SDLRender::processTexture(SdlTexture &src, int effect, const EffectUniforms &u){
+	std::vector<uint8_t> px;
+	readTexture(src, px);
+
+	if (effect == SHADER_hue){
+		applyHue(px, u.hueAdjust);
+	}else if (effect == SHADER_gray){
+		applyGray(px, u.gray);
+	}else if (effect == SHADER_sprite || effect == SHADER_plane){
+		applyGray(px, u.tone.w);
+	}else if (effect == SHADER_blur){
+		std::vector<uint8_t> out(px.size());
+		applyBlur(px, out, src.width, src.height, blurPass != 0);
+		px.swap(out);
+	}
+
+	SDL_Texture *tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, src.width, src.height);
+	if (!tex)
+		return 0;
+
+	SDL_UpdateTexture(tex, 0, px.data(), src.width * 4);
+	return tex;
+}
+
 void SDLRender::readPixels(const RenderTarget &rt, int w, int h, void *out){
 	SdlTexture *tex = texture(rt.fbo.id);
 	if (!tex)
@@ -334,6 +440,11 @@ void SDLRender::uploadGeometryRange(GeometryHandle geom, size_t offset, size_t b
 void SDLRender::ensureQuadIndices(size_t){
 }
 
+static SDL_BlendMode approxSubtractBlend(){
+	return SDL_ComposeCustomBlendMode(SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE_MINUS_SRC_COLOR, SDL_BLENDOPERATION_ADD,
+	                                  SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD);
+}
+
 SDL_BlendMode SDLRender::blendMode(bool forceBlend){
 	if (!blend.current && !forceBlend)
 		return SDL_BLENDMODE_NONE;
@@ -347,10 +458,16 @@ SDL_BlendMode SDLRender::blendMode(bool forceBlend){
 		return SDL_BLENDMODE_MUL;
 
 	case BlendKind::Substraction :
+		if (!reverseSubtract)
+			return approxSubtractBlend();
+
 		return SDL_ComposeCustomBlendMode(SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_REV_SUBTRACT,
 		                                  SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD);
 
 	case BlendKind::ToneSubtract :
+		if (!reverseSubtract)
+			return approxSubtractBlend();
+
 		return SDL_ComposeCustomBlendMode(SDL_BLENDFACTOR_ONE, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_REV_SUBTRACT,
 		                                  SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD);
 
@@ -381,6 +498,62 @@ void SDLRender::submit(SdlTexture *tex, const Vertices &v, SDL_BlendMode mode, b
 	++renderStats.drawCalls;
 	renderStats.vertices += v.list.size();
 	SDL_RenderGeometry(renderer, sdlTex, v.list.data(), (int) v.list.size(), v.indices.data(), (int) v.indices.size());
+}
+
+static SDL_Vertex lerpVertex(const SDL_Vertex &a, const SDL_Vertex &b, float t){
+	SDL_Vertex out;
+	out.position.x = a.position.x + (b.position.x - a.position.x) * t;
+	out.position.y = a.position.y + (b.position.y - a.position.y) * t;
+	out.tex_coord.x = a.tex_coord.x + (b.tex_coord.x - a.tex_coord.x) * t;
+	out.tex_coord.y = a.tex_coord.y + (b.tex_coord.y - a.tex_coord.y) * t;
+	out.color.r = a.color.r + (b.color.r - a.color.r) * t;
+	out.color.g = a.color.g + (b.color.g - a.color.g) * t;
+	out.color.b = a.color.b + (b.color.b - a.color.b) * t;
+	out.color.a = a.color.a + (b.color.a - a.color.a) * t;
+	return out;
+}
+
+static void appendQuadIndices(std::vector<int> &indices, int base);
+
+static void appendBushQuad(std::vector<SDL_Vertex> &list, std::vector<int> &indices, const SDL_Vertex q[4], float opacity){
+	const int base = (int) list.size();
+
+	for (int i = 0; i < 4; ++i){
+		SDL_Vertex vert = q[i];
+		vert.color.a *= opacity;
+		list.push_back(vert);
+	}
+
+	appendQuadIndices(indices, base);
+}
+
+static void applyBushDepth(std::vector<SDL_Vertex> &list, std::vector<int> &indices, float depth, float opacity){
+	std::vector<SDL_Vertex> src;
+	src.swap(list);
+	indices.clear();
+
+	for (size_t i = 0; i + 3 < src.size(); i += 4){
+		const SDL_Vertex *q = &src[i];
+		const float y0 = q[0].tex_coord.y;
+		const float y3 = q[3].tex_coord.y;
+		const bool aboveStart = y0 < depth;
+		const bool aboveEnd = y3 < depth;
+
+		if (aboveStart && aboveEnd){
+			appendBushQuad(list, indices, q, 1.0f);
+		}else if (!aboveStart && !aboveEnd){
+			appendBushQuad(list, indices, q, opacity);
+		}else{
+			const float t = (depth - y0) / (y3 - y0);
+			const SDL_Vertex p = lerpVertex(q[0], q[3], t);
+			const SDL_Vertex r = lerpVertex(q[1], q[2], t);
+			const SDL_Vertex startPart[4] = { q[0], q[1], r, p };
+			const SDL_Vertex endPart[4] = { p, r, q[2], q[3] };
+
+			appendBushQuad(list, indices, startPart, aboveStart ? 1.0f : opacity);
+			appendBushQuad(list, indices, endPart, aboveEnd ? 1.0f : opacity);
+		}
+	}
 }
 
 static void appendQuadIndices(std::vector<int> &indices, int base){
@@ -610,6 +783,9 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 		return;
 	}
 
+	if (effect == SHADER_sprite && u.bushDepth < 1.0f && u.bushOpacity < 1.0f)
+		applyBushDepth(v.list, v.indices, u.bushDepth, u.bushOpacity);
+
 	if (untextured){
 		const bool tone = activeBlend == BlendKind::ToneAdd || activeBlend == BlendKind::ToneSubtract;
 		if (tone){
@@ -621,8 +797,26 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 		return;
 	}
 
+	const bool grayed = (effect == SHADER_sprite || effect == SHADER_plane) && u.tone.w > 0;
+	const bool cpuEffect = effect == SHADER_hue || effect == SHADER_gray || effect == SHADER_blur || grayed;
+	SdlTexture processed;
+
+	if (cpuEffect){
+		processed.texture = processTexture(*bound, effect, u);
+		if (!processed.texture)
+			return;
+
+		processed.width = bound->width;
+		processed.height = bound->height;
+		processed.smooth = bound->smooth;
+		bound = &processed;
+	}
+
 	const SDL_BlendMode mode = blendMode(effect == SHADER_blt);
 	submit(bound, v, mode, false);
+
+	if (cpuEffect)
+		SDL_DestroyTexture(processed.texture);
 
 	const bool toned = effect == SHADER_sprite || effect == SHADER_plane;
 	const bool hasAdd = u.tone.x > 0 || u.tone.y > 0 || u.tone.z > 0 || u.color.w > 0;

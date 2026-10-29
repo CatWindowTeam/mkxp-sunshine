@@ -85,6 +85,7 @@ private:
 	SDL_BlendMode blendMode(bool forceBlend);
 	void submit(SdlTexture *tex, const Vertices &v, SDL_BlendMode mode, bool smooth);
 	void readTexture(SdlTexture &tex, std::vector<uint8_t> &out);
+	SDL_Texture *processTexture(SdlTexture &src, int effect, const EffectUniforms &u);
 	void drawTransition(const Vertices &v);
 	void drawTextureQuad(SdlTexture *tex, const SDL_Vertex corners[4], SDL_BlendMode mode, bool smooth);
 	int screenHeight();
@@ -95,6 +96,7 @@ private:
 
 	SdlTexture *target;
 	int maxTexSize;
+	bool reverseSubtract;
 	std::string apiNameStr;
 };
 
