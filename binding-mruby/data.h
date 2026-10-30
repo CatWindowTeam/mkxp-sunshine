@@ -1,8 +1,4 @@
-#ifndef DATA_H
-#define DATA_H
-
+#pragma once
 struct MRBBindingData {
   struct RClass* shudownExc;
 };
-
-#endif
