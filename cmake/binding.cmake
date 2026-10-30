@@ -9,10 +9,7 @@ if(BINDING STREQUAL "mruby")
 	            -fno-hardcfr-check-returning-calls
 		        -fhardcfr-check-noreturn-calls=never
 				-fstack-check=no
-				-mno-speculative-load-hardening
-				-fzero-call-used-regs=skip
-				-fno-threadsafe-statics
-				-mno-lvi-hardening)
+				-fno-threadsafe-statics)
 		endif()
 
 		if(CMAKE_BUILD_TYPE STREQUAL "Debug")
