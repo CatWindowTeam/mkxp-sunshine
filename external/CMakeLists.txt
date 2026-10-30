@@ -27,9 +27,6 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 		        -fno-hardcfr-check-returning-calls
 		        -fhardcfr-check-noreturn-calls=never
 				-fstack-check=no
-				-mno-speculative-load-hardening
-				-fzero-call-used-regs=skip
-				-mno-lvi-hardening
 		)
 		
 		check_option(OPTIONS_RELEASE_UNSAFE_CPP
@@ -57,9 +54,6 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_mixer EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_image EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_net EXCLUDE_FROM_ALL)
-set(SIGCPP_STATIC ON CACHE BOOL "Build Static library?")
-set(SIGCPP_EXAMPLES OFF CACHE BOOL "Build examples")
-set(SIGCPP_TESTS OFF CACHE BOOL "Build tests")
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/sigc)
 if(LTO)
 	set_property(TARGET SDL3_net-static PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
