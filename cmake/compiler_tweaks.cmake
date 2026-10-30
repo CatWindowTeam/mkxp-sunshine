@@ -1,5 +1,4 @@
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/check.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/arch_compiler_tweaks.cmake)
 
 function(unsafe_optimizations)
 	if(UNSAFE_OPTIMIZATIONS)
@@ -11,28 +10,24 @@ function(unsafe_optimizations)
 	        -fno-hardcfr-check-returning-calls
 		    -fhardcfr-check-noreturn-calls=never
 			-fstack-check=no
-			-mno-speculative-load-hardening
-			-fzero-call-used-regs=skip
-			-fno-threadsafe-statics
-			-mno-lvi-hardening)
+			-fno-threadsafe-statics)
 		target_compile_options(${APP_TARGET} PRIVATE ${OPTIONS_RELEASE_UNSAFE})
 	endif()
 endfunction()
 
 function(release_linker_tweaks)
 	check_linker_option(OPTIONS_LINKER_RELEASE
-		-Wl,-O3
-		-Wl,--gc-sections
-		-Wl,--no-copy-dt-needed-entries
-		-Wl,--icf=safe
-		-Wl,--strip-all
-		-Wl,--relax
-		-Wl,--build-id=none
-		-Wl,--as-needed
-		-Wl,--no-insert-timestamp
-		-Wl,--no-whole-archive
-		-Wl,-z,start-stop-gc
-		-Wl,--no-eh-frame-hdr)
+		LINKER:-O3
+		LINKER:--gc-sections
+		LINKER:--no-copy-dt-needed-entries
+		LINKER:--icf=safe
+		LINKER:--strip-all
+		LINKER:--relax
+		LINKER:--build-id=none
+		LINKER:--as-needed
+		LINKER:--no-whole-archive
+		LINKER:-z,start-stop-gc
+		LINKER:--no-eh-frame-hdr)
 endfunction()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
