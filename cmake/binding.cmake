@@ -68,7 +68,7 @@ if(BINDING STREQUAL "mruby")
 	file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/binding-${BINDING}/*.h*")
 	file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/binding-${BINDING}/*.c*")
 
-	set(MRBC_EXE "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby/build/sunshine/bin/mrbc")
+	set(MRBC_EXE "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby/build/host/bin/mrbc")
 
 	add_custom_command(
 		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/module_rpg.mrb"
