@@ -1,6 +1,4 @@
-/*
-	Really hacked-together naiive implementation of gettext
-*/
+//Really hacked-together naiive implementation of gettext
 #include "i18n.h"
 #include <stdio.h>
 #include <SDL3/SDL_stdinc.h>

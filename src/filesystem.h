@@ -55,10 +55,8 @@ public:
 
 	/* Circumvents extension supplementing */
 	void openReadRaw(SDL_IOStream* &ops, const char *filename);
-
 	/* Does not perform extension supplementing */
 	bool exists(const char *filename);
-
 private:
 	FileSystemPrivate *p;
 };

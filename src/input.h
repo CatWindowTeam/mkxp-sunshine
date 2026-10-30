@@ -62,8 +62,8 @@ public:
 	int mouseX();
 	int mouseY();
 
-	void setBinding(std::vector<SourceDesc> descs, Input::ButtonCode target);
-
+	void setBinding(const std::vector<SourceDesc> &descs, Input::ButtonCode target);
+				
 	// more non-standard extensions
 	float wheelX();
 	float wheelY();

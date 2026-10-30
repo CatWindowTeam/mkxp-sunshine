@@ -55,7 +55,6 @@ private:
 	void draw();
 	void onGeometryChange(const Scene::Geometry &);
 	void defaultSpriteShaderInit(ShaderType effect);
-
 	void releaseResources();
 	const char *klassName() const { return "plane"; }
 

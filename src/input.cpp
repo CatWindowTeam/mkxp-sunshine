@@ -138,11 +138,7 @@ struct JsButtonBinding : public Binding{
 struct JsAxisBinding : public Binding{
 	JsAxisBinding() {}
 
-	JsAxisBinding(uint8_t source, AxisDir dir, Input::ButtonCode target)
-	    : Binding(target),
-	      source(source),
-	      dir(dir)
-	{}
+	JsAxisBinding(uint8_t source, AxisDir dir, Input::ButtonCode target) : Binding(target), source(source), dir(dir){}
 
 	bool sourceActive() const{
 		int val = EventThread::joyState.axes[source];
@@ -188,10 +184,7 @@ struct JsHatBinding : public Binding{
 struct MsBinding : public Binding{
 	MsBinding() {}
 
-	MsBinding(int buttonIndex, Input::ButtonCode target)
-	    : Binding(target),
-	      index(buttonIndex)
-	{}
+	MsBinding(int buttonIndex, Input::ButtonCode target) : Binding(target), index(buttonIndex){}
 
 	bool sourceActive() const{
 		return EventThread::mouseState.buttons[index];
@@ -532,7 +525,6 @@ struct InputPrivate {
 				bind.source = src.d.scan;
 				bind.target = desc.target;
 				kbBindings.push_back(bind);
-
 				break;
 			}
 			case CAxis :
@@ -542,7 +534,6 @@ struct InputPrivate {
 				bind.dir = src.d.ja.dir;
 				bind.target = desc.target;
 				gcABindings.push_back(bind);
-
 				break;
 			}
 			case CButton :
@@ -551,7 +542,6 @@ struct InputPrivate {
 				bind.source = src.d.jb;
 				bind.target = desc.target;
 				gcBBindings.push_back(bind);
-
 				break;
 			}
 			case JAxis :
@@ -561,7 +551,6 @@ struct InputPrivate {
 				bind.dir = src.d.ja.dir;
 				bind.target = desc.target;
 				jsABindings.push_back(bind);
-
 				break;
 			}
 			case JHat :
@@ -571,7 +560,6 @@ struct InputPrivate {
 				bind.pos = src.d.jh.pos;
 				bind.target = desc.target;
 				jsHBindings.push_back(bind);
-
 				break;
 			}
 			case JButton :
@@ -580,7 +568,6 @@ struct InputPrivate {
 				bind.source = src.d.jb;
 				bind.target = desc.target;
 				jsBBindings.push_back(bind);
-
 				break;
 			}
 			default :
@@ -655,9 +642,7 @@ struct InputPrivate {
 		if (repeatCand != Input::None)
 			return;
 
-		if (repeating != b.target &&
-			!oldState.pressed)
-		{
+		if (repeating != b.target && !oldState.pressed){
 			if (b.sourceRepeatable())
 				repeatCand = b.target;
 			else
@@ -827,7 +812,7 @@ int Input::mouseY(){
 	return (EventThread::mouseState.y - rtData.screenOffset.y) * rtData.sizeResoRatio.y;
 }
 
-void Input::setBinding(const std::vector<SourceDesc> descs, Input::ButtonCode target){
+void Input::setBinding(const std::vector<SourceDesc> &descs, Input::ButtonCode target){
 	p->setBindingDescs(descs, target);
 }
 

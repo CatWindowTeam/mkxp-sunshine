@@ -283,10 +283,10 @@ void LightMap::clearStaticLightSources(){
 void LightMap::clearDynamicLightSources(){
 	p->dynamicLightSources.clear();
 }
-void LightMap::addStaticLightSource(const LightSource source){
+void LightMap::addStaticLightSource(const LightSource &source){
 	p->staticLightSources.push_back(source);
 }
-void LightMap::addDynamicLightSource(const LightSource source){
+void LightMap::addDynamicLightSource(const LightSource &source){
 	p->dynamicLightSources.push_back(source);
 }
 void LightMap::removeStaticLightSource(float x, float y){

@@ -11,9 +11,7 @@ void Sunshine::loadNoise() {
 		return;
 
 	SDL_IOStream* rawNoise = SDL_IOFromConstMem(assets_noise_png, assets_noise_png_len);
-
 	this->noise = new Bitmap(rawNoise);
-
 	SDL_CloseIO(rawNoise);
 }
 

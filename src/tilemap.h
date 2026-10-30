@@ -19,11 +19,8 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TILEMAP_H
-#define TILEMAP_H
-
+#pragma once
 #include "disposable.h"
-
 #include "util.h"
 
 class Viewport;
@@ -74,5 +71,3 @@ private:
 	void releaseResources();
 	const char *klassName() const { return "tilemap"; }
 };
-
-#endif // TILEMAP_H

@@ -27,10 +27,7 @@ namespace TileAtlas{
  * with undefined width */
 struct Column{
 	int x, y, h;
-
-	Column(int x, int y, int h)
-	    : x(x), y(y), h(h)
-	{}
+	Column(int x, int y, int h) : x(x), y(y), h(h){}
 };
 
 typedef std::vector<Column> ColumnVec;

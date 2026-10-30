@@ -19,12 +19,9 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TABLE_H
-#define TABLE_H
-
+#pragma once
 #include "signals/signal.h"
 #include "serializable.h"
-
 #include <stdint.h>
 #include <vector>
 
@@ -76,5 +73,3 @@ private:
 	int xs, ys, zs;
 	std::vector<int16_t> data;
 };
-
-#endif // TABLE_H

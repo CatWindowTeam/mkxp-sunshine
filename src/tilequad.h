@@ -19,10 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TILEQUAD_H
-#define TILEQUAD_H
-
-#include "etc-internal.h"
+#pragma once
 
 /* Tiled Quads
  *
@@ -30,7 +27,7 @@
  * of a texture,
  * but no advanced stuff like rotation, scaling etc.
  */
-
+#include "etc-internal.h"
 #include "quadarray.h"
 
 namespace TileQuads{
@@ -40,15 +37,10 @@ namespace TileQuads{
 
 	/* Build tiling quads */
 	int buildH(const IntRect &sourceRect, int width, int x, int y, Vertex *verts);
-
 	int buildV(const IntRect &sourceRect, int height, int ox, int oy, Vertex *verts);
-
 	int build(const IntRect &sourceRect, const IntRect &destRect, Vertex *verts);
 
 	/* Build a quad "frame" (see Window cursor_rect) */
 	int buildFrame(const IntRect &rect, Vertex vert[36]);
-
 	int buildFrameSource(const IntRect &rect, Vertex vert[36]);
 }
-
-#endif // TILEQUAD_H

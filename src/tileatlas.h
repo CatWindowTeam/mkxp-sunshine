@@ -19,11 +19,8 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TILEATLAS_H
-#define TILEATLAS_H
-
+#pragma once
 #include "etc-internal.h"
-
 #include <vector>
 
 namespace TileAtlas{
@@ -34,14 +31,8 @@ struct Blit{
 	Vec2i src;
 	Vec2i dst;
 	int h;
-
-	Blit(int sx, int sy,
-	     int dx, int dy,
-	     int h)
-	    : src(sx, sy),
-	      dst(dx, dy),
-	      h(h)
-	{}
+	
+	Blit(int sx, int sy, int dx, int dy, int h) : src(sx, sy), dst(dx, dy), h(h){}
 };
 
 typedef std::vector<Blit> BlitVec;
@@ -61,5 +52,3 @@ BlitVec calcBlits(int tilesetH, const Vec2i &atlasSize);
 Vec2i tileToAtlasCoor(int tileX, int tileY, int tilesetH, int atlasH);
 
 }
-
-#endif // TILEATLAS_H

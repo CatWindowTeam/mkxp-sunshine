@@ -37,9 +37,8 @@
 #include "oneshot.h"
 #include "meow.h"
 #include "config.h"
-#include <map>
-#include <iostream>
 #include "binding.h"
+#include <map>
 
 uint8_t EventThread::keyStates[];
 EventThread::ControllerState EventThread::gcState;

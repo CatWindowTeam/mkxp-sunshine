@@ -869,14 +869,9 @@ void GroundLayer::onGeometryChange(const Scene::Geometry &geo){
 	p->updateSceneGeometry(geo);
 }
 
-ZLayer::ZLayer(TilemapPrivate *p, Viewport *viewport)
-    : ViewportElement(viewport, 0),
-      index(0),
-      firstQuad(0),
-      quadCount(0),
-      p(p),
-      batchQuadCount(0)
-{}
+ZLayer::ZLayer(TilemapPrivate *p, Viewport *viewport) 
+		: ViewportElement(viewport, 0), index(0), firstQuad(0), 
+		quadCount(0), p(p), batchQuadCount(0){}
 
 void ZLayer::setIndex(int value){
 	index = value;

@@ -24,15 +24,15 @@
 #include "util.h"
 #include "exception.h"
 #include "sharedstate.h"
-#include <tsl/robin_map.h>
+#include "define.h"
 #include "debugwriter.h"
 #include "meow.h"
 #include <physfs.h>
 #include <SDL3/SDL_stdinc.h>
+#include <tsl/robin_map.h>
 #include <vector>
 #include <stack>
 #include <memory>
-#include "define.h"
 #ifdef apple
 	#include <iconv.h>
 #endif
@@ -135,16 +135,16 @@ static Sint64 SDL_RWopsSeek(void *userdata, Sint64 offset, SDL_IOWhence whence){
 	int64_t base;
 
 	switch (whence){
-	default:
-	case SDL_IOWhence::SDL_IO_SEEK_SET:
-		base = 0;
-		break;
-	case SDL_IOWhence::SDL_IO_SEEK_CUR:
-		base = PHYSFS_tell(f);
-		break;
-	case SDL_IOWhence::SDL_IO_SEEK_END:
-		base = PHYSFS_fileLength(f);
-		break;
+		default:
+			case SDL_IOWhence::SDL_IO_SEEK_SET:
+				base = 0;
+				break;
+			case SDL_IOWhence::SDL_IO_SEEK_CUR:
+				base = PHYSFS_tell(f);
+				break;
+			case SDL_IOWhence::SDL_IO_SEEK_END:
+				base = PHYSFS_fileLength(f);
+				break;
 	}
 
 	int result = PHYSFS_seek(f, base + offset);
@@ -231,7 +231,6 @@ struct FileSystemPrivate{
 	 * across rehashes of this map (tsl::robin_map does not give
 	 * reference stability like std::unordered_map does) */
 	tsl::robin_map<std::string, std::unique_ptr<std::vector<std::string> > > fileLists;
-
 	/* This is for compatibility with games that take Windows'
 	 * case insensitivity for granted */
 	bool havePathCache;
@@ -256,9 +255,8 @@ void FileSystem::addPath(const char *path){
 		/* If it didn't work, try mounting via a wrapped
 		* SDL_IOStream */
 		PHYSFS_Io *io = createSDLRWIo(path);
-		if(io){
+		if(io)
 			PHYSFS_mountIo(io, path, 0, 1);
-		}
 	}
 }
 
@@ -272,15 +270,15 @@ struct CacheEnumData{
 	#endif
 
 	CacheEnumData(FileSystemPrivate *p) : p(p){
-	#ifdef apple
-		nfd2nfc = iconv_open("utf-8", "utf-8-mac");
-	#endif
+		#ifdef apple
+			nfd2nfc = iconv_open("utf-8", "utf-8-mac");
+		#endif
 	}
 
 	~CacheEnumData(){
-	#ifdef apple
-		iconv_close(nfd2nfc);
-	#endif
+		#ifdef apple
+			iconv_close(nfd2nfc);
+		#endif
 	}
 
 	/* Converts in-place */
@@ -516,7 +514,6 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 	}
 
 	if (data.matchCount == 0){
-		//Debug() << filename;
 		throw Exception(Exception::NoFileError, filename);
 	}
 }

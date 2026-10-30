@@ -804,7 +804,7 @@ int Graphics::width() const{
 
 int Graphics::height() const{
 	return p->scRes.y;
-}\
+}
 
 double Graphics::deltaTime() const{
 	return p->deltaTime;

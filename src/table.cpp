@@ -27,15 +27,8 @@
 #include "meow.h"
 
 /* Init normally */
-Table::Table(int x, int y /*= 1*/, int z /*= 1*/)
-    : xs(x), ys(y), zs(z),
-      data(x*y*z)
-{}
-
-Table::Table(const Table &other)
-    : xs(other.xs), ys(other.ys), zs(other.zs),
-      data(other.data)
-{}
+Table::Table(int x, int y /*= 1*/, int z /*= 1*/) : xs(x), ys(y), zs(z), data(x*y*z){}
+Table::Table(const Table &other) : xs(other.xs), ys(other.ys), zs(other.zs), data(other.data){}
 
 int16_t Table::get(int x, int y, int z) const{
 	return data[xs*ys*z + xs*y + x];
@@ -49,7 +42,6 @@ void Table::set(int16_t value, int x, int y, int z){
 	}
 
 	data[xs*ys*z + xs*y + x] = value;
-
 	modified();
 }
 

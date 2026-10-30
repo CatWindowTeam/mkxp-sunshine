@@ -19,11 +19,8 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ETC_H
-#define ETC_H
-
+#pragma once
 #include "signals/signal.h"
-
 #include "serializable.h"
 #include "etc-internal.h"
 
@@ -31,7 +28,6 @@ struct SDL_Color;
 
 enum BlendType{
 	BlendKeepDestAlpha = -1,
-
 	BlendNormal = 0,
 	BlendAddition = 1,
 	BlendSubstraction = 2,
@@ -39,9 +35,7 @@ enum BlendType{
 };
 
 struct Color : public Serializable{
-	Color()
-	    : red(0), green(0), blue(0), alpha(0)
-	{}
+	Color() : red(0), green(0), blue(0), alpha(0){}
 
 	Color(double red, double green, double blue, double alpha = 255);
 	Color(const Vec4 &norm);
@@ -143,9 +137,7 @@ struct Tone : public Serializable{
 };
 
 struct Rect : public Serializable{
-	Rect()
-	    : x(0), y(0), width(0), height(0)
-	{}
+	Rect() : x(0), y(0), width(0), height(0){}
 
 	virtual ~Rect() {}
 
@@ -201,13 +193,8 @@ struct LightSource {
     float radius;
     Color color;
 
-	LightSource()
-	  : x(0), y(0), power(0), radius(0), color(Color())
-	{};
-	
-	LightSource(float x, float y, float power, float radius, const Color color)
-	  : x(x), y(y), power(power), radius(radius), color(color)
-	{};
+	LightSource() : x(0), y(0), power(0), radius(0), color(Color()) {};
+	LightSource(float x, float y, float power, float radius, const Color &color) : x(x), y(y), power(power), radius(radius), color(color) {};
 
 	bool hasEffect(){
 		return radius > 0.0 && power != 0.0 && color.alpha >= 0.0 && (color.red != 0.0 || color.green != 0.0 || color.blue != 0.0);
@@ -235,5 +222,3 @@ struct EtcTemps{
 	Rect rect;
 	Color modulate;
 };
-
-#endif // ETC_H

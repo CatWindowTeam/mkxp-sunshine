@@ -89,11 +89,7 @@ static inline void atSelectSubPos(FloatRect &pos, int i){
 }
 
 struct FlashMap{
-	FlashMap()
-		: dirty(false),
-	      data(0),
-	      allocQuads(0)
-	{
+	FlashMap() : dirty(false), data(0), allocQuads(0){
 		geom = shState->render().createGeometry(VertexLayout::Color);
 	}
 
