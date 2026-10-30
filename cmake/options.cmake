@@ -1,7 +1,6 @@
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/check.cmake)
 # Options
 option(NATIVE "Use native instructions,for local use only" OFF)
-option(LOW_MEMORY "Build with optimizations for minimal RAM usage" OFF)
 option(USE_OPENGL_ES2 "GLES2_HEADER define" OFF)
 set(VERSION_STRING "0.2.0" CACHE STRING "Version string")
 set(BINDING "cruby" CACHE STRING "Binding to use")

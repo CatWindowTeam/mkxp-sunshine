@@ -1,37 +1,18 @@
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	check_option(OPTIONS_DEBUG -g -Og)
-	add_compile_options(${OPTIONS_DEBUG})
+	check_option(OPTIONS_DEPS -g -Og)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-	if(LOW_MEMORY)
-		check_option(OPTIONS_RELEASE
-			-Oz
-			-fno-ident
-			-ffunction-sections
-			-fdata-sections
-			-fdelete-dead-exceptions
-			-fvirtual-function-elimination
-			-ffast-math
-			-ffp-contract=fast
-			-fshort-enums
-			-fshort-wchar
-			-fshort-double
-			-fpack-struct=1
-			-fconserve-stack
-			-fmerge-all-constants
-		)
-	else()
-		check_option(OPTIONS_RELEASE
-			-O3
-			-fno-ident
-			-ffunction-sections
-			-fdata-sections
-			-fdelete-dead-exceptions
-			-fvirtual-function-elimination
-			-ffast-math
-			-ffp-contract=fast
-		)
-	endif()
-
+	check_option(OPTIONS_DEPS
+		-O3
+		-fno-ident
+		-ffunction-sections
+		-fdata-sections
+		-fdelete-dead-exceptions
+		-fvirtual-function-elimination
+		-ffast-math
+		-ffp-contract=fast
+		-fmerge-all-constants
+	)
+		
 	check_option(OPTIONS_RELEASE_CPP
 		-fno-rtti
 		-fno-unwind-tables
@@ -100,58 +81,58 @@ if(LTO)
 endif()
 
 target_compile_options(SDL3_net-static PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
 	
 target_compile_options(zlibstatic PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
 	
 target_compile_options(physfs-static PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
 	
 target_compile_options(wavpack PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
 	
 target_compile_options(ogg PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
 	
 target_compile_options(compat PRIVATE "${OPTIONS_NATIVE}"
 	"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_CPP}>"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}"
 	"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_UNSAFE_CPP}>")
 
 # -Wno-template-body for compatibility with latest GCC
 target_compile_options(sigc-3.0 PRIVATE "${OPTIONS_NATIVE}"
 	"${OPTIONS_RELEASE_CPP}" "-Wno-template-body"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}"
 	"${OPTIONS_RELEASE_UNSAFE_CPP}")
 	
 target_compile_options(SDL3_image-static PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
 	
 target_compile_options(freetype PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
 
 target_compile_options(vorbis PRIVATE "${OPTIONS_NATIVE}"
 	"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_CPP}>"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}"
 	"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_UNSAFE_CPP}>")
 
 target_compile_options(libmpg123 PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
 
 target_compile_options(harfbuzz PRIVATE "${OPTIONS_NATIVE}"
 	"${OPTIONS_RELEASE_CPP}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}"
 	"${OPTIONS_RELEASE_UNSAFE_CPP}")
 	
 target_compile_options(vorbisfile PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
 
 target_compile_options(SDL3-static PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
 	
 target_compile_options(SDL3_ttf-static PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
 	
 target_compile_options(SDL3_mixer-static PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")

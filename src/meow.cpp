@@ -214,7 +214,7 @@ void crash_screen(SDL_Window* win){
 				if(i < cd.size()){
 					count = count + 10;
 					SDL_snprintf(index_str, sizeof(index_str), "%03d", i);
-					SDL_RenderDebugTextFormat(ren, 10, count, "%s| %s", index_str, cd[i].c_str());
+					SDL_RenderDebugTextFormat(ren, 10, count, "%s  %s", index_str, cd[i].c_str());
 				}
 			}
 	    	SDL_RenderPresent(ren);
