@@ -103,7 +103,7 @@ void journalBindingInit(mrb_state *mrb){
 	}
 	
 	struct RClass *m = mrb_define_module(mrb, "Journal");
-	mrb_define_method(mrb, m, "set", journalSet, MRB_ARGS_REQ(1));
-	mrb_define_method(mrb, m, "setLang", journalLangSet, MRB_ARGS_REQ(1));
-	mrb_define_method(mrb, m, "active?", journalActive, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, m, "set", journalSet, MRB_ARGS_REQ(1));
+	mrb_define_module_function(mrb, m, "setLang", journalLangSet, MRB_ARGS_REQ(1));
+	mrb_define_module_function(mrb, m, "active?", journalActive, MRB_ARGS_NONE());
 }

@@ -100,18 +100,39 @@ else
   #puts final
 
   scripts = []
-  final.each do |path|
-    path.strip!
-    next if path.empty?
 
-    data = File.read(path).rstrip.gsub("\n", "\r\n")
+  File.open(target_path + ".h", 'w') { |f|
+    f.write "#include <vector>\n\n"
 
-    script = Array.new(3)
-    script[0] = 0
-    script[1] = path.delete_suffix(".rb").sub(/^#{Regexp.escape(scripts_dir)}\/?/, '')
-    script[2] = Zlib.deflate(data)
-    scripts << script
-  end
+    f.write "#ifndef TEST_SCRIPTS_H\n"
+    f.write "#define TEST_SCRIPTS_H\n\n"
+
+    f.write "struct TestScript {\n"
+    f.write "  const char* name;\n"
+    f.write "  const char* script;\n"
+    f.write "};\n\n"
+
+    f.write "inline std::vector<TestScript> scripts = {"
+    final.each do |path|
+      path.strip!
+      next if path.empty?
+
+      data = File.read(path).rstrip.gsub("\n", "\r\n")
+
+      script = Array.new(3)
+      script[0] = 0
+      script[1] = path.delete_suffix(".rb").sub(/^#{Regexp.escape(scripts_dir)}\/?/, '')
+      script[2] = Zlib.deflate(data)
+
+      data_s = data.gsub(')"', ')."')
+
+      f.write "  {\"" + script[1] + "\", R\"(" + data_s + ")\"},\n"
+      scripts << script
+    end
+    f.write "};\n\n"
+
+    f.write "#endif"
+  }
 
   File.open(target_path, 'wb') { |f| f.write(Marshal.dump(scripts)) }
   puts "#{target_path} written."

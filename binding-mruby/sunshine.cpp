@@ -27,7 +27,7 @@ void SunshineBindingInit(mrb_state *mrb){
 	mrb_define_const(mrb, m, "VERSION", mrb_str_new_lit(mrb, VERSION_STRING));
 	mrb_define_const(mrb, m, "RENDERER", mrb_str_new_cstr(mrb, conf.renderer.c_str()));
 	mrb_define_const(mrb, m, "RENDER_API", mrb_str_new_cstr(mrb, shState->render().apiName()));
-	mrb_define_class_method(mrb, m, "SetCrashScreenData", SetCrashScreenData, MRB_ARGS_REQ(1));
+	mrb_define_module_function(mrb, m, "SetCrashScreenData", SetCrashScreenData, MRB_ARGS_REQ(1));
 
 	//detect unsupported enviroment/platform/OS	
 	#ifdef defined(vita) || \

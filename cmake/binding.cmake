@@ -68,8 +68,20 @@ if(BINDING STREQUAL "mruby")
     	message(FATAL_ERROR "Failed to find MRuby includes")
     endif()
 
-    file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/binding-${BINDING}/*.h*")
-    file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/binding-${BINDING}/*.c*")
+	file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/binding-${BINDING}/*.h*")
+	file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/binding-${BINDING}/*.c*")
+
+	set(MRBC_EXE "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby/build/sunshine/bin/mrbc")
+
+	add_custom_command(
+		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/module_rpg.mrb"
+		COMMAND ${MRBC_EXE} "-o${CMAKE_CURRENT_BINARY_DIR}/module_rpg.mrb" "./binding-${BINDING}/module_rpg.rb"
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		DEPENDS "./binding-${BINDING}/module_rpg.rb"
+		COMMENT "Precompiling module_rpg.rb"
+	)
+
+	ProcessWithXXDIn(${CMAKE_CURRENT_BINARY_DIR} EMBEDDED_SOURCE "module_rpg.mrb" ".")
 elseif(BINDING STREQUAL "cruby")
 	find_package(Ruby 3.3 COMPONENTS Interpreter Development REQUIRED)
     set(BINDING_LIBRARY ${Ruby_LIBRARIES})
@@ -77,6 +89,8 @@ elseif(BINDING STREQUAL "cruby")
     file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/binding-mri/*.h*")
     file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/binding-mri/*.c*")
     add_definitions(-DRUBY_DONT_SUBST)
+	
+	ProcessWithXXD(EMBEDDED_SOURCE binding-mri/module_rpg1.rb ${CMAKE_CURRENT_BINARY_DIR})
 elseif(BINDING STREQUAL "benchmark")
 	file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/binding-benchmark/*.h*")
 	file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/binding-benchmark/*.c*")
