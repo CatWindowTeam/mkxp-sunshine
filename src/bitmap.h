@@ -46,28 +46,17 @@ public:
 	IntRect rect() const;
 
 	void blt(int x, int y, const Bitmap &source, IntRect rect, int opacity = 255);
-
 	void stretchBlt(const IntRect &destRect, const Bitmap &source, const IntRect &sourceRect, int opacity = 255);
-
 	void fillRect(int x, int y, int width, int height, const Vec4 &color);
-
 	void fillRect(const IntRect &rect, const Vec4 &color);
-
 	void gradientFillRect(int x, int y, int width, int height, const Vec4 &color1, const Vec4 &color2, bool vertical = false);
-
 	void gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec4 &color2, bool vertical = false);
-
 	void gradientFillRect(int x, int y, int width, int height, const Vec4 &color1, const Vec4 &color2, const Vec4 &color3, const Vec4 &color4);
-
 	void gradientFillRect(const IntRect &rect, const Vec4 &color1, const Vec4 &color2, const Vec4 &color3, const Vec4 &color4);
-
-	void clearRect(int x, int y,
-	               int width, int height);
+	void clearRect(int x, int y, int width, int height);
 	void clearRect(const IntRect &rect);
-
 	void blur();
 	void radialBlur(int angle, int divisions);
-
 	void clear();
 
 	Color getPixel(int x, int y) const;
@@ -82,9 +71,8 @@ public:
 	};
 
 	void drawText(int x, int y, int width, int height, const char *str, int align = Left);
-
 	void drawText(const IntRect &rect, const char *str, int align = Left);
-
+	
 	IntRect textSize(const char *str);
 
 	DECL_ATTR(Font, Font&)
@@ -107,10 +95,9 @@ public:
 	void taintArea(const IntRect &rect);
 
 	Signal<void()> modified;
-
+	
 private:
 	void releaseResources();
 	const char *klassName() const { return "bitmap"; }
-
 	BitmapPrivate *p;
 };

@@ -138,13 +138,11 @@ SDLRender::SDLRender(const Config &conf, SDL_Renderer *renderer)
 	apiNameStr = rendererName ? rendererName : "unknown";
 
 	reverseSubtract = apiNameStr != "opengl" && apiNameStr != "software";
-
 	setActiveRender(this);
 }
 
 SDLRender::~SDLRender(){
 	setActiveRender(0);
-
 	for (size_t i = 0; i < textures.size(); ++i)
 		if (textures.at(i) && textures.at(i)->texture)
 			SDL_DestroyTexture(textures.at(i)->texture);
@@ -200,7 +198,6 @@ void SDLRender::resizeTexture(TexHandle handle, int w, int h, PixelFormat){
 		return;
 
 	flushIfUses(tex->texture);
-
 	if (tex->texture)
 		SDL_DestroyTexture(tex->texture);
 
@@ -220,7 +217,6 @@ void SDLRender::destroyTexture(TexHandle handle){
 		boundTexture = 0;
 
 	flushIfUses(tex->texture);
-
 	if (tex->texture)
 		SDL_DestroyTexture(tex->texture);
 
@@ -230,14 +226,12 @@ void SDLRender::destroyTexture(TexHandle handle){
 
 void SDLRender::setTextureSmooth(TexHandle handle, bool smooth){
 	boundTexture = handle.id;
-
 	if (SdlTexture *tex = texture(handle.id))
 		tex->smooth = smooth;
 }
 
 void SDLRender::setTextureRepeat(TexHandle handle, bool repeat){
 	boundTexture = handle.id;
-
 	if (SdlTexture *tex = texture(handle.id))
 		tex->repeat = repeat;
 }
@@ -250,18 +244,15 @@ void SDLRender::uploadTexture(TexHandle handle, int w, int h, const void *pixels
 void SDLRender::uploadTextureRect(TexHandle handle, int x, int y, int w, int h, const void *pixels, PixelFormat fmt){
 	SdlTexture *tex = texture(handle.id);
 	boundTexture = handle.id;
-
 	if (!tex || !tex->texture || !pixels)
 		return;
 
 	flushIfUses(tex->texture);
 	renderStatsUpload((size_t) w * h * 4);
 	SDL_Rect rect = { x, y, w, h };
-
 	if (fmt == PixelFormat::Luminance){
 		const uint8_t *src = static_cast<const uint8_t*>(pixels);
 		std::vector<uint8_t> expanded((size_t) w * h * 4);
-
 		for (size_t i = 0; i < (size_t) w * h; ++i){
 			expanded[i*4+0] = expanded[i*4+1] = expanded[i*4+2] = src[i];
 			expanded[i*4+3] = 255;
@@ -276,7 +267,6 @@ void SDLRender::uploadTextureRect(TexHandle handle, int x, int y, int w, int h, 
 void SDLRender::uploadTextureRect(TexHandle handle, int dstX, int dstY, int w, int h, SDL_Surface *src, int srcX, int srcY){
 	SdlTexture *tex = texture(handle.id);
 	boundTexture = handle.id;
-
 	if (!tex || !tex->texture)
 		return;
 
@@ -324,7 +314,6 @@ int SDLRender::screenHeight(){
 
 void SDLRender::applyStateFor(SDL_Texture *wantTarget, const SDL_Rect &vp, bool clipOn, const SDL_Rect &box){
 	const bool targetChanged = !stateValid || wantTarget != appliedTarget;
-
 	if (targetChanged){
 		SDL_SetRenderTarget(renderer, wantTarget);
 		appliedTarget = wantTarget;
@@ -354,7 +343,6 @@ void SDLRender::flush(){
 
 	batch.active = false;
 	applyStateFor(batch.target, batch.viewport, batch.clipOn, batch.clip);
-
 	if (batch.src){
 		SDL_SetTextureBlendMode(batch.src, batch.mode);
 		SDL_SetTextureScaleMode(batch.src, batch.linear ? SDL_SCALEMODE_LINEAR : SDL_SCALEMODE_NEAREST);
@@ -389,7 +377,6 @@ void SDLRender::clear(){
 void SDLRender::readTexture(SdlTexture &tex, std::vector<uint8_t> &out){
 	flush();
 	out.assign((size_t) tex.width * tex.height * 4, 0);
-
 	if (!tex.texture)
 		return;
 
@@ -401,13 +388,11 @@ void SDLRender::readTexture(SdlTexture &tex, std::vector<uint8_t> &out){
 	SDL_Surface *surf = SDL_RenderReadPixels(renderer, &clip);
 	SDL_SetRenderTarget(renderer, previous);
 	stateValid = false;
-
 	if (!surf)
 		return;
 
 	SDL_Surface *conv = SDL_ConvertSurface(surf, SDL_PIXELFORMAT_RGBA32);
 	SDL_DestroySurface(surf);
-
 	if (!conv)
 		return;
 
@@ -501,29 +486,21 @@ SDL_BlendMode SDLRender::blendMode(bool forceBlend){
 		return SDL_BLENDMODE_NONE;
 
 	switch (activeBlend){
-	case BlendKind::Addition :
-	case BlendKind::ToneAdd :
-		return SDL_BLENDMODE_ADD;
-
-	case BlendKind::Multiply :
-		return SDL_BLENDMODE_MUL;
-
-	case BlendKind::Substraction :
-		if (!reverseSubtract)
-			return approxSubtractBlend();
-
-		return SDL_ComposeCustomBlendMode(SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_REV_SUBTRACT,
-		                                  SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD);
-
-	case BlendKind::ToneSubtract :
-		if (!reverseSubtract)
-			return approxSubtractBlend();
-
-		return SDL_ComposeCustomBlendMode(SDL_BLENDFACTOR_ONE, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_REV_SUBTRACT,
-		                                  SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD);
-
-	default :
-		return SDL_BLENDMODE_BLEND;
+		case BlendKind::Addition:
+		case BlendKind::ToneAdd:
+			return SDL_BLENDMODE_ADD;
+		case BlendKind::Multiply :
+			return SDL_BLENDMODE_MUL;
+		case BlendKind::Substraction :
+			if (!reverseSubtract)
+				return approxSubtractBlend();
+			return SDL_ComposeCustomBlendMode(SDL_BLENDFACTOR_SRC_ALPHA, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_REV_SUBTRACT, SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD);
+		case BlendKind::ToneSubtract :
+			if (!reverseSubtract)
+				return approxSubtractBlend();
+			return SDL_ComposeCustomBlendMode(SDL_BLENDFACTOR_ONE, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_REV_SUBTRACT, SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD);
+		default:
+			return SDL_BLENDMODE_BLEND;
 	}
 }
 

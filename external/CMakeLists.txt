@@ -9,7 +9,6 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 			-ffunction-sections
 			-fdata-sections
 			-fdelete-dead-exceptions
-			-flto
 			-fvirtual-function-elimination
 			-ffast-math
 			-ffp-contract=fast
@@ -27,7 +26,6 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 			-ffunction-sections
 			-fdata-sections
 			-fdelete-dead-exceptions
-			-flto
 			-fvirtual-function-elimination
 			-ffast-math
 			-ffp-contract=fast
@@ -59,18 +57,14 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 			    -fno-threadsafe-statics
 		)
 	endif()
-	
-	add_compile_options(
-		"${OPTIONS_RELEASE}"
-		"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_CPP}>"
-		"${OPTIONS_RELEASE_UNSAFE}"
-		"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_UNSAFE_CPP}>"
-	)
+
+	if(LTO)
+		check_option(OPTIONS_LTO -fdevirtualize-at-ltrans)
+	endif()
 endif()
 
 if(NATIVE)
 	check_option(OPTIONS_NATIVE -march=native -mtune=native)
-	add_compile_options(${OPTIONS_NATIVE})
 endif()
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/CLI11 EXCLUDE_FROM_ALL)
@@ -86,3 +80,76 @@ set(SIGCPP_STATIC ON CACHE BOOL "Build Static library?")
 set(SIGCPP_EXAMPLES OFF CACHE BOOL "Build examples")
 set(SIGCPP_TESTS OFF CACHE BOOL "Build tests")
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/sigc)
+if(LTO)
+	set_property(TARGET SDL3_net-static PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET zlibstatic PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET physfs-static PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET wavpack PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET ogg PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET compat PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET sigc-3.0 PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET SDL3_image-static PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET freetype PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET vorbis PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET libmpg123 PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET harfbuzz PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET vorbisfile PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET SDL3-static PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET SDL3_ttf-static PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET SDL3_mixer-static PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
+target_compile_options(SDL3_net-static PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	
+target_compile_options(zlibstatic PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	
+target_compile_options(physfs-static PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	
+target_compile_options(wavpack PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	
+target_compile_options(ogg PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	
+target_compile_options(compat PRIVATE "${OPTIONS_NATIVE}"
+	"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_CPP}>"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}"
+	"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_UNSAFE_CPP}>")
+	
+target_compile_options(sigc-3.0 PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_CPP}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}"
+	"${OPTIONS_RELEASE_UNSAFE_CPP}")
+	
+target_compile_options(SDL3_image-static PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	
+target_compile_options(freetype PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+
+target_compile_options(vorbis PRIVATE "${OPTIONS_NATIVE}"
+	"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_CPP}>"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}"
+	"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_UNSAFE_CPP}>")
+target_compile_options(libmpg123 PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+
+target_compile_options(harfbuzz PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_CPP}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}"
+	"${OPTIONS_RELEASE_UNSAFE_CPP}")
+	
+target_compile_options(vorbisfile PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+
+target_compile_options(SDL3-static PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	
+target_compile_options(SDL3_ttf-static PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")
+	
+target_compile_options(SDL3_mixer-static PRIVATE "${OPTIONS_NATIVE}"
+	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_RELEASE}")

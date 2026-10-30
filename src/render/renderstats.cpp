@@ -3,27 +3,27 @@
 #include "debugwriter.h"
 #include "render/irender.h"
 #include <SDL3/SDL_timer.h>
-#include <stdio.h>
+#include <SDL3/SDL_stdinc.h>
 
 RenderStats renderStats;
 
-static uint64_t lastSwapEnd = 0;
-static uint64_t swapStart = 0;
-static uint64_t workNs = 0;
-static uint64_t swapNs = 0;
-static uint64_t windowStart = 0;
-static uint32_t frames = 0;
-static uint64_t totalDraws = 0;
-static uint64_t totalVertices = 0;
-static uint64_t totalUploads = 0;
-static uint64_t totalUploadBytes = 0;
+static Uint64 lastSwapEnd = 0;
+static Uint64 swapStart = 0;
+static Uint64 workNs = 0;
+static Uint64 swapNs = 0;
+static Uint64 windowStart = 0;
+static Uint32 frames = 0;
+static Uint64 totalDraws = 0;
+static Uint64 totalVertices = 0;
+static Uint64 totalUploads = 0;
+static Uint64 totalUploadBytes = 0;
 
 void renderStatsBeginSwap(){
-	if (!conf.renderStats)
+	if(!conf.renderStats)
 		return;
 
 	swapStart = SDL_GetTicksNS();
-	if (lastSwapEnd)
+	if(lastSwapEnd)
 		workNs += swapStart - lastSwapEnd;
 }
 
@@ -42,16 +42,16 @@ void renderStatsEndSwap(){
 	totalUploadBytes += renderStats.uploadBytes;
 	renderStats = RenderStats();
 
-	if (!windowStart)
+	if(!windowStart)
 		windowStart = now;
 
-	if (now - windowStart < 1000000000ull)
+	if(now - windowStart < 1000000000ull)
 		return;
 
 	const double f = frames;
 	char line[256];
-	snprintf(line, sizeof(line), "[RenderStats] %s fps %d | draws %d | verts %d | uploads %.1f (%d KB) | cpu %.2f ms | swap %.2f ms",
-	         activeRender().apiName(), (int) (f * 1e9 / (now - windowStart)),
+	SDL_snprintf(line, sizeof(line), "[RS] fps %d | draws %d | verts %d | uploads %.1f (%d KB) | cpu %.2f ms | swap %.2f ms",
+	         (int) (f * 1e9 / (now - windowStart)),
 	         (int) (totalDraws / f), (int) (totalVertices / f),
 	         totalUploads / f, (int) (totalUploadBytes / f / 1024),
 	         workNs / f / 1e6, swapNs / f / 1e6);

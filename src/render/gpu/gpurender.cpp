@@ -497,13 +497,13 @@ GpuBlend GPURender::currentBlend() const{
 		return GpuBlend::None;
 
 	switch (activeBlend){
-	case BlendKind::KeepDestAlpha : return GpuBlend::KeepDestAlpha;
-	case BlendKind::Normal        : return GpuBlend::Normal;
-	case BlendKind::Addition      : return GpuBlend::Addition;
-	case BlendKind::Substraction  : return GpuBlend::Substraction;
-	case BlendKind::Multiply      : return GpuBlend::Multiply;
-	case BlendKind::ToneAdd       : return GpuBlend::ToneAdd;
-	case BlendKind::ToneSubtract  : return GpuBlend::ToneSubtract;
+		case BlendKind::KeepDestAlpha : return GpuBlend::KeepDestAlpha;
+		case BlendKind::Normal        : return GpuBlend::Normal;
+		case BlendKind::Addition      : return GpuBlend::Addition;
+		case BlendKind::Substraction  : return GpuBlend::Substraction;
+		case BlendKind::Multiply      : return GpuBlend::Multiply;
+		case BlendKind::ToneAdd       : return GpuBlend::ToneAdd;
+		case BlendKind::ToneSubtract  : return GpuBlend::ToneSubtract;
 	}
 
 	return GpuBlend::Normal;

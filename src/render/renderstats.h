@@ -1,12 +1,10 @@
 #pragma once
-#include <stddef.h>
-#include <stdint.h>
-
+#include <SDL3/SDL_stdinc.h>
 struct RenderStats{
-	uint32_t drawCalls;
-	uint32_t vertices;
-	uint32_t uploads;
-	uint64_t uploadBytes;
+	Uint32 drawCalls;
+	Uint32 vertices;
+	Uint32 uploads;
+	Uint64 uploadBytes;
 };
 
 extern RenderStats renderStats;

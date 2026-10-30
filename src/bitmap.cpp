@@ -206,12 +206,12 @@ struct BitmapPrivate{
 		render.bindRenderTarget(target);
 	}
 
-	void pushSetViewport() const{
+	void pushSetViewport(){
 		render.pushViewport(IntRect(0, 0, target.width, target.height));
 		render.applyViewportProj();
 	}
 
-	void popViewport() const{
+	void popViewport(){
 		render.popViewport();
 	}
 
@@ -288,7 +288,6 @@ Bitmap::Bitmap(const char *filename){
 
 		p = new BitmapPrivate(this);
 		p->target = tex;
-
 		p->render.uploadTexture(p->target.tex, p->target.width, p->target.height, imgSurf->pixels);
 
 		SDL_DestroySurface(imgSurf);
