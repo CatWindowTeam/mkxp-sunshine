@@ -13,12 +13,11 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 		-fmerge-all-constants
 	)
 		
-	check_option(OPTIONS_RELEASE_CPP
-		-fno-rtti
-		-fno-unwind-tables
-		-fno-asynchronous-unwind-tables
-		-fwhole-program-vtables
-	)
+	set(_release_cpp_options -fno-rtti -fwhole-program-vtables)
+	if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	    list(APPEND _release_cpp_options -fno-unwind-tables -fno-asynchronous-unwind-tables)
+	endif()
+	check_option(OPTIONS_RELEASE_CPP ${_release_cpp_options})
 
 	if(UNSAFE_OPTIMIZATIONS)
 		check_option(OPTIONS_RELEASE_UNSAFE

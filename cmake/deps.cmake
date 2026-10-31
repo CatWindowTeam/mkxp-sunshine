@@ -9,6 +9,7 @@ target_compile_definitions(${APP_TARGET}
 							
 target_include_directories(${APP_TARGET} 
 							PRIVATE
+							${CMAKE_CURRENT_BINARY_DIR}
 							${PLATFORM_INCLUDE}
 							${CMAKE_SOURCE_DIR}/src
 							${CMAKE_SOURCE_DIR}/external/robin-map/include

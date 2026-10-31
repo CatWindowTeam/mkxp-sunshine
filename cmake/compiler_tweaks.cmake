@@ -3,19 +3,22 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/check.cmake)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	check_option(COMPILER_OPTIONS -g -Og)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-	check_option(COMPILER_OPTIONS
+	set(_release_options
 		-O3
 		-fno-ident
 		-ffunction-sections
 		-fdata-sections
 		-fno-rtti
 		-ffp-contract=fast
-		-fno-unwind-tables
-		-fno-asynchronous-unwind-tables
 		-fdelete-dead-exceptions
 		-fwhole-program-vtables
 		-fvirtual-function-elimination
-		-fmerge-all-constants)
+		-fmerge-all-constants
+	)
+	if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	    list(APPEND _release_options -fno-unwind-tables -fno-asynchronous-unwind-tables)
+	endif()
+	check_option(COMPILER_OPTIONS ${_release_options})
 
 	check_linker_option(OPTIONS_LINKER_RELEASE
 		LINKER:-O3
