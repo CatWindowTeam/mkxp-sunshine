@@ -137,7 +137,7 @@ static void mrbBindingExecute() {
 		MRBBindingData* bindingData = static_cast<MRBBindingData*>(mrb->ud);
 		mrbBindingInit(mrb);
 
-		throw std::runtime_error("script loading not implemented yet.")
+		throw std::runtime_error("script loading not implemented yet.");
 		/*
 		for (auto script : scripts) {
 			mrb_ccontext_filename(mrb, cxt, script.name);
