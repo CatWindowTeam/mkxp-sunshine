@@ -13,6 +13,11 @@ BLACKLIST = [
   'libm.so',
   'linux-vdso.so',
   'libstdc++.so',
+  'libblkid.so',
+  'libblkid.so',
+  'libselinux.so',
+  'libgcc_s.so',
+  'libmvec.so',
   # Windows system dlss
   "ntdll.dll",
   "KERNEL32.DLL",
