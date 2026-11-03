@@ -358,8 +358,6 @@ class Game_Player < Game_Character
     # getting new positions if move will successful
     next_real_x = @real_x + x
     next_real_y = @real_y + y
-    next_x = ((next_real_x + 64) / 128).to_i
-    next_y = ((next_real_y + 64) / 128).to_i
 
     old_x = @x
     old_y = @y
