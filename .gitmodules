@@ -30,4 +30,4 @@
 	url = https://github.com/mruby/mruby.git
 [submodule "external/sigc"]
 	path = external/sigc
-	url = https://github.com/CatWindowTeam/libsigcplusplus.git
+	url = https://github.com/CatWindowTeam/libsigcplusplus
