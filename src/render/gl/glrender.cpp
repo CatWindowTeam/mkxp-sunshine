@@ -764,5 +764,4 @@ bool glProbe(SDL_Window *window){
 	return true;
 }
 
-
 #endif

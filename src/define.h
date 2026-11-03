@@ -16,10 +16,6 @@
 	#define mkxp_android 1
 #endif
 
-#if defined(SDL_PLATFORM_APPLE)
-	#define apple 1
-#endif
-
 #if SDL_PLATFORM_EMSCRIPTEN
 	#define web 1
 #endif
