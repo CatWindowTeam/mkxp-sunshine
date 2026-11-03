@@ -113,7 +113,7 @@ void PhysFS_binding_init();
 void LoggerInit();
 
 static VALUE mriPrint(int argc, VALUE *argv, VALUE self);
-static VALUE mkxpPuts(int argc, VALUE *argv, VALUE self);
+static VALUE rbPuts(int argc, VALUE *argv, VALUE self);
 static VALUE _kernelCaller(VALUE self);
 
 // TODO: find the reason why Symbol doesn't have some methods
@@ -161,6 +161,7 @@ static void mriBindingInit(){
 	rb_define_module_function(rb_mKernel, "print", RUBY_METHOD_FUNC(mriPrint), -1);
 	rb_define_alias(rb_singleton_class(rb_mKernel), "_mkxp_kernel_caller_alias", "caller");
 	rb_define_module_function(rb_mKernel, "caller", RUBY_METHOD_FUNC(_kernelCaller), 0);
+	rb_define_module_function(rb_mKernel, "puts", RUBY_METHOD_FUNC(rbPuts), -1);
 
 	char *script = (char*)SDL_malloc(binding_mri_module_rpg1_rb_len + 1);
 	SDL_memcpy(script, binding_mri_module_rpg1_rb, binding_mri_module_rpg1_rb_len);
@@ -186,9 +187,6 @@ static void mriBindingInit(){
 	    rb_set_errinfo(Qnil);
 	    return;
 	}
-
-	VALUE mod = rb_define_module("MKXP");
-	rb_define_module_function(mod, "puts", RUBY_METHOD_FUNC(mkxpPuts), -1);
 }
 
 static void printP(int argc, VALUE *argv, const char *convMethod, const char *sep){
@@ -208,10 +206,15 @@ static VALUE mriPrint(int argc, VALUE *argv, VALUE self){
 	return Qnil;
 }
 
-static VALUE mkxpPuts(int argc, VALUE *argv, VALUE self){
-	const char *str;
-	rb_get_args(argc, argv, "z", &str RB_ARG_END);
-	Debug() << str;
+static VALUE rbPuts(int argc, VALUE *argv, VALUE self){
+	std::string result;
+
+	for (int i = 0; i < argc; ++i){
+		VALUE str = rb_obj_as_string(argv[i]);
+		result.append(StringValueCStr(str));
+	}
+
+	Debug() << result;
 	return Qnil;
 }
 

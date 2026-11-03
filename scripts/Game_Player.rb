@@ -24,9 +24,8 @@ class Game_Player < Game_Character
   #         * 0 = Determines if all directions are impassable (for jumping)
   #--------------------------------------------------------------------------
   def passable?(x, y, d)
-    if Settings[:debug] && Input.press?(Input::DEBUGACTION)
-      return true
-    end
+    return true if Settings[:debug] && Input.press?(Input::DEBUGACTION)
+
     # Get new coordinates
     new_x = x + (d == 6 ? 1 : d == 4 ? -1 : 0)
     new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
@@ -223,7 +222,7 @@ class Game_Player < Game_Character
           straighten
         end
         # moving from obstacle if it is too near
-        if !passable?(@x, @y, 8) && @y > ((@real_y + 64).to_i / 128)
+        if !passable?(@x, @y, 8) && @y > ((@real_y + 96).to_i / 128)
           # Move down
           @real_y = @real_y + distance
         end
@@ -235,7 +234,7 @@ class Game_Player < Game_Character
           # Move right
           @real_x = @real_x + distance
         end
-        if !passable?(@x, @y, 2) && @y < ((@real_y + 128).to_i / 128)
+        if !passable?(@x, @y, 2) && @y < ((@real_y + 160).to_i / 128)
           # Move up
           @real_y = @real_y - distance
         end
@@ -336,27 +335,50 @@ class Game_Player < Game_Character
     super
   end
 
+  def smooth_passable?(x = 0.0, y = 0.0)
+    return true if Settings[:debug] && Input.press?(Input::DEBUGACTION)
+
+      # check up
+    if (y < 0 && !passable?(@x, @y, 8) && @y.to_f > (@real_y + 96 + y) / 128.0) ||
+      # check right
+       (x > 0 && !passable?(@x, @y, 6) && @x.to_f < (@real_x - 32 + x) / 128.0) ||
+      # check left
+       (x < 0 && !passable?(@x, @y, 4) && @x.to_f > (@real_x + 32 + x) / 128.0) ||
+      # check down
+       (y > 0 && !passable?(@x, @y, 2) && @y.to_f < (@real_y + 32 + y) / 128.0)
+      # we got wall
+      return false
+    end
+
+    # all meow :3
+    return true
+  end
+
   def smooth_move(x = 0, y = 0)
     # getting new positions if move will successful
     next_real_x = @real_x + x
     next_real_y = @real_y + y
-    next_x = ((next_real_x + 64 + (x <=> 0) * 32) / 128).to_i
-    next_y = ((next_real_y + 96 + (y <=> 0) * 32) / 128).to_i
+    next_x = ((next_real_x + 64) / 128).to_i
+    next_y = ((next_real_y + 64) / 128).to_i
 
     old_x = @x
     old_y = @y
-    
+
     # moving player
-    @real_x += x if @x == next_x || passable?(@x, @y, x > 0 ? 6 : 4)
-    @real_y += y if @y == next_y || passable?(@x, @y, y > 0 ? 2 : 8)
+    @real_x = next_real_x if smooth_passable?(x, 0.0)
+    @real_y = next_real_y if smooth_passable?(0.0, y)
     @x = ((@real_x + 64) / 128).to_i
-    @y = ((@real_y + 96) / 128).to_i
+    @y = ((@real_y + 128) / 128).to_i
     
     # checking for tile position is changed
     if @x != old_x || @y != old_y
       increase_steps
-      check_event_trigger_touch(next_x, next_y)
+      # calling triggers
+      check_event_trigger_here([1, 2])
+    elsif (@real_x != next_real_x) || (@real_y != next_real_y)
+        check_event_trigger_touch(@x + ((@real_x != next_real_x) ? (x <=> 0) : 0), @y + ((@real_y != next_real_y) ? (y <=> 0) : 0))
     end
+    # if walk but cant walk to next pos
     moved = false
     # checking for world position is changed
     if (@real_x == next_real_x && x != 0) || (@real_y == next_real_y && y != 0)
@@ -370,8 +392,6 @@ class Game_Player < Game_Character
         @anime_count += 1 * Graphics.scaled_delta
       end
     end
-    # calling triggers
-    check_event_trigger_here([1, 2])
     moved
   end
 

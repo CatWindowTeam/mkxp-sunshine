@@ -1,15 +1,3 @@
-module Kernel
-  def puts(*args)
-    string = ""
-    args.each do |arg|
-      string << arg.to_s
-    end
-    MKXP.puts string
-    nil
-  end
-  module_function :puts
-end
-
 def lerp(a, b, t)
   a + (b - a) * t
 end
