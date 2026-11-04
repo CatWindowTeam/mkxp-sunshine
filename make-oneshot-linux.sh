@@ -4,12 +4,12 @@ shopt -u dotglob
 rm -rf build journal/build libs
 
 cmake . -B build/ "$@"
-cmake --build build/ "-j${nproc}"
+cmake --build build/ "-j$(nproc)"
 
 cd journal/
 	bash download_journal_deps.sh
 	cmake . -B build/
-	cmake --build build/ "-j${nproc}"
+	cmake --build build/ "-j$(nproc)"
 cd ..
 
 mkdir -p build/bandle
