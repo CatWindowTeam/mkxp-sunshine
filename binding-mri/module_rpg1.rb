@@ -359,26 +359,26 @@ module RPG
       @_whiten_duration > 0 or
       @_appear_duration > 0 or
       @_escape_duration > 0 or
-      @_collapse_duration > 0 or
-      @_damage_duration > 0 or
-      @_animation_duration > 0
+      @_collapse_duration >= 0 or
+      @_damage_duration >= 0 or
+      @_animation_duration >= 0
     end
     def update
       super
       if @_whiten_duration > 0
-        @_whiten_duration -= 1
+        @_whiten_duration -= Graphics.scaled_delta
         self.color.alpha = 128 - (16 - @_whiten_duration) * 10
       end
       if @_appear_duration > 0
-        @_appear_duration -= 1
+        @_appear_duration -= Graphics.scaled_delta
         self.opacity = (16 - @_appear_duration) * 16
       end
       if @_escape_duration > 0
-        @_escape_duration -= 1
+        @_escape_duration -= Graphics.scaled_delta
         self.opacity = 256 - (32 - @_escape_duration) * 10
       end
       if @_collapse_duration > 0
-        @_collapse_duration -= 1
+        @_collapse_duration -= Graphics.scaled_delta
         self.opacity = 256 - (48 - @_collapse_duration) * 6
       end
       if @_damage_duration > 0
@@ -394,7 +394,7 @@ module RPG
           @_damage_sprite.y += 4 * Graphics.scaled_delta
         end
         @_damage_sprite.opacity = 256 - (12 - @_damage_duration) * 32
-        if @_damage_duration == 0
+        if @_damage_duration <= 0
           dispose_damage
         end
       end
@@ -420,7 +420,7 @@ module RPG
       @@_animations.clear
     end
     def update_animation
-      if @_animation_duration > 0
+      if @_animation_duration >= 1
         frame_index = @_animation.frame_max - @_animation_duration.to_i
         cell_data = @_animation.frames[frame_index].cell_data
         position = @_animation.position
