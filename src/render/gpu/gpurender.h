@@ -178,6 +178,7 @@ private:
 	void flush();
 	void ensureVertexCapacity(size_t bytes);
 	void ensureIndexBuffer(size_t quads);
+	bool prepareTransfer();
 	SDL_GPUGraphicsPipeline *pipelineFor(int pipeline, GpuBlend blend, SDL_GPUTextureFormat format);
 	SDL_GPUSampler *samplerFor(int flags);
 	void releasePending();
@@ -212,6 +213,7 @@ private:
 	std::vector<GpuCommand> commands;
 	std::vector<GpuVertex> vertexStream;
 	std::vector<std::vector<uint8_t>> uploads;
+	std::vector<size_t> uploadOffsets;
 	std::vector<GpuLightParams> lightPool;
 
 	SDL_GPUBuffer *vertexBuffer;
@@ -219,6 +221,8 @@ private:
 	SDL_GPUBuffer *indexBuffer;
 	size_t indexQuads;
 	size_t neededQuads;
+	SDL_GPUTransferBuffer *uploadTransfer;
+	size_t uploadCapacity;
 };
 
 #endif

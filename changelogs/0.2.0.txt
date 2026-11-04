@@ -2,4 +2,10 @@
 * Migrated from sigc++2 to sigc++3
 * Using custom functions instead of pixman
 * optimization
-* 
+* libraries.rb filtering improved
+* Windows bundle build script rewrited
+* Reworked CMake configuration
+* MP3 support disabled by default
+* Journal fixes
+* WME like movement system
+*  

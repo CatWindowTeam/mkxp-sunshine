@@ -200,12 +200,6 @@ class Window_Settings
         :parameter => :fight_crime_track,
         :icons => [[3, 1]],
       },
-      {
-        :type => :bool,
-        :name => "Use Old Self Contained Universe(Reprise) version",
-        :icons => [[3, 1]],
-        :parameter => :old_reprise_song
-      },
     ],
     "Video" => [
       { :type => :sep, :name => "Screen"},

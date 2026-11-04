@@ -1,12 +1,9 @@
 #!/usr/bin/ruby
 #encoding: utf-8
-puts "copying libraries..."
 require 'fileutils'
 
-# These libraries MUST NOT be packaged with OneShot
-# or otherwise they will cause incompatibilities.
 BLACKLIST = [
-  # Linux/*NIX
+  # Linux
   'libc.so',
   'libpthread.so',
   'libdl.so',
@@ -15,10 +12,9 @@ BLACKLIST = [
   'libstdc++.so',
   'libblkid.so',
   'libblkid.so',
-  'libselinux.so',
   'libgcc_s.so',
   'libmvec.so',
-  # Windows system dlss
+  # Windows system DLLs
   "ntdll.dll",
   "KERNEL32.DLL",
   "KERNELBASE.dll",
@@ -63,8 +59,8 @@ while line = STDIN.gets
     filename = File.basename(path)
     next if BLACKLIST.any? { |library| filename.downcase.start_with?(library.downcase) }
     path = `cygpath -w "#{path}"`.strip if ENV['MSYSTEM'] && path.start_with?("/")
+    puts "Added: #{path}"
     files << path
   end
 end
 FileUtils.cp(files, outDir)
-puts "copying libraries done."

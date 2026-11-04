@@ -184,7 +184,9 @@ GPURender::GPURender(const Config &conf, SDL_GPUDevice *device, SDL_Window *wind
       vertexCapacity(0),
       indexBuffer(0),
       indexQuads(0),
-      neededQuads(1)
+      neededQuads(1),
+      uploadTransfer(0),
+      uploadCapacity(0)
 {
 	for (int i = 0; i < 4; ++i)
 		samplers[i] = 0;
@@ -260,6 +262,9 @@ GPURender::~GPURender(){
 
 	if (indexBuffer)
 		SDL_ReleaseGPUBuffer(device, indexBuffer);
+
+	if (uploadTransfer)
+		SDL_ReleaseGPUTransferBuffer(device, uploadTransfer);
 
 	if (dummy)
 		SDL_ReleaseGPUTexture(device, dummy);
@@ -420,7 +425,10 @@ void GPURender::setTextureRepeat(TexHandle handle, bool repeat){
 }
 
 void GPURender::uploadTexture(TexHandle handle, int w, int h, const void *pixels, PixelFormat fmt){
-	resizeTexture(handle, w, h, fmt);
+	GpuTexture *tex = texture(handle.id);
+	if (!pixels || !tex || !tex->texture || tex->width != w || tex->height != h)
+		resizeTexture(handle, w, h, fmt);
+
 	uploadTextureRect(handle, 0, 0, w, h, pixels, fmt);
 }
 
@@ -1036,7 +1044,9 @@ void GPURender::ensureVertexCapacity(size_t bytes){
 	if (vertexBuffer && vertexCapacity >= bytes)
 		return;
 
-	size_t capacity = std::max<size_t>(bytes, 1 << 20);
+	size_t capacity = 1 << 20;
+	while (capacity < bytes)
+		capacity <<= 1;
 
 	if (vertexBuffer)
 		SDL_ReleaseGPUBuffer(device, vertexBuffer);
@@ -1086,6 +1096,48 @@ void GPURender::ensureIndexBuffer(size_t quads){
 	SDL_ReleaseGPUTransferBuffer(device, transfer);
 }
 
+bool GPURender::prepareTransfer(){
+	size_t total = vertexStream.size() * sizeof(GpuVertex);
+	uploadOffsets.resize(uploads.size());
+
+	for (size_t i = 0; i < uploads.size(); ++i){
+		total = (total + 511) & ~(size_t) 511;
+		uploadOffsets[i] = total;
+		total += uploads[i].size();
+	}
+
+	if (total == 0)
+		return false;
+
+	if (!uploadTransfer || uploadCapacity < total){
+		size_t capacity = 1 << 20;
+		while (capacity < total)
+			capacity <<= 1;
+
+		if (uploadTransfer)
+			SDL_ReleaseGPUTransferBuffer(device, uploadTransfer);
+
+		SDL_GPUTransferBufferCreateInfo info;
+		memset(&info, 0, sizeof(info));
+		info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
+		info.size = (Uint32) capacity;
+		uploadTransfer = SDL_CreateGPUTransferBuffer(device, &info);
+		uploadCapacity = capacity;
+	}
+
+	Uint8 *mapped = static_cast<Uint8*>(SDL_MapGPUTransferBuffer(device, uploadTransfer, true));
+
+	if (!vertexStream.empty())
+		memcpy(mapped, vertexStream.data(), vertexStream.size() * sizeof(GpuVertex));
+
+	for (size_t i = 0; i < uploads.size(); ++i)
+		if (!uploads[i].empty())
+			memcpy(mapped + uploadOffsets[i], uploads[i].data(), uploads[i].size());
+
+	SDL_UnmapGPUTransferBuffer(device, uploadTransfer);
+	return true;
+}
+
 void GPURender::uploadVertexStream(SDL_GPUCommandBuffer *cmd){
 	if (vertexStream.empty())
 		return;
@@ -1093,14 +1145,11 @@ void GPURender::uploadVertexStream(SDL_GPUCommandBuffer *cmd){
 	const size_t bytes = vertexStream.size() * sizeof(GpuVertex);
 	ensureVertexCapacity(bytes);
 
-	SDL_GPUTransferBuffer *transfer = createUploadBuffer(vertexStream.data(), bytes);
-
 	SDL_GPUCopyPass *copy = SDL_BeginGPUCopyPass(cmd);
-	SDL_GPUTransferBufferLocation src = { transfer, 0 };
+	SDL_GPUTransferBufferLocation src = { uploadTransfer, 0 };
 	SDL_GPUBufferRegion dst = { vertexBuffer, 0, (Uint32) bytes };
 	SDL_UploadToGPUBuffer(copy, &src, &dst, true);
 	SDL_EndGPUCopyPass(copy);
-	SDL_ReleaseGPUTransferBuffer(device, transfer);
 }
 
 void GPURender::endPass(FlushState &s){
@@ -1168,10 +1217,9 @@ void GPURender::executeUpload(FlushState &s, const GpuCommand &c){
 
 	const std::vector<uint8_t> &data = uploads[c.payload];
 	renderStatsUpload(data.size());
-	SDL_GPUTransferBuffer *transfer = createUploadBuffer(data.data(), data.size());
 
 	SDL_GPUCopyPass *copy = SDL_BeginGPUCopyPass(s.cmd);
-	SDL_GPUTextureTransferInfo src = { transfer, 0, (Uint32) c.rect.w, (Uint32) c.rect.h };
+	SDL_GPUTextureTransferInfo src = { uploadTransfer, (Uint32) uploadOffsets[c.payload], (Uint32) c.rect.w, (Uint32) c.rect.h };
 	SDL_GPUTextureRegion dst;
 	memset(&dst, 0, sizeof(dst));
 	dst.texture = tex->texture;
@@ -1182,7 +1230,6 @@ void GPURender::executeUpload(FlushState &s, const GpuCommand &c){
 	dst.d = 1;
 	SDL_UploadToGPUTexture(copy, &src, &dst, false);
 	SDL_EndGPUCopyPass(copy);
-	SDL_ReleaseGPUTransferBuffer(device, transfer);
 }
 
 void GPURender::executeDraw(FlushState &s, const GpuCommand &c, const ResolvedTarget &r){
@@ -1253,6 +1300,7 @@ void GPURender::flush(){
 	s.cmd = SDL_AcquireGPUCommandBuffer(device);
 	s.swapFormat = SDL_GetGPUSwapchainTextureFormat(device, window);
 
+	prepareTransfer();
 	uploadVertexStream(s.cmd);
 
 	for (size_t i = 0; i < commands.size(); ++i){

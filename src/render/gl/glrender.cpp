@@ -78,6 +78,7 @@ static GLenum glUsage(GeometryUsage usage){
 
 GLRender::GLRender() : glStateObj(), context(SDL_GL_GetCurrentContext()){
 	setActiveRender(this);
+	gl.PixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	quadIbo = IBO::gen();
 	ensureQuadIndices(1);
 

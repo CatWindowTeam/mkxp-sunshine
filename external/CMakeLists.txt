@@ -54,78 +54,46 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_image EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_net EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/sigc)
-if(LTO)
-	set_property(TARGET SDL3_net-static PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET zlibstatic PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET physfs-static PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET wavpack PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET ogg PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET compat PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET sigc-3.0 PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET SDL3_image-static PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET freetype PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET vorbis PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET libmpg123 PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET harfbuzz PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET vorbisfile PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET SDL3-static PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET SDL3_ttf-static PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-	set_property(TARGET SDL3_mixer-static PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-endif()
-
-target_compile_options(SDL3_net-static PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
-	
-target_compile_options(zlibstatic PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
-	
-target_compile_options(physfs-static PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
-	
-target_compile_options(wavpack PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
-	
-target_compile_options(ogg PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
-	
-target_compile_options(compat PRIVATE "${OPTIONS_NATIVE}"
-	"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_CPP}>"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}"
-	"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_UNSAFE_CPP}>")
 
 # -Wno-template-body for compatibility with latest GCC
+# TODO: move -Wno-template-body to libsigc++
 target_compile_options(sigc-3.0 PRIVATE "${OPTIONS_NATIVE}"
 	"${OPTIONS_RELEASE_CPP}" "-Wno-template-body"
 	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}"
 	"${OPTIONS_RELEASE_UNSAFE_CPP}")
-	
-target_compile_options(SDL3_image-static PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
-	
-target_compile_options(freetype PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
+if(LTO)
+	set_property(TARGET sigc-3.0 PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
 
-target_compile_options(vorbis PRIVATE "${OPTIONS_NATIVE}"
-	"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_CPP}>"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}"
-	"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_UNSAFE_CPP}>")
+set(targets 
+	SDL3_net-static
+	SDL3_image-static
+	SDL3-static
+	SDL3_ttf-static
+	SDL3_mixer-static
+	zlibstatic
+	physfs-static
+	wavpack
+	ogg
+	compat
+	freetype
+	libmpg123
+	vorbisfile
+	harfbuzz)
 
-target_compile_options(libmpg123 PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
-
-target_compile_options(harfbuzz PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_CPP}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}"
-	"${OPTIONS_RELEASE_UNSAFE_CPP}")
-	
-target_compile_options(vorbisfile PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
-
-target_compile_options(SDL3-static PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
-	
-target_compile_options(SDL3_ttf-static PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
-	
-target_compile_options(SDL3_mixer-static PRIVATE "${OPTIONS_NATIVE}"
-	"${OPTIONS_RELEASE_UNSAFE}" "${OPTIONS_LTO}" "${OPTIONS_DEPS}")
+foreach(t IN LISTS targets)
+    if(TARGET "${t}")
+        message(STATUS "Configuring ${t}")
+        target_compile_options(${t} PRIVATE "${OPTIONS_NATIVE}"
+            								"${OPTIONS_RELEASE_UNSAFE}"
+            								"${OPTIONS_LTO}"
+            								"${OPTIONS_DEPS}"
+            								"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_CPP}>"
+            								"$<$<COMPILE_LANGUAGE:CXX>:${OPTIONS_RELEASE_UNSAFE_CPP}>")
+		if(LTO)
+			set_property(TARGET ${t} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+		endif()
+    else()
+        message(WARNING "${t} not found, skip")
+    endif()
+endforeach()

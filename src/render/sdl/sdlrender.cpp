@@ -237,7 +237,10 @@ void SDLRender::setTextureRepeat(TexHandle handle, bool repeat){
 }
 
 void SDLRender::uploadTexture(TexHandle handle, int w, int h, const void *pixels, PixelFormat fmt){
-	resizeTexture(handle, w, h, fmt);
+	SdlTexture *tex = texture(handle.id);
+	if (!pixels || !tex || !tex->texture || tex->width != w || tex->height != h)
+		resizeTexture(handle, w, h, fmt);
+
 	uploadTextureRect(handle, 0, 0, w, h, pixels, fmt);
 }
 
