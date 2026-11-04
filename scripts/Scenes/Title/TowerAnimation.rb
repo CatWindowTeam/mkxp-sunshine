@@ -171,19 +171,19 @@ class Scene_Title
       @black.origin_y = @black.bitmap.height / 2
       @black.order = 2
 
-      atlas = RPG::Cache.title("tower")
+      @atlas = RPG::Cache.title("tower")
 
       @floor = Sprite.new(@viewport)
-      @floor.bitmap = Bitmap.new(192, 192)
-      @floor.bitmap.stretch_blt(Rect.new(0, 0, 192, 192), atlas, Rect.new(0, 0, 192, 192))
+      @floor.bitmap = @atlas
+      @floor.src_rect.set(0, 0, 192, 192)
       @floor.origin_x = @floor.origin_y = 96
       @floor.y = TOWER_POS
       @floor.z = TOWER_Z_OFFSET
       @floor.rot_x = 90
       
       @wall_left = Sprite.new(@viewport)
-      @wall_left.bitmap = Bitmap.new(96, 240)
-      @wall_left.bitmap.stretch_blt(Rect.new(0, 0, 96, 240), atlas, Rect.new(192, 0, 96, 240))
+      @wall_left.bitmap = @atlas
+      @wall_left.src_rect.set(192, 0, 96, 240)
       @wall_left.origin_y = 240
       @wall_left.x = -96
       @wall_left.y = TOWER_POS
@@ -192,16 +192,16 @@ class Scene_Title
       @wall_left.scale_x = 1.118033989
 
       @wall_center = Sprite.new(@viewport)
-      @wall_center.bitmap = Bitmap.new(96, 240)
-      @wall_center.bitmap.stretch_blt(Rect.new(0, 0, 96, 240), atlas, Rect.new(288, 0, 96, 240))
+      @wall_center.bitmap = @atlas
+      @wall_center.src_rect.set(288, 0, 96, 240)
       @wall_center.origin_x = 48
       @wall_center.origin_y = 240
       @wall_center.z = 96 + TOWER_Z_OFFSET
       @wall_center.y = TOWER_POS
 
       @wall_right = Sprite.new(@viewport)
-      @wall_right.bitmap = Bitmap.new(96, 240)
-      @wall_right.bitmap.stretch_blt(Rect.new(0, 0, 96, 240), atlas, Rect.new(384, 0, 96, 240))
+      @wall_right.bitmap = @atlas
+      @wall_right.src_rect.set(384, 0, 96, 240)
       @wall_right.origin_x = 96
       @wall_right.origin_y = 240
       @wall_right.x = 96
@@ -212,6 +212,7 @@ class Scene_Title
 
       @mirror_wall_left = Sprite.new(@viewport)
       @mirror_wall_left.bitmap = @wall_left.bitmap
+      @mirror_wall_left.src_rect = @wall_left.src_rect
       @mirror_wall_left.origin_y = 240
       @mirror_wall_left.x = -96
       @mirror_wall_left.y = TOWER_POS
@@ -221,6 +222,7 @@ class Scene_Title
 
       @mirror_wall_center = Sprite.new(@viewport)
       @mirror_wall_center.bitmap = @wall_center.bitmap
+      @mirror_wall_center.src_rect = @wall_center.src_rect
       @mirror_wall_center.origin_x = 48
       @mirror_wall_center.origin_y = 240
       @mirror_wall_center.z = 96 + TOWER_Z_OFFSET
@@ -228,6 +230,7 @@ class Scene_Title
 
       @mirror_wall_right = Sprite.new(@viewport)
       @mirror_wall_right.bitmap = @wall_right.bitmap
+      @mirror_wall_right.src_rect = @wall_right.src_rect
       @mirror_wall_right.origin_x = 96
       @mirror_wall_right.origin_y = 240
       @mirror_wall_right.x = 96
@@ -240,16 +243,16 @@ class Scene_Title
       @mirror_wall_left.scale_y = @mirror_wall_center.scale_y = @mirror_wall_right.scale_y = -1
 
       @pedestal = Sprite.new(@viewport)
-      @pedestal.bitmap = Bitmap.new(192, 192)
-      @pedestal.bitmap.stretch_blt(Rect.new(0, 0, 48, 32), atlas, Rect.new(144, 208, 48, 32))
+      @pedestal.bitmap = @atlas
+      @pedestal.src_rect.set(144, 208, 48, 32)
       @pedestal.origin_x = 24
       @pedestal.origin_y = 32
       @pedestal.y = TOWER_POS
       @pedestal.z = TOWER_Z_OFFSET
 
       @lamp = Sprite.new(@viewport)
-      @lamp.bitmap = Bitmap.new(32, 32)
-      @lamp.bitmap.stretch_blt(Rect.new(0, 0, 32, 32), atlas, Rect.new(0, 0, 32, 32))
+      @lamp.bitmap = @atlas
+      @lamp.src_rect.set(0, 0, 32, 32)
       @lamp.scale_x = @lamp.scale_y = 0.5
       @lamp.origin_x = 16
       @lamp.origin_y = 16
@@ -261,8 +264,8 @@ class Scene_Title
       @lamp.order = 3
 
       @lamp_light = Sprite.new(@viewport)
-      @lamp_light.bitmap = Bitmap.new(64, 64)
-      @lamp_light.bitmap.stretch_blt(Rect.new(0, 0, 64, 64), atlas, Rect.new(416, 240, 64, 64))
+      @lamp_light.bitmap = @atlas
+      @lamp_light.src_rect.set(416, 240, 64, 64)
       @lamp_light.scale_x = @lamp_light.scale_y = 0.5
       @lamp_light.origin_x = 32
       @lamp_light.origin_y = 32
@@ -307,8 +310,6 @@ class Scene_Title
       @wall_left.perspective = @wall_center.perspective = @wall_right.perspective =
       @lamp.perspective = @lamp_light.perspective =
       @floor.perspective = @pedestal.perspective = true
-
-      atlas.dispose
       #@wall_left.smooth = @wall_center.smooth = @wall_right.smooth =
       #@floor.smooth = true
       #@loaded_sound.play
@@ -430,13 +431,10 @@ class Scene_Title
     def dispose_tower
       return if tower_disposed?
       @black.dispose
-        
-      @floor.bitmap.dispose
+
+      @atlas.dispose
+      
       @floor.dispose
-        
-      @wall_right.bitmap.dispose
-      @wall_center.bitmap.dispose
-      @wall_left.bitmap.dispose
         
       @wall_right.dispose
       @wall_center.dispose
@@ -446,12 +444,9 @@ class Scene_Title
       @mirror_wall_center.dispose
       @mirror_wall_left.dispose
         
-      @pedestal.bitmap.dispose
       @pedestal.dispose
         
-      @lamp.bitmap.dispose
       @lamp.dispose
-      @lamp_light.bitmap.dispose
       @lamp_light.dispose
         
       @base_bitmap.dispose
