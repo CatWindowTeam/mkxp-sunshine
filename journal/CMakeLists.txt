@@ -7,9 +7,11 @@ project(_______ C CXX)
 include(../cmake/check.cmake)
 include(../cmake/xxd.cmake)
 
-set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(EMBEDDED_INPUT assets/icon.png assets/default.png)
+set(EMBEDDED_INPUT
+		assets/icon.png
+		assets/default.png)
+
 foreach(item ${EMBEDDED_INPUT})
 	ProcessWithXXD(EMBEDDED_SOURCE ${item} ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
@@ -29,15 +31,15 @@ check_option(OPTIONS_RELEASE
 			-fno-hardcfr-check-exceptions
 	        -fno-hardcfr-check-returning-calls
 			-fhardcfr-check-noreturn-calls=never
-			-fstack-check=no
-			-fzero-call-used-regs=skip)
+			-fstack-check=no)
 add_compile_options(${OPTIONS_RELEASE})
+
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_image EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_net EXCLUDE_FROM_ALL)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image SDL3_net::SDL3_net SDL3::SDL3 ${PLATFORM_LIBRARIES})
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image SDL3_net::SDL3_net SDL3::SDL3)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_link_options(${PROJECT_NAME} PRIVATE -mwindows -municode)
-	list(APPEND DEFINES UNICODE)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE)
 endif()
