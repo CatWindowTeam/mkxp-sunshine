@@ -79,7 +79,8 @@ set(targets
 	freetype
 	libmpg123
 	vorbisfile
-	harfbuzz)
+	harfbuzz
+	CLI11)
 
 foreach(t IN LISTS targets)
     if(TARGET "${t}")
