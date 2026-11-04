@@ -6,6 +6,15 @@ def delta_lerp(a, b, t)
   lerp(a, b, 1.0 - ((1.0 - t) ** Graphics.scaled_delta))
 end
 
+module FileExtensions
+  def exist?(file_path)
+    return true if PhysFS.exist?(file_path)
+    super
+  end
+end
+
+File.singleton_class.prepend(FileExtensions)
+
 module Graphics
 # 0 - 3:2      - 720x480
 # 1 - 4:3      - 640x480 (default)
@@ -43,13 +52,7 @@ module Graphics
   end
 
   def self.adapted_file(path, extention = ".png")
-    if PhysFS.exist?(path + extention)
-      return path
-    else
-      if File.exist?(path + extention)
-        return path
-      end
-    end
+    return path if File.exist?(path + extention)
   end
 
   def self.scaled_delta
@@ -379,16 +382,16 @@ module RPG
         self.opacity = 256 - (48 - @_collapse_duration) * 6
       end
       if @_damage_duration > 0
-        @_damage_duration -= 1
+        @_damage_duration -= Graphics.scaled_delta
         case @_damage_duration
         when 38..39
-          @_damage_sprite.y -= 4
+          @_damage_sprite.y -= 4 * Graphics.scaled_delta
         when 36..37
-          @_damage_sprite.y -= 2
+          @_damage_sprite.y -= 2 * Graphics.scaled_delta
         when 34..35
-          @_damage_sprite.y += 2
+          @_damage_sprite.y += 2 * Graphics.scaled_delta
         when 28..33
-          @_damage_sprite.y += 4
+          @_damage_sprite.y += 4 * Graphics.scaled_delta
         end
         @_damage_sprite.opacity = 256 - (12 - @_damage_duration) * 32
         if @_damage_duration == 0
@@ -396,16 +399,17 @@ module RPG
         end
       end
       if @_animation != nil and (Graphics.frame_count % 2 == 0)
-        @_animation_duration -= 1
+        @_animation_duration -= Graphics.scaled_delta
         update_animation
       end
       if @_loop_animation != nil and (Graphics.frame_count % 2 == 0)
         update_loop_animation
-        @_loop_animation_index += 1
-        @_loop_animation_index %= @_loop_animation.frame_max
+        @_loop_animation_index += Graphics.scaled_delta
+        @_loop_animation_index = 0 if @_loop_animation_index >= @_loop_animation.frame_max
       end
       if @_blink
-        @_blink_count = (@_blink_count + 1) % 32
+        @_blink_count = @_blink_count + Graphics.scaled_delta
+        @_blink_count = 0 if @_blink_count > 32
         if @_blink_count < 16
           alpha = (16 - @_blink_count) * 6
         else
@@ -417,7 +421,7 @@ module RPG
     end
     def update_animation
       if @_animation_duration > 0
-        frame_index = @_animation.frame_max - @_animation_duration
+        frame_index = @_animation.frame_max - @_animation_duration.to_i
         cell_data = @_animation.frames[frame_index].cell_data
         position = @_animation.position
         animation_set_sprites(@_animation_sprites, cell_data, position)
@@ -431,7 +435,7 @@ module RPG
       end
     end
     def update_loop_animation
-      frame_index = @_loop_animation_index
+      frame_index = @_loop_animation_index.to_i
       cell_data = @_loop_animation.frames[frame_index].cell_data
       position = @_loop_animation.position
       animation_set_sprites(@_loop_animation_sprites, cell_data, position)

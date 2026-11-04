@@ -97,7 +97,7 @@ class Sprite_Character
           @character.character_hue)
         end
 	  
-        if PhysFS.exist?("Graphics/Lightmaps/#{@character.character_name}")
+        if File.exist?("Graphics/Lightmaps/#{@character.character_name}.png")
           @light_sprite.bitmap = RPG::Cache.lightmap(@character.character_name)
           @light_sprite.visible = true
         else

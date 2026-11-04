@@ -15,7 +15,7 @@ end
 module RPG
   module Cache
     def self.autotile(filename)
-      if !Settings[:water] && PhysFS.exist?("Graphics/Autotiles/" + filename + "_simple.png")
+      if !Settings[:water] && File.exist?("Graphics/Autotiles/" + filename + "_simple.png")
         filename += "_simple"
       end
       self.load_bitmap("Graphics/Autotiles/", filename)

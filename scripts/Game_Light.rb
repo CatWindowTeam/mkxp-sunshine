@@ -42,7 +42,7 @@ class Game_Light
   def update
     table_offset = ($game_player.direction - 2) * 2
     radius_mult = @plr_light_table[table_offset + 3]
-    @plr_light_radius_lerped = @plr_light_radius_lerped * 0.8 + @plr_light_radius * 0.2 * radius_mult
+    @plr_light_radius_lerped = delta_lerp(@plr_light_radius_lerped, @plr_light_radius * radius_mult, 0.2)
   end
   
   def add(x, y, power, radius, color = Color.new(255, 255, 255))

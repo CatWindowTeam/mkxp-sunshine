@@ -4,13 +4,8 @@ module Graphics
       path = "Graphics/Faces/niko"
     end
     file_tag = RESOLUTIONS[Settings[:resolution] || 999]&.[](:file_tag) || ""
-    if PhysFS.exist?(path + file_tag + extension)
-      return path + file_tag
-    else
-      if File.exist?(path + file_tag + extension)
-        return path + file_tag
-      end
-    end
+    
+    return path + file_tag if File.exist?(path + file_tag + extension)
     path
   end
 end

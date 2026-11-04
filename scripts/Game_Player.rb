@@ -42,8 +42,8 @@ class Game_Player < Game_Character
   def center(x, y)
   	max_x = ($game_map.width - (Graphics.width / 32.0).round) * 128
     max_y = ($game_map.height - (Graphics.height / 32.0).round) * 128
-    $game_map.display_x = [0, [x * 128 - @center_x, max_x].min].max
-    $game_map.display_y = [0, [y * 128 - @center_y, max_y].min].max
+    $game_map.display_x = (x * 128 - @center_x).clamp(0, max_x)
+    $game_map.display_y = (y * 128 - 64 - @center_y).clamp(0, max_y)
   end
   #--------------------------------------------------------------------------
   # * Move to Designated Position
@@ -52,6 +52,7 @@ class Game_Player < Game_Character
   #--------------------------------------------------------------------------
   def moveto(x, y)
     super
+    @real_y -= 64
     # Centering
     center(x, y)
   end
@@ -217,27 +218,19 @@ class Game_Player < Game_Character
               emit_footprint(@direction)
               @walk_distance = 0
             end
+          else
+            straighten
           end
         else
           straighten
         end
+
+        passable_here = !smooth_passable?(0, 0, true)        
         # moving from obstacle if it is too near
-        if !passable?(@x, @y, 8) && @y > ((@real_y + 96).to_i / 128)
-          # Move down
-          @real_y = @real_y + distance
-        end
-        if !passable?(@x, @y, 6) && @x < ((@real_x + 64).to_i / 128)
-          # Move left
-          @real_x = @real_x - distance
-        end
-        if !passable?(@x, @y, 4) && @x > ((@real_x + 32).to_i / 128)
-          # Move right
-          @real_x = @real_x + distance
-        end
-        if !passable?(@x, @y, 2) && @y < ((@real_y + 160).to_i / 128)
-          # Move up
-          @real_y = @real_y - distance
-        end
+        @real_x -= distance if passable_here && !smooth_passable?( distance, 0) # Move left
+        @real_x += distance if passable_here && !smooth_passable?(-distance, 0) # Move right
+        @real_y -= distance if passable_here && !smooth_passable?(0,  distance) # Move up
+        @real_y += distance if passable_here && !smooth_passable?(0, -distance) # Move down
       else
         @event_move_mode = false if !moving?
       end
@@ -335,17 +328,17 @@ class Game_Player < Game_Character
     super
   end
 
-  def smooth_passable?(x = 0.0, y = 0.0)
+  def smooth_passable?(x = 0.0, y = 0.0, ignore_zero = false)
     return true if Settings[:debug] && Input.press?(Input::DEBUGACTION)
 
       # check up
-    if (y < 0 && !passable?(@x, @y, 8) && @y.to_f > (@real_y + 96 + y) / 128.0) ||
+    if ((y < 0 || ignore_zero) && !passable?(@x, @y, 8) && @y * 128.0 > @real_y + 64 + y) ||
       # check right
-       (x > 0 && !passable?(@x, @y, 6) && @x.to_f < (@real_x - 32 + x) / 128.0) ||
+       ((x > 0 || ignore_zero) && !passable?(@x, @y, 6) && @x * 128.0 < @real_x - 32 + x) ||
       # check left
-       (x < 0 && !passable?(@x, @y, 4) && @x.to_f > (@real_x + 32 + x) / 128.0) ||
+       ((x < 0 || ignore_zero) && !passable?(@x, @y, 4) && @x * 128.0 > @real_x + 32 + x) ||
       # check down
-       (y > 0 && !passable?(@x, @y, 2) && @y.to_f < (@real_y + 32 + y) / 128.0)
+       ((y > 0 || ignore_zero) && !passable?(@x, @y, 2) && @y * 128.0 < @real_y + y)
       # we got wall
       return false
     end
@@ -354,17 +347,16 @@ class Game_Player < Game_Character
     return true
   end
 
-  def smooth_move(x = 0, y = 0)
-    # getting new positions if move will successful
-    next_real_x = @real_x + x
-    next_real_y = @real_y + y
-
+  def smooth_move(x = 0.0, y = 0.0)
     old_x = @x
     old_y = @y
 
+    x_passable = smooth_passable?(x, 0.0)
+    y_passable = smooth_passable?(0.0, y)
+
     # moving player
-    @real_x = next_real_x if smooth_passable?(x, 0.0)
-    @real_y = next_real_y if smooth_passable?(0.0, y)
+    @real_x += x if x_passable
+    @real_y += y if y_passable
     @x = ((@real_x + 64) / 128).to_i
     @y = ((@real_y + 128) / 128).to_i
     
@@ -373,13 +365,14 @@ class Game_Player < Game_Character
       increase_steps
       # calling triggers
       check_event_trigger_here([1, 2])
-    elsif (@real_x != next_real_x) || (@real_y != next_real_y)
-        check_event_trigger_touch(@x + ((@real_x != next_real_x) ? (x <=> 0) : 0), @y + ((@real_y != next_real_y) ? (y <=> 0) : 0))
+    elsif !x_passable || !y_passable
+      check_event_trigger_touch(@x + (!x_passable ? (x <=> 0) : 0), @y + (!y_passable ? (y <=> 0) : 0))
     end
+    
     # if walk but cant walk to next pos
     moved = false
     # checking for world position is changed
-    if (@real_x == next_real_x && x != 0) || (@real_y == next_real_y && y != 0)
+    if (x != 0 && x_passable) || (y != 0 && y_passable)
       moved = true
       if @walk_anime
         # Increase animation count by 1.5
@@ -390,7 +383,8 @@ class Game_Player < Game_Character
         @anime_count += 1 * Graphics.scaled_delta
       end
     end
-    moved
+
+    return moved
   end
 
   def emit_footprint(direction)
