@@ -19,12 +19,6 @@
 	#include <security.h>
 	#include <secext.h>
 	#include <shlobj.h>
-#elif apple
-	#include <stdlib.h>
-	#include <unistd.h>
-	#include <pwd.h>
-	#include <dlfcn.h>
-	#include <dispatch/dispatch.h>
 #elif unix_like
 	#include <stdlib.h>
 	#include <unistd.h>
@@ -122,8 +116,6 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	//OS
 	#ifdef windows
 		p->os = "windows";
-	#elif apple
-		p->os = "macos";
 	#elif unix_like
 		//TODO: FIX IT
 		p->os = "linux";
@@ -168,11 +160,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 		p->userName = "Player";
 	#elif unix_like
 		// Get user's name
-		#ifdef apple
-			struct passwd *pwd = getpwuid(geteuid());
-		#elif unix_like
-			struct passwd *pwd = getpwuid(getuid());
-		#endif
+		struct passwd *pwd = getpwuid(getuid());
 		if (pwd){
 			if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ','){
 				// Get the user's full name
@@ -396,14 +384,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title){
 	#endif
 	int button;
 
-	#ifdef apple
-		int *btn = &button;
-		// Message boxes and UI changes must be performed from the main thread on macOS Mojave and above.
-		// This block ensures the message box will show from the main thread.
-		dispatch_sync(dispatch_get_main_queue(), { SDL_ShowMessageBox(&data, btn); });
-	#else
-		SDL_ShowMessageBox(&data, &button);
-	#endif
+	SDL_ShowMessageBox(&data, &button);
 	return button ? true : false;
 }
 

@@ -33,9 +33,6 @@
 #include <vector>
 #include <stack>
 #include <memory>
-#ifdef apple
-	#include <iconv.h>
-#endif
 
 struct SDLRWIoContext{
 	SDL_IOStream *ops;
@@ -264,41 +261,12 @@ struct CacheEnumData{
 	FileSystemPrivate *p;
 	std::stack<std::vector<std::string>*> fileLists;
 
-	#ifdef apple
-		iconv_t nfd2nfc;
-		char buf[512];
-	#endif
-
-	CacheEnumData(FileSystemPrivate *p) : p(p){
-		#ifdef apple
-			nfd2nfc = iconv_open("utf-8", "utf-8-mac");
-		#endif
-	}
-
-	~CacheEnumData(){
-		#ifdef apple
-			iconv_close(nfd2nfc);
-		#endif
-	}
+	CacheEnumData(FileSystemPrivate *p) : p(p){}
+	~CacheEnumData(){}
 
 	/* Converts in-place */
 	void toNFC(char *inout){
-	#ifdef apple
-		size_t srcSize = SDL_strlen(inout);
-		size_t bufSize = sizeof(buf);
-		char *bufPtr = buf;
-		char *inoutPtr = inout;
-
-		/* Reserve room for null terminator */
-		--bufSize;
-
-		iconv(nfd2nfc, &inoutPtr, &srcSize, &bufPtr, &bufSize);
-		/* Null-terminate */
-		*bufPtr = 0;
-		strcpy(inout, buf);
-	#else
 		(void) inout;
-	#endif
 	}
 };
 
