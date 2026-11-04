@@ -4,16 +4,12 @@ shopt -u dotglob
 rm -rf build journal/build libs
 
 cmake . -B build/ "$@"
-cd build
-	make -j$(nproc)
-cd ..
+cmake --build build/ "-j${nproc}"
 
 cd journal/
 	bash download_journal_deps.sh
 	cmake . -B build/
-	cd build
-		make -j$(nproc)
-	cd ..
+	cmake --build build/ "-j${nproc}"
 cd ..
 
 mkdir -p build/bandle
@@ -35,6 +31,6 @@ ruby rpgscript.rb scripts/ build/bandle/
 
 cd build/bandle/
 	tar -I 'xz -9e' -cf ../OneshotSunshine_Linux.tar.xz --exclude='.git' *
-cd ..
+cd ../..
 
 rm -rf libs journal/build
