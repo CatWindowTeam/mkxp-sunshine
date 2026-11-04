@@ -228,7 +228,14 @@ void ShaderBase::init(){
 
 void ShaderBase::applyViewportProj(){
 	const IntRect &vp = glState.viewport.get();
-	projMat.set(Vec2i(vp.w, vp.h));
+	const Vec2i size(vp.w, vp.h);
+
+	if (projMat.perspective){
+		projMat.perspective = false;
+		projMat.init(size);
+	}else{
+		projMat.set(size);
+	}
 }
 
 void ShaderBase::applyPerspectiveProj(){
@@ -255,6 +262,7 @@ void ShaderBase::applyPerspectiveProj(){
     };
 
     gl.UniformMatrix4fv(projMat.u_mat, 1, GL_FALSE, mat);
+    projMat.perspective = true;
 }
 
 void ShaderBase::setTexSize(const Vec2i &value){
@@ -328,7 +336,7 @@ void DynamicLightShader::setTileMapOffset(const int x, const int y){
 	gl.Uniform2f(u_tileMapOffset, x, y);
 }
 
-void DynamicLightShader::setLightSources(const std::vector<LightSource> sources){
+void DynamicLightShader::setLightSources(const std::vector<LightSource> &sources){
 	int count = 0;
 	int screenWidth = shState->graphics().width();
 	int screenHeight = shState->graphics().height();

@@ -55,6 +55,8 @@ protected:
 class ShaderBase : public Shader{
 public:
 	struct GLProjMat : public GLProperty<Vec2i>{
+		bool perspective = false;
+
 	private:
 		void apply(const Vec2i &value);
 		GLint u_mat;
@@ -113,7 +115,7 @@ public:
 	void setWallMapResolution(const int x, const int y);
 	void setCameraPosition(const int x, const int y);
 	void setTileMapOffset(const int x, const int y);
-	void setLightSources(std::vector<LightSource> sources);
+	void setLightSources(const std::vector<LightSource> &sources);
 	void setAmbient(const float power);
 
 private:
