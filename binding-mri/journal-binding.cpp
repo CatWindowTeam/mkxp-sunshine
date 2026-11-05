@@ -5,10 +5,10 @@
 #include "debugwriter.h"
 #include "define.h"
 #include <SDL3/SDL.h>
-#include <SDL3_net/SDL_net.h>
 #include "config.h"
 static char lang[4] = "en";
 
+#include <SDL3_net/SDL_net.h>
 NET_Address* addr = NULL;
 void SendRaw(const char *raw){
     if(NET_WaitUntilResolved(addr, -1) == NET_FAILURE){
@@ -69,8 +69,7 @@ static VALUE journalActive(VALUE self) {
         NET_DestroyStreamSocket(socket);
         return Qfalse;
     }
-
-    if (!NET_WriteToStreamSocket(socket, ping, sizeof(ping)/* - 1*/)) { //TODO: figure out why this shit was here in the first place
+    if (!NET_WriteToStreamSocket(socket, ping, SDL_strlen(ping))) {
         NET_DestroyStreamSocket(socket);
         return Qfalse;
     }
@@ -86,24 +85,32 @@ static VALUE journalActive(VALUE self) {
         return Qfalse;
     }
 
-    char response[sizeof(expectedPong)/* - 1*/] = {}; //TODO: figure out why this shit was here in the first place x2
-    int received = NET_ReadFromStreamSocket(socket, response, sizeof(response)/* - 1*/); //TODO: figure out why this shit was here in the first place x3
+    char response[sizeof(expectedPong)] = {};
+    int received = NET_ReadFromStreamSocket(socket, response, SDL_strlen(expectedPong));
     NET_DestroyStreamSocket(socket);
-    if (received != sizeof(expectedPong)/* - 1*/) {  //TODO: figure out why this shit was here in the first place x4
+    if (received != SDL_strlen(expectedPong)) {
         return Qfalse;
     }
 
-    return SDL_memcmp(response, expectedPong, sizeof(expectedPong)/* - 1*/) == 0 ? Qtrue : Qfalse; //TODO: figure out why this shit was here in the first place x5
+    return SDL_strcmp(response, expectedPong) == 0 ? Qtrue : Qfalse;
 }
 
 
+//#else
+//	static VALUE journalSet(int argc, VALUE *argv, VALUE self){ return Qnil; }
+//	static VALUE journalLangSet(int argc, VALUE *argv, VALUE self){ return Qnil; }
+//	static VALUE journalActive(VALUE self){ return Qtrue; }
+//#endif
+
 void journalBindingInit(){
-	if(!NET_Init()) {
-		Debug() << "NET_Init() failed: " << SDL_GetError();
-	}else{
-		addr = NET_ResolveHostname(conf.journal_address.c_str());
-		NET_WaitUntilResolved(addr, 1000);
-	}
+	#ifdef JOURNAL_ENABLED
+		if (!NET_Init()) {
+			Debug() << "NET_Init() failed: " << SDL_GetError();
+		}else{
+			addr = NET_ResolveHostname(conf.journal_address.c_str());
+			NET_WaitUntilResolved(addr, 1000);
+		}
+	#endif
 	VALUE module = rb_define_module("Journal");
 	rb_define_module_function(module, "set", RUBY_METHOD_FUNC(journalSet), -1);
 	rb_define_module_function(module, "setLang", RUBY_METHOD_FUNC(journalLangSet), -1);
