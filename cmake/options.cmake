@@ -16,7 +16,6 @@ set(VITASDK_PATH "/usr/local/vitasdk" CACHE STRING "VitaSDK path")
 option_with_define(TERMUX "Build for TERMUX" OFF)
 option(LTO "Use LTO optimization" ON)
 option(VITA "Build for Playstation Vita" OFF)
-option(CODE_ANAL "Code analysis" OFF)
 option(MRUBY_AUTOBUILD "Build mruby during cmake configuration" ON)
 set(SUNSHINE_ASSETS_PATH "SunshineAssets" CACHE STRING "Path to SunshineAssets")
 option(API_ONESHOT_EXTENSIONS_XFCE "Support for wallpaper setter for xfce4, libxfconf required " ON)
@@ -29,36 +28,6 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-#code analysis
-if(CODE_ANAL)
-	#tools
-	check_option(WARNS -Wdouble-promotion
-			-Wduplicate-decl-specifier
-			-Wformat=2
-			-Wdisabled-optimization
-			-Wunused-macros
-			-Wunsafe-loop-optimizations
-			-Winline
-			-Waggressive-loop-optimizations
-			-Wstrict-overflow=2
-			-Wvector-operation-performance
-			-Wpass-failed
-			-Wloop-analysis
-			-Wrange-loop-analysis
-			-Wrange-loop-construct
-			-Wrange-loop-bind-reference
-			-Wlarge-by-value-copy
-			-Wmove
-			-Wunused
-			-Wunreachable-code
-			-Wunreachable-code-aggressive
-			-Wunreachable-code-break
-			-Wunreachable-code-loop-increment
-			-Wunreachable-code-return)
-	add_compile_options(${WARNS})
-	set(CMAKE_LINK_WHAT_YOU_USE ON)
-endif()
 
 # For local builds
 if(NATIVE)

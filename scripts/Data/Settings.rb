@@ -51,9 +51,7 @@ module Settings
         # qmq ^
 
         # ---------- Advanced -----------
-        :crashlog_privacy       => false,
         :streamer_privacy       => false,
-        :replace_all_niko       => false,
 
         # ---------- Сontrols -----------
         :gamepad_type           => -1,
@@ -721,26 +719,11 @@ class Window_Settings
       },
     ],
     "Advanced" => [
-      { :type => :sep, :name => "Privacy" },
-      {
-        :type => :bool,
-        :name => "Crashlog privacy",
-        :icons => [[7, 3]],
-        :parameter => :crashlog_privacy
-      },
       {
         :type => :bool,
         :name => "Streamer privacy",
         :icons => [[7, 3]],
         :parameter => :streamer_privacy
-      },
-      { :type => :sep, :name => "Other" },
-      {
-        :type => :bool,
-        :name => "Oneshot Community Mode",
-        :icons => [[7, 0]],
-        :additional_icons => [[1, 0]],
-        :parameter => :replace_all_niko
       },
     ],
     "Debug" => [
