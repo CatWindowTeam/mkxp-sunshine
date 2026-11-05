@@ -347,6 +347,10 @@ class Game_Player < Game_Character
     return true
   end
 
+  def real_pos_to_tile_pos(real_x = @real_x, real_y = @real_y)
+    return ((real_x + 64) / 128).to_i, ((real_y + 128) / 128).to_i
+  end
+
   def smooth_move(x = 0.0, y = 0.0)
     old_x = @x
     old_y = @y
@@ -357,8 +361,7 @@ class Game_Player < Game_Character
     # moving player
     @real_x += x if x_passable
     @real_y += y if y_passable
-    @x = ((@real_x + 64) / 128).to_i
-    @y = ((@real_y + 128) / 128).to_i
+    @x, @y = real_pos_to_tile_pos
     
     # checking for tile position is changed
     if @x != old_x || @y != old_y
@@ -404,24 +407,25 @@ class Game_Player < Game_Character
     distance = 2 ** @move_speed * Graphics.scaled_delta
     if @event_move_mode
       # If logical coordinates are further down than real coordinates
-      if @y * 128 > @real_y
+      x, y = real_pos_to_tile_pos
+      if @y > y || !smooth_passable?(0, -distance)
         # Move down
-        @real_y = [@real_y + distance, @y * 128].min
+        @real_y += distance
       end
       # If logical coordinates are more to the left than real coordinates
-      if @x * 128 < @real_x
+      if @x < x || !smooth_passable?(distance, 0)
         # Move left
-        @real_x = [@real_x - distance, @x * 128].max
+        @real_x -= distance
       end
       # If logical coordinates are more to the right than real coordinates
-      if @x * 128 > @real_x
+      if @x > x || !smooth_passable?(-distance, 0)
         # Move right
-        @real_x = [@real_x + distance, @x * 128].min
+        @real_x += distance
       end
       # If logical coordinates are further up than real coordinates
-      if @y * 128 < @real_y
+      if @y < y || !smooth_passable?(0, distance)
         # Move up
-        @real_y = [@real_y - distance, @y * 128].max
+        @real_y -= distance
       end
     end
     if @walk_anime
@@ -442,27 +446,28 @@ class Game_Player < Game_Character
   end
 
   def moving?
-    return @event_move_mode && super
+    x, y = real_pos_to_tile_pos
+    return @event_move_mode && (x != @x || y != @y || !smooth_passable?(0, 0, false))
   end
 
   def move_down(turn_enabled = true)
     @event_move_mode = true
-    super
+    super(turn_enabled)
   end
   
   def move_left(turn_enabled = true)
     @event_move_mode = true
-    super
+    super(turn_enabled)
   end
   
   def move_right(turn_enabled = true)
     @event_move_mode = true
-    super
+    super(turn_enabled)
   end
   
   def move_up(turn_enabled = true)
     @event_move_mode = true
-    super
+    super(turn_enabled)
   end
   
   def move_lower_left
