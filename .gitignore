@@ -41,7 +41,6 @@ build/
 *.lock.json
 .idea/
 .rubocop_todo.yml
-test.py
 sunshine.zip
 journal/external/*
-msys2_sysroot
+journal/build

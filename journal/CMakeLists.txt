@@ -1,25 +1,57 @@
 cmake_minimum_required(VERSION 3.20)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message(FATAL_ERROR "In-source builds are disabled. Use: cmake -S . -B build")
 endif()
-project(_______ C CXX)
+
+project(_______ C)
+include(CheckIPOSupported)
 include(../cmake/check.cmake)
 include(../cmake/xxd.cmake)
+include(${CMAKE_SOURCE_DIR}/deps_config.cmake)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(EMBEDDED_INPUT
 		assets/icon.png
-		assets/default.png)
+		assets/default.png
+)
+
+check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error LANGUAGES C)
+if(NOT MinGW)
+	if(ipo_supported)
+	   	set_property(TARGET ${APP_TARGET} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	else()
+	   	message(FATAL_ERROR "IPO/LTO is not supported: ${ipo_error}")
+	endif()
+else()
+	message(FATAL_ERROR "IPO/LTO is not supported on MinGW/MSYS2")
+endif()
 
 foreach(item ${EMBEDDED_INPUT})
 	ProcessWithXXD(EMBEDDED_SOURCE ${item} ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
 
 add_executable(${PROJECT_NAME} ${EMBEDDED_SOURCE} main.c)
-include(${CMAKE_SOURCE_DIR}/deps_config.cmake)
+if(ipo_supported)
+	set(INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
 
-check_option(OPTIONS_RELEASE
+check_linker_option_c(LOPT_BASE
+		LINKER:-O3
+		LINKER:--gc-sections
+		LINKER:--no-copy-dt-needed-entries
+		LINKER:--icf=safe
+		LINKER:--strip-all
+		LINKER:--relax
+		LINKER:--build-id=none
+		LINKER:--as-needed
+		LINKER:--no-whole-archive
+		LINKER:-z,start-stop-gc
+		LINKER:--no-eh-frame-hdr
+)
+target_link_options(${PROJECT_NAME} PRIVATE ${LOPT_BASE})
+
+check_option_c(OPTIONS_RELEASE
 			-O3
 			-fno-ident
 			-ffunction-sections
@@ -31,7 +63,8 @@ check_option(OPTIONS_RELEASE
 			-fno-hardcfr-check-exceptions
 	        -fno-hardcfr-check-returning-calls
 			-fhardcfr-check-noreturn-calls=never
-			-fstack-check=no)
+			-fstack-check=no
+)
 add_compile_options(${OPTIONS_RELEASE})
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL EXCLUDE_FROM_ALL)
