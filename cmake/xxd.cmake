@@ -9,7 +9,6 @@ find_program(XXD_EXE
 macro(ProcessWithXXDIn workdir outvar inputfile outdir)
 	get_filename_component(basefile ${inputfile} NAME)
 	set(outputfile ${outdir}/${basefile}.xxd)
-	#set_source_files_properties(${outputfile} PROPERTIES HEADER_FILE_ONLY TRUE)
 	add_custom_command(
 		OUTPUT ${outputfile}
 		COMMAND ${XXD_EXE} -i ${inputfile} ${outputfile}
