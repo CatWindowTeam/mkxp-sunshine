@@ -23,6 +23,7 @@ class Sprite_Character
     @debug_sprite.bitmap = Bitmap.new(32, 32)
     @debug_sprite.bitmap.fill_rect(0, 0, 32, 32, Color.new(255, 0, 0))
     @debug_sprite.bitmap.fill_rect(8, 8, 16, 16, Color.new(0, 0, 255))
+    @debug_sprite.order = 10000
     @sprite = RPG::Sprite.new(viewport)
     @light_sprite = RPG::Sprite.new(light_viewport)
     @light_sprite.blend_type = 1

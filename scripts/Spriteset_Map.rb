@@ -44,6 +44,8 @@ class Spriteset_Map
     @viewport_pics.order = 500
     @viewport_flash.order = 5000
 
+    #@hitboxes_debug = HitboxesDebug.new(@viewport)
+
     # Make tilemap
     @old_setting = Settings[:water]
     @tilemap = Tilemap.new(@viewport)
@@ -113,6 +115,9 @@ class Spriteset_Map
   #--------------------------------------------------------------------------
   def dispose
     @update_connection.disconnect
+    
+    #@hitboxes_debug.dispose
+    
     # Dispose of tilemap
     @tilemap.tileset.dispose if @tilemap.tileset
     (0..6).each do |i|
@@ -178,6 +183,7 @@ class Spriteset_Map
   #--------------------------------------------------------------------------
   def update
   	frame_reset = false
+    #@hitboxes_debug.update
     # Update tilemap
     @tilemap.wrapping = $game_map.wrapping
     # If panorama is different from current one

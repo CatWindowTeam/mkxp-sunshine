@@ -330,7 +330,8 @@ class Game_Player < Game_Character
 
   def smooth_passable?(x = 0.0, y = 0.0, ignore_zero = false)
     return true if Settings[:debug] && Input.press?(Input::DEBUGACTION)
-
+    return true if @through
+    
       # check up
     if ((y < 0 || ignore_zero) && !passable?(@x, @y, 8) && @y * 128.0 > @real_y + 64 + y) ||
       # check right
@@ -339,6 +340,26 @@ class Game_Player < Game_Character
        ((x < 0 || ignore_zero) && !passable?(@x, @y, 4) && @x * 128.0 > @real_x + 32 + x) ||
       # check down
        ((y > 0 || ignore_zero) && !passable?(@x, @y, 2) && @y * 128.0 < @real_y + y)
+      # we got wall
+      return false
+    end
+
+    # all meow :3
+    return true
+  end
+
+  def smooth_passable_at?(x = 0, y = 0, real_x = 0.0, real_y = 0.0, move_x = 0.0, move_y = 0.0, ignore_zero = false)
+    return true if Settings[:debug] && Input.press?(Input::DEBUGACTION)
+    return true if @through
+    
+      # check up
+    if ((move_y < 0 || ignore_zero) && !passable?(x, y, 8) && y * 128.0 > real_y + 64 + move_y) ||
+      # check right
+       ((move_x > 0 || ignore_zero) && !passable?(x, y, 6) && x * 128.0 < real_x - 32 + move_x) ||
+      # check left
+       ((move_x < 0 || ignore_zero) && !passable?(x, y, 4) && x * 128.0 > real_x + 32 + move_x) ||
+      # check down
+       ((move_y > 0 || ignore_zero) && !passable?(x, y, 2) && y * 128.0 < real_y + move_y)
       # we got wall
       return false
     end
