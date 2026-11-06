@@ -1,4 +1,5 @@
-#this bashscript goal is to make the linux user able to compile the project easily and enjoy the game 
+#this bashscript goal is to make the linux user able to compile the project easily and enjoy the game o
+# btw this scripts used only by box_yld :D
 cd..
 cmake . -B build/ "$@" -DAPI_ONESHOT_EXTENSIONS_XFCE=OFF -DAPI_ONESHOT_EXTENSIONS_KDE=OFF
 cd build
