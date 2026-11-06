@@ -296,7 +296,7 @@ class Spriteset_Map
       $game_map.pan_move_offset += 0.25 * Graphics.scaled_delta
     end
     if $game_map.clamped_x
-      x = ($game_player.real_x.to_f / (($game_map.width  - 1) * 128)) * (@panorama.bitmap.width * $game_map.pan_zoom - Graphics.width) 
+      x = ($game_player.real_x.to_f / (($game_map.width - 1) * 128)) * (@panorama.bitmap.width * $game_map.pan_zoom - Graphics.width) 
       @panorama.origin_x = x < 0.0 ? 0.0 : x
     else
       @panorama.origin_x = $game_map.display_x / ($game_map.pan_onetoone ? 4 : 8)
@@ -319,8 +319,8 @@ class Spriteset_Map
       end
     end
 
-    @panorama.origin_x += $game_map.pan_move_offset * Graphics.scaled_delta
-    @panorama.origin_y += $game_map.pan_move_offset * Graphics.scaled_delta
+    @panorama.origin_x += $game_map.pan_move_offset
+    @panorama.origin_y += $game_map.pan_move_offset
 
     if $game_map.pan_fade_animate && @panorama2 != nil && !((@panorama_name == "green_water" || @panorama_name == "dark_water") && Settings[:water])
       @pan2_opacity += 3 * Graphics.scaled_delta
