@@ -1,5 +1,5 @@
 # Platform specific bullshit
-if(NOT VITA AND NOT PSP AND NOT PS2 AND NOT ANDROID)
+if(NOT VITA AND NOT ANDROID)
 	set_target_properties(${APP_TARGET} PROPERTIES BUILD_RPATH "$ORIGIN" INSTALL_RPATH "$ORIGIN")
 endif()
 

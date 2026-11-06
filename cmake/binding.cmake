@@ -1,33 +1,14 @@
 if(BINDING STREQUAL "mruby")
 	if(MRUBY_AUTOBUILD)
-		if(UNSAFE_OPTIMIZATIONS)
-			check_option(OPTIONS_RELEASE_UNSAFE
-				-fstrub=disable
-		        -fvtable-verify=none
-		        -fno-enforce-eh-specs
-		        -fno-hardcfr-check-exceptions
-	            -fno-hardcfr-check-returning-calls
-		        -fhardcfr-check-noreturn-calls=never
-				-fstack-check=no
-				-fno-threadsafe-statics)
-		endif()
-
-		if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			check_option(OPTIONS_DEBUG -g -Og)
-		elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-			check_option(COMPILER_OPTIONS
-				-O3
-				-ffunction-sections
-				-fdata-sections
-				-fno-rtti
-				-ffp-contract=fast
-				-fno-unwind-tables
-				-fno-asynchronous-unwind-tables
-				-fdelete-dead-exceptions
-				-fwhole-program-vtables
-				-fvirtual-function-elimination)
-		endif()
-		set(_mruby_flags "${COMPILER_OPTIONS} ${OPTIONS_RELEASE_UNSAFE} ${OPTIONS_DEBUG}")
+		set(_mruby_flags
+			${COPT_C}
+			${COPT_CXX}
+			${COPT_UNSAFE}
+			${COPT_UNSAFE_CXX}
+			${COPT_NATIVE}
+			${COPT_LTO}
+		)
+		
 		string(REPLACE ";" " " _mruby_flags "${_mruby_flags}")
 		string(STRIP "${_mruby_flags}" _mruby_flags)
 		execute_process(COMMAND "${CMAKE_COMMAND}" -E env
