@@ -42,10 +42,7 @@ set(EMBEDDED_INPUT
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    list(APPEND MAIN_SOURCE assets/resources.rc)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    list(APPEND MAIN_HEADERS src/mac-desktop.h)
-    list(APPEND MAIN_SOURCE src/mac-desktop.mm)
+    list(APPEND MAIN_SOURCE misc/assets/resources.rc)
 endif()
 
 foreach(item ${EMBEDDED_INPUT})

@@ -47,8 +47,8 @@
 #include <inttypes.h>
 #include <time.h>
 #include <SDL3/SDL_filesystem.h>
-extern const char binding_mri_module_rpg1_rb[];
-extern const int binding_mri_module_rpg1_rb_len;
+extern const char bindings_binding_mri_module_rpg1_rb[];
+extern const int bindings_binding_mri_module_rpg1_rb_len;
 
 static void mriBindingExecute();
 static void mriBindingTerminate();
@@ -163,9 +163,9 @@ static void mriBindingInit(){
 	rb_define_module_function(rb_mKernel, "caller", RUBY_METHOD_FUNC(_kernelCaller), 0);
 	rb_define_module_function(rb_mKernel, "puts", RUBY_METHOD_FUNC(rbPuts), -1);
 
-	char *script = (char*)SDL_malloc(binding_mri_module_rpg1_rb_len + 1);
-	SDL_memcpy(script, binding_mri_module_rpg1_rb, binding_mri_module_rpg1_rb_len);
-	script[binding_mri_module_rpg1_rb_len] = '\0';
+	char *script = (char*)SDL_malloc(bindings_binding_mri_module_rpg1_rb_len + 1);
+	SDL_memcpy(script, bindings_binding_mri_module_rpg1_rb, bindings_binding_mri_module_rpg1_rb_len);
+	script[bindings_binding_mri_module_rpg1_rb_len] = '\0';
 
 	int state = 0;
 	rb_eval_string_protect(script, &state);

@@ -1,6 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-shopt -u dotglob
 rm -rf build
 
 cmake . -B build/ -DCMAKE_TOOLCHAIN_FILE=$VITASDK/share/vita.toolchain.cmake -DRENDER_GPU=OFF -DRENDER_GL_MKXP=OFF "$@"
@@ -19,5 +18,5 @@ vita-pack-vpk -s build/param.sfo -b build/eboot.bin \
   -a sce_sys/livearea/contents/bg.png=misc/sce_sys/livearea/contents/bg.png \
   -a sce_sys/livearea/contents/startup.png=misc/sce_sys/livearea/contents/startup.png \
   -a sce_sys/livearea/contents/template.xml=misc/sce_sys/livearea/contents/template.xml \
-  -a sunshine.zip=build/assets.zip \
+  -a assets.zip=build/assets.zip \
   build/sunshine.vpk
