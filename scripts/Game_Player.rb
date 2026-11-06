@@ -42,8 +42,8 @@ class Game_Player < Game_Character
   def center(x, y)
   	max_x = ($game_map.width - (Graphics.width / 32.0).round) * 128
     max_y = ($game_map.height - (Graphics.height / 32.0).round) * 128
-    $game_map.display_x = (x * 128 - @center_x).clamp(0, max_x)
-    $game_map.display_y = (y * 128 - 64 - @center_y).clamp(0, max_y)
+    $game_map.display_x = [0, [x * 128      - @center_x, max_x].min].max
+    $game_map.display_y = [0, [y * 128 - 64 - @center_y, max_y].min].max
   end
   #--------------------------------------------------------------------------
   # * Move to Designated Position
