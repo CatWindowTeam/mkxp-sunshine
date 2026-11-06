@@ -1,5 +1,5 @@
 ---
-Checks:          'clang-analyzer-*,performance-*'
+Checks:          'clang-analyzer-*, performance-*'
 WarningsAsErrors: ''
 HeaderFileExtensions:
   - ''

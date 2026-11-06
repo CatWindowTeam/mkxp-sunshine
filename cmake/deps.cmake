@@ -3,10 +3,6 @@ find_package(PkgConfig REQUIRED)
 include(${CMAKE_SOURCE_DIR}/cmake/deps_config.cmake)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external)
 
-target_compile_definitions(${APP_TARGET}
-							PRIVATE
-							${DEFINES})
-							
 target_include_directories(${APP_TARGET} 
 							PRIVATE
 							${PLATFORM_INCLUDE}
