@@ -11,20 +11,17 @@ include(../cmake/check.cmake)
 include(../cmake/xxd.cmake)
 include(${CMAKE_SOURCE_DIR}/deps_config.cmake)
 
-set(EMBEDDED_INPUT
-		assets/icon.png
-		assets/default.png
-)
+set(EMBEDDED_INPUT assets/icon.png assets/default.png)
 
 check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error LANGUAGES C)
 if(NOT MinGW)
 	if(ipo_supported)
 	   	set_property(TARGET ${APP_TARGET} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 	else()
-	   	message(FATAL_ERROR "IPO/LTO is not supported: ${ipo_error}")
+	   	message(WARNING "IPO/LTO is not supported: ${ipo_error}")
 	endif()
 else()
-	message(FATAL_ERROR "IPO/LTO is not supported on MinGW/MSYS2")
+	message(WARNING "IPO/LTO is not supported on MinGW/MSYS2")
 endif()
 
 foreach(item ${EMBEDDED_INPUT})
@@ -32,9 +29,6 @@ foreach(item ${EMBEDDED_INPUT})
 endforeach()
 
 add_executable(${PROJECT_NAME} ${EMBEDDED_SOURCE} main.c)
-if(ipo_supported)
-	set(INTERPROCEDURAL_OPTIMIZATION TRUE)
-endif()
 
 check_linker_option_c(LOPT_BASE
 		LINKER:-O3
@@ -51,6 +45,10 @@ check_linker_option_c(LOPT_BASE
 )
 target_link_options(${PROJECT_NAME} PRIVATE ${LOPT_BASE})
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL EXCLUDE_FROM_ALL)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_image EXCLUDE_FROM_ALL)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_net EXCLUDE_FROM_ALL)
+
 check_option_c(OPTIONS_RELEASE
 			-O3
 			-fno-ident
@@ -64,12 +62,21 @@ check_option_c(OPTIONS_RELEASE
 	        -fno-hardcfr-check-returning-calls
 			-fhardcfr-check-noreturn-calls=never
 			-fstack-check=no
+			-fmerge-all-constants
 )
-add_compile_options(${OPTIONS_RELEASE})
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_image EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_net EXCLUDE_FROM_ALL)
+set(targets SDL3_net-static SDL3_image-static SDL3-static ${PROJECT_NAME})
+foreach(t IN LISTS targets)
+    if(TARGET "${t}")
+        message(STATUS "Configuring ${t}")
+        target_compile_options(${t} PRIVATE ${OPTIONS_RELEASE})
+		if(ipo_supported)
+			set_property(TARGET ${t} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+		endif()
+    else()
+        message(WARNING "${t} not found, skip")
+    endif()
+endforeach()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image SDL3_net::SDL3_net SDL3::SDL3)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
