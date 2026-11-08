@@ -225,7 +225,7 @@ static void processReset(){
 	shState->graphics().repaintWait(shState->rtData().rqResetFinish, false);
 }
 
-static VALUE _kernelCaller(VALUE self){
+static VALUE _kernelCaller(VALUE){
 	VALUE trace = rb_funcall2(rb_mKernel, rb_intern("_mkxp_kernel_caller_alias"), 0, 0);
 	if (!RB_TYPE_P(trace, RUBY_T_ARRAY))
 		return trace;
@@ -259,7 +259,6 @@ struct evalArg{
 };
 
 static VALUE evalHelper(evalArg *arg){
-	// crashes with Game_Battler_1 for some reason
 	VALUE argv[] = { arg->string, Qnil, arg->filename };
 	return rb_funcall2(Qnil, rb_intern("eval"), ARRAY_SIZE(argv), argv);
 }
@@ -357,7 +356,7 @@ static void runRMXPScripts(BacktraceData &btData){
 			const char *scriptName = RSTRING_PTR(rb_ary_entry(script, 1));
 			char buf[512];
 			int len;
-			len = SDL_snprintf(buf, sizeof(buf), "%03ld:%s", i, scriptName);
+			len = SDL_snprintf(buf, sizeof(buf), "%03ld: %s", i, scriptName);
 			fname = newStringUTF8(buf, len);
 			rb_gc_register_address(&fname);
 			btData.scriptNames.emplace(buf, scriptName);

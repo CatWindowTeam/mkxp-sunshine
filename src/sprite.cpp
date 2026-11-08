@@ -240,11 +240,11 @@ struct SpritePrivate{
 		/* The length of the sprite as it appears on screen */
 		int visibleLength = height * zoomY;
 		/* First chunk length (aligned to 8 pixel boundary */
-		int firstLength = ((int) trans.getPosition().y) % 8;
+		int firstLength = ((int) trans.getPosition().y) % 1;
 		/* Amount of full 8 pixel chunks in the middle */
-		int chunks = (visibleLength - firstLength) / 8;
+		int chunks = (visibleLength - firstLength) / 1;
 		/* Final chunk length */
-		int lastLength = (visibleLength - firstLength) % 8;
+		int lastLength = (visibleLength - firstLength) % 1;
 
 		wave.qArray.resize(!!firstLength + chunks + !!lastLength);
 		SVertex *vert = &wave.qArray.vertices[0];
@@ -255,10 +255,10 @@ struct SpritePrivate{
 			emitWaveChunk(vert, phase, width, zoomY, 0, firstLength);
 
 		for (int i = 0; i < chunks; ++i)
-			emitWaveChunk(vert, phase, width, zoomY, firstLength + i * 8, 8);
+			emitWaveChunk(vert, phase, width, zoomY, firstLength + i * 1, 8);
 
 		if (lastLength > 0)
-			emitWaveChunk(vert, phase, width, zoomY, firstLength + chunks * 8, lastLength);
+			emitWaveChunk(vert, phase, width, zoomY, firstLength + chunks * 1, lastLength);
 
 		wave.qArray.commit();
 	}
@@ -309,7 +309,7 @@ DEF_ATTR_RD_SIMPLE(Sprite, WavePhase,    float,   p->wave.phase)
 DEF_ATTR_RD_SIMPLE(Sprite, PerspectiveMode, bool,  p->trans.getPerspectiveMode())
 
 DEF_ATTR_SIMPLE(Sprite, BushOpacity,  int,        p->bushOpacity)
-DEF_ATTR_SIMPLE(Sprite, Opacity,      int,        p->opacity)
+DEF_ATTR_SIMPLE(Sprite, Opacity,      float,      p->opacity)
 DEF_ATTR_SIMPLE(Sprite, SrcRect,      Rect&,     *p->srcRect)
 DEF_ATTR_SIMPLE(Sprite, Color,        Color&,    *p->color)
 DEF_ATTR_SIMPLE(Sprite, Tone,         Tone&,     *p->tone)

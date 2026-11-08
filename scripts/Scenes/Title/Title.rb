@@ -32,6 +32,8 @@ class Scene_Title
       BadEnd.new(@viewport)
     elsif Settings[:static_title]
       Simple.new(@viewport)
+    elsif april_fools?
+      FruttyApril.new(@viewport)
     else
       TowerAnimation.new(@viewport)
     end

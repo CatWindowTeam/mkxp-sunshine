@@ -18,7 +18,7 @@ class Window_Settings
       target_class = descendants.find { |klass| klass::TYPE == type }
 
       unless target_class
-        Logger.Warn "Unknown parameter type :#{type}"
+        Logger.warn "Unknown parameter type :#{type}"
         return nil
       end
 
@@ -38,7 +38,7 @@ class Window_Settings
       @disabled = false
 
       if parameter && Settings[parameter] == nil
-        Logger.Warn "Setting was registered for a parameter when the parameter itself does not exist (Parameter :#{parameter}, Screen ID #{screen_id}, Position #{position})"
+        Logger.warn "Setting was registered for a parameter when the parameter itself does not exist (Parameter :#{parameter}, Screen ID #{screen_id}, Position #{position})"
       end
 
       @sprite = Sprite.new(@settings_content.viewport)

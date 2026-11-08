@@ -236,7 +236,7 @@ class Window_Message < Window_Selectable
 
     if @blip >= BLIP_TIME
       #april fools
-      if ($game_temp.message_face != nil && ((CTime.month == 4 && CTime.day == 1) or Settings[:enforce_april_fools]) && $game_temp.message_face.start_with?("niko"))
+      if ($game_temp.message_face != nil && april_fools? && $game_temp.message_face.start_with?("niko"))
         Audio.se_play("Audio/SE/cat_2", 50, rand(100..125)) unless @text.empty?
       else
         Audio.se_play("Audio/SE/#{@blipsound}", 50) unless @text.empty?

@@ -278,7 +278,7 @@ class Spriteset_Map
           count = Settings[:max_shrimp_count]
           layer = :back
         else
-          Logger.Warn 'invalid particle type used'
+          Logger.warn 'invalid particle type used'
         end
         @particles = ParticleLayer.new(@viewport_particles, klass, count)
         @viewport_particles.order = (layer == :front) ? 499 : -400

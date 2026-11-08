@@ -65,6 +65,7 @@ class Window_Settings
     end
 
     @content = SettingsContent.new(@viewport, TITLE_TOP_MARGIN + TITLE_MARGIN + 100, old_screen, old_index)
+    $settings_content = @content
 
     DATA.each_with_index do |(screen_title, parameters_info), screen_index|
       @content.add_screen(screen_title)
@@ -91,6 +92,7 @@ class Window_Settings
     @title.dispose
     @content.dispose
     @update_connection.disconnect
+    $settings_content = nil
   end
 
   def disable_setting(screen, position)

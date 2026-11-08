@@ -33,30 +33,30 @@
 
 extern void initGamepadBinding(VALUE inputModule);
 
-static VALUE inputUpdate(VALUE self){
+static VALUE inputUpdate(VALUE){
 	shState->input().update();
 	return Qnil;
 }
 
-static VALUE inputSetMouseEnabled(int argc, VALUE *argv, VALUE self){
+static VALUE inputSetMouseEnabled(int argc, VALUE *argv, VALUE){
 	bool value;
 	rb_get_args(argc, argv, "b", &value RB_ARG_END);
 	EventThread::mouseEnabled = value;
 	return Qnil;
 }
 
-static VALUE inputGetMouseEnabled(VALUE self){
+static VALUE inputGetMouseEnabled(VALUE){
 	return EventThread::mouseEnabled ? Qtrue : Qfalse;
 }
 
-static VALUE inputSetGamepadEnabled(int argc, VALUE *argv, VALUE self){
+static VALUE inputSetGamepadEnabled(int argc, VALUE *argv, VALUE){
 	bool value;
 	rb_get_args(argc, argv, "b", &value RB_ARG_END);
 	EventThread::gamepadEnabled = value;
 	return Qnil;
 }
 
-static VALUE inputGetGamepadEnabled(VALUE self){
+static VALUE inputGetGamepadEnabled(VALUE){
 	return EventThread::gamepadEnabled ? Qtrue : Qfalse;
 }
 
@@ -74,57 +74,57 @@ static int getButtonArg(int argc, VALUE *argv){
 	return num;
 }
 
-static VALUE inputPress(int argc, VALUE *argv, VALUE self){
+static VALUE inputPress(int argc, VALUE *argv, VALUE){
 	int num = getButtonArg(argc, argv);
 	return rb_bool_new(shState->input().isPressed(num));
 }
 
-static VALUE inputTrigger(int argc, VALUE *argv, VALUE self){
+static VALUE inputTrigger(int argc, VALUE *argv, VALUE){
 	int num = getButtonArg(argc, argv);
 	return rb_bool_new(shState->input().isTriggered(num));
 }
 
-static VALUE inputRepeat(int argc, VALUE *argv, VALUE self){
+static VALUE inputRepeat(int argc, VALUE *argv, VALUE){
 	int num = getButtonArg(argc, argv);
 	return rb_bool_new(shState->input().isRepeated(num));
 }
 
-static VALUE inputDir4(VALUE self){
+static VALUE inputDir4(VALUE){
 	return rb_fix_new(shState->input().dir4Value());
 }
 
-static VALUE inputDir8(VALUE self){
+static VALUE inputDir8(VALUE){
 	return rb_fix_new(shState->input().dir8Value());
 }
 
 /* Non-standard extensions */
-static VALUE inputMouseX(VALUE self){
+static VALUE inputMouseX(VALUE){
 	return rb_fix_new(shState->input().mouseX());
 }
 
-static VALUE inputMouseY(VALUE self){
+static VALUE inputMouseY(VALUE){
 	return rb_fix_new(shState->input().mouseY());
 }
 
 // wheel :3
-static VALUE inputWheelX(VALUE self) {
+static VALUE inputWheelX(VALUE) {
 	return rb_float_new(shState->input().wheelX());
 }
 
-static VALUE inputWheelY(VALUE self) {
+static VALUE inputWheelY(VALUE) {
 	return rb_float_new(shState->input().wheelY());
 }
 
-static VALUE inputWheelFlipped(VALUE self) {
+static VALUE inputWheelFlipped(VALUE) {
 	return rb_bool_new(shState->input().wheelFlipped());
 }
 
-static VALUE inputQuit(VALUE self) {
+static VALUE inputQuit(VALUE) {
 	return rb_bool_new(shState->input().hasQuit());
 }
 
 // keyboard
-static VALUE getKeyName(int argc, VALUE *argv, VALUE self) {
+static VALUE getKeyName(int argc, VALUE *argv, VALUE) {
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
 	if (key >= 0 && key < SDL_Scancode::SDL_SCANCODE_COUNT)
@@ -133,7 +133,7 @@ static VALUE getKeyName(int argc, VALUE *argv, VALUE self) {
 	return rb_utf8_str_new_cstr(SDL_GetKeyName(SDLK_UNKNOWN));
 }
 
-static VALUE keyPress(int argc, VALUE *argv, VALUE self) {
+static VALUE keyPress(int argc, VALUE *argv, VALUE) {
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
 	if (key >= 0 && key < SDL_Scancode::SDL_SCANCODE_COUNT)
@@ -142,20 +142,20 @@ static VALUE keyPress(int argc, VALUE *argv, VALUE self) {
 	return rb_bool_new(false);
 }
 
-static VALUE getPressedKey(VALUE self) {
+static VALUE getPressedKey(VALUE) {
 	short pressedKey = 0;
 	for(; pressedKey < SDL_Scancode::SDL_SCANCODE_COUNT && !EventThread::keyStates[pressedKey]; pressedKey++);
 	return pressedKey == SDL_Scancode::SDL_SCANCODE_COUNT ? Qnil : rb_fix_new(pressedKey);
 }
 
-static VALUE getKeyFromName(int argc, VALUE *argv, VALUE self) {
+static VALUE getKeyFromName(int argc, VALUE *argv, VALUE) {
 	const char *name;
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);
 	return rb_fix_new(SDL_GetScancodeFromName(name));
 }
 
 // gamepad buttons
-static VALUE getGamepadButtonName(int argc, VALUE *argv, VALUE self) {
+static VALUE getGamepadButtonName(int argc, VALUE *argv, VALUE) {
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
 	if (key >= 0 && key < SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT)
@@ -164,7 +164,7 @@ static VALUE getGamepadButtonName(int argc, VALUE *argv, VALUE self) {
 	return rb_utf8_str_new_cstr("Invalid");
 }
 
-static VALUE gamepadButtonPress(int argc, VALUE *argv, VALUE self) {
+static VALUE gamepadButtonPress(int argc, VALUE *argv, VALUE) {
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
 	if (key >= 0 && key < SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT)
@@ -173,20 +173,20 @@ static VALUE gamepadButtonPress(int argc, VALUE *argv, VALUE self) {
 	return rb_bool_new(false);
 }
 
-static VALUE getPressedGamepadButton(VALUE self) {
+static VALUE getPressedGamepadButton(VALUE) {
 	short pressedKey = 0;
 	for(; pressedKey < SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT && !EventThread::gcState.buttons[pressedKey]; pressedKey++);
 	return pressedKey == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_COUNT ? Qnil : rb_fix_new(pressedKey);
 }
 
-static VALUE getGamepadButtonFromName(int argc, VALUE *argv, VALUE self) {
+static VALUE getGamepadButtonFromName(int argc, VALUE *argv, VALUE) {
 	const char *name;
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);
 	return rb_fix_new(SDL_GetGamepadButtonFromString(name));
 }
 
 // gamepad axes
-static VALUE getGamepadAxisName(int argc, VALUE *argv, VALUE self) {
+static VALUE getGamepadAxisName(int argc, VALUE *argv, VALUE) {
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
 	if (key >= 0 && key < SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT)
@@ -195,7 +195,7 @@ static VALUE getGamepadAxisName(int argc, VALUE *argv, VALUE self) {
 	return rb_utf8_str_new_cstr("Invalid");
 }
 
-static VALUE getGamepadAxisPressure(int argc, VALUE *argv, VALUE self) {
+static VALUE getGamepadAxisPressure(int argc, VALUE *argv, VALUE) {
 	int key = 0;
 	rb_get_args(argc, argv, "i", &key RB_ARG_END);
 	if (key >= 0 && key < SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT)
@@ -204,7 +204,7 @@ static VALUE getGamepadAxisPressure(int argc, VALUE *argv, VALUE self) {
 	return rb_fix_new(0);
 }
 
-static VALUE getActiveGamepadAxis(int argc, VALUE *argv, VALUE self) {
+static VALUE getActiveGamepadAxis(int argc, VALUE *argv, VALUE) {
 	int deadzone = 16000;
 	rb_get_args(argc, argv, "|i", &deadzone RB_ARG_END);
 	short pressedKey = 0;
@@ -212,13 +212,13 @@ static VALUE getActiveGamepadAxis(int argc, VALUE *argv, VALUE self) {
 	return pressedKey == SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT ? Qnil : rb_fix_new(pressedKey);
 }
 
-static VALUE getGamepadAxisFromName(int argc, VALUE *argv, VALUE self) {
+static VALUE getGamepadAxisFromName(int argc, VALUE *argv, VALUE) {
 	const char *name;
 	rb_get_args(argc, argv, "z", &name RB_ARG_END);
 	return rb_fix_new(SDL_GetGamepadAxisFromString(name));
 }
 
-static VALUE setBinding(VALUE self, VALUE rb_arr, VALUE rb_target){
+static VALUE setBinding(VALUE, VALUE rb_arr, VALUE rb_target){
     Check_Type(rb_arr, T_ARRAY);
     int target = FIX2INT(rb_target);
     long count = RARRAY_LEN(rb_arr);
@@ -239,24 +239,20 @@ static VALUE setBinding(VALUE self, VALUE rb_arr, VALUE rb_target){
     return Qnil;
 }
 
-static VALUE setLED(VALUE self, VALUE r, VALUE g, VALUE b) {
-    if (gc != nullptr) {
-        if (!SDL_SetGamepadLED(gc, NUM2INT(r), NUM2INT(g), NUM2INT(b))) {
+static VALUE setLED(VALUE, VALUE r, VALUE g, VALUE b) {
+    if (gc != nullptr)
+        if (!SDL_SetGamepadLED(gc, NUM2INT(r), NUM2INT(g), NUM2INT(b)))
 			Debug() << "failed to set gamepad led for gamepad " << SDL_GetGamepadName(gc) << ": " << SDL_GetError();
-		}
-    }
 
     return Qnil;
 }
 
-static VALUE rumble(VALUE self, VALUE low_frequency_rumble, VALUE high_frequency_rumble, VALUE duration_ms) {
+static VALUE rumble(VALUE, VALUE low_frequency_rumble, VALUE high_frequency_rumble, VALUE duration_ms) {
     Uint16 low_freq = NUM2DBL(low_frequency_rumble) * 65535;
     Uint16 high_freq = NUM2DBL(high_frequency_rumble) * 65535;
-    if (gc != nullptr) {
-        if (!SDL_RumbleGamepad(gc, low_freq, high_freq, NUM2INT(duration_ms))) {
+    if (gc != nullptr)
+        if (!SDL_RumbleGamepad(gc, low_freq, high_freq, NUM2INT(duration_ms)))
 			Debug() << "failed to rumble gamepad " << SDL_GetGamepadName(gc) << ": " << SDL_GetError();
-		}
-    }
 
     return Qnil;
 }
@@ -328,6 +324,7 @@ void inputBindingInit(){
 	rb_define_module_function(module, "active_c_axis", RUBY_METHOD_FUNC(getActiveGamepadAxis), -1);
 	rb_define_module_function(module, "c_axis_from_name", RUBY_METHOD_FUNC(getGamepadAxisFromName), -1);
 	rb_const_set(module, rb_intern("GAMEPAD_AXIS_COUNT"), SDL_GamepadAxis::SDL_GAMEPAD_AXIS_COUNT - 1);
+	
 	rb_define_module_function(module, "set_binding", RUBY_METHOD_FUNC(setBinding), 2);
 	
 	// haptic
