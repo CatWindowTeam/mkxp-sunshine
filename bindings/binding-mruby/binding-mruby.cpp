@@ -19,9 +19,6 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <cstddef>
-#include <cstdlib>
-#include <cstring>
 #include <exception>
 #include <mruby.h>
 #include <mruby/string.h>
@@ -31,10 +28,8 @@
 #include <mruby/compile.h>
 #include <mruby/proc.h>
 #include <mruby/dump.h>
-#include <stdexcept>
 #include <zlib.h>
 #include <SDL3/SDL_iostream.h>
-#include <unistd.h>
 #include "SDL3/SDL_stdinc.h"
 #include "binding.h"
 #include "debugwriter.h"
@@ -48,10 +43,7 @@
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "util.h"
-
 #include "data.h"
-//#include "test_scripts.h"
-
 #include "module_rpg.mrb.xxd"
 
 static void mrbBindingExecute();
@@ -85,7 +77,7 @@ const char* stringify_object(mrb_state *mrb, mrb_value *obj) {
 
 	if (mrb_respond_to(mrb, *obj, sym)) {
 		auto val = mrb_funcall(mrb, *obj, "to_s", 0);
-		if (mrb->exc) {
+		if(mrb->exc) {
 			mrb_clear_error(mrb);
 			return nullptr;
 		}
@@ -114,22 +106,20 @@ static const char *mrbValueString(mrb_value value){
 	return mrb_string_p(value) ? RSTRING_PTR(value) : 0;
 }
 
-static void checkException(mrb_state *mrb) {
-
-}
+static void checkException(mrb_state *mrb) {}
 
 static void mrbBindingExecute() {
 	mrb_state *mrb = mrb_open();
 	shState->setBindingData(mrb);
 
 	mrb_ccontext *cxt = mrb_ccontext_new(mrb);
-	try {
+	try{
 		mrb->ud = SDL_calloc(1, sizeof(MRBBindingData));
-		if (!mrb->ud)
+		if(!mrb->ud)
 			throw std::runtime_error("failed to allocate binding data");
 
 		mrb_load_irep_buf_cxt(mrb, module_rpg_mrb, module_rpg_mrb_len, cxt);
-		if (mrb->exc) {
+		if(mrb->exc) {
 			mrb_print_backtrace(mrb);
 			throw std::runtime_error("failed to load RPG module bytecode");
 		}
@@ -156,11 +146,10 @@ static void mrbBindingExecute() {
 		const char* what = e.what();
 
 		size_t len = clamp(SDL_strlen(what), (size_t)0, sizeof(crash_message) - 1);
-
 		SDL_memset(crash_message, 0, sizeof(crash_message));
-		if (len != 0) {
+		if(len != 0){
 			SDL_memcpy(crash_message, what, len);
-		} else {
+		}else{
 			const char what[] = "(empty error message)";
 			SDL_memcpy(crash_message, what, sizeof(what));
 		}
@@ -168,7 +157,7 @@ static void mrbBindingExecute() {
 		show_crash_screen = true;
 	}
 
-	if (mrb->ud) {
+	if (mrb->ud){
 		SDL_free(mrb->ud);
 		mrb->ud = nullptr;
 	}
@@ -176,14 +165,13 @@ static void mrbBindingExecute() {
 	mrb_ccontext_free(mrb, cxt);
 
 	shState->rtData().rqTermAck.set();
-
 	shState->setBindingData(nullptr);
 	mrb_close(mrb);
 }
 
 static void mrbBindingTerminate() {
 	mrb_state* mrb = static_cast<mrb_state*>(shState->bindingData());
-	if (mrb)
+	if(mrb)
 		mrb_raise(mrb, ((MRBBindingData*)mrb->ud)->shudownExc, "termination requested");
 }
 
@@ -191,6 +179,6 @@ static void mrbBindingReset(){}
 
 static void mrbBindingGC() {
 	mrb_state* mrb = static_cast<mrb_state*>(shState->bindingData());
-	if (mrb)
+	if(mrb)
 		mrb_full_gc(mrb);
 }
