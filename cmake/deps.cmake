@@ -8,6 +8,7 @@ target_include_directories(${APP_TARGET}
 							${PLATFORM_INCLUDE}
 							${CMAKE_SOURCE_DIR}/src
 							${CMAKE_SOURCE_DIR}/external/robin-map/include
+							${CMAKE_SOURCE_DIR}/external/CLI11/include
 							${CMAKE_SOURCE_DIR}/external/sigc
 							${CMAKE_BINARY_DIR}/external/sigc
 							${BINDING_INCLUDE}
@@ -23,7 +24,6 @@ target_link_libraries(${APP_TARGET}
 						SDL3::SDL3
 						${PLATFORM_LIBRARIES}
 						${BINDING_LIBRARY}
-						CLI11::CLI11
 						ZLIB::ZLIBSTATIC
 						PhysFS::PhysFS
 						sigc-3.0)

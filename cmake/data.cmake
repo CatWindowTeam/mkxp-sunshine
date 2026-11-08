@@ -36,7 +36,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 	    -fvirtual-function-elimination
 	  )
 	endif()
-	
+
 	if(MSVC)
 	  check_linker_option(LOPT_BASE
 	    /OPT:ICF
