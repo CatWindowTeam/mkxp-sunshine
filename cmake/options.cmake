@@ -24,6 +24,8 @@ option_with_define(RENDER_SIMPLE "Build with simple render backend" ON)
 option_with_define(RENDER_GPU "Build with GPU render backend" ON)
 option_with_define(RENDER_GL_MKXP "Build with gl-mkxp render backend" ON)
 option_with_define(UNSAFE_OPTIMIZATIONS "Allow unsafe optimizations" OFF)
+option_with_define(SUNSHINE_MODLOADER "Enable support for Modloader" ON)
+option_with_define(SUNSHINE_CRASH "Enable support for crash handling" ON)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

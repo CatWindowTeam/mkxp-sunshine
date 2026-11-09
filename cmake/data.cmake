@@ -24,6 +24,13 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 	    -ffp-contract=fast
 	    -fdelete-dead-exceptions
 	    -fmerge-all-constants
+	    # Graphite
+		-fgraphite
+	    -floop-block
+	    -fgraphite-identity
+	    -floop-nest-optimize
+	    -floop-parallelize-all
+	    -floop-interchange
 	  )
 	endif()
 

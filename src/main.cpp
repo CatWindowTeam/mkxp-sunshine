@@ -278,8 +278,10 @@ int main(int argc, char *argv[]) {
   	// anyfing
   	mount_assets_archive();
 
-  	/* start modloader */
-  	ModLoader(win);
+	#ifdef SUNSHINE_MODLOADER
+  		/* start modloader */
+  		ModLoader(win);
+  	#endif
   	/* Load and post key bindings */
   	rtData.bindingUpdateMsg.post(loadBindings());
   	/* Start RGSS thread */
@@ -317,9 +319,11 @@ int main(int argc, char *argv[]) {
   	eventThread.cleanup();
   	unloadLocale();
   	unloadLanguageMetadata();
-  	if(show_crash_screen) {
-    	crash_screen(win);
-  	}
+  	#ifdef SUNSHINE_CRASH
+  		if(show_crash_screen){
+    		crash_screen(win);
+  		}
+  	#endif
   	MIX_DestroyMixer(mixer);
   	SDL_DestroyWindow(win);
   	MIX_Quit();

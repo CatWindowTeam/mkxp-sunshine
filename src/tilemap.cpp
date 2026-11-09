@@ -41,10 +41,10 @@
 
 extern const StaticRect autotileRects[];
 typedef std::vector<SVertex> SVVector;
-static const int tilesetW  = 8 * 32;
-static const int autotileW = 3 * 32;
-static const int autotileH = 4 * 32;
-static const unsigned char autotileCount = 7;
+constexpr static const int tilesetW  = 8 * 32;
+constexpr static const int autotileW = 3 * 32;
+constexpr static const int autotileH = 4 * 32;
+constexpr static const unsigned char autotileCount = 7;
 static const int atAreaW = autotileW * 4;
 static const int atAreaH = autotileH * autotileCount;
 static const int tsLaneW = tilesetW / 2;
@@ -211,15 +211,12 @@ struct TilemapPrivate {
 	struct {
 		RenderTarget gl;
 		Vec2i size;
-
 		/* Effective tileset height,
 		 * clamped to a multiple of 32 */
 		int efTilesetH;
-
 		/* Indices of usable
 		 * (not null, not disposed) autotiles */
 		std::vector<uint8_t> usableATs;
-
 		/* Indices of animated autotiles */
 		std::vector<uint8_t> animatedATs;
 	} atlas;
@@ -309,7 +306,6 @@ struct TilemapPrivate {
 
 		atlas.animatedATs.reserve(autotileCount);
 		atlas.efTilesetH = 0;
-
 		tiles.animated = false;
 		tiles.frameIdx = 0;
 		tiles.aniIdx = 0;
@@ -324,7 +320,7 @@ struct TilemapPrivate {
 		prepareCon = shState->graphicsSignals.prepareDraw.Connect(*this, &TilemapPrivate::prepare);
 		viewpUpdateConnection = shState->graphicsSignals.resized.Connect([&](int w, int h){
 			shState->rubyDispatcher().invoke([&, w, h]{
-				if (this->viewport->isDisposed()){
+				if(this->viewport->isDisposed()){
 					Debug() << "Warning: resize updating of disposed tilemap, disconnecting";
 					this->viewpUpdateConnection.Disconnect();
 					return;
@@ -336,10 +332,10 @@ struct TilemapPrivate {
 				zlayersMax = viewpH + 5;
 				zlayerVert.resize(zlayersMax);
 				zlayerBases.resize(zlayersMax + 1);
-				if (zlayersMax > oldZLayersCount){
+				if(zlayersMax > oldZLayersCount){
 					elem.zlayers.resize(zlayersMax);
-					for (size_t i = oldZLayersCount; i < zlayersMax; ++i)
-						if (elem.zlayers[i] == nullptr)
+					for(size_t i = oldZLayersCount; i < zlayersMax; ++i)
+						if(elem.zlayers[i] == nullptr)
 							elem.zlayers[i] = new ZLayer(this, this->viewport);
 				}else{
 					for (size_t i = zlayersMax; i < oldZLayersCount; ++i)
@@ -360,10 +356,8 @@ struct TilemapPrivate {
 		    delete ptr;
 
 		shState->releaseAtlasTex(atlas.gl);
-
 		/* Destroy tile buffers */
 		shState->render().destroyGeometry(tiles.geom);
-
 		/* Disconnect signal handlers */
 		viewpUpdateConnection.Disconnect();
 		tilesetCon.Disconnect();
@@ -389,7 +383,7 @@ struct TilemapPrivate {
 		int tsH = tileset->height();
 		atlas.efTilesetH = tsH - (tsH % 32);
 		atlas.size = TileAtlas::minSize(atlas.efTilesetH, shState->render().maxTextureSize());
-		if (atlas.size.x < 0)
+		if(atlas.size.x < 0)
 			throw Exception(Exception::MKXPError, "Cannot allocate big enough texture for tileset atlas");
 	}
 

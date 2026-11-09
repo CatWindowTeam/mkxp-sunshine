@@ -1,5 +1,3 @@
-//TODO: check this bullshit optimization
-
 /*
 ** tilemap-common.h
 **
@@ -29,7 +27,6 @@
 #include "etc-internal.h"
 #include "signals/signal.h"
 #include <stdint.h>
-#include <assert.h>
 #include <vector>
 
 static inline int wrap(int value, int range){
@@ -64,27 +61,25 @@ enum AtSubPos{
 
 static inline void atSelectSubPos(FloatRect &pos, int i){
 	switch (i){
-	case TopLeft:
-		return;
-	case TopRight:
-		pos.x += 16;
-		return;
-	case BottomLeft:
-		pos.y += 16;
-		return;
-	case BottomRight:
-		pos.x += 16;
-		pos.y += 16;
-		return;
-	case BottomLeftTable:
-		pos.y += 24;
-		return;
-	case BottomRightTable:
-		pos.x += 16;
-		pos.y += 24;
-		return;
-	default:
-		assert(!"Unreachable");
+		case TopLeft:
+			return;
+		case TopRight:
+			pos.x += 16;
+			return;
+		case BottomLeft:
+			pos.y += 16;
+			return;
+		case BottomRight:
+			pos.x += 16;
+			pos.y += 16;
+			return;
+		case BottomLeftTable:
+			pos.y += 24;
+			return;
+		case BottomRightTable:
+			pos.x += 16;
+			pos.y += 24;
+			return;
 	}
 }
 
@@ -153,7 +148,6 @@ private:
 
 	bool sampleFlashColor(Vec4 &out, int x, int y) const{
 		int16_t packed = tableGetWrapped(*data, x, y);
-
 		if (packed == 0)
 			return false;
 
@@ -181,7 +175,7 @@ private:
 				CVertex v[4];
 				Quad::setPosRect(v, posRect);
 				Quad::setColor(v, color);
-				for (size_t i = 0; i < 4; ++i)
+				for(size_t i = 0; i < 4; ++i)
 					vertices.push_back(v[i]);
 			}
 
@@ -189,7 +183,7 @@ private:
 			return;
 
 		IRender &render = shState->render();
-		if (quadCount() > allocQuads){
+		if(quadCount() > allocQuads){
 			allocQuads = quadCount();
 			render.allocGeometry(geom, sizeof(CVertex) * vertices.size(), GeometryUsage::Static);
 		}

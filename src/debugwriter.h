@@ -18,6 +18,7 @@
 ** You should have received a copy of the GNU General Public License
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #pragma once
 #include <iostream>
 #include <sstream>
@@ -30,10 +31,6 @@
 
 class Debug{
 public:
-	Debug() noexcept {
-	    buf << std::boolalpha;
-	}
-
 	template<typename T>
 	Debug &operator<<(const T &t){
 		buf << t;
@@ -53,7 +50,6 @@ public:
 		#endif
 		logs.emplace_back(buf.view());
 	}
-
 private:
 	std::ostringstream buf;
 };

@@ -31,16 +31,13 @@ struct TilemapPrivate;
 
 class Tilemap : public Disposable{
 public:
-
 	class Autotiles{
 	public:
 		void set(int i, Bitmap *bitmap);
 		Bitmap *get(int i) const;
-
 	private:
 		Autotiles() {}
 		~Autotiles() {}
-
 		TilemapPrivate *p;
 		friend class Tilemap;
 		friend struct TilemapPrivate;
@@ -63,11 +60,11 @@ public:
 	DECL_ATTR( Wrapping,    bool    )
 	DECL_ATTR( OX,          float   )
 	DECL_ATTR( OY,          float   )
-
 private:
 	TilemapPrivate *p;
 	Autotiles atProxy;
-
 	void releaseResources();
-	const char *klassName() const { return "tilemap"; }
+	const char *klassName() const {
+		return "tilemap"; 
+	}
 };

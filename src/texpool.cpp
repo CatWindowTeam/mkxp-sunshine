@@ -90,7 +90,6 @@ RenderTarget TexPool::request(int width, int height){
 	Size size(width, height);
 	/* See if we can statisfy request from cache */
 	CNodeList &bucket = p->poolHash[size];
-
 	if (!bucket.empty()){
 		/* Found one! */
 		cnode = bucket.back();
@@ -109,7 +108,6 @@ RenderTarget TexPool::request(int width, int height){
 
 	/* Nope, create it instead */
 	cnode.obj = shState->render().createRenderTarget(width, height);
-
 	return cnode.obj;
 }
 
