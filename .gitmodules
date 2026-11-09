@@ -28,3 +28,6 @@
 [submodule "external/sigc"]
 	path = external/sigc
 	url = https://github.com/CatWindowTeam/libsigcplusplus
+[submodule "external/mruby"]
+	path = external/mruby
+	url = https://forgejo.xatacraft.ru/niko/mruby-amalgam.git
