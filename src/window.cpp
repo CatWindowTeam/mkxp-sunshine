@@ -469,7 +469,6 @@ struct WindowPrivate {
 
 		if (useBaseTex){
 			ensureBaseTexReady();
-
 			if (baseTexDirty){
 				redrawBaseTex();
 				baseTexDirty = false;
@@ -526,7 +525,6 @@ struct WindowPrivate {
 		render.pushScissorTest(true);
 		render.saveScissorBox();
 		render.intersectScissorBox(windowRect);
-
 		render.useEffect(SHADER_simpleAlpha);
 		render.applyViewportProj();
 
@@ -566,7 +564,7 @@ struct WindowPrivate {
 			FloatRect frameRect = pauseAniSrc[pauseAniQuad[static_cast<uint8_t>(pauseAniQuadIdx)]];
 			pauseAniVert.setAlpha(alpha/* * opacity.norm*/);
 			Quad::setTexRect(pauseAniVert.vert, frameRect);
-			updateArray = true; 
+			updateArray = true;
 		}
 
 		if (updateArray)
@@ -575,7 +573,6 @@ struct WindowPrivate {
 
 	void stepAnimations(){
 		cursorAniAlphaTime += shState->graphics().deltaTime() * 60.0f;
-
 		if (pauseAniAlphaIdx < pauseAniAlphaN-1)
 			++pauseAniAlphaIdx;
 
@@ -585,8 +582,7 @@ struct WindowPrivate {
 	}
 };
 
-Window::Window(Viewport *viewport)
-	: ViewportElement(viewport){
+Window::Window(Viewport *viewport) : ViewportElement(viewport){
 	p = new WindowPrivate(viewport);
 	onGeometryChange(scene->getGeometry());
 }
