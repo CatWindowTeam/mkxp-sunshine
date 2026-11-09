@@ -62,7 +62,7 @@ public:
 	DECL_ATTR( MirrorY,         bool    )
 	DECL_ATTR( BushDepth,       int     )
 	DECL_ATTR( BushOpacity,     int     )
-	DECL_ATTR( Opacity,         int     )
+	DECL_ATTR( Opacity,         float   )
 	DECL_ATTR( BlendType,       int     )
 	DECL_ATTR( Color,           Color&  )
 	DECL_ATTR( Modulate,        Color&  )

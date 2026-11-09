@@ -349,22 +349,22 @@ struct FloatRect{
 /* Value between 0 and 255 with internal
  * normalized representation */
 struct NormValue{
-	int unNorm;
+	float unNorm;
 	float norm;
 
 	NormValue() : unNorm(0), norm(0){}
-	NormValue(int unNorm) : unNorm(unNorm), norm(unNorm / 255.0f){}
+	NormValue(float unNorm) : unNorm(unNorm), norm(unNorm / 255.0f){}
 
-	void operator =(int value){
-		unNorm = clamp(value, 0, 255);
+	void operator =(float value){
+		unNorm = clamp(value, 0.0f, 255.0f);
 		norm = unNorm / 255.0f;
 	}
 
-	bool operator ==(int value) const{
-		return unNorm == clamp(value, 0, 255);
+	bool operator ==(float value) const{
+		return unNorm == clamp(value, 0.0f, 255.0f);
 	}
 
-	operator int() const noexcept {
+	operator float() const noexcept {
 		return unNorm;
 	}
 };

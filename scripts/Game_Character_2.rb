@@ -343,7 +343,7 @@ class Game_Character
           begin
             eval(command.parameters[0])
           rescue
-            Logger.Error "[Game_Character_2.rb] Failed to execute script #{command.parameters[0]}"
+            Logger.error "[Game_Character_2.rb] Failed to execute script #{command.parameters[0]}"
           end
         end
         @move_route_index += 1

@@ -4,8 +4,12 @@ RUE_TEXT = "put me in the big portal"
 
 SUPPORTED_DE = ["cinnamon", "mate", "kde", "xfce", "gnome", "lxde", "lxqt"]
 
+def april_fools?
+  ((CTime.month == 4 && CTime.day == 1) or Settings[:enforce_april_fools])
+end
+
 module Script
-  #For Pancake episode support###
+  ### For Pancake episode support ###
   def self.start_plight_timer
     $game_oneshot.bruteforce_start = Graphics.frame_count
   end
@@ -21,7 +25,7 @@ module Script
     $game_variables[29] = digit2
     $game_variables[30] = digit1
   end
-  ################################	
+  ####################################	
 
   def self.px
     logpos($game_player.x, $game_player.real_x, $game_player.direction == 6)

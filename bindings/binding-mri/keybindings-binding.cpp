@@ -181,12 +181,14 @@ static VALUE rb_source_marshal_load(VALUE self, VALUE data){
 void keybindingsBindingInit(){
 	VALUE klass = rb_define_class("KeyBind", rb_cObject);
     rb_define_alloc_func(klass, sourceDesc_alloc);
+
     rb_define_singleton_method(klass, "key",     RUBY_METHOD_FUNC(rb_source_key), 1);
     rb_define_singleton_method(klass, "caxis",   RUBY_METHOD_FUNC(rb_source_caxis), 2);
     rb_define_singleton_method(klass, "cbutton", RUBY_METHOD_FUNC(rb_source_cbutton), 1);
     rb_define_singleton_method(klass, "jaxis",   RUBY_METHOD_FUNC(rb_source_jaxis), 2);
     rb_define_singleton_method(klass, "jhat",    RUBY_METHOD_FUNC(rb_source_jhat), 2);
     rb_define_singleton_method(klass, "jbutton", RUBY_METHOD_FUNC(rb_source_jbutton), 1);
+    
     rb_define_method(klass, "type",     RUBY_METHOD_FUNC(rb_source_type), 0);
     rb_define_method(klass, "scancode", RUBY_METHOD_FUNC(rb_source_scancode), 0);
     rb_define_method(klass, "button",   RUBY_METHOD_FUNC(rb_source_button), 0);
@@ -194,8 +196,10 @@ void keybindingsBindingInit(){
     rb_define_method(klass, "dir",      RUBY_METHOD_FUNC(rb_source_dir), 0);
     rb_define_method(klass, "hat",      RUBY_METHOD_FUNC(rb_source_hat), 0);
     rb_define_method(klass, "pos",      RUBY_METHOD_FUNC(rb_source_pos), 0);
+
     rb_define_method(klass, "marshal_dump", RUBY_METHOD_FUNC(rb_source_marshal_dump), 0);
     rb_define_method(klass, "marshal_load", RUBY_METHOD_FUNC(rb_source_marshal_load), 1);
+
     rb_const_set(klass, rb_intern("Negative"), INT2FIX(0));
     rb_const_set(klass, rb_intern("Positive"), INT2FIX(1));
 

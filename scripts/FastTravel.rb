@@ -7,12 +7,11 @@ class FastTravel
 
 
   def initialize
-    @scale_multiplier = Graphics.height > 600 ? 3.0 : 2.0
-
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @bg = Sprite.new(@viewport)
     @bg.bitmap = Bitmap.new(Graphics.width, Graphics.height)
     @bg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0, 128))
+    
     @title = Sprite.new(@viewport)
     Language.register_text_sprite(self.class.name + "_title", @title)
     @title.bitmap = Bitmap.new(Graphics.width / 2, TITLE_MARGIN)
@@ -31,13 +30,11 @@ class FastTravel
     # WME Niko Icon
     @niko_icon = Sprite.new(@viewport)
     @niko_icon.bitmap = RPG::Cache.load_bitmap("Graphics/Menus/Minimap/", "niko_icon")
-    @niko_icon.scale_x = @niko_icon.scale_y = @scale_multiplier
+    @niko_icon.scale_x = @niko_icon.scale_y = 2
     @niko_icon.order = 10
     @niko_icon.opacity = 0
     @niko_icon.shader = Shader::WorldMachine
 
-    @niko_pos_x = 0.0
-    @niko_pos_y = 0.0
     @niko_target_pos_x = 0.0
     @niko_target_pos_y = 0.0
 
@@ -62,7 +59,7 @@ class FastTravel
     @arrow_top.scale_x = @arrow_top.scale_y =
     @arrow_bottom.scale_x = @arrow_bottom.scale_y =
     @arrow_left.scale_x = @arrow_left.scale_y =
-    @arrow_right.scale_x = @arrow_right.scale_y = @scale_multiplier
+    @arrow_right.scale_x = @arrow_right.scale_y = 2
     
     @arrow_top.opacity = @arrow_bottom.opacity =
     @arrow_left.opacity = @arrow_right.opacity = 0
@@ -120,12 +117,12 @@ class FastTravel
   
   def update_arrows_positions
     @arrow_left.y = @arrow_right.y = @niko_icon.y
-    @arrow_top.x = @arrow_bottom.x = @niko_icon.x + 4 * @scale_multiplier
+    @arrow_top.x = @arrow_bottom.x = @niko_icon.x + 8
     
-    @arrow_top.y = @niko_icon.y - (12 + @arrows_offset) * @scale_multiplier
-    @arrow_bottom.y = @niko_icon.y + @niko_icon.bitmap.height * @scale_multiplier / 3 + (6 + @arrows_offset) * @scale_multiplier
-    @arrow_left.x = @niko_icon.x - (8 + @arrows_offset) * @scale_multiplier
-    @arrow_right.x = @niko_icon.x + @niko_icon.bitmap.width * @scale_multiplier / 3 + (7 + @arrows_offset) * @scale_multiplier
+    @arrow_top.y = @niko_icon.y - (12 + @arrows_offset) * 2
+    @arrow_bottom.y = @niko_icon.y + @niko_icon.bitmap.height * 2 / 3 + (6 + @arrows_offset) * 2
+    @arrow_left.x = @niko_icon.x - (8 + @arrows_offset) * 2
+    @arrow_right.x = @niko_icon.x + @niko_icon.bitmap.width * 2 / 3 + (7 + @arrows_offset) * 2
   end
 
   #Not WME
@@ -189,9 +186,9 @@ class FastTravel
         #WME
         spr = Sprite.new(@viewport)
         spr.bitmap = RPG::Cache.load_bitmap("Graphics/Menus/Minimap/", "#{$game_fasttravel.zone}_#{item}")
-        spr.scale_x = spr.scale_y = @scale_multiplier
-        spr.x = Graphics.width / 2 + zone.locations[item].x * @scale_multiplier
-        spr.y = Graphics.height / 2 + zone.locations[item].y * @scale_multiplier
+        spr.scale_x = spr.scale_y = 2
+        spr.x = Graphics.width / 2 + zone.locations[item].x * 2
+        spr.y = Graphics.height / 2 + zone.locations[item].y * 2
         spr.opacity = 0
         spr.shader = Shader::WorldMachine
         @data_locations[item] = spr
@@ -214,11 +211,8 @@ class FastTravel
     
     #WME
     if @data_locations.has_key?(@selected_location)
-      @niko_pos_x = (zone.locations[@selected_location].x.to_f + zone.locations[@selected_location].niko_x.to_f)
-      @niko_pos_y = (zone.locations[@selected_location].y.to_f + zone.locations[@selected_location].niko_y.to_f)
-
-      @niko_icon.x = @niko_pos_x.to_i * @scale_multiplier + Graphics.width / 2
-      @niko_icon.y = @niko_pos_y.to_i * @scale_multiplier + Graphics.height / 2
+      @niko_icon.x = (zone.locations[@selected_location].x.to_f + zone.locations[@selected_location].niko_x.to_f) + Graphics.width / 2
+      @niko_icon.y = (zone.locations[@selected_location].y.to_f + zone.locations[@selected_location].niko_y.to_f) + Graphics.height / 2
     end
 
     update_location_name_text
@@ -229,7 +223,7 @@ class FastTravel
     zone = ZONES[$game_fasttravel.zone]
     zone = zone == nil ? Zone.new("", {}, {}) : zone
     if zone.locations != nil && !(Settings[:fasttravel_ui] == 0)
-      @arrows_timer += 1
+      @arrows_timer += Graphics.scaled_delta
       if @arrows_timer >= 30
         @arrows_timer = 0
         @arrows_offset = @arrows_offset == 1 ? 0 : 1
@@ -237,71 +231,28 @@ class FastTravel
     end
 
     if @fade_in
-      self.opacity += 20
-
-      if zone.locations != nil && !(Settings[:fasttravel_ui] == 0)
-        #WME
-        @niko_icon.opacity += 20
-        @location_name_text.opacity += 20
-        
-        location = zone.locations[@selected_location]
-        @arrow_top.opacity += @data.include?(location.next_top) ? 20 : 0
-        @arrow_bottom.opacity += @data.include?(location.next_bottom) ? 20 : 0
-        @arrow_left.opacity += @data.include?(location.next_left) ? 20 : 0
-        @arrow_right.opacity += @data.include?(location.next_right) ? 20 : 0
-      end
+      self.opacity += 20 * Graphics.scaled_delta
 
       active_spr = nil
+
       @data_sprites.each do |spr|
-        spr.opacity += 10
-        spr.opacity = 128 if spr.opacity > 128
         active_spr = spr if !active_spr && spr.x < MARGIN * 2
       end
-      #WME
-      if !(Settings[:fasttravel_ui] == 0)
-        @data_locations.each do |name, spr|
-          spr.opacity += 20
-          spr.opacity = 255 if spr.opacity > 255
-        end
-      end
-      #Not WME
+
       if active_spr
-        active_spr.x += 6
+        active_spr.x += 6 * Graphics.scaled_delta
         active_spr.x = MARGIN * 2 if active_spr.x > MARGIN * 2
-      elsif self.opacity == 255
+      elsif self.opacity >= 255
         @fade_in = false
       end
       return
     end
 
     if @fade_out
-      self.opacity -= 20
-
-      if zone.locations != nil && !(Settings[:fasttravel_ui] == 0)
-        #WME
-        @niko_icon.opacity -= 20
-        @location_name_text.opacity -= 20
-        
-        location = zone.locations[@selected_location]
-        @arrow_top.opacity -= @data.include?(location.next_top) ? 20 : 0
-        @arrow_bottom.opacity -= @data.include?(location.next_bottom) ? 20 : 0
-        @arrow_left.opacity -= @data.include?(location.next_left) ? 20 : 0
-        @arrow_right.opacity -= @data.include?(location.next_right) ? 20 : 0
-      end
-
-      @data_sprites.each do |spr|
-        spr.opacity -= 10
-      end
-      
-      #WME
-      if !(Settings[:fasttravel_ui] == 0)
-        @data_locations.each do |name, spr|
-          spr.opacity -= 20
-        end
-      end
+      self.opacity -= 20 * Graphics.scaled_delta
 
       #Not WME
-      if self.opacity == 0
+      if self.opacity <= 0
         @fade_out = false
         self.visible = false
         @data_sprites.each do |spr|
@@ -338,27 +289,21 @@ class FastTravel
 
     #WME noik
     if zone.locations != nil && !(Settings[:fasttravel_ui] == 0)
-      @niko_target_pos_x = (zone.locations[@selected_location].x.to_f + zone.locations[@selected_location].niko_x.to_f)
-      @niko_target_pos_y = (zone.locations[@selected_location].y.to_f + zone.locations[@selected_location].niko_y.to_f)
+      @niko_target_pos_x = (zone.locations[@selected_location].x.to_f + zone.locations[@selected_location].niko_x.to_f) + Graphics.width / 2
+      @niko_target_pos_y = (zone.locations[@selected_location].y.to_f + zone.locations[@selected_location].niko_y.to_f) + Graphics.height / 2
 
       if @data_locations.has_key?(@selected_location)
-        @niko_pos_x = (@niko_target_pos_x * 0.25 + @niko_pos_x * 0.75)
-        @niko_pos_y = (@niko_target_pos_y * 0.25 + @niko_pos_y * 0.75)
+        @niko_icon.x = delta_lerp(@niko_icon.x, @niko_target_pos_x, 0.25)
+        @niko_icon.y = delta_lerp(@niko_icon.y, @niko_target_pos_y, 0.25)
       end
-
-      @niko_pos_x = (@niko_pos_x - @niko_target_pos_x).abs < 0.5 ? @niko_target_pos_x : @niko_pos_x
-      @niko_pos_y = (@niko_pos_y - @niko_target_pos_y).abs < 0.5 ? @niko_target_pos_y : @niko_pos_y
-
-      @niko_icon.x = @niko_pos_x.to_i * @scale_multiplier + Graphics.width / 2
-      @niko_icon.y = @niko_pos_y.to_i * @scale_multiplier + Graphics.height / 2
       
       update_arrows_positions
       
       location = zone.locations[@selected_location]
-      @arrow_top.opacity += @data.include?(location.next_top) ? 40 : -40
-      @arrow_bottom.opacity += @data.include?(location.next_bottom) ? 40 : -40
-      @arrow_left.opacity += @data.include?(location.next_left) ? 40 : -40
-      @arrow_right.opacity += @data.include?(location.next_right) ? 40 : -40
+      @arrow_top.opacity += (@data.include?(location.next_top) ? 40 : -40) * Graphics.scaled_delta
+      @arrow_bottom.opacity += (@data.include?(location.next_bottom) ? 40 : -40) * Graphics.scaled_delta
+      @arrow_left.opacity += (@data.include?(location.next_left) ? 40 : -40) * Graphics.scaled_delta
+      @arrow_right.opacity += (@data.include?(location.next_right) ? 40 : -40) * Graphics.scaled_delta
     elsif !(Settings[:fasttravel_ui] == 0)
       @niko_icon.opacity = 
       @arrow_top.opacity = @arrow_bottom.opacity =
@@ -369,16 +314,16 @@ class FastTravel
     @data_sprites.each_with_index do |spr, i|
       if i == @index
         if spr.x < ACTIVE_MARGIN
-          spr.x += 6
+          spr.x += 6.0 * Graphics.scaled_delta
           spr.x = ACTIVE_MARGIN if spr.x > ACTIVE_MARGIN
         end
-        spr.opacity += 10 if spr.opacity < 255
+        spr.opacity += 10.0 * Graphics.scaled_delta if spr.opacity < 255
       else
         if spr.x > MARGIN * 2
-          spr.x -= 6
+          spr.x -= 6 * Graphics.scaled_delta
           spr.x = MARGIN * 2 if spr.x < MARGIN * 2
         end
-        spr.opacity -= 10 if spr.opacity > 128
+        spr.opacity -= 10.0 * Graphics.scaled_delta if spr.opacity > 128
         spr.opacity = 128 if spr.opacity < 128
       end
     end
@@ -467,6 +412,33 @@ class FastTravel
   def opacity=(val)
     @bg.opacity = val
     @title.opacity = val
+
+    zone = ZONES[$game_fasttravel.zone]
+    zone = zone == nil ? Zone.new("", {}, {}) : zone
+
+    if zone.locations != nil && !(Settings[:fasttravel_ui] == 0)
+      #WME
+      @niko_icon.opacity = val
+      @location_name_text.opacity = val
+      
+      location = zone.locations[@selected_location]
+      @arrow_top.opacity = @data.include?(location.next_top) ? val : 0
+      @arrow_bottom.opacity = @data.include?(location.next_bottom) ? val : 0
+      @arrow_left.opacity = @data.include?(location.next_left) ? val : 0
+      @arrow_right.opacity = @data.include?(location.next_right) ? val : 0
+    end
+    
+    @data_sprites.each do |spr|
+      spr.opacity = val
+      spr.opacity = 128 if spr.opacity > 128
+    end
+    #WME
+    if !(Settings[:fasttravel_ui] == 0)
+      @data_locations.each do |name, spr|
+        spr.opacity = val
+        spr.opacity = 255 if spr.opacity > 255
+      end
+    end
   end
   def opacity
     @bg.opacity
