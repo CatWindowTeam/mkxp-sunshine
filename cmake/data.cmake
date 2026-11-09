@@ -120,6 +120,7 @@ if(NATIVE)
 	    -mtune=native
 	  )
 	endif()
+	add_compile_options(${COPT_NATIVE})
 endif()
 
 if(LTO)

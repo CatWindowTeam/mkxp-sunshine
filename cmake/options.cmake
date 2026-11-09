@@ -31,11 +31,4 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# For local builds
-if(NATIVE)
-	check_option(OPTIONS_NATIVE -march=native -mtune=native)
-	add_compile_options(${OPTIONS_NATIVE})
-endif()
-
 add_definitions(-DVERSION_STRING="${VERSION_STRING}")
