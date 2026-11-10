@@ -15,7 +15,7 @@ cd ..
 mkdir -p build/bandle
 mkdir -p build/bandle
 mkdir -p build/bandle/Data
-cp -r ../SunshineAssets/* build/bandle
+cp -r /assets/* build/bandle
 
 # Copy libraries.
 mkdir -p libs

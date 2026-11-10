@@ -1,7 +1,4 @@
 #include <mruby.h>
-#include <mruby/value.h>
-#include <mruby/common.h>
-
 namespace {
 
   // placeholder

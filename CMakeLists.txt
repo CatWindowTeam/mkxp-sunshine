@@ -34,6 +34,8 @@ endif()
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/source.cmake)
 # add_executable
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_exec.cmake)
+# configure binding
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/binding.cmake)
 # platform specific deps and tweaks
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/platform.cmake)
 # tweak compiler and linker for optimization

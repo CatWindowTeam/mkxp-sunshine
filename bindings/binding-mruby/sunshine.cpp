@@ -1,11 +1,4 @@
 #include <mruby.h>
-#include <mruby/string.h>
-#include <mruby/array.h>
-#include <mruby/class.h>
-#include <mruby/irep.h>
-#include <mruby/compile.h>
-#include <mruby/proc.h>
-#include <mruby/dump.h>
 #include <SDL3/SDL_revision.h>
 #include "config.h"
 #include "sunshine.h"

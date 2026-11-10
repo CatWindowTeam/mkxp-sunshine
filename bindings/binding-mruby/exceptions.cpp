@@ -1,6 +1,5 @@
-#include "binding-mruby/data.h"
+#include "bindings/binding-mruby/data.h"
 #include <mruby.h>
-#include <mruby/error.h>
 #include <stdexcept>
 
 void exceptions_binding(mrb_state *mrb){

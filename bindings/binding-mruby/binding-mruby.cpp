@@ -21,25 +21,13 @@
 
 #include <exception>
 #include <mruby.h>
-#include <mruby/string.h>
-#include <mruby/array.h>
-#include <mruby/class.h>
-#include <mruby/irep.h>
-#include <mruby/compile.h>
-#include <mruby/proc.h>
-#include <mruby/dump.h>
 #include <zlib.h>
 #include <SDL3/SDL_iostream.h>
 #include "SDL3/SDL_stdinc.h"
 #include "binding.h"
 #include "debugwriter.h"
-#include <mruby/error.h>
-#include <mruby/value.h>
-#include <mruby/object.h>
-#include "external/mruby/include/mruby/compile.h"
 #include "graphics.h"
 #include "meow.h"
-#include "mruby/boxing_word.h"
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "util.h"

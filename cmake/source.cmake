@@ -1,9 +1,6 @@
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/xxd.cmake)
-
 # recursive search instead of hardcored list
 file(GLOB_RECURSE MAIN_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h*")
 file(GLOB_RECURSE MAIN_SOURCE CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c*")
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/binding.cmake)
 set(EMBEDDED_INPUT
 	shader/common.h
 	shader/transSimple.frag
