@@ -6,7 +6,8 @@ if(ANDROID)
                 	${MAIN_SOURCE}
                 	${BINDING_HEADERS}
                 	${BINDING_SOURCE}
-                	${EMBEDDED_SOURCE})
+                	${EMBEDDED_SOURCE}
+        )
 	else()
 		set(APP_TARGET main)
 		add_library(${APP_TARGET} SHARED
@@ -14,7 +15,8 @@ if(ANDROID)
                 	${MAIN_SOURCE}
                 	${BINDING_HEADERS}
                 	${BINDING_SOURCE}
-                	${EMBEDDED_SOURCE})
+                	${EMBEDDED_SOURCE}
+        )
 	endif()
 else()
 	set(APP_TARGET ${PROJECT_NAME})
@@ -23,5 +25,6 @@ else()
 		${MAIN_SOURCE}
 		${BINDING_HEADERS}
 		${BINDING_SOURCE}
-		${EMBEDDED_SOURCE})
+		${EMBEDDED_SOURCE}
+	)
 endif()

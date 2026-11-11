@@ -1,7 +1,7 @@
 if(BINDING STREQUAL "mruby")
 	add_library(mruby STATIC "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby/mruby.c")
-	target_include_directories(mruby PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby")
-	target_link_libraries(${APP_TARGET} PRIVATE mruby)
+	set(BINDING_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/external/mruby")
+	set(BINDING_LIBRARY mruby)
 	
 	file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/bindings/binding-${BINDING}/*.h*")
 	file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/bindings/binding-${BINDING}/*.c*")
