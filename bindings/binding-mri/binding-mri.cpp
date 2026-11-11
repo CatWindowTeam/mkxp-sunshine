@@ -42,6 +42,7 @@
 #include <ruby/version.h>
 #include "ruby/internal/eval.h"
 #include "ruby/internal/memory.h"
+#include <SDL3/SDL_platform_defines.h>
 #include <string>
 #include <zlib.h>
 #include <inttypes.h>
@@ -452,6 +453,8 @@ static void mriBindingExecute(){
 static void mriBindingTerminate(){
 	#ifdef unix_like
 		wallpaperBindingTerminate();
+	#elif SDL_PLATFORM_HURD
+		//
 	#endif
 	rb_raise(rb_eSystemExit, "");
 }
