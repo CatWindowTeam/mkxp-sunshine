@@ -102,6 +102,8 @@ void journalBindingInit();
 void wallpaperBindingInit();
 #ifdef unix_like
 	void wallpaperBindingTerminate();
+#elif SDL_PLATFORM_HURD
+	// a
 #endif
 void nikoBindingInit();
 void oneshotBindingInit();
