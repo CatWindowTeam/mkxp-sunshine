@@ -24,7 +24,7 @@ elseif(BINDING STREQUAL "cruby")
     file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/bindings/binding-mri/*.c*")
     add_definitions(-DRUBY_DONT_SUBST)
 	
-	ProcessWithXXD(EMBEDDED_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}bindings/binding-mri/module_rpg1.rb ${CMAKE_CURRENT_BINARY_DIR})
+	ProcessWithXXD(EMBEDDED_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/bindings/binding-mri/module_rpg1.rb ${CMAKE_CURRENT_BINARY_DIR})
 elseif(BINDING STREQUAL "benchmark")
 	file(GLOB_RECURSE BINDING_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/bindings/binding-benchmark/*.h*")
 	file(GLOB_RECURSE BINDING_SOURCE CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/bindings/binding-benchmark/*.c*")
