@@ -1,7 +1,11 @@
 #include "define.h"
+#include <SDL3/SDL_platform_defines.h>
 #include <ruby.h>
 #if windows
 	#include "wallpaper/w_windows.h"
+#elif SDL_PLATFORM_HURD
+	//TODO: fix gio on Hurd
+	#include "wallpaper/w_dummy.h"
 #elif unix_like
 	#include "wallpaper/w_unix.h"
 #else
