@@ -364,7 +364,11 @@ struct NormValue{
 		return unNorm == clamp(value, 0.0f, 255.0f);
 	}
 
-	operator float() const noexcept {
+	bool operator ==(int value) const{
+                return unNorm == clamp(value, 0, 255);
+        }
+
+	operator float() const {
 		return unNorm;
 	}
 };

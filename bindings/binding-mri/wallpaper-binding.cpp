@@ -6,6 +6,8 @@
 #elif SDL_PLATFORM_HURD
 	//TODO: fix gio on Hurd
 	#include "wallpaper/w_dummy.h"
+#elif TERMUX
+	#include "wallpaper/w_dummy.h"
 #elif unix_like
 	#include "wallpaper/w_unix.h"
 #else
