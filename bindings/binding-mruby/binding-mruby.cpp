@@ -62,7 +62,6 @@ const char* stringify_object(mrb_state *mrb, mrb_value *obj) {
 		return mrb_string_value_cstr(mrb, obj);
 
 	auto sym = mrb_intern_lit(mrb, "to_s");
-
 	if (mrb_respond_to(mrb, *obj, sym)) {
 		auto val = mrb_funcall(mrb, *obj, "to_s", 0);
 		if(mrb->exc) {
@@ -107,7 +106,7 @@ static void mrbBindingExecute() {
 			throw std::runtime_error("failed to allocate binding data");
 
 		mrb_load_irep_buf_cxt(mrb, module_rpg_mrb, module_rpg_mrb_len, cxt);
-		if(mrb->exc) {
+		if(mrb->exc){
 			mrb_print_backtrace(mrb);
 			throw std::runtime_error("failed to load RPG module bytecode");
 		}
@@ -115,34 +114,9 @@ static void mrbBindingExecute() {
 		MRBBindingData* bindingData = static_cast<MRBBindingData*>(mrb->ud);
 		mrbBindingInit(mrb);
 
-		throw std::runtime_error("script loading not implemented yet.");
-		/*
-		for (auto script : scripts) {
-			mrb_ccontext_filename(mrb, cxt, script.name);
-			mrb_load_string_cxt(mrb, script.script, cxt);
-
-			if (mrb->exc) {
-				if (mrb->exc->c == bindingData->shudownExc)
-					break;
-
-				mrb_print_backtrace(mrb);
-				throw std::runtime_error("uncaught exception in ruby");
-			}
-		}
-		*/
+		//test
 	} catch (const std::exception& e) {
-		const char* what = e.what();
-
-		size_t len = clamp(SDL_strlen(what), (size_t)0, sizeof(crash_message) - 1);
-		SDL_memset(crash_message, 0, sizeof(crash_message));
-		if(len != 0){
-			SDL_memcpy(crash_message, what, len);
-		}else{
-			const char what[] = "(empty error message)";
-			SDL_memcpy(crash_message, what, sizeof(what));
-		}
-
-		show_crash_screen = true;
+		set_crash_info(e.what().c_str());
 	}
 
 	if (mrb->ud){

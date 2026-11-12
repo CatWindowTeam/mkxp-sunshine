@@ -10,6 +10,7 @@
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_stdinc.h>
 #include "meow.h"
+#include "util.h"
 #include "exception.h"
 #include "config.h"
 #include "debugwriter.h"
@@ -20,80 +21,12 @@
 #include <string>
 #include <vector>
 #include <iostream>
-
 #ifdef mkxp_android
 	#include <android/api-level.h>
 #endif
 
 #include "crash.png.xxd"
 using namespace std;
-
-#define STR2(x) #x
-#define STR(x) STR2(x)
-
-#if defined(__clang__)
-  #define COMPILER_NAME "Clang"
-  #define COMPILER_VER  STR(__clang_major__) "." STR(__clang_minor__) "." STR(__clang_patchlevel__)
-#elif defined(__GNUC__)
-  #define COMPILER_NAME "GCC"
-  #define COMPILER_VER  STR(__GNUC__) "." STR(__GNUC_MINOR__) "." STR(__GNUC_PATCHLEVEL__)
-#elif defined(_MSC_VER)
-  #define COMPILER_NAME "MSVC"
-  #define COMPILER_VER  STR(_MSC_VER)
-#elif defined(__INTEL_COMPILER)
-  #define COMPILER_NAME "Intel"
-  #define COMPILER_VER  "n/a"
-#else
-  #define COMPILER_NAME "Unknown compiler"
-  #define COMPILER_VER  "n/a"
-#endif
-
-// https://stackoverflow.com/questions/152016/detecting-cpu-architecture-compile-time
-const static char* get_processor(){
-	#if defined(__x86_64__) || defined(_M_X64)
-        return "x86_64";
-	#elif defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
-		return "x86";
-	#elif defined(__ARM_ARCH_2__)
-		return "ARM2";
-	#elif defined(__ARM_ARCH_3__) || defined(__ARM_ARCH_3M__)
-		return "ARM3";
-	#elif defined(__ARM_ARCH_4T__) || defined(__TARGET_ARM_4T)
-		return "ARM4T";
-	#elif defined(__ARM_ARCH_5_) || defined(__ARM_ARCH_5E_)
-		return "ARM5";
-	#elif defined(__ARM_ARCH_6T2_) || defined(__ARM_ARCH_6T2_)
-		return "ARM6T2";
-	#elif defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) || defined(__ARM_ARCH_6K__) || defined(__ARM_ARCH_6Z__) || defined(__ARM_ARCH_6ZK__)
-		return "ARM6";
-	#elif defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
-		return "ARM7";
-	#elif defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
-		return "ARM7A";
-	#elif defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
-		return "ARM7R";
-	#elif defined(__ARM_ARCH_7M__)
-		return "ARM7M";
-	#elif defined(__ARM_ARCH_7S__)
-		return "ARM7S";
-	#elif defined(__aarch64__) || defined(_M_ARM64)
-		return "ARM64";
-	#elif defined(mips) || defined(__mips__) || defined(__mips)
-		return "MIPS";
-	#elif defined(__sh__)
-		return "SUPERH";
-	#elif defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) || defined(__POWERPC__) || defined(__ppc__) || defined(__PPC__) || defined(_ARCH_PPC)
-		return "POWERPC";
-	#elif defined(__PPC64__) || defined(__ppc64__) || defined(_ARCH_PPC64)
-		return "POWERPC64";
-	#elif defined(__sparc__) || defined(__sparc)
-		return "SPARC";
-	#elif defined(__m68k__)
-		return "M68K";
-	#else
-		return "UNKNOWN";
-	#endif
-}
 
 void crash(Exception::Type type, const char *fmt, ...){
     va_list args;
@@ -104,15 +37,33 @@ void crash(Exception::Type type, const char *fmt, ...){
     scriptBinding->terminate();
 }
 
+void set_crash_info(const char *fmt, ...){
+	char message[1024];
+
+    va_list args;
+    va_start(args, fmt);
+    SDL_vsnprintf(message, sizeof(message), fmt, args);
+    
+    size_t len = clamp(SDL_strlen(message), (size_t)0, sizeof(crash_message) - 1);
+    SDL_memset(crash_message, 0, sizeof(crash_message));
+    if(len != 0){
+    	SDL_memcpy(crash_message, message, len);
+    }else{
+    	SDL_memcpy(crash_message, "(empty error message)", 22);
+    }
+    
+    va_end(args);
+    show_crash_screen = true;
+}
+
 // Here we prepare information that we display on crash screen and write in crashdump later
 static std::vector<std::string> prepare_crash_info(){
 	std::vector<std::string> c;
 	c.emplace_back("If you're sure that the problem is not with");
 	c.emplace_back("your device, nor with your modifications, nor your ham-fisted setup, please");
-	c.emplace_back("report the bug to the developers");
+	c.emplace_back("report the bug to the developers.");
 	c.emplace_back(std::string{"VERSION: "} + VERSION_STRING);
 	c.emplace_back(std::string{"MSG: "} + crash_message);
-	c.emplace_back(std::string{"COMPILER: "} + COMPILER_NAME + std::string{" "} + COMPILER_VER);
 	c.emplace_back("");
 	c.emplace_back("[LOGS]");
 	c.insert(c.end(), logs.begin(), logs.end());
@@ -121,7 +72,6 @@ static std::vector<std::string> prepare_crash_info(){
 	c.emplace_back(std::string{"Video Driver: "} + SDL_GetCurrentVideoDriver());
 	c.emplace_back(std::string{"Detected Platform: "} + SDL_GetPlatform());
 	c.emplace_back(std::string{"Last PhysFS error: "} + PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-	c.emplace_back(std::string{"Last SDL Error on the current thread: "} + SDL_GetError());
 	#ifdef mkxp_android
 		c.emplace_back(std::string{"Android API: "} + std::to_string(android_get_device_api_level()));
 	#endif
@@ -132,23 +82,11 @@ void crash_screen(SDL_Window* win){
 	SDL_ShowCursor();
 	// Skip Crash screen if failed initialize
 	static bool skip_crash_screen = false;
-	//creating render
+	//creating render, yes i deleted checks
 	SDL_Renderer* ren = SDL_CreateRenderer(win, NULL);
-	if (ren == nullptr) {
-		WarnMsg("Failed to create a renderer, please make sure that your device is powerful enough to run the game; otherwise, report the bug. Error Message: ", SDL_GetError());
-		skip_crash_screen = true;
-	}
 	SDL_Surface* crash_img = IMG_Load_IO(SDL_IOFromConstMem(assets_crash_png, assets_crash_png_len), true);
-	if (crash_img == nullptr) {
-		WarnMsg("Failed to create a surface, please make sure that your device is powerful enough to run the game; otherwise, report the bug. Error Message: ", SDL_GetError());
-		skip_crash_screen = true;
-	}
 	SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, crash_img);
 	SDL_DestroySurface(crash_img);
-	if (tex == nullptr) {
-		WarnMsg("Failed to create a texture, please make sure that your device is powerful enough to run the game; otherwise, report the bug. Error Message: ", SDL_GetError());
-		skip_crash_screen = true;
-	}
 
 	static int w = 0;
 	static unsigned int pager_start = 0;
@@ -156,20 +94,22 @@ void crash_screen(SDL_Window* win){
 	SDL_GetCurrentRenderOutputSize(ren, NULL, &w);
 	static int items_count = (((w / 10) * 10) / 10);
 	static unsigned int pager_end = items_count;
-	const static char* shit = "[S - save crash info to crash.txt]";
+	const static char* shit = "[S - save crash info]";
 	//cd -- crashdump
 	std::vector<std::string> cd = prepare_crash_info();
 	if(!skip_crash_screen){
 		SDL_Event e;
 		bool quit = false;
 		int texW = 100, texH = 100;
-		int winW = 0, winH = 0;
+		//if something, use default
+		int winW = 640, winH = 480;
 		SDL_GetWindowSize(win, &winW, &winH);
 		SDL_FRect dst{
 	    	(float)((winW - 100) / 2),
 	    	(float)((winH - 100) / 2),
-	    	(float)100,
-	    	(float)100};
+			100.0f,
+	    	100.0f
+	    };
 
 		while(!quit) {
 	    	while(SDL_PollEvent(&e)) {
@@ -193,8 +133,6 @@ void crash_screen(SDL_Window* win){
 						shit = "[SAVED]";
 					}else if(e.key.scancode == SDL_SCANCODE_Q){
 						quit = true;
-					}else if(e.key.scancode == SDL_SCANCODE_E){
-						quit = true;
 					}
 				}
 		    }
@@ -210,7 +148,7 @@ void crash_screen(SDL_Window* win){
 			SDL_RenderDebugText(ren, 5, 20, shit);
 			SDL_SetRenderScale(ren, 1.0f, 1.0f);
 			char index_str[32];
-			for (int i = pager_start; i <= pager_end; ++i){
+			for(int i = pager_start; i <= pager_end; ++i){
 				if(i < cd.size()){
 					count = count + 10;
 					SDL_snprintf(index_str, sizeof(index_str), "%03d", i);
