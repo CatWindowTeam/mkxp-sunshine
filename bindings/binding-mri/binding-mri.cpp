@@ -454,8 +454,8 @@ static void mriBindingExecute(){
 
 static void mriBindingTerminate(){
 	#ifdef SDL_PLATFORM_HURD
-		Debug() << "A";
-	#else unix_like
+	#elif TERMUX
+	#elif unix_like
 		wallpaperBindingTerminate();
 	#endif
 	rb_raise(rb_eSystemExit, "");
