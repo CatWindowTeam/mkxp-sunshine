@@ -286,7 +286,7 @@ void Plane::draw(){
 		{
 			if (renderEffect){
 				defaultSpriteShaderInit(SHADER_sprite);
-			}else if (p->opacity != 255){
+			}else if (p->opacity != 255.0f){
 				render.useEffect(SHADER_alphaSprite);
 				render.setOpacity(p->opacity.norm);
 				render.applyViewportProj();

@@ -553,7 +553,7 @@ void Sprite::draw(){
 		default:
 			if (renderEffect){
 				defaultSpriteShaderInit(SHADER_sprite);
-			}else if (p->opacity != 255){
+			}else if (p->opacity != 255.0f){
 				render.useEffect(SHADER_alphaSprite);
 				render.setSpriteMat(p->trans.getMatrix());
 				render.setOpacity(p->opacity.norm);
