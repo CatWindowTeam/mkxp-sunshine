@@ -11,7 +11,8 @@ macro(ProcessWithXXDIn workdir outvar inputfile outdir)
 	set(outputfile ${outdir}/${basefile}.xxd)
 	add_custom_command(
 		OUTPUT ${outputfile}
-		COMMAND ${XXD_EXE} -i ${inputfile} ${outputfile}
+		# and -n here to make sure we always have predictable variable names
+		COMMAND ${XXD_EXE} -n "${inputfile}" -i ${inputfile} ${outputfile}
 		WORKING_DIRECTORY ${workdir}
 		DEPENDS ${inputfile}
 		COMMENT "Generating XXD for ${inputfile}"
