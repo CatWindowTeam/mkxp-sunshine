@@ -118,7 +118,7 @@ static void mrbBindingExecute() {
 
 		//test
 	} catch (const std::exception& e) {
-		set_crash_info(e.what().c_str());
+		set_crash_info(e.what());
 	}
 
 	if (mrb->ud){
