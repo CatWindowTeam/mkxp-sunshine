@@ -151,8 +151,8 @@ DEF_GRA_PROP_B(Smooth)
 
 #define INIT_GRA_PROP_BIND(PropName, prop_name_s) \
 { \
-	mrb_define_module_function(mrb, m, prop_name_s, graphics##Get##PropName, MRB_ARGS_NONE()); \
-	mrb_define_module_function(mrb, m, prop_name_s "=", graphics##Set##PropName, MRB_ARGS_REQ(1)); \
+	mrb_define_module_function(mrb, module, prop_name_s, graphics##Get##PropName, MRB_ARGS_NONE()); \
+	mrb_define_module_function(mrb, module, prop_name_s "=", graphics##Set##PropName, MRB_ARGS_REQ(1)); \
 }
 
 //static mrb_value graphicsWindowMoved(mrb_value self){
@@ -210,7 +210,7 @@ static mrb_value graphicsSetFOV(mrb_state *mrb, mrb_value self){
 }
 
 void graphicsBindingInit(mrb_state *mrb){
-	struct RClass *m = mrb_define_module(mrb, "Graphics");
+	struct RClass *module = mrb_define_module(mrb, "Graphics");
 
 	// Signals
 	//rb_define_module_function(module, "window_moved", RUBY_METHOD_FUNC(graphicsWindowMoved), 0);
@@ -218,25 +218,25 @@ void graphicsBindingInit(mrb_state *mrb){
 	//rb_define_module_function(module, "viewport_resized", RUBY_METHOD_FUNC(graphicsViewportResized), 0);
 
 	// Functions
-	mrb_define_module_function(mrb, m, "x", graphicsPosX, MRB_ARGS_NONE());
-	mrb_define_module_function(mrb, m, "y", graphicsPosY, MRB_ARGS_NONE());
-	mrb_define_module_function(mrb, m, "width", graphicsWidth, MRB_ARGS_NONE());
-	mrb_define_module_function(mrb, m, "height", graphicsHeight, MRB_ARGS_NONE());
-	mrb_define_module_function(mrb, m, "wait", graphicsWait, MRB_ARGS_OPT(1));
-	mrb_define_module_function(mrb, m, "fadeout", graphicsFadeout, MRB_ARGS_OPT(1));
-	mrb_define_module_function(mrb, m, "fadein", graphicsFadein, MRB_ARGS_OPT(1));
+	mrb_define_module_function(mrb, module, "x", graphicsPosX, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, module, "y", graphicsPosY, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, module, "width", graphicsWidth, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, module, "height", graphicsHeight, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, module, "wait", graphicsWait, MRB_ARGS_OPT(1));
+	mrb_define_module_function(mrb, module, "fadeout", graphicsFadeout, MRB_ARGS_OPT(1));
+	mrb_define_module_function(mrb, module, "fadein", graphicsFadein, MRB_ARGS_OPT(1));
 	//rb_define_module_function(m, "snap_to_bitmap", graphicsSnapToBitmap, 0);
-	mrb_define_module_function(mrb, m, "resize_screen", graphicsResizeScreen, MRB_ARGS_ARG(2,1));
-	mrb_define_module_function(mrb, m, "move_screen", graphicsMoveScreen, MRB_ARGS_REQ(2));
-	mrb_define_module_function(mrb, m, "update", graphicsUpdate, MRB_ARGS_NONE());
-	mrb_define_module_function(mrb, m, "delta_time", graphicsDeltaTime, MRB_ARGS_NONE());
-	mrb_define_module_function(mrb, m, "freeze", graphicsFreeze, MRB_ARGS_NONE());
-	mrb_define_module_function(mrb, m, "transition", graphicsTransition, MRB_ARGS_OPT(3));
-	mrb_define_module_function(mrb, m, "frame_reset", graphicsFrameReset, MRB_ARGS_NONE());
-	mrb_define_module_function(mrb, m, "vsync_mode=", graphicsSetVsync, MRB_ARGS_REQ(2));
-	mrb_define_module_function(mrb, m, "fov", graphicsGetFOV, MRB_ARGS_NONE());
-	mrb_define_module_function(mrb, m, "fov=", graphicsSetFOV, MRB_ARGS_REQ(1));
-	mrb_define_module_function(mrb, m, "__reset__", graphicsReset, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, module, "resize_screen", graphicsResizeScreen, MRB_ARGS_ARG(2,1));
+	mrb_define_module_function(mrb, module, "move_screen", graphicsMoveScreen, MRB_ARGS_REQ(2));
+	mrb_define_module_function(mrb, module, "update", graphicsUpdate, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, module, "delta_time", graphicsDeltaTime, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, module, "freeze", graphicsFreeze, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, module, "transition", graphicsTransition, MRB_ARGS_OPT(3));
+	mrb_define_module_function(mrb, module, "frame_reset", graphicsFrameReset, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, module, "vsync_mode=", graphicsSetVsync, MRB_ARGS_REQ(2));
+	mrb_define_module_function(mrb, module, "fov", graphicsGetFOV, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, module, "fov=", graphicsSetFOV, MRB_ARGS_REQ(1));
+	mrb_define_module_function(mrb, module, "__reset__", graphicsReset, MRB_ARGS_NONE());
 
 	// Variables
 	INIT_GRA_PROP_BIND( FrameRate,  "frame_rate"  );
@@ -245,5 +245,5 @@ void graphicsBindingInit(mrb_state *mrb){
 	INIT_GRA_PROP_BIND( Fullscreen, "fullscreen"  );
 	INIT_GRA_PROP_BIND( ShowCursor, "show_cursor" );
 	INIT_GRA_PROP_BIND( Smooth,     "smooth"      );
-	mrb_define_const(mrb, "RESOLUTION_OVERRIDDEN", conf.resolutionOverridden ? mrb_true_value() : mrb_false_value());
+	mrb_define_const(mrb, module, "RESOLUTION_OVERRIDDEN", conf.resolutionOverridden ? mrb_true_value() : mrb_false_value());
 }

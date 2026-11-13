@@ -1,16 +1,18 @@
+#include <SDL3/SDL_platform_defines.h>
 #include <mruby.h>
-namespace {
 
-  // placeholder
-  static mrb_value do_nothing(mrb_state* mrb, mrb_value) {
-    return mrb_nil_value();
-  }
+#if SDL_PLATFORM_WINDOWS
+	#include "wallpaper/w_windows.h"
+#elif SDL_PLATFORM_UNIX
+	#include "wallpaper/w_unix.h"
+#else
+	#include "wallpaper/w_dummy.h"
+#endif
 
-}
+void wallpaperBindingInit(mrb_state *mrb){
+	auto module = mrb_define_module(mrb, "Wallpaper");
 
-void wallpaperBindingInit(mrb_state *mrb) {
-  auto oneshot = mrb_define_module(mrb, "Wallpaper");
-
-  mrb_define_module_function(mrb, oneshot, "reset", do_nothing, MRB_ARGS_OPT(1));
-  mrb_define_module_function(mrb, oneshot, "set", do_nothing, MRB_ARGS_OPT(1));
+	// Functions
+	mrb_define_module_function(mrb, module, "set", wallpaperSet, MRB_ARGS_REQ(2));
+	mrb_define_module_function(mrb, module, "reset", wallpaperReset, MRB_ARGS_NONE());
 }
