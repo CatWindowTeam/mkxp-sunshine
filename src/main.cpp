@@ -89,6 +89,9 @@ static int rgssThreadFun(void *userdata) {
 }
 
 int main(int argc, char *argv[]) {
+	#ifdef TERMUX
+		SDL_SetMainReady();
+	#endif
   	conf.read(argc, argv);
   	SDL_SetHint("SDL_HINT_INVALID_PARAM_CHECKS", "1");
   	startTime = std::chrono::high_resolution_clock::now();

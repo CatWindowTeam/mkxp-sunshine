@@ -26,7 +26,6 @@
 #endif
 
 #include "crash.png.xxd"
-using namespace std;
 
 void crash(Exception::Type type, const char *fmt, ...){
     va_list args;

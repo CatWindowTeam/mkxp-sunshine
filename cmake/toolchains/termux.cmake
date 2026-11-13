@@ -1,0 +1,6 @@
+set(CMAKE_SYSTEM_NAME Linux)
+set(TERMUX ON)
+set(SDL_KMSDRM OFF)
+set(SDL_VULKAN OFF)
+set(RENDER_GPU OFF)
+add_definitions(-DSDL_MAIN_HANDLED)
