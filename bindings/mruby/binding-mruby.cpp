@@ -32,6 +32,7 @@
 #include "eventthread.h"
 #include "util.h"
 #include "data.h"
+#include "filesystem.h"
 #include "module_rpg.mrb.xxd"
 
 static void mrbBindingExecute();
@@ -109,6 +110,8 @@ static void mrbBindingExecute() {
 		if(!mrb->ud)
 			throw std::runtime_error("failed to allocate binding data");
 
+		mrbBindingInit(mrb);
+		
 		mrb_load_irep_buf_cxt(mrb, module_rpg_mrb, module_rpg_mrb_len, cxt);
 		if(mrb->exc){
 			mrb_print_backtrace(mrb);
@@ -116,10 +119,15 @@ static void mrbBindingExecute() {
 		}
 
 		MRBBindingData* bindingData = static_cast<MRBBindingData*>(mrb->ud);
-		mrbBindingInit(mrb);
-
-		//test
-	} catch (const std::exception& e) {
+		if(!shState->fileSystem().exists("Scripts.mrb")){
+			throw std::runtime_error("Unable to open Scripts.mrb");
+		}else{
+			// TODO: replace with filesystem.cpp code
+			FILE* filepointer = fopen("Scripts.mrb", "r");
+			mrb_load_irep_file_cxt(mrb, filepointer ,cxt);
+			fclose(filepointer);
+		}
+	}catch(const std::exception& e) {
 		set_crash_info(e.what());
 	}
 

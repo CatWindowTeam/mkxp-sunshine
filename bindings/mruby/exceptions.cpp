@@ -1,4 +1,4 @@
-#include "bindings/binding-mruby/data.h"
+#include "bindings/mruby/data.h"
 #include <mruby.h>
 #include <stdexcept>
 
