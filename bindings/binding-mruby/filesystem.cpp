@@ -22,7 +22,7 @@ static mrb_value file_rmpath(mrb_state *mrb, mrb_value self){
   const char *path;
   mrb_get_args(mrb, "z", &path);
   
-  return SDL_RemovePath(path) ? mrb_true_value() : mrb_false_value();
+  return SDL_RemovePath(path) Qnil;
 }
 
 void FileSystemBindingInit(mrb_state *mrb){
