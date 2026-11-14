@@ -1,3 +1,1 @@
-while true do
-  
-end
+MKXP.puts "Hello world"

@@ -184,7 +184,9 @@ static bool SDL_RWopsClose(void *userdata){
 }
 
 // dummy function because i have NO IDEA if this function optional.
-static bool SDL_RWopsFlush(void *userdata, SDL_IOStatus *status) { return true; }
+static bool SDL_RWopsFlush(void *userdata, SDL_IOStatus *status){
+	return true;
+}
 
 /* Attempt to locate an extension string in a filename.
  * Either a pointer into the input string pointing at the
@@ -214,7 +216,7 @@ static void initReadOps(PHYSFS_File *handle, SDL_IOStream* &ops){
 }
 
 static void strTolower(std::string &str){
-	for (size_t i = 0; i < str.size(); ++i)
+	for(size_t i = 0; i < str.size(); ++i)
 		str[i] = SDL_tolower(str[i]);
 }
 
@@ -260,14 +262,8 @@ void FileSystem::addPath(const char *path){
 struct CacheEnumData{
 	FileSystemPrivate *p;
 	std::stack<std::vector<std::string>*> fileLists;
-
 	CacheEnumData(FileSystemPrivate *p) : p(p){}
 	~CacheEnumData(){}
-
-	/* Converts in-place */
-	void toNFC(char *inout){
-		(void) inout;
-	}
 };
 
 static PHYSFS_EnumerateCallbackResult cacheEnumCB(void *d, const char *origdir, const char *fname){
@@ -278,8 +274,6 @@ static PHYSFS_EnumerateCallbackResult cacheEnumCB(void *d, const char *origdir, 
 	else
 		SDL_snprintf(fullPath, sizeof(fullPath), "%s/%s", origdir, fname);
 
-	/* Deal with OSX' weird UTF-8 standards */
-	data.toNFC(fullPath);
 	std::string mixedCase(fullPath);
 	std::string lowerCase = mixedCase;
 	strTolower(lowerCase);
@@ -379,15 +373,12 @@ struct OpenReadEnumData{
 	/* In case of a PhysFS error, save it here so it
 	 * doesn't get changed before we get back into our code */
 	const char *physfsError;
-	OpenReadEnumData(FileSystem::OpenHandler &handler, const char *filename, size_t filenameN, tsl::robin_map<std::string, std::string> *pathTrans)
-	    : handler(handler), filename(filename), filenameN(filenameN),
-	      pathTrans(pathTrans), matchCount(0), stopSearching(false),
-	      physfsError(0)
-	{}
+	OpenReadEnumData(FileSystem::OpenHandler &handler, const char *filename, size_t filenameN, tsl::robin_map<std::string, std::string> *pathTrans) :
+		handler(handler), filename(filename), filenameN(filenameN), pathTrans(pathTrans),
+		matchCount(0), stopSearching(false), physfsError(0) {}
 };
 
-static PHYSFS_EnumerateCallbackResult
-openReadEnumCB(void *d, const char *dirpath, const char *filename){
+static PHYSFS_EnumerateCallbackResult openReadEnumCB(void *d, const char *dirpath, const char *filename){
 	OpenReadEnumData &data = *static_cast<OpenReadEnumData*>(d);
 	char buffer[512];
 	const char *fullPath;
@@ -425,7 +416,6 @@ openReadEnumCB(void *d, const char *dirpath, const char *filename){
 		 * Just abort alltogether. */
 		data.stopSearching = true;
 		data.physfsError = PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
-
 		return PHYSFS_ENUM_ERROR;
 	}
 
@@ -442,8 +432,8 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 	char buffer[512];
 	size_t len = SDL_strlcpy(buffer, filename, sizeof(buffer));
 	char *delim;
-	if (p->havePathCache)
-		for (size_t i = 0; i < len; ++i)
+	if(p->havePathCache)
+		for(size_t i = 0; i < len; ++i)
 			buffer[i] = SDL_tolower(buffer[i]);
 
 	/* Find the deliminator separating directory and file name */
@@ -477,7 +467,7 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 	}
 
 	if (data.physfsError){
-		Debug() << data.physfsError;
+		Debug() << "PhysFS error: " << data.physfsError;
 		throw Exception(Exception::PHYSFSError, "PhysFS: %s", data.physfsError);
 	}
 
@@ -488,7 +478,7 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 
 void FileSystem::openReadRaw(SDL_IOStream* &stream, const char *filename){
 	PHYSFS_File *handle = PHYSFS_openRead(filename);
-	if (!handle)
+	if(!handle)
 		throw Exception(Exception::NoFileError, "%s", filename);
 
 	initReadOps(handle, stream);
