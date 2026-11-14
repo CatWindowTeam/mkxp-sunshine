@@ -5,7 +5,7 @@ endif()
 
 set(API_ONESHOT_EXTENSIONS_XFCE_ENABLED OFF)
 
-function(detect_de_pkgs)
+macro(detect_de_pkgs)
 	find_package(PkgConfig REQUIRED)
     if(API_ONESHOT_EXTENSIONS_XFCE)
     	pkg_check_modules(XFCE IMPORTED_TARGET libxfconf-0)
@@ -20,7 +20,7 @@ function(detect_de_pkgs)
     endif()
     pkg_check_modules(GIO REQUIRED IMPORTED_TARGET gio-2.0)
     target_link_libraries(${APP_TARGET} PRIVATE PkgConfig::GIO)
-endfunction()
+endmacro()
 
 set(UNIX_SYSTEMS Linux FreeBSD OpenBSD NetBSD)
 
