@@ -59,6 +59,8 @@ void wallpaperBindingInit(mrb_state *mrb);
 void mkxpBindingInit(mrb_state *mrb);
 void FileSystemBindingInit(mrb_state *mrb);
 void oneshotBindingInit(mrb_state *mrb);
+void audioPlaybackBindingInit(mrb_state *mrb);
+void audioBindingInit(mrb_state *mrb);
 
 const char* stringify_object(mrb_state *mrb, mrb_value *obj) {
 	if (mrb_string_p(*obj))
@@ -91,6 +93,8 @@ static void mrbBindingInit(mrb_state *mrb){
 	mkxpBindingInit(mrb);
 	FileSystemBindingInit(mrb);
 	oneshotBindingInit(mrb);
+	audioPlaybackBindingInit(mrb);
+	audioBindingInit(mrb);
 	mrb_gc_arena_restore(mrb, arena);
 }
 
