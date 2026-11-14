@@ -122,8 +122,8 @@ static void mrbBindingExecute() {
 		if(!shState->fileSystem().exists("Scripts.mrb")){
 			throw std::runtime_error("Unable to open Scripts.mrb");
 		}else{
-			// TODO: replace with filesystem.cpp code
-			FILE* filepointer = fopen("Scripts.mrb", "r");
+			// TODO: replace with PhysFS code code
+			FILE* filepointer = fopen("Data/Scripts.mrb", "r");
 			mrb_load_irep_file_cxt(mrb, filepointer ,cxt);
 			fclose(filepointer);
 		}
