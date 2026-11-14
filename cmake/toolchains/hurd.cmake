@@ -1,0 +1,1 @@
+set(SDL_ALSA OFF)
