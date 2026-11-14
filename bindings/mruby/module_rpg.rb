@@ -1,1 +1,3 @@
-MKXP.puts "Hello from new Mruby!"
+while true do
+  
+end
