@@ -7,7 +7,8 @@ cmake . -B build/ "$@"
 cmake --build build/ "-j$(nproc)"
 
 cd journal/
-	bash download_journal_deps.sh
+	git submodule update --init --recursive --single-branch --jobs $(nproc)
+	git submodule foreach --recursive git pull
 	cmake . -B build/ "$@"
 	cmake --build build/ "-j$(nproc)"
 cd ..

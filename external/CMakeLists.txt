@@ -1,3 +1,4 @@
+set(CMAKE_REQUIRED_QUIET TRUE)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/ZLIB EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/PhysFS EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL EXCLUDE_FROM_ALL)
@@ -6,6 +7,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_image EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_net EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/sigc)
+set(CMAKE_REQUIRED_QUIET FALSE)
 
 # -Wno-template-body for compatibility with latest GCC
 # TODO: move -Wno-template-body to libsigc++
