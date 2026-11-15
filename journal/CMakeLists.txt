@@ -45,9 +45,11 @@ check_linker_option_c(LOPT_BASE
 )
 target_link_options(${PROJECT_NAME} PRIVATE ${LOPT_BASE})
 
-add_subdirectory(../external/SDL EXCLUDE_FROM_ALL)
-add_subdirectory(../external/SDL_image EXCLUDE_FROM_ALL)
-add_subdirectory(../external/SDL_net EXCLUDE_FROM_ALL)
+set(EXTERNAL_DIR "${CMAKE_CURRENT_LIST_DIR}/../external")
+set(EXTERNAL_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/external")
+add_subdirectory("${EXTERNAL_DIR}/SDL" "${EXTERNAL_BUILD_DIR}/SDL" EXCLUDE_FROM_ALL)
+add_subdirectory("${EXTERNAL_DIR}/SDL_image" "${EXTERNAL_BUILD_DIR}/SDL_image" EXCLUDE_FROM_ALL)
+add_subdirectory("${EXTERNAL_DIR}/SDL_net" "${EXTERNAL_BUILD_DIR}/SDL_net" EXCLUDE_FROM_ALL)
 
 check_option_c(OPTIONS_RELEASE
 			-O3
