@@ -75,3 +75,4 @@ if(LTO)
 	    -fwhole-program-vtables
 	  )
 endif()
+ 

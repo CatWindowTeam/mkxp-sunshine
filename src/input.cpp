@@ -29,7 +29,6 @@
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_stdinc.h>
-#include <assert.h>
 
 #define BUTTON_CODE_COUNT 24
 
@@ -483,9 +482,6 @@ struct InputPrivate {
 
 				break;
 			}
-			default :
-				assert(!"unreachable");
-			}
 		}
 
 		bindings.clear();
@@ -570,9 +566,6 @@ struct InputPrivate {
 				jsBBindings.push_back(bind);
 				break;
 			}
-			default :
-				assert(!"unreachable");
-			}
 		}
 
 		bindings.clear();
@@ -590,7 +583,6 @@ struct InputPrivate {
 
 	void initStaticKbBindings(){
 		kbStatBindings.clear();
-
 		for (size_t i = 0; i < staticKbBindingsN; ++i)
 			kbStatBindings.push_back(KbBinding(staticKbBindings[i]));
 	}

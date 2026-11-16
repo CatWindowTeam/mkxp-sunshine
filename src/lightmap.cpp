@@ -280,15 +280,19 @@ void LightMap::update(){
 void LightMap::clearStaticLightSources(){
 	p->staticLightSources.clear();
 }
+
 void LightMap::clearDynamicLightSources(){
 	p->dynamicLightSources.clear();
 }
+
 void LightMap::addStaticLightSource(const LightSource &source){
 	p->staticLightSources.push_back(source);
 }
+
 void LightMap::addDynamicLightSource(const LightSource &source){
 	p->dynamicLightSources.push_back(source);
 }
+
 void LightMap::removeStaticLightSource(float x, float y){
 	for (int i = 0; i < p->staticLightSources.size(); i++)
 		if (p->staticLightSources[i].x == x && p->staticLightSources[i].y == y){

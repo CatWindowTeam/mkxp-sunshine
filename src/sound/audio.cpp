@@ -45,7 +45,9 @@ Audio::Audio(RGSSThreadData &threadData){
 	p = new AudioPrivate();
 }
 
-Audio::~Audio() { delete p; }
+Audio::~Audio() {
+	delete p;
+}
 
 AudioSource* Audio::createAudioSource(const std::string& path, bool predecode) {
 	AudioSource* source;

@@ -9,12 +9,11 @@ Config conf;
 		#define CLI11_DISABLE_EXTRA_VALIDATORS 1
 	#endif
 	#include "meow.h"
-	#include "util.h"
 	#include "debugwriter.h"
+	#include "CLI/CLI.hpp"
 	#include <SDL3/SDL_filesystem.h>
 	#include <SDL3/SDL_system.h>
 	#include <SDL3/SDL_stdinc.h>
-	#include "CLI/CLI.hpp"
 	
 	static std::string prefPath(const char *org, const char *app){
 		const char *path = SDL_GetPrefPath(org, app);

@@ -1,12 +1,12 @@
 set(CMAKE_REQUIRED_QUIET TRUE)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/ZLIB EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/PhysFS EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_mixer EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_image EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_ttf EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/SDL_net EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/sigc)
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/ZLIB" EXCLUDE_FROM_ALL)
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/PhysFS" EXCLUDE_FROM_ALL)
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/SDL" EXCLUDE_FROM_ALL)
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/SDL_mixer" EXCLUDE_FROM_ALL)
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/SDL_image" EXCLUDE_FROM_ALL)
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/SDL_ttf" EXCLUDE_FROM_ALL)
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/SDL_net" EXCLUDE_FROM_ALL)
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/sigc" EXCLUDE_FROM_ALL)
 set(CMAKE_REQUIRED_QUIET FALSE)
 
 # -Wno-template-body for compatibility with latest GCC
@@ -38,10 +38,8 @@ set(targets
 foreach(t IN LISTS targets)
     if(TARGET "${t}")
         message(STATUS "Configuring ${t}")
-        target_compile_options(${t} PRIVATE "${COPT_NATIVE}"
-            								"${COPT_UNSAFE}"
-            								"${COPT_LTO}"
-            								"${COPT_C}"
+        target_compile_options(${t} PRIVATE "${COPT_NATIVE}" "${COPT_UNSAFE}"
+            								"${COPT_LTO}" "${COPT_C}"
             								"$<$<COMPILE_LANGUAGE:CXX>:${COPT_CXX}>"
             								"$<$<COMPILE_LANGUAGE:CXX>:${COPT_UNSAFE_CXX}>")
 		if(LTO)

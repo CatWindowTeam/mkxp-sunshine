@@ -1,5 +1,4 @@
 include(CheckCXXCompilerFlag)
-include(CheckCCompilerFlag)
 include(CheckLinkerFlag)
 
 # Helper for checking if options supported by compiller
@@ -23,27 +22,6 @@ function(check_option output_var)
     set(CMAKE_REQUIRED_QUIET FALSE)
 endfunction()
 
-# Helper for checking if options supported by compiller
-function(check_option_c output_var)
-    set(CMAKE_REQUIRED_QUIET TRUE)
-    set(result)
-    foreach(option IN LISTS ARGN)
-        string(MAKE_C_IDENTIFIER "${option}" option_id)
-        set(check_var "HAVE_OPTION_${option_id}")
-
-        check_c_compiler_flag("${option}" "${check_var}")
-        if(${check_var})
-            message(STATUS "${option} supported")
-            list(APPEND result "${option}")
-        else()
-			message(STATUS "${option} unsupported")
-        endif()
-    endforeach()
-
-    set("${output_var}" "${result}" PARENT_SCOPE)
-    set(CMAKE_REQUIRED_QUIET FALSE)
-endfunction()
-
 function(check_linker_option output_var)
     set(CMAKE_REQUIRED_QUIET TRUE)
     set(result)
@@ -53,27 +31,6 @@ function(check_linker_option output_var)
         set(check_var "HAVE_OPTION_${option_id}")
 
         check_linker_flag(CXX "${option}" "${check_var}")
-        if(${check_var})
-            message(STATUS "${option} supported")
-            list(APPEND result "${option}")
-        else()
-			message(STATUS "${option} unsupported")
-        endif()
-    endforeach()
-
-    set("${output_var}" "${result}" PARENT_SCOPE)
-    set(CMAKE_REQUIRED_QUIET FALSE)
-endfunction()
-
-function(check_linker_option_c output_var)
-    set(CMAKE_REQUIRED_QUIET TRUE)
-    set(result)
-
-    foreach(option IN LISTS ARGN)
-        string(MAKE_C_IDENTIFIER "${option}" option_id)
-        set(check_var "HAVE_OPTION_${option_id}")
-
-        check_linker_flag(C "${option}" "${check_var}")
         if(${check_var})
             message(STATUS "${option} supported")
             list(APPEND result "${option}")
