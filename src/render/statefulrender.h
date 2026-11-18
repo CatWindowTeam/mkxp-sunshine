@@ -8,7 +8,6 @@ template<typename T>
 struct StateProperty{
 	T current;
 	std::vector<T> stack;
-
 	void push() { stack.push_back(current); }
 	void pop() { if (!stack.empty()) { current = stack.back(); stack.pop_back(); } }
 	void set(const T &value) { current = value; }
@@ -54,7 +53,7 @@ private:
 	std::vector<Uint32> freeIds;
 };
 
-enum class BlendKind{
+enum class BlendKind : Uint8{
 	KeepDestAlpha,
 	Normal,
 	Addition,

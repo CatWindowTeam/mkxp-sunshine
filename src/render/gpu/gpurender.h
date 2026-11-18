@@ -65,7 +65,7 @@ struct GpuGeometry{
 	std::vector<GpuVertex> vertices;
 };
 
-enum class GpuBlend{
+enum class GpuBlend : Uint8{
 	None,
 	Normal,
 	KeepDestAlpha,

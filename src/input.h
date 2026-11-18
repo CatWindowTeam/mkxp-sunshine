@@ -21,31 +21,27 @@
 
 #pragma once
 #include <vector>
+#include <SDL3/SDL_stdinc.h>
 struct InputPrivate;
 struct RGSSThreadData;
 struct SourceDesc;
 
 class Input{
 public:
-	enum ButtonCode{
+	enum ButtonCode : Uint8{
 		None = 0,
-
 		Down = 2, Left = 4, Right = 6, Up = 8,
-
 		Action = 11,
 		Cancel = 12,
 		Menu = 13,
 		Items = 14,
 		Run = 15,
 		Deactivate = 16,
-
 		L = 17, R = 18,
-
 		F5 = 25, F6 = 26, F7 = 27, F8 = 28, F9 = 29,
-
+		
 		/* Non-standard extensions */
 		MouseLeft = 38, MouseMiddle = 39, MouseRight = 40,
-
 		DebugAction = 41
 	};
 
