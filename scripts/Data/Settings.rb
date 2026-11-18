@@ -6,6 +6,7 @@ module Settings
 				:master_volume          => 100,
 				:bgm_volume             => 100,
 				:sfx_volume             => 100,
+				:voiceover		        => false,
 				:fight_crime_track      => false,
 				:old_reprise_song       => false,
 
@@ -48,8 +49,6 @@ module Settings
 				:oneshot_mode           => false,
 				:twm_shader_footprint   => true,
 				:disable_pizzles_for_fuckin_gayland_users_gayland_devs_fix_your_bullshit_already => false,
-				# qmq ^
-
 				# ---------- Advanced -----------
 				:streamer_privacy       => false,
 
@@ -190,6 +189,12 @@ class Window_Settings
 				:min => 0,
 				:max => 100,
 				:icons => [[2, 1]],
+			},
+			{ :type => :sep, :name => "Voiceover"},
+			{
+				:type => :bool,
+				:name => "Voiceover",
+				:parameter => :voiceover,
 			},
 			{ :type => :sep, :name => "Game tracks"},
 			{

@@ -69,6 +69,7 @@ module Settings
 
       def language(value)
         $persistent.lang = Language::LANGUAGES[value]
+        Voiceover.set(Language::LANGUAGES[value])
         $scene&.redraw
       end
 

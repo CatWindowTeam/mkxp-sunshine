@@ -14,6 +14,7 @@ class Game_Temp
   attr_accessor :bgm_fadein_timer         # used so we aren't changing the volume every frame
   attr_accessor :map_bgm                  # map music (for battle memory)
   attr_accessor :message_text             # message text
+  attr_accessor :message_text_unmodifed
   attr_accessor :message_face             # face graphic
   attr_accessor :message_proc             # message callback (Proc)
   attr_accessor :message_ed_text          # Ed message text
@@ -79,6 +80,7 @@ class Game_Temp
     @bgm_fadein_timer = 0
     @map_bgm = nil
     @message_text = nil
+    @message_text_unmodifed = nil
     @message_face = nil
     @message_proc = nil
     @choices = nil

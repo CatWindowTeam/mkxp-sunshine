@@ -56,6 +56,9 @@ class Window_Message < Window_Selectable
 
     # Text blip sound
     @blipsound = nil
+    # доступна ли озвучка сука я ебал английский как тут написать "доступнен"
+    @voiceover = false
+    @voiceover_file = nil
   end
   #--------------------------------------------------------------------------
   # * Dispose
@@ -109,16 +112,23 @@ class Window_Message < Window_Selectable
     # Pre-process text
     if $game_temp.message_text != nil && !$game_temp.message_text.empty?
       text = $game_temp.message_text
-
-      # Determine blip sound
-      @blipsound = text.start_with?('[') ? 'text_robot' : 'text'
+      Logger.info $game_temp.message_text_unmodifed
+	  @voiceover_file = Voiceover.get_file($game_temp.message_text_unmodifed)
+	  if @voiceover_file.nil? || !Settings[:voiceover]
+		Logger.info "NOT FOUND"
+		# Determine blip sound
+		@blipsound = text.start_with?('[') ? 'text_robot' : 'text'
+	  else
+	  	@voiceover = true
+	  	Logger.info @voiceover_file
+	  end
 
       # Substitute variables, actors, player name, newlines, etc
       text.gsub!(/\\v\[([0-9]+)\]/) do
         $game_variables[$1.to_i]
       end
       #add a space to the beginning of the player name to better deal with longer names in asian languages
-      if (Language::FONT_WESTERN == Font.default_name)
+      if Language::FONT_WESTERN == Font.default_name
         text.gsub!("\\p", $game_oneshot.player_name)
       else
         text.gsub!("\\p", " " + $game_oneshot.player_name)
@@ -129,7 +139,6 @@ class Window_Message < Window_Selectable
       text.gsub!("\\.", "\001")
       text.gsub!("\\|", "\002")
       text.gsub!("\\>", "\004")
-
 
       text.gsub!("\\@", "\003")
       # Finally convert the backslash back
@@ -219,6 +228,10 @@ class Window_Message < Window_Selectable
         @skip_message_proc = true
       end
     end
+
+	if @voiceover and Settings[:voiceover]
+		Voiceover.play_voiceover(@voiceover_file)
+    end
   end
   #--------------------------------------------------------------------------
   # * Tick: render a new character to the message box
@@ -233,19 +246,21 @@ class Window_Message < Window_Selectable
     return if !@drawing_text
     
     @text_timer -= 1
-
-    if @blip >= BLIP_TIME
-      #april fools
-      if ($game_temp.message_face != nil && april_fools? && $game_temp.message_face.start_with?("niko"))
-        Audio.se_play("Audio/SE/cat_2", 50, rand(100..125)) unless @text.empty?
-      else
-        Audio.se_play("Audio/SE/#{@blipsound}", 50) unless @text.empty?
-      end
-      @blip = 0
-    else
-      @blip += 1
+	if @voiceover and Settings[:voiceover]
+		#meow
+	else
+    	if @blip >= BLIP_TIME
+      		#april fools
+      		if($game_temp.message_face != nil && april_fools? && $game_temp.message_face.start_with?("niko"))
+        		Audio.se_play("Audio/SE/cat_2", 50, rand(100..125)) unless @text.empty?
+	      	else
+    	    	Audio.se_play("Audio/SE/#{@blipsound}", 50) unless @text.empty?
+      		end
+      		@blip = 0
+    	else
+      		@blip += 1
+      	end
     end
-	
     autoMash = (Input.press?(Input::R) && $game_switches[253]) || (Settings[:debug] && Input.press?(Input::DEBUGACTION))
 
     # Get 1 text character in c (loop until unable to get text)

@@ -19,13 +19,13 @@ class Interpreter
       # End
       return false
     end
-
+	
     # Create full text string
     choices = false
-    text = @list[@index].parameters[0].strip
+	$game_temp.message_text_unmodifed = @list[@index].parameters[0]
 
     # Translate text
-    text = Language.tr(text).clone
+    text = Language.tr(@list[@index].parameters[0].strip).clone
 
     if text.start_with?('$')
       is_doc = true
