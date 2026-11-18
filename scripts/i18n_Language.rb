@@ -4,9 +4,6 @@
 # Classes for translating text similar to GNU gettext
 # Translator class: translate text to another language
 
-# for debug REMOVE BEFORE COMMITTING / BUILDING
-# require "zlib"
-
 class Language
   FONT_WESTERN = 'Terminus (TTF)'
   FONT_J = 'HigashiOme Gothic regular'

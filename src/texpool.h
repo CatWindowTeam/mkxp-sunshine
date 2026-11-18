@@ -26,7 +26,7 @@
 struct TexPoolPrivate;
 class TexPool{
 	public:
-		TexPool(conf.TexPool_maxMemSize);
+		TexPool();
 		~TexPool();
 		RenderTarget request(int width, int height);
 		void release(RenderTarget &obj);

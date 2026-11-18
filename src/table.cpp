@@ -30,11 +30,11 @@
 Table::Table(int x, int y /*= 1*/, int z /*= 1*/) : xs(x), ys(y), zs(z), data(x*y*z){}
 Table::Table(const Table &other) : xs(other.xs), ys(other.ys), zs(other.zs), data(other.data){}
 
-int16_t Table::get(int x, int y, int z) const{
+Sint16 Table::get(int x, int y, int z) const{
 	return data[xs*ys*z + xs*y + x];
 }
 
-void Table::set(int16_t value, int x, int y, int z){
+void Table::set(Sint16 value, int x, int y, int z){
 	if (x < 0 || x >= xs
 	||  y < 0 || y >= ys
 	||  z < 0 || z >= zs){
@@ -49,8 +49,7 @@ void Table::resize(int x, int y, int z){
 	if (x == xs && y == ys && z == zs)
 		return;
 
-	std::vector<int16_t> newData(x*y*z);
-
+	std::vector<Sint16> newData(x*y*z);
 	for (int k = 0; k < z; ++k)
 		for (int j = 0; j < y; ++j)
 			for (int i = 0; i < x; ++i)
@@ -61,7 +60,6 @@ void Table::resize(int x, int y, int z){
 	xs = x;
 	ys = y;
 	zs = z;
-
 	return;
 }
 
@@ -87,7 +85,6 @@ void Table::serialize(char *buffer) const{
 
 	if (ys > 1)
 		dim = 2;
-
 	if (zs > 1)
 		dim = 3;
 
@@ -96,8 +93,7 @@ void Table::serialize(char *buffer) const{
 	writeInt32(&buffer, ys);
 	writeInt32(&buffer, zs);
 	writeInt32(&buffer, size);
-
-	SDL_memcpy(buffer, dataPtr(data), sizeof(int16_t)*size);
+	SDL_memcpy(buffer, dataPtr(data), sizeof(Sint16)*size);
 }
 
 
@@ -118,7 +114,6 @@ Table *Table::deserialize(const char *data, int len){
 		crash(Exception::RGSSError, "Marshal: Table: bad file format");
 
 	Table *t = new Table(x, y, z);
-	SDL_memcpy(dataPtr(t->data), data, sizeof(int16_t)*size);
-
+	SDL_memcpy(dataPtr(t->data), data, sizeof(Sint16)*size);
 	return t;
 }

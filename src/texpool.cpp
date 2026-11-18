@@ -24,6 +24,7 @@
 #include "sharedstate.h"
 #include "meow.h"
 #include "util.h"
+#include "config.h"
 #include <list>
 #include <utility>
 #include <assert.h>
@@ -63,8 +64,8 @@ struct TexPoolPrivate{
 	TexPoolPrivate(Uint32 maxMemSize) : maxMemSize(maxMemSize), memSize(0), objCount(0), disabled(false){}
 };
 
-TexPool::TexPool(Uint32 maxMemSize){
-	p = new TexPoolPrivate(maxMemSize);
+TexPool::TexPool(){
+	p = new TexPoolPrivate(conf.TexPool_maxMemSize);
 }
 
 TexPool::~TexPool(){

@@ -695,33 +695,57 @@ static size_t layoutStride(VertexLayout layout){
 }
 
 static void convertVertices(VertexLayout layout, const Uint8 *src, size_t count, GpuVertex *dst){
-	const size_t stride = layoutStride(layout);
-	for (size_t i = 0; i < count; ++i){
-		GpuVertex &out = dst[i];
-		const Uint8 *p = src + i * stride;
+    const size_t stride = layoutStride(layout);
+    for (size_t i = 0; i < count; ++i) {
+        GpuVertex &out = dst[i];
+        const Uint8 *p = src + i * stride;
 
-		switch (layout){
-			case VertexLayout::Simple :
-				SVertex v;
-				SDL_memcpy(&v, p, sizeof(v));
-				out.x = v.pos.x; out.y = v.pos.y; out.u = v.texPos.x; out.v = v.texPos.y;
-				out.r = 0; out.g = 0; out.b = 0; out.a = 1;
-				break;
-			case VertexLayout::Color :
-				CVertex v;
-				SDL_memcpy(&v, p, sizeof(v));
-				out.x = v.pos.x; out.y = v.pos.y; out.u = 0; out.v = 0;
-				out.r = v.color.x; out.g = v.color.y; out.b = v.color.z; out.a = v.color.w;
-				break;
-			case VertexLayout::Full :
-				Vertex v;
-				SDL_memcpy(&v, p, sizeof(v));
-				out.x = v.pos.x; out.y = v.pos.y; out.u = v.texPos.x; out.v = v.texPos.y;
-				out.r = v.color.x; out.g = v.color.y; out.b = v.color.z; out.a = v.color.w;
-				break;
-		}
-	}
+        switch (layout) {
+        case VertexLayout::Simple: {
+            SVertex v;
+            SDL_memcpy(&v, p, sizeof(v));
+            out.x = v.pos.x;
+            out.y = v.pos.y;
+            out.u = v.texPos.x;
+            out.v = v.texPos.y;
+            out.r = 0;
+            out.g = 0;
+            out.b = 0;
+            out.a = 1;
+            break;
+        }
+
+        case VertexLayout::Color: {
+            CVertex v;
+            SDL_memcpy(&v, p, sizeof(v));
+            out.x = v.pos.x;
+            out.y = v.pos.y;
+            out.u = 0;
+            out.v = 0;
+            out.r = v.color.x;
+            out.g = v.color.y;
+            out.b = v.color.z;
+            out.a = v.color.w;
+            break;
+        }
+
+        case VertexLayout::Full: {
+            Vertex v;
+            SDL_memcpy(&v, p, sizeof(v));
+            out.x = v.pos.x;
+            out.y = v.pos.y;
+            out.u = v.texPos.x;
+            out.v = v.texPos.y;
+            out.r = v.color.x;
+            out.g = v.color.y;
+            out.b = v.color.z;
+            out.a = v.color.w;
+            break;
+        }
+        }
+    }
 }
+
 
 void GPURender::allocGeometry(GeometryHandle geom, size_t bytes, GeometryUsage){
 	GpuGeometry &g = *geometries.get(geom.id);

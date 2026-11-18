@@ -36,8 +36,8 @@ public:
 	int ySize() const { return ys; }
 	int zSize() const { return zs; }
 
-	Uint16 get(int x, int y = 0, int z = 0) const;
-	void set(Uint16 value, int x, int y = 0, int z = 0);
+	Sint16 get(int x, int y = 0, int z = 0) const;
+	void set(Sint16 value, int x, int y = 0, int z = 0);
 
 	void resize(int x, int y, int z);
 	void resize(int x, int y);
@@ -48,17 +48,16 @@ public:
 	static Table *deserialize(const char *data, int len);
 
 	/* <internal */
-	inline int16_t &at(int x, int y = 0, int z = 0){
+	inline Sint16 &at(int x, int y = 0, int z = 0){
 		int pos = xs*ys*z + xs*y + x; 
     	if (pos >= 0 && pos < data.size()) {
     	    return data[pos];
     	}
-    	static Uint16 dummy = 0;
-    	dummy = 0;
+    	static Sint16 dummy = 0;
     	return dummy; 
 	}
 
-	inline const Uint16 &at(int x, int y = 0, int z = 0) const{
+	inline const Sint16 &at(int x, int y = 0, int z = 0) const{
 		int pos = xs*ys*z + xs*y + x;
     	if (pos >= 0 && pos < data.size()) {
     	    return data[pos];

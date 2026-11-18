@@ -81,7 +81,6 @@ struct KbBinding : public Binding{
 /* Controller button binding */
 struct GcButtonBinding : public Binding{
 	GcButtonBinding() {}
-
 	bool sourceActive() const{
 		return EventThread::gcState.buttons[source];
 	}
@@ -254,13 +253,11 @@ struct InputPrivate {
 	std::vector<Binding*> bindings;
 
 	ButtonState stateArray[BUTTON_CODE_COUNT*2];
-
 	ButtonState *states;
 	ButtonState *statesOld;
 
 	Input::ButtonCode repeating;
 	float repeatCount;
-
 	bool triedExit;
 
 	struct{
@@ -341,7 +338,7 @@ struct InputPrivate {
 			bindings.push_back(&bind[i]);
 	}
 
-	void setBindingDescs(const std::vector<SourceDesc> &descs, const Input::ButtonCode &target){
+void setBindingDescs(const std::vector<SourceDesc> &descs, const Input::ButtonCode &target){
 		// cleaning
 		kbBindings.erase(
 		    std::remove_if(
@@ -459,6 +456,7 @@ struct InputPrivate {
 				break;
 			}
 		}
+		}
 
 		bindings.clear();
 
@@ -541,13 +539,13 @@ struct InputPrivate {
 				jsBBindings.push_back(bind);
 				break;
 			}
+			}
 		}
 
 		bindings.clear();
 
 		appendBindings(kbStatBindings);
 		appendBindings(msBindings);
-
 		appendBindings(kbBindings);
 		appendBindings(gcABindings);
 		appendBindings(gcBBindings);
