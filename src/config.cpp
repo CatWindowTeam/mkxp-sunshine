@@ -14,7 +14,7 @@ Config conf;
 	#include <SDL3/SDL_filesystem.h>
 	#include <SDL3/SDL_system.h>
 	#include <SDL3/SDL_stdinc.h>
-	
+
 	static std::string prefPath(const char *org, const char *app){
 		const char *path = SDL_GetPrefPath(org, app);
 		if(!path){
@@ -22,7 +22,7 @@ Config conf;
 		}
 		return path;
 	}
-	
+
 	void Config::read(int argc, char* argv[]) {
 		#if defined(mkxp_android) && !defined(TERMUX)
 			commonDataPath = SDL_GetAndroidInternalStoragePath();
@@ -31,7 +31,7 @@ Config conf;
 		#else
 			commonDataPath = prefPath("CatWindowTeam", "Sunshine");
 		#endif
-	
+
 		CLI::App a{"Engine of Sunshine"};
 		argv = a.ensure_utf8(argv);
 		a.add_option("-d,--debug", debugMode, "Debug mode");
@@ -50,7 +50,6 @@ Config conf;
 														   "implementations of this functionality, so disabling it can be used as a workaround");
 		a.add_option("--gameFolder", gameFolder, "Game Folder path");
 		a.add_option("--renderStats", renderStats, "Print render statistics once per second");
-		a.add_option("--allowSymlinks", allowSymlinks, "Allow symlinks for game assets to be followed");
 		a.add_option("--pathCache", pathCache, "Index all accesible assets via their lower case path (emulates windows case insensitivity)");
 		a.add_option("--JournalAddress", journal_address, "journal_address");
 		a.add_option("--JournalPort", journal_port, "journal_port");

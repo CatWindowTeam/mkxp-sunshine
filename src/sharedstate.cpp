@@ -79,7 +79,7 @@ struct SharedStatePrivate{
 	      sdlWindow(threadData->window),
 		  rubyDispatcher(),
 		  mainDispatcher(),
-	      fileSystem(conf.allowSymlinks),
+	      fileSystem(),
 	      eThread(*threadData->ethread),
 	      rtData(*threadData),
 	      render(createRender()),

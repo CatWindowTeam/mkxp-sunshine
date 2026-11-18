@@ -281,6 +281,8 @@ int main(int argc, char *argv[]) {
   	// anyfing
   	mount_assets_archive();
 
+	// some platforms can don't work properly with modloader 
+	//so if something we just disable it.
 	#ifdef SUNSHINE_MODLOADER
   		/* start modloader */
   		ModLoader(win);
@@ -311,7 +313,7 @@ int main(int argc, char *argv[]) {
   	if (rtData.rqTermAck) {
    		SDL_WaitThread(rgssThread, 0);
   	}else{
-    	SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, conf.windowTitle, "The RGSS script seems to be stuck and Sunshine will now force quit", win);
+    	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle, "The RGSS script seems to be stuck and Sunshine will now force quit", win);
   	}
 
   	if(!rtData.rgssErrorMsg.empty()) {

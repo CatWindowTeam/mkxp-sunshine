@@ -115,7 +115,6 @@ static void mrbBindingExecute() {
 			throw std::runtime_error("failed to allocate binding data");
 
 		mrbBindingInit(mrb);
-		
 		mrb_load_irep_buf_cxt(mrb, module_rpg_mrb, module_rpg_mrb_len, cxt);
 		if(mrb->exc){
 			mrb_print_backtrace(mrb);
@@ -123,7 +122,7 @@ static void mrbBindingExecute() {
 		}
 
 		MRBBindingData* bindingData = static_cast<MRBBindingData*>(mrb->ud);
-		if(!shState->fileSystem().exists("Scripts.mrb")){
+		if(!shState->fileSystem().exists("Data/Scripts.mrb")){
 			throw std::runtime_error("Unable to open Scripts.mrb");
 		}else{
 			// TODO: replace with PhysFS code code

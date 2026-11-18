@@ -24,7 +24,6 @@
 #include "audioplayback.h"
 #include "binding-utils.h"
 
-
 static const char *tag_to_cstr(mrb_state *mrb, mrb_value tag){
   if (mrb_symbol_p(tag)) {
     return mrb_sym_name(mrb, mrb_symbol(tag));

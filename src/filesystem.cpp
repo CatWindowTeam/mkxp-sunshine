@@ -235,11 +235,8 @@ struct FileSystemPrivate{
 	bool havePathCache;
 };
 
-FileSystem::FileSystem(bool allowSymlinks){
+FileSystem::FileSystem(){
 	p = new FileSystemPrivate;
-	p->havePathCache = false;
-	if(allowSymlinks)
-		PHYSFS_permitSymbolicLinks(1);
 }
 
 FileSystem::~FileSystem(){

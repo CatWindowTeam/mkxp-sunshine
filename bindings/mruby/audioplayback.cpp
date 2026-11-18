@@ -193,7 +193,7 @@ static mrb_value rb_playbackFadeIn(mrb_state *mrb, mrb_value self){
 	mrb_int loops;
 	mrb_float volume;
 	mrb_float pitch = 1.0;
-            
+
     mrb_int argc = mrb_get_args(mrb, "f|iff", &time, &loops, &volume, &pitch);
     switch(argc){
         case 1:{
@@ -235,7 +235,7 @@ void audioPlaybackBindingInit(mrb_state *mrb){
     mrb_define_method(mrb, audioplayback_klass, "clear_tags", rb_playbackClearTags, MRB_ARGS_NONE());
     mrb_define_method(mrb, audioplayback_klass, "group=", rb_playbackSetGroup, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, audioplayback_klass, "group", rb_playbackGetGroup, MRB_ARGS_NONE());
-	mrb_define_method(mrb, audioplayback_klass, "path", rb_audio_getPath, MRB_ARGS_NONE());
+    mrb_define_method(mrb, audioplayback_klass, "path", rb_audio_getPath, MRB_ARGS_NONE());
     mrb_define_method(mrb, audioplayback_klass, "loops=", rb_playbackSetLoops, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, audioplayback_klass, "loops", rb_playbackGetLoops, MRB_ARGS_NONE());
     mrb_define_method(mrb, audioplayback_klass, "volume=", rb_playbackSetVolume, MRB_ARGS_REQ(1));

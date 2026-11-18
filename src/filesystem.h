@@ -27,14 +27,11 @@ class SharedFontState;
 
 class FileSystem{
 public:
-	FileSystem(bool allowSymlinks);
+	FileSystem();
 	~FileSystem();
-
 	void addPath(const char *path);
-
 	/* Call these after the last 'addPath()' */
 	void createPathCache();
-
 	/* Scans "Fonts/" and creates inventory of
 	 * available font assets */
 	void initFontSets(SharedFontState &sfs);
@@ -52,7 +49,6 @@ public:
 	};
 
 	void openRead(OpenHandler &handler, const char *filename);
-
 	/* Circumvents extension supplementing */
 	void openReadRaw(SDL_IOStream* &ops, const char *filename);
 	/* Does not perform extension supplementing */

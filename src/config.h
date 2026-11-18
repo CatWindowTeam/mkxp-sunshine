@@ -25,7 +25,6 @@ struct Config {
     bool renderStats = false;
     bool subImageFix = false;
     bool enableBlitting = true;
-    bool allowSymlinks = false;
     bool pathCache = true;
     std::string journal_address = "127.0.0.1";
     int journal_port = 23821;
@@ -51,7 +50,7 @@ struct Config {
     #else
     	std::string customDataPath;
     	std::string commonDataPath;
-    	std::string gameFolder = ".";	
+    	std::string gameFolder = ".";
     #endif
     void read(int argc, char* argv[]);
 };
