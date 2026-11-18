@@ -112,15 +112,12 @@ class Window_Message < Window_Selectable
     # Pre-process text
     if $game_temp.message_text != nil && !$game_temp.message_text.empty?
       text = $game_temp.message_text
-      Logger.info $game_temp.message_text_unmodifed
 	  @voiceover_file = Voiceover.get_file($game_temp.message_text_unmodifed)
 	  if @voiceover_file.nil? || !Settings[:voiceover]
-		Logger.info "NOT FOUND"
 		# Determine blip sound
 		@blipsound = text.start_with?('[') ? 'text_robot' : 'text'
 	  else
 	  	@voiceover = true
-	  	Logger.info @voiceover_file
 	  end
 
       # Substitute variables, actors, player name, newlines, etc
