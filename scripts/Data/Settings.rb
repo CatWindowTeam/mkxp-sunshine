@@ -7,6 +7,7 @@ module Settings
 				:bgm_volume             => 100,
 				:sfx_volume             => 100,
 				:voiceover		        => false,
+				:voiceover_hidden		=> false,
 				:fight_crime_track      => false,
 				:old_reprise_song       => false,
 

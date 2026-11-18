@@ -5,39 +5,31 @@ class Voiceover
 		path = "Voiceover/#{lang}/index.txt"
 		if PhysFS.exist?(path)
 			load_voiceover(path)
-			Logger.info "Voiceover/#{lang}/index.txt found!"
-		else
-			@data = {}
-			Settings[:voiceover] = false
-			Logger.info "Voiceover/#{lang}/index.txt not found!"
 		end
     end
 
     def load_voiceover(path)
 	  @data = {}
-	  return unless PhysFS.exist?(path)
 	  
       msgid = nil
       file = nil
       @data = Hash.new
-      if PhysFS.exist?(path)
-        PhysFS.read(path).each_line do |line|
-          if line.start_with?("msgid ")
-            line = line[6..-1]
 
-            msgid = Language.unescape_string(line)
-          elsif line.start_with?("file ")
-            line = line[5..-1]
-            #unescape the string
-            file = Language.unescape_string(line)
-            lastLineWasMsgId = false
-            lastLineWasFile = true
-          else
-            if !(msgid.nil? || msgid.empty?)
-              @data[Oneshot::crc32(msgid)] = file
-              msgid = nil
-              file = nil
-            end
+      PhysFS.read(path).each_line do |line|
+        if line.start_with?("msgid ")
+          line = line[6..-1]
+          msgid = Language.unescape_string(line)
+        elsif line.start_with?("file ")
+          line = line[5..-1]
+          #unescape the string
+          file = Language.unescape_string(line)
+          lastLineWasMsgId = false
+          lastLineWasFile = true
+        else
+          if !(msgid.nil? || msgid.empty?)
+            @data[Oneshot::crc32(msgid)] = file
+            msgid = nil
+            file = nil
           end
         end
       end
