@@ -7,7 +7,6 @@ cmake . -B build/ "$@"
 cmake --build build/ "-j$(nproc)"
 
 cd journal/
-	bash download_journal_deps.sh
 	cmake . -B build/
 	cmake --build build/ "-j$(nproc)"
 cd ..
