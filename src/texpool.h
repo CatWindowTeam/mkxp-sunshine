@@ -21,17 +21,16 @@
 
 #pragma once
 #include "render/irender.h"
+#include "config.h"
 
 struct TexPoolPrivate;
-
 class TexPool{
-public:
-	TexPool(Uint32 maxMemSize = 20000000 /* 20 MB */);
-	~TexPool();
-
-	RenderTarget request(int width, int height);
-	void release(RenderTarget &obj);
-	void disable();
-private:
-	TexPoolPrivate *p;
+	public:
+		TexPool(conf.TexPool_maxMemSize);
+		~TexPool();
+		RenderTarget request(int width, int height);
+		void release(RenderTarget &obj);
+		void disable();
+	private:
+		TexPoolPrivate *p;
 };

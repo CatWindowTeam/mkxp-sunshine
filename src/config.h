@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <SDL3/SDL_stdinc.h>
 #include "define.h"
 
 struct Config {
@@ -29,6 +30,7 @@ struct Config {
     std::string journal_address = "127.0.0.1";
     int journal_port = 23821;
 	int journal_timeout = 500;
+	Uint32 TexPool_maxMemSize = 20000000;
 
     struct {
         std::string ModsDirPath = "mods";

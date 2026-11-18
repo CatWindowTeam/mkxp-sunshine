@@ -716,7 +716,7 @@ void Bitmap::clear(){
 
 static Uint32 &getPixelAt(SDL_Surface *surf, SDL_PixelFormatDetails *form, int x, int y){
 	size_t offset = x * form->bytes_per_pixel + y * surf->pitch;
-	Uint8 *bytes = (Uint64*) surf->pixels + offset;
+	Uint8 *bytes = (Uint8*) surf->pixels + offset;
 	return *((Uint32*) bytes);
 }
 
