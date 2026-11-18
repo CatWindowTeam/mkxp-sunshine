@@ -90,20 +90,16 @@ struct GcButtonBinding : public Binding{
 		return true;
 	}
 
-	uint8_t source;
+	Uint8 source;
 };
 
 /* Controller axis binding */
 struct GcAxisBinding : public Binding{
 	GcAxisBinding() {}
-
-	GcAxisBinding(uint8_t source, AxisDir dir, Input::ButtonCode target) : Binding(target),
-	      source(source),
-	      dir(dir){}
+	GcAxisBinding(Uint8 source, AxisDir dir, Input::ButtonCode target) : Binding(target), source(source), dir(dir){}
 
 	bool sourceActive() const{
 		int val = EventThread::gcState.axes[source];
-
 		if (dir == Negative)
 			return val < -JAXIS_THRESHOLD;
 		else /* dir == Positive */
@@ -114,7 +110,7 @@ struct GcAxisBinding : public Binding{
 		return true;
 	}
 
-	uint8_t source;
+	Uint8 source;
 	AxisDir dir;
 };
 
@@ -130,18 +126,16 @@ struct JsButtonBinding : public Binding{
 		return true;
 	}
 
-	uint8_t source;
+	Uint8 source;
 };
 
 /* Joystick axis binding */
 struct JsAxisBinding : public Binding{
 	JsAxisBinding() {}
-
-	JsAxisBinding(uint8_t source, AxisDir dir, Input::ButtonCode target) : Binding(target), source(source), dir(dir){}
+	JsAxisBinding(Uint8 source, AxisDir dir, Input::ButtonCode target) : Binding(target), source(source), dir(dir){}
 
 	bool sourceActive() const{
 		int val = EventThread::joyState.axes[source];
-
 		if (dir == Negative)
 			return val < -JAXIS_THRESHOLD;
 		else /* dir == Positive */
@@ -152,19 +146,14 @@ struct JsAxisBinding : public Binding{
 		return true;
 	}
 
-	uint8_t source;
+	Uint8 source;
 	AxisDir dir;
 };
 
 /* Joystick hat binding */
 struct JsHatBinding : public Binding{
 	JsHatBinding() {}
-
-	JsHatBinding(uint8_t source, uint8_t pos, Input::ButtonCode target)
-	    : Binding(target),
-	      source(source),
-	      pos(pos)
-	{}
+	JsHatBinding(Uint8 source, Uint8 pos, Input::ButtonCode target) : Binding(target), source(source), pos(pos){}
 
 	bool sourceActive() const{
 		/* For a diagonal input accept it as an input for both the axes */
@@ -175,14 +164,13 @@ struct JsHatBinding : public Binding{
 		return true;
 	}
 
-	uint8_t source;
-	uint8_t pos;
+	Uint8 source;
+	Uint8 pos;
 };
 
 /* Mouse button binding */
 struct MsBinding : public Binding{
 	MsBinding() {}
-
 	MsBinding(int buttonIndex, Input::ButtonCode target) : Binding(target), index(buttonIndex){}
 
 	bool sourceActive() const{
@@ -303,20 +291,15 @@ struct InputPrivate {
 
 		repeating = Input::None;
 		repeatCount = 0;
-
 		dir4Data.active = 0;
 		dir4Data.previous = Input::None;
-
 		dir8Data.active = 0;
-
 		triedExit = false;
-
 		mouseWheelState = { 0, 0 };
 	}
 
 	inline ButtonState &getStateCheck(int code){
 		int index;
-
 		if (code < 0 || (size_t) code > mapToIndexN-1)
 			index = 0;
 		else
@@ -346,7 +329,6 @@ struct InputPrivate {
 
 	void checkBindingChange(const RGSSThreadData &rtData){
 		BDescVec d;
-
 		if (!rtData.bindingUpdateMsg.poll(d))
 			return;
 
@@ -431,7 +413,6 @@ struct InputPrivate {
 				bind.source = src.d.scan;
 				bind.target = target;
 				kbBindings.push_back(bind);
-
 				break;
 			}
 			case CAxis :
@@ -441,7 +422,6 @@ struct InputPrivate {
 				bind.dir = src.d.ja.dir;
 				bind.target = target;
 				gcABindings.push_back(bind);
-
 				break;
 			}
 			case CButton :
@@ -450,7 +430,6 @@ struct InputPrivate {
 				bind.source = src.d.jb;
 				bind.target = target;
 				gcBBindings.push_back(bind);
-
 				break;
 			}
 			case JAxis :
@@ -460,7 +439,6 @@ struct InputPrivate {
 				bind.dir = src.d.ja.dir;
 				bind.target = target;
 				jsABindings.push_back(bind);
-
 				break;
 			}
 			case JHat :
@@ -470,7 +448,6 @@ struct InputPrivate {
 				bind.pos = src.d.jh.pos;
 				bind.target = target;
 				jsHBindings.push_back(bind);
-
 				break;
 			}
 			case JButton :
@@ -479,7 +456,6 @@ struct InputPrivate {
 				bind.source = src.d.jb;
 				bind.target = target;
 				jsBBindings.push_back(bind);
-
 				break;
 			}
 		}
@@ -488,7 +464,6 @@ struct InputPrivate {
 
 		appendBindings(kbStatBindings);
 		appendBindings(msBindings);
-
 		appendBindings(kbBindings);
 		appendBindings(gcABindings);
 		appendBindings(gcBBindings);
@@ -748,7 +723,6 @@ void Input::update(){
 		p->repeating = repeatCand;
 		p->repeatCount = 0;
 		p->getState(repeatCand).repeated = true;
-
 		return;
 	}
 
@@ -761,7 +735,6 @@ void Input::update(){
 			p->repeatCount = 11;
 
 		p->getState(p->repeating).repeated = repeated;
-
 		return;
 	}
 
@@ -794,13 +767,11 @@ int Input::dir8Value(){
 
 int Input::mouseX(){
 	RGSSThreadData &rtData = shState->rtData();
-
 	return (EventThread::mouseState.x - rtData.screenOffset.x) * rtData.sizeResoRatio.x;
 }
 
 int Input::mouseY(){
 	RGSSThreadData &rtData = shState->rtData();
-
 	return (EventThread::mouseState.y - rtData.screenOffset.y) * rtData.sizeResoRatio.y;
 }
 

@@ -1,4 +1,5 @@
 #include "render/backends.h"
+#include <SDL3/SDL_stdinc.h>
 #include "config.h"
 
 static IRender *activeInstance = 0;
@@ -30,7 +31,7 @@ std::vector<std::string> renderBackendOrder(){
 	return order;
 }
 
-uint64_t renderWindowFlags(){
+Uint64 renderWindowFlags(){
 	#ifdef RENDER_GPU
 		if(conf.renderer == "gpu")
 			return gpuWindowFlags();

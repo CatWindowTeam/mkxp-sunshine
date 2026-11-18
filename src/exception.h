@@ -24,16 +24,14 @@
 #include <string>
 
 struct Exception{
-	enum Type{
+	enum Type : Uint8{
 		RGSSError,
 		NoFileError,
 		IOError,
 		ShaderError,
-
 		/* Already defined by ruby */
 		TypeError,
 		ArgumentError,
-
 		/* New types introduced in mkxp */
 		PHYSFSError,
 		SDLError,

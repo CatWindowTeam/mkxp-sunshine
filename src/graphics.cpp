@@ -59,7 +59,7 @@
 struct PingPong{
 	IRender &render;
 	RenderTarget rt[2];
-	uint8_t srcInd, dstInd;
+	Uint8 srcInd, dstInd;
 	int screenW, screenH;
 
 	PingPong(IRender &render, int screenW, int screenH) : render(render), srcInd(0), dstInd(1), screenW(screenW), screenH(screenH){
@@ -266,17 +266,13 @@ private:
 #define NS_PER_S 1000000000
 
 struct FPSLimiter{
-	uint64_t lastTickCount;
-
+	Uint64 lastTickCount;
 	/* ticks per frame */
-	int64_t tpf;
-
+	Sint64 tpf;
 	/* Ticks per second */
-	const uint64_t tickFreq;
-
+	const Uint64 tickFreq;
 	/* Ticks per milisecond */
-	const uint64_t tickFreqMS;
-
+	const Uint64 tickFreqMS;
 	/* Ticks per nanosecond */
 	const double tickFreqNS;
 
@@ -285,29 +281,23 @@ struct FPSLimiter{
 	/* Data for frame timing adjustment */
 	struct{
 		/* Last tick count */
-		uint64_t last;
-
+		Uint64 last;
 		/* How far behind/in front we are for ideal frame timing */
-		int64_t idealDiff;
-
+		Sint64 idealDiff;
 		bool resetFlag;
 	} adj;
 
-	FPSLimiter(uint16_t desiredFPS)
-	    : lastTickCount(SDL_GetPerformanceCounter()),
-	      tickFreq(SDL_GetPerformanceFrequency()),
-	      tickFreqMS(tickFreq / 1000),
-	      tickFreqNS((double) tickFreq / NS_PER_S),
-	      disabled(false)
+	FPSLimiter(Uint16 desiredFPS) : lastTickCount(SDL_GetPerformanceCounter()),
+	      tickFreq(SDL_GetPerformanceFrequency()), tickFreqMS(tickFreq / 1000),
+	      tickFreqNS((double)tickFreq / NS_PER_S), disabled(false)
 	{
 		setDesiredFPS(desiredFPS);
-
 		adj.last = SDL_GetPerformanceCounter();
 		adj.idealDiff = 0;
 		adj.resetFlag = false;
 	}
 
-	void setDesiredFPS(uint16_t value){
+	void setDesiredFPS(Uint16 value){
 		tpf = tickFreq / value;
 	}
 
@@ -327,8 +317,8 @@ struct FPSLimiter{
 
 		delayTicks(toDelay);
 
-		uint64_t now = lastTickCount = SDL_GetPerformanceCounter();
-		int64_t diff = now - adj.last;
+		Uint64 now = lastTickCount = SDL_GetPerformanceCounter();
+		Sint64 diff = now - adj.last;
 		adj.last = now;
 
 		/* Recalculate our temporal position
@@ -357,10 +347,10 @@ struct FPSLimiter{
 	}
 
 private:
-	void delayTicks(uint64_t ticks){
+	void delayTicks(Uint64 ticks){
 #if defined(HAVE_NANOSLEEP)
 		struct timespec req;
-		uint64_t nsec = ticks / tickFreqNS;
+		Uint64 nsec = ticks / tickFreqNS;
 		req.tv_sec = nsec / NS_PER_S;
 		req.tv_nsec = nsec % NS_PER_S;
 		errno = 0;
@@ -410,8 +400,8 @@ struct GraphicsPrivate{
 	unsigned int frameCount;
 	int brightness;
 	bool smooth;
-	uint64_t lastTick;
-	uint64_t freq;
+	Uint64 lastTick;
+	Uint64 freq;
 	double deltaTime;
 
 	FPSLimiter fpsLimiter;
@@ -564,7 +554,7 @@ struct GraphicsPrivate{
 	}
 	
 	void updateDeltaTime(){
-		uint64_t now = SDL_GetPerformanceCounter();
+		Uint64 now = SDL_GetPerformanceCounter();
 		deltaTime = static_cast<double>((now - lastTick)) / static_cast<double>(freq);
 		lastTick = now;
 	}

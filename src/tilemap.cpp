@@ -135,7 +135,7 @@ static const int tsLaneW = tilesetW / 2;
  */
 
 /* Autotile animation */
-static const uint8_t atAnimation[16*4] = {
+static const Uint8 atAnimation[16*4] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -145,7 +145,7 @@ static const uint8_t atAnimation[16*4] = {
 static elementsN(atAnimation);
 
 /* Flash tiles pulsing opacity */
-static const uint8_t flashAlpha[] = {
+static const Uint8 flashAlpha[] = {
 	/* Fade in */
 	0x3C, 0x3C, 0x3C, 0x3C, 0x4B, 0x4B, 0x4B, 0x4B,
 	0x5A, 0x5A, 0x5A, 0x5A, 0x69, 0x69, 0x69, 0x69,
@@ -216,9 +216,9 @@ struct TilemapPrivate {
 		int efTilesetH;
 		/* Indices of usable
 		 * (not null, not disposed) autotiles */
-		std::vector<uint8_t> usableATs;
+		std::vector<Uint8> usableATs;
 		/* Indices of animated autotiles */
-		std::vector<uint8_t> animatedATs;
+		std::vector<Uint8> animatedATs;
 	} atlas;
 
 	int viewpW, viewpH;
@@ -239,12 +239,12 @@ struct TilemapPrivate {
 		GeometryHandle geom;
 		bool animated;
 		/* Animation state */
-		uint8_t frameIdx;
+		Uint8 frameIdx;
 		float aniIdx;
 	} tiles;
 
 	FlashMap flashMap;
-	uint8_t flashAlphaIdx;
+	Uint8 flashAlphaIdx;
 
 	/* Scene elements */
 	struct{
@@ -389,8 +389,8 @@ struct TilemapPrivate {
 
 	void updateAutotileInfo(){
 		/* Check if and which autotiles are animated */
-		std::vector<uint8_t> &usableATs = atlas.usableATs;
-		std::vector<uint8_t> &animatedATs = atlas.animatedATs;
+		std::vector<Uint8> &usableATs = atlas.usableATs;
+		std::vector<Uint8> &animatedATs = atlas.animatedATs;
 
 		usableATs.clear();
 		for (int i = 0; i < autotileCount; ++i){
@@ -465,7 +465,7 @@ struct TilemapPrivate {
 
 		/* Blit autotiles */
 		for (size_t i = 0; i < atlas.usableATs.size(); ++i){
-			const uint8_t atInd = atlas.usableATs[i];
+			const Uint8 atInd = atlas.usableATs[i];
 			Bitmap *autotile = autotiles[atInd];
 
 			int blitW = std::min(autotile->width(), atAreaW);
@@ -956,7 +956,7 @@ void Tilemap::update(){
 	if (!p->tiles.animated)
 		return;
 
-	p->tiles.frameIdx = atAnimation[static_cast<std::uint8_t>(p->tiles.aniIdx)];
+	p->tiles.frameIdx = atAnimation[static_cast<Uint8>(p->tiles.aniIdx)];
 	p->tiles.aniIdx += shState->graphics().deltaTime() * 60.0f;
 	if (p->tiles.aniIdx >= atAnimationN)
 		p->tiles.aniIdx = 0.0;

@@ -2,7 +2,7 @@
 #include "render/irender.h"
 
 #ifdef RENDER_GL_MKXP
-	uint64_t glWindowFlags();
+	Uint64 glWindowFlags();
 	void glSetupWindowAttributes();
 	bool glProbe(SDL_Window *window);
 	IRenderContext *createGLRenderContext(SDL_Window *window);
@@ -10,7 +10,7 @@
 #endif
 
 #ifdef RENDER_SIMPLE
-	uint64_t sdlWindowFlags();
+	Uint64 sdlWindowFlags();
 	void sdlSetupWindowAttributes();
 	bool sdlProbe(SDL_Window *window);
 	IRenderContext *createSDLRenderContext(SDL_Window *window);
@@ -18,7 +18,7 @@
 #endif
 
 #ifdef RENDER_GPU
-	uint64_t gpuWindowFlags();
+	Uint64 gpuWindowFlags();
 	void gpuSetupWindowAttributes();
 	bool gpuProbe(SDL_Window *window);
 	IRenderContext *createGPURenderContext(SDL_Window *window);

@@ -26,13 +26,12 @@ struct TexPoolPrivate;
 
 class TexPool{
 public:
-	TexPool(uint32_t maxMemSize = 20000000 /* 20 MB */);
+	TexPool(Uint32 maxMemSize = 20000000 /* 20 MB */);
 	~TexPool();
 
 	RenderTarget request(int width, int height);
 	void release(RenderTarget &obj);
 	void disable();
-
 private:
 	TexPoolPrivate *p;
 };

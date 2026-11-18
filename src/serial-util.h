@@ -20,7 +20,6 @@
 */
 
 #pragma once
-#include <stdint.h>
 #include <string.h>
 #include <SDL3/SDL_endian.h>
 

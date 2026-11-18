@@ -26,7 +26,7 @@
 #include "quad.h"
 #include "etc-internal.h"
 #include "signals/signal.h"
-#include <stdint.h>
+#include <SDL3/SDL_stdinc.h>
 #include <vector>
 
 static inline int wrap(int value, int range){
@@ -50,7 +50,7 @@ static inline Vec2i getTilePos(const Vec2i &pixelPos){
 	return (pixelPos & ~(32-1)) / 32;
 }
 
-enum AtSubPos{
+enum AtSubPos : Uint8{
 	TopLeft          = 0,
 	TopRight         = 1,
 	BottomLeft       = 2,
@@ -93,7 +93,7 @@ struct FlashMap{
 		dataCon.Disconnect();
 	}
 
-	Table *getData() const noexcept {
+	Table *getData() const {
 		return data;
 	}
 
@@ -142,7 +142,7 @@ private:
 		dirty = true;
 	}
 
-	size_t quadCount() const{
+	size_t quadCount() {
 		return vertices.size() / 4;
 	}
 
@@ -195,12 +195,9 @@ private:
 	}
 
 	bool dirty;
-
 	Table *data;
 	SignalConnection dataCon;
-
 	IntRect viewp;
-
 	GeometryHandle geom;
 	size_t allocQuads;
 	std::vector<CVertex> vertices;

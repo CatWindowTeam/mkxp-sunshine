@@ -1,4 +1,5 @@
 #pragma once
+#include <SDL3/SDL_stdinc.h>
 
 //    Name            In ruby const name
 #define SHADER_LIST(X) \
@@ -26,14 +27,14 @@
 	X(obscured,       Obscured) \
 	X(dynamicLight,   DynamicLight)
 
-enum ShaderType{
+enum ShaderType : Uint8 {
 #define DECLARE_ENUM(name, rb) SHADER_##name,
 	SHADER_LIST(DECLARE_ENUM)
 #undef DECLARE_ENUM
 	SHADER_COUNT
 };
 
-enum class EffectTexture{
+enum class EffectTexture {
 	Noise,
 	Obscured,
 	Current,

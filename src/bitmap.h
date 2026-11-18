@@ -64,14 +64,14 @@ public:
 
 	void hueChange(int hue);
 
-	enum TextAlign{
+	enum TextAlign : Uint8 {
 		Left = 0,
 		Center = 1,
 		Right = 2
 	};
 
-	void drawText(int x, int y, int width, int height, const char *str, int align = Left);
-	void drawText(const IntRect &rect, const char *str, int align = Left);
+	void drawText(int x, int y, int width, int height, const char *str, Uint8 align = Left);
+	void drawText(const IntRect &rect, const char *str, Uint8 align = Left);
 	
 	IntRect textSize(const char *str);
 

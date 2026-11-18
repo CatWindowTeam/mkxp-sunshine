@@ -51,7 +51,6 @@ public:
 	}
 
 	Signal<void()> wasDisposed;
-
 protected:
 	void guardDisposed() const{
 		if (isDisposed())

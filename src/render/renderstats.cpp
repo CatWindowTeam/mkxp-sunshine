@@ -31,7 +31,7 @@ void renderStatsEndSwap(){
 	if (!conf.renderStats)
 		return;
 
-	const uint64_t now = SDL_GetTicksNS();
+	const Uint64 now = SDL_GetTicksNS();
 	swapNs += now - swapStart;
 	lastSwapEnd = now;
 

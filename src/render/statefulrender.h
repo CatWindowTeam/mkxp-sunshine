@@ -1,5 +1,6 @@
 #pragma once
 #include "render/irender.h"
+#include <SDL3/SDL_stdinc.h>
 #include <memory>
 #include <vector>
 
@@ -17,26 +18,26 @@ struct StateProperty{
 template<typename T>
 class HandlePool{
 public:
-	uint32_t add(std::unique_ptr<T> item){
+	Uint32 add(std::unique_ptr<T> item){
 		if (freeIds.empty()){
 			items.push_back(std::move(item));
-			return (uint32_t) items.size();
+			return (Uint32)items.size();
 		}
 
-		uint32_t id = freeIds.back();
+		Uint32 id = freeIds.back();
 		freeIds.pop_back();
 		items[id-1] = std::move(item);
 		return id;
 	}
 
-	T *get(uint32_t id) const{
+	T *get(Uint32 id) const{
 		if (id == 0 || id > items.size())
 			return 0;
 
 		return items[id-1].get();
 	}
 
-	void remove(uint32_t id){
+	void remove(Uint32 id){
 		items[id-1].reset();
 		freeIds.push_back(id);
 	}
@@ -48,10 +49,9 @@ public:
 	T *at(size_t index) const{
 		return items[index].get();
 	}
-
 private:
 	std::vector<std::unique_ptr<T>> items;
-	std::vector<uint32_t> freeIds;
+	std::vector<Uint32> freeIds;
 };
 
 enum class BlendKind{
@@ -85,8 +85,7 @@ struct EffectUniforms{
 	float aniIndex;
 	float prog;
 	float vague;
-	uint32_t aux[4];
-
+	Uint32 aux[4];
 	EffectUniforms();
 };
 
@@ -97,36 +96,28 @@ void perspectiveMatrix(float out[16], int w, int h, float fovDegrees);
 class StatefulRender : public IRender{
 public:
 	explicit StatefulRender(const Config &conf);
-
 	void bindTexture(TexHandle tex);
 	void unbindTexture();
-
 	void setViewport(const IntRect &rect);
 	void pushViewport(const IntRect &rect);
 	void popViewport();
 	void refreshViewport();
-
 	void pushBlend(bool enabled);
 	void popBlend();
-
 	void pushBlendMode(BlendType mode);
 	void popBlendMode();
 	void setBlendOverride(BlendOverride mode);
 	void refreshBlendMode();
-
 	void pushScissorTest(bool enabled);
 	void popScissorTest();
-
 	void pushScissorBox(const IntRect &rect);
 	void saveScissorBox();
 	void intersectScissorBox(const IntRect &rect);
 	void popScissorBox();
 	void setScissorBox(const IntRect &rect);
 	const IntRect &scissorBox();
-
 	void pushClearColor(const Vec4 &color);
 	void popClearColor();
-
 	void useEffect(ShaderType effect);
 	void useBlurPass(int pass);
 	void applyViewportProj();
@@ -157,11 +148,9 @@ public:
 	void setLightSources(const std::vector<LightSource> &sources);
 	void setAmbient(float value);
 	void setScale(float value);
-
 protected:
 	EffectUniforms &uniforms();
 	void resetBlend();
-
 	StateProperty<IntRect> viewport;
 	StateProperty<bool> blend;
 	StateProperty<BlendType> blendModeProp;
@@ -169,12 +158,10 @@ protected:
 	StateProperty<IntRect> scissorBoxProp;
 	StateProperty<Vec4> clearColor;
 	BlendKind activeBlend;
-
-	uint32_t boundTexture;
+	Uint32 boundTexture;
 	std::vector<EffectUniforms> uniformSets;
 	int currentSlot;
 	int blurPass;
-
 	std::vector<LightSource> lights;
 	Vec2i cameraPos;
 	float ambient;

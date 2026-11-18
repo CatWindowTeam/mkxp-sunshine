@@ -1,7 +1,7 @@
 #pragma once
 #include "etc.h"
 #include "render/effects.h"
-#include <stdint.h>
+#include <SDL3/SDL_stdinc.h>
 #include <string>
 #include <vector>
 #include "config.h"
@@ -10,19 +10,20 @@ struct SDL_Surface;
 struct SDL_Window;
 
 struct TexHandle{
-	uint32_t id;
-
-	explicit TexHandle(uint32_t id = 0) : id(id) {}
-
-	bool valid() const { return id != 0; }
+	Uint32 id;
+	
+	explicit TexHandle(Uint32 id = 0) : id(id) {}
+	bool valid() const {
+		return id != 0;
+	}
 	bool operator==(const TexHandle &o) const { return id == o.id; }
 	bool operator!=(const TexHandle &o) const { return id != o.id; }
 };
 
 struct FboHandle{
-	uint32_t id;
+	Uint32 id;
 
-	explicit FboHandle(uint32_t id = 0) : id(id) {}
+	explicit FboHandle(Uint32 id = 0) : id(id) {}
 
 	bool valid() const { return id != 0; }
 	bool operator==(const FboHandle &o) const { return id == o.id; }
@@ -30,9 +31,9 @@ struct FboHandle{
 };
 
 struct GeometryHandle{
-	uint32_t id;
+	Uint32 id;
 
-	explicit GeometryHandle(uint32_t id = 0) : id(id) {}
+	explicit GeometryHandle(Uint32 id = 0) : id(id) {}
 
 	bool valid() const { return id != 0; }
 	bool operator==(const GeometryHandle &o) const { return id == o.id; }
@@ -49,23 +50,23 @@ struct RenderTarget{
 	bool operator==(const RenderTarget &o) const { return tex == o.tex && fbo == o.fbo; }
 };
 
-enum class PixelFormat{
+enum class PixelFormat : Uint8{
 	RGBA,
 	Luminance
 };
 
-enum class VertexLayout{
+enum class VertexLayout : Uint8{
 	Simple,
 	Color,
 	Full
 };
 
-enum class GeometryUsage{
+enum class GeometryUsage : Uint8{
 	Static,
 	Dynamic
 };
 
-enum class BlendOverride{
+enum class BlendOverride: Uint8{
 	ToneAdd,
 	ToneSubtract,
 	Overlay
@@ -180,7 +181,7 @@ public:
 	virtual ~IRenderContext() {}
 };
 
-uint64_t renderWindowFlags();
+Uint64 renderWindowFlags();
 void setupRenderWindowAttributes();
 std::vector<std::string> renderBackendOrder();
 bool probeRenderBackend(SDL_Window *window);

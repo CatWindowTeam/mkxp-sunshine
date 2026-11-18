@@ -48,7 +48,6 @@ public:
 	DECL_ATTR( Color,     Color& )
 	DECL_ATTR( Tone,      Tone&  )
 	void initDynAttribs();
-
 private:
 	void initViewport(int x, int y, unsigned int width, unsigned int height);
 	void geometryChanged();
@@ -62,7 +61,6 @@ private:
 
 	ViewportPrivate *p;
 	friend struct ViewportPrivate;
-
 	IntruListLink<Scene> sceneLink;
 };
 
@@ -71,7 +69,7 @@ public:
 	ViewportElement(Viewport *viewport = 0, int z = 0, int spriteY = 0);
 	DECL_ATTR( Viewport,  Viewport* )
 protected:
-	virtual void onViewportChange() {}
+	virtual void onViewportChange(){}
 private:
 	Viewport *m_viewport;
 };

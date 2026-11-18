@@ -74,7 +74,7 @@ static const Sides<IntRect> scrollArrowSrc = {
 };
 
 /* Cycling */
-static const uint8_t pauseAniQuad[] = {
+static const Uint8 pauseAniQuad[] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	1, 1, 1, 1, 1, 1, 1, 1,
 	2, 2, 2, 2, 2, 2, 2, 2,
@@ -84,7 +84,7 @@ static const uint8_t pauseAniQuad[] = {
 static elementsN(pauseAniQuad);
 
 /* No cycle */
-static const uint8_t pauseAniAlpha[] = {
+static const Uint8 pauseAniAlpha[] = {
 	0x00, 0x20, 0x40, 0x60,
 	0x80, 0xA0, 0xC0, 0xE0,
 	0xFF
@@ -196,7 +196,7 @@ struct WindowPrivate {
 	QuadChunk cursorVert;
 
 	float cursorAniAlphaTime;
-	uint8_t pauseAniAlphaIdx;
+	Uint8 pauseAniAlphaIdx;
 	float pauseAniQuadIdx;
 
 	bool controlsVertDirty;
@@ -434,7 +434,7 @@ struct WindowPrivate {
 		/* Pause animation */
 		if (pause){
 			pauseAniVert.vert = &vert[i*4];
-			i += Quad::setTexPosRect(&vert[i*4], pauseAniSrc[pauseAniQuad[static_cast<uint8_t>(pauseAniQuadIdx)]],
+			i += Quad::setTexPosRect(&vert[i*4], pauseAniSrc[pauseAniQuad[static_cast<Uint8>(pauseAniQuadIdx)]],
 			                         FloatRect((size.x - 16) / 2, size.y - 16, 16, 16));
 		}
 
@@ -561,7 +561,7 @@ struct WindowPrivate {
 
 		if (pause && pauseAniVert.vert){
 			float alpha = pauseAniAlpha[pauseAniAlphaIdx] / 255.0f;
-			FloatRect frameRect = pauseAniSrc[pauseAniQuad[static_cast<uint8_t>(pauseAniQuadIdx)]];
+			FloatRect frameRect = pauseAniSrc[pauseAniQuad[static_cast<Uint8>(pauseAniQuadIdx)]];
 			pauseAniVert.setAlpha(alpha/* * opacity.norm*/);
 			Quad::setTexRect(pauseAniVert.vert, frameRect);
 			updateArray = true;

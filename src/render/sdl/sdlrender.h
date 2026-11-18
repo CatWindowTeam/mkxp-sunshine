@@ -16,18 +16,16 @@
 
 	struct SdlGeometry{
 		VertexLayout layout;
-		std::vector<uint8_t> data;
+		std::vector<Uint8> data;
 	};
 
 	class SDLRender : public StatefulRender{
 	public:
 		SDLRender(const Config &conf, SDL_Renderer *renderer);
 		~SDLRender();
-
 		int maxTextureSize() const;
 		bool repeatNpotSupported() const;
 		const char *apiName() const;
-
 		TexHandle createTexture(int w, int h, PixelFormat fmt);
 		void resizeTexture(TexHandle tex, int w, int h, PixelFormat fmt);
 		void destroyTexture(TexHandle tex);
@@ -36,7 +34,6 @@
 		void uploadTexture(TexHandle tex, int w, int h, const void *pixels, PixelFormat fmt);
 		void uploadTextureRect(TexHandle tex, int x, int y, int w, int h, const void *pixels, PixelFormat fmt);
 		void uploadTextureRect(TexHandle tex, int dstX, int dstY, int w, int h, SDL_Surface *src, int srcX, int srcY);
-
 		RenderTarget createRenderTarget(int w, int h);
 		void resizeRenderTarget(RenderTarget &target, int w, int h);
 		void destroyRenderTarget(RenderTarget &target);
@@ -44,7 +41,6 @@
 		void bindScreenTarget();
 		void clear();
 		void readPixels(const RenderTarget &target, int w, int h, void *out);
-
 		GeometryHandle createGeometry(VertexLayout layout);
 		void destroyGeometry(GeometryHandle geom);
 		void allocGeometry(GeometryHandle geom, size_t bytes, GeometryUsage usage);
@@ -85,12 +81,12 @@
 		void flush();
 		void flushIfUses(SDL_Texture *tex);
 
-		SdlTexture *texture(uint32_t id);
+		SdlTexture *texture(Uint32 id);
 		void createSdlTexture(SdlTexture &tex, int w, int h);
 		void applyState();
 		SDL_BlendMode blendMode(bool forceBlend);
 		void submit(SdlTexture *tex, const Vertices &v, SDL_BlendMode mode, bool smooth);
-		void readTexture(SdlTexture &tex, std::vector<uint8_t> &out);
+		void readTexture(SdlTexture &tex, std::vector<Uint8> &out);
 		SDL_Texture *processTexture(SdlTexture &src, int effect, const EffectUniforms &u);
 		void drawTransition(const Vertices &v);
 		void drawTextureQuad(SdlTexture *tex, const SDL_Vertex corners[4], SDL_BlendMode mode, bool smooth);
@@ -106,7 +102,6 @@
 		SDL_Rect appliedClip;
 		HandlePool<SdlTexture> textures;
 		HandlePool<SdlGeometry> geometries;
-
 		SdlTexture *target;
 		int maxTexSize;
 		bool reverseSubtract;

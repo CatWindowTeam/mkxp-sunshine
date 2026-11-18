@@ -2,7 +2,6 @@
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
-
 #include "etc-internal.h"
 #include <string>
 #include "define.h"
@@ -13,17 +12,15 @@ class Oneshot{
 public:
 	Oneshot(RGSSThreadData &threadData);
 	~Oneshot();
-
 	//msgbox type codes
-	enum{
+	enum : Uint8{
 		MSG_INFO,
 		MSG_YESNO,
 		MSG_WARN,
 		MSG_ERR,
 	};
-
 	//Wallpaper style
-	enum{
+	enum : Uint8{
 		STYLE_NONE,
 		STYLE_TILE,
 		STYLE_CENTER,
@@ -32,9 +29,8 @@ public:
 		STYLE_FILL,
 		STYLE_SPAN,
 	};
-
 	//Wallpaper gradient
-	enum{
+	enum : Uint8{
 		GRADIENT_NONE,
 		GRADIENT_HORIZONTAL,
 		GRADIENT_VERTICAL,
@@ -48,11 +44,10 @@ public:
 	const std::string &docsPath() const;
 	const std::string &gamePath() const;
 	const std::string &journal() const;
-	const std::vector<uint8_t> &obscuredMap() const;
+	const std::vector<Uint8> &obscuredMap() const;
 	bool obscuredCleared() const;
 	bool allowExit() const;
 	bool exiting() const;
-
 	//Mutators
 	void setYesNo(const char *yes, const char *no);
 	void setExiting(bool exiting);
@@ -61,11 +56,9 @@ public:
 	void updateObscuredSize(int winW, int winH);
 	void updateObscured(int winX, int winY);
 	void resetObscured();
-
 	//Functions
 	bool msgbox(int type, const char *body, const char *title);
 	std::string textinput(const char* prompt, int char_limit, const char* fontName);
-
 	//Dirty flag for obscured texture
 	bool obscuredDirty;
 	#ifdef unix_like

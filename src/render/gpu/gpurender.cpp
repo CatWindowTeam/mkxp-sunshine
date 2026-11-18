@@ -1,75 +1,70 @@
 #ifdef RENDER_GPU
+	#include "gpurender.h"
+	#include "render/backends.h"
+	#include "config.h"
+	#include "render/renderstats.h"
+	#include "exception.h"
+	#include "debugwriter.h"
+	#include "sharedstate.h"
+	#include "graphics.h"
+	#include "vertex.h"
+	#include <SDL3/SDL_video.h>
+	#include <SDL3/SDL_surface.h>
+	#include <SDL3/SDL_stdinc.h>
+	#include <algorithm>
+	#include <math.h>
+	#include <string.h>
+	#ifdef SUNSHINE_GPU_SHADERS
+		#include "uber.vert.spv.xxd"
+		#include "uber.frag.spv.xxd"
+		#include "light.frag.spv.xxd"
+	#endif
 
-#include "gpurender.h"
-#include "render/backends.h"
-#include "config.h"
-#include "render/renderstats.h"
-#include "exception.h"
-#include "debugwriter.h"
-#include "sharedstate.h"
-#include "graphics.h"
-#include "vertex.h"
-
-#include <SDL3/SDL_video.h>
-#include <SDL3/SDL_surface.h>
-#include <algorithm>
-#include <math.h>
-#include <string.h>
-
-#ifdef SUNSHINE_GPU_SHADERS
-	#include "uber.vert.spv.xxd"
-	#include "uber.frag.spv.xxd"
-	#include "light.frag.spv.xxd"
-#endif
-
-static SDL_GPUDevice *createdDevice = 0;
-static SDL_Window *createdWindow = 0;
-
-static const int PipelineUber = 0;
-static const int PipelineLight = 1;
-static const int MaxQuadsPerDraw = 16000;
+	static SDL_GPUDevice *createdDevice = 0;
+	static SDL_Window *createdWindow = 0;
+	static const int PipelineUber = 0;
+	static const int PipelineLight = 1;
+	static const int MaxQuadsPerDraw = 16000;
 
 static bool usesTranslation(int effect){
 	switch (effect){
-	case SHADER_simple :
-	case SHADER_simpleColor :
-	case SHADER_simpleAlpha :
-	case SHADER_tilemap :
-	case SHADER_tilemapWater :
-	case SHADER_plane :
-	case SHADER_gray :
-	case SHADER_hue :
-	case SHADER_blt :
-	case SHADER_trans :
-	case SHADER_simpleTrans :
-	case SHADER_obscured :
-	case SHADER_water :
-	case SHADER_dynamicLight :
-	case SHADER_flashMap :
-		return true;
-
-	default :
-		return false;
+		case SHADER_simple :
+		case SHADER_simpleColor :
+		case SHADER_simpleAlpha :
+		case SHADER_tilemap :
+		case SHADER_tilemapWater :
+		case SHADER_plane :
+		case SHADER_gray :
+		case SHADER_hue :
+		case SHADER_blt :
+		case SHADER_trans :
+		case SHADER_simpleTrans :
+		case SHADER_obscured :
+		case SHADER_water :
+		case SHADER_dynamicLight :
+		case SHADER_flashMap :
+			return true;
+		default :
+			return false;
 	}
 }
 
 static bool usesSpriteMat(int effect){
 	switch (effect){
-	case SHADER_simpleSprite :
-	case SHADER_alphaSprite :
-	case SHADER_sprite :
-	case SHADER_worldMachine :
-	case SHADER_crt :
-		return true;
-
-	default :
-		return false;
+		case SHADER_simpleSprite :
+		case SHADER_alphaSprite :
+		case SHADER_sprite :
+		case SHADER_worldMachine :
+		case SHADER_crt :
+			return true;
+		default :
+			return false;
 	}
 }
 
 static SDL_GPUColorTargetBlendState blendState(GpuBlend blend){
 	SDL_GPUColorTargetBlendState s;
-	memset(&s, 0, sizeof(s));
+	SDL_memset(&s, 0, sizeof(s));
 
 	s.color_blend_op = SDL_GPU_BLENDOP_ADD;
 	s.alpha_blend_op = SDL_GPU_BLENDOP_ADD;
@@ -82,28 +77,24 @@ static SDL_GPUColorTargetBlendState blendState(GpuBlend blend){
 	switch (blend){
 	case GpuBlend::None :
 		break;
-
 	case GpuBlend::Normal :
 		s.src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA;
 		s.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
 		s.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
 		s.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
 		break;
-
 	case GpuBlend::KeepDestAlpha :
 		s.src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA;
 		s.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
 		s.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO;
 		s.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
 		break;
-
 	case GpuBlend::Addition :
 		s.src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA;
 		s.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
 		s.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
 		s.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
 		break;
-
 	case GpuBlend::Substraction :
 		s.src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA;
 		s.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
@@ -111,21 +102,18 @@ static SDL_GPUColorTargetBlendState blendState(GpuBlend blend){
 		s.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO;
 		s.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
 		break;
-
 	case GpuBlend::Multiply :
 		s.src_color_blendfactor = SDL_GPU_BLENDFACTOR_DST_COLOR;
 		s.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ZERO;
 		s.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO;
 		s.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
 		break;
-
 	case GpuBlend::ToneAdd :
 		s.src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
 		s.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
 		s.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO;
 		s.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
 		break;
-
 	case GpuBlend::ToneSubtract :
 		s.src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
 		s.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
@@ -133,7 +121,6 @@ static SDL_GPUColorTargetBlendState blendState(GpuBlend blend){
 		s.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO;
 		s.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
 		break;
-
 	case GpuBlend::Count :
 		break;
 	}
@@ -144,7 +131,6 @@ static SDL_GPUColorTargetBlendState blendState(GpuBlend blend){
 bool GPURender::PipelineKey::operator<(const PipelineKey &o) const{
 	if (pipeline != o.pipeline)
 		return pipeline < o.pipeline;
-
 	if (blend != o.blend)
 		return blend < o.blend;
 
@@ -222,7 +208,7 @@ GPURender::GPURender(const Config &conf, SDL_GPUDevice *device, SDL_Window *wind
 	SDL_GPUCopyPass *copy = SDL_BeginGPUCopyPass(cmd);
 	SDL_GPUTextureTransferInfo src = { transfer, 0, 1, 1 };
 	SDL_GPUTextureRegion dst;
-	memset(&dst, 0, sizeof(dst));
+	SDL_memset(&dst, 0, sizeof(dst));
 	dst.texture = dummy;
 	dst.w = 1;
 	dst.h = 1;
@@ -234,7 +220,6 @@ GPURender::GPURender(const Config &conf, SDL_GPUDevice *device, SDL_Window *wind
 
 	const char *driverName = SDL_GetGPUDeviceDriver(device);
 	apiNameStr = driverName ? driverName : "unknown";
-
 	setActiveRender(this);
 }
 
@@ -259,22 +244,16 @@ GPURender::~GPURender(){
 
 	if (vertexBuffer)
 		SDL_ReleaseGPUBuffer(device, vertexBuffer);
-
 	if (indexBuffer)
 		SDL_ReleaseGPUBuffer(device, indexBuffer);
-
 	if (uploadTransfer)
 		SDL_ReleaseGPUTransferBuffer(device, uploadTransfer);
-
 	if (dummy)
 		SDL_ReleaseGPUTexture(device, dummy);
-
 	if (vertexShader)
 		SDL_ReleaseGPUShader(device, vertexShader);
-
 	if (uberShader)
 		SDL_ReleaseGPUShader(device, uberShader);
-
 	if (lightShader)
 		SDL_ReleaseGPUShader(device, lightShader);
 }
@@ -291,7 +270,7 @@ bool GPURender::repeatNpotSupported() const{
 	return true;
 }
 
-GpuTexture *GPURender::texture(uint32_t id){
+GpuTexture *GPURender::texture(Uint32 id){
 	return textures.get(id);
 }
 
@@ -313,7 +292,7 @@ void GPURender::createGpuTexture(GpuTexture &tex, int w, int h){
 	tex.height = h;
 
 	SDL_GPUTextureCreateInfo info;
-	memset(&info, 0, sizeof(info));
+	SDL_memset(&info, 0, sizeof(info));
 	info.type = SDL_GPU_TEXTURETYPE_2D;
 	info.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
 	info.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET;
@@ -328,9 +307,9 @@ void GPURender::createGpuTexture(GpuTexture &tex, int w, int h){
 		Debug() << "[GPURender] cannot create texture" << w << h << SDL_GetError();
 }
 
-void GPURender::recordClear(uint32_t id, const Vec4 &color){
+void GPURender::recordClear(Uint32 id, const Vec4 &color){
 	GpuCommand c;
-	memset(&c, 0, sizeof(c));
+	SDL_memset(&c, 0, sizeof(c));
 	c.type = GpuCommand::Clear;
 	c.target = id;
 	c.clearColor[0] = color.x;
@@ -340,12 +319,12 @@ void GPURender::recordClear(uint32_t id, const Vec4 &color){
 	commands.push_back(c);
 }
 
-void GPURender::recordUpload(uint32_t id, int x, int y, int w, int h, std::vector<uint8_t> &data){
-	uploads.push_back(std::vector<uint8_t>());
+void GPURender::recordUpload(Uint32 id, int x, int y, int w, int h, std::vector<Uint8> &data){
+	uploads.push_back(std::vector<Uint8>());
 	uploads.back().swap(data);
 
 	GpuCommand c;
-	memset(&c, 0, sizeof(c));
+	SDL_memset(&c, 0, sizeof(c));
 	c.type = GpuCommand::Upload;
 	c.target = id;
 	c.payload = (int) uploads.size() - 1;
@@ -360,7 +339,7 @@ TexHandle GPURender::createTexture(int w, int h, PixelFormat){
 	std::unique_ptr<GpuTexture> tex(new GpuTexture);
 	createGpuTexture(*tex, w, h);
 
-	uint32_t id = textures.add(std::move(tex));
+	Uint32 id = textures.add(std::move(tex));
 
 	recordClear(id, Vec4(0, 0, 0, 0));
 	return TexHandle(id);
@@ -372,7 +351,6 @@ void GPURender::resizeTexture(TexHandle handle, int w, int h, PixelFormat){
 		return;
 
 	flush();
-
 	if (tex->texture)
 		SDL_ReleaseGPUTexture(device, tex->texture);
 
@@ -398,7 +376,7 @@ void GPURender::destroyTexture(TexHandle handle){
 
 void GPURender::releasePending(){
 	for (size_t i = 0; i < quarantine.size(); ++i){
-		uint32_t id = quarantine[i];
+		Uint32 id = quarantine[i];
 		GpuTexture *tex = textures.get(id);
 
 		if (tex && tex->texture)
@@ -412,14 +390,12 @@ void GPURender::releasePending(){
 
 void GPURender::setTextureSmooth(TexHandle handle, bool smooth){
 	boundTexture = handle.id;
-
 	if (GpuTexture *tex = texture(handle.id))
 		tex->smooth = smooth;
 }
 
 void GPURender::setTextureRepeat(TexHandle handle, bool repeat){
 	boundTexture = handle.id;
-
 	if (GpuTexture *tex = texture(handle.id))
 		tex->repeat = repeat;
 }
@@ -434,21 +410,19 @@ void GPURender::uploadTexture(TexHandle handle, int w, int h, const void *pixels
 
 void GPURender::uploadTextureRect(TexHandle handle, int x, int y, int w, int h, const void *pixels, PixelFormat fmt){
 	boundTexture = handle.id;
-
-	if (!texture(handle.id) || !pixels)
+	if(!texture(handle.id) || !pixels)
 		return;
 
-	std::vector<uint8_t> data((size_t) w * h * 4);
-
+	std::vector<Uint8> data((size_t) w * h * 4);
 	if (fmt == PixelFormat::Luminance){
-		const uint8_t *src = static_cast<const uint8_t*>(pixels);
+		const Uint8 *src = static_cast<const Uint8*>(pixels);
 
 		for (size_t i = 0; i < (size_t) w * h; ++i){
 			data[i*4+0] = data[i*4+1] = data[i*4+2] = src[i];
 			data[i*4+3] = 255;
 		}
 	}else{
-		memcpy(data.data(), pixels, data.size());
+		SDL_memcpy(data.data(), pixels, data.size());
 	}
 
 	recordUpload(handle.id, x, y, w, h, data);
@@ -456,15 +430,13 @@ void GPURender::uploadTextureRect(TexHandle handle, int x, int y, int w, int h, 
 
 void GPURender::uploadTextureRect(TexHandle handle, int dstX, int dstY, int w, int h, SDL_Surface *src, int srcX, int srcY){
 	boundTexture = handle.id;
-
 	if (!texture(handle.id))
 		return;
 
-	std::vector<uint8_t> data((size_t) w * h * 4);
-	const uint8_t *base = static_cast<const uint8_t*>(src->pixels);
-
+	std::vector<Uint8> data((size_t) w * h * 4);
+	const Uint8 *base = static_cast<const Uint8*>(src->pixels);
 	for (int row = 0; row < h; ++row)
-		memcpy(&data[(size_t) row * w * 4], base + (size_t) (srcY + row) * src->pitch + (size_t) srcX * 4, (size_t) w * 4);
+		SDL_memcpy(&data[(size_t) row * w * 4], base + (size_t) (srcY + row) * src->pitch + (size_t) srcX * 4, (size_t) w * 4);
 
 	recordUpload(handle.id, dstX, dstY, w, h, data);
 }
@@ -518,7 +490,7 @@ GpuBlend GPURender::currentBlend() const{
 }
 
 void GPURender::fillCommandState(GpuCommand &c, const EffectUniforms &u, int effect){
-	memset(&c.vertexParams, 0, sizeof(c.vertexParams));
+	SDL_memset(&c.vertexParams, 0, sizeof(c.vertexParams));
 	memset(&c.fragParams, 0, sizeof(c.fragParams));
 
 	if (usesSpriteMat(effect))
@@ -526,7 +498,7 @@ void GPURender::fillCommandState(GpuCommand &c, const EffectUniforms &u, int eff
 	else if (effect == SHADER_simpleMatrix)
 		multiplyMatrices(u.proj, u.matrix, c.vertexParams.xform);
 	else
-		memcpy(c.vertexParams.xform, u.proj, sizeof(float) * 16);
+		SDL_memcpy(c.vertexParams.xform, u.proj, sizeof(float) * 16);
 
 	const float invX = u.texSize.x != 0 ? 1.0f / u.texSize.x : 1.0f;
 	const float invY = u.texSize.y != 0 ? 1.0f / u.texSize.y : 1.0f;
@@ -581,7 +553,7 @@ void GPURender::pushDraw(const GpuCommand &c){
 		    && last.target == c.target && last.blend == c.blend
 		    && last.scissorOn == c.scissorOn
 		    && last.firstVertex + last.quadCount * 4 == c.firstVertex
-		    && last.quadCount + c.quadCount <= (uint32_t) MaxQuadsPerDraw
+		    && last.quadCount + c.quadCount <= (Uint32) MaxQuadsPerDraw
 		    && memcmp(&last.viewport, &c.viewport, sizeof(SDL_Rect)) == 0
 		    && memcmp(&last.scissor, &c.scissor, sizeof(SDL_Rect)) == 0
 		    && memcmp(&last.vertexParams, &c.vertexParams, sizeof(c.vertexParams)) == 0
@@ -597,7 +569,7 @@ void GPURender::pushDraw(const GpuCommand &c){
 	commands.push_back(c);
 }
 
-void GPURender::recordQuad(const GpuVertex verts[4], int effect, GpuBlend blendKind, const SDL_Rect &vp, bool scissor, const SDL_Rect &scissorRect, uint32_t targetTexture){
+void GPURender::recordQuad(const GpuVertex verts[4], int effect, GpuBlend blendKind, const SDL_Rect &vp, bool scissor, const SDL_Rect &scissorRect, Uint32 targetTexture){
 	GpuCommand c;
 	memset(&c, 0, sizeof(c));
 	c.type = GpuCommand::Draw;
@@ -607,10 +579,9 @@ void GPURender::recordQuad(const GpuVertex verts[4], int effect, GpuBlend blendK
 	c.viewport = vp;
 	c.scissorOn = scissor;
 	c.scissor = scissorRect;
-	c.firstVertex = (uint32_t) vertexStream.size();
+	c.firstVertex = (Uint32)vertexStream.size();
 	c.quadCount = 1;
 	fillCommandState(c, uniforms(), effect);
-
 	for (int i = 0; i < 4; ++i)
 		vertexStream.push_back(verts[i]);
 
@@ -619,7 +590,6 @@ void GPURender::recordQuad(const GpuVertex verts[4], int effect, GpuBlend blendK
 
 void GPURender::clear(){
 	const Vec4 &col = clearColor.current;
-
 	if (!scissorTest.current){
 		recordClear(targetId, col);
 		return;
@@ -628,7 +598,7 @@ void GPURender::clear(){
 	const Vec2i size = targetSize();
 
 	GpuCommand c;
-	memset(&c, 0, sizeof(c));
+	SDL_memset(&c, 0, sizeof(c));
 	c.type = GpuCommand::Draw;
 	c.target = targetId;
 	c.pipeline = PipelineUber;
@@ -636,7 +606,7 @@ void GPURender::clear(){
 	c.viewport = SDL_Rect{ 0, 0, size.x, size.y };
 	c.scissorOn = true;
 	c.scissor = scissorBoxProp.current;
-	c.firstVertex = (uint32_t) vertexStream.size();
+	c.firstVertex = (Uint32)vertexStream.size();
 	c.quadCount = 1;
 
 	orthoMatrix(c.vertexParams.xform, size.x, size.y);
@@ -648,11 +618,10 @@ void GPURender::clear(){
 	c.fragParams.color[3] = col.w;
 
 	GpuVertex v[4];
-	memset(v, 0, sizeof(v));
+	SDL_memset(v, 0, sizeof(v));
 	v[1].x = size.x;
 	v[2].x = size.x; v[2].y = size.y;
 	v[3].y = size.y;
-
 	for (int i = 0; i < 4; ++i){
 		v[i].r = col.x; v[i].g = col.y; v[i].b = col.z; v[i].a = col.w;
 		vertexStream.push_back(v[i]);
@@ -668,10 +637,10 @@ void GPURender::readPixels(const RenderTarget &rt, int w, int h, void *out){
 
 	flush();
 
-	const Uint32 size = (Uint32) ((size_t) tex->width * tex->height * 4);
+	const Uint32 size = (Uint32)((size_t) tex->width * tex->height * 4);
 
 	SDL_GPUTransferBufferCreateInfo binfo;
-	memset(&binfo, 0, sizeof(binfo));
+	SDL_memset(&binfo, 0, sizeof(binfo));
 	binfo.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD;
 	binfo.size = size;
 	SDL_GPUTransferBuffer *transfer = SDL_CreateGPUTransferBuffer(device, &binfo);
@@ -694,13 +663,12 @@ void GPURender::readPixels(const RenderTarget &rt, int w, int h, void *out){
 	SDL_WaitForGPUFences(device, true, &fence, 1);
 	SDL_ReleaseGPUFence(device, fence);
 
-	const uint8_t *src = static_cast<const uint8_t*>(SDL_MapGPUTransferBuffer(device, transfer, false));
-	uint8_t *dst = static_cast<uint8_t*>(out);
+	const Uint8 *src = static_cast<const Uint8*>(SDL_MapGPUTransferBuffer(device, transfer, false));
+	Uint8 *dst = static_cast<Uint8*>(out);
 	const int cw = std::min(w, tex->width);
 	const int ch = std::min(h, tex->height);
-
 	for (int y = 0; y < ch; ++y)
-		memcpy(dst + (size_t) y * w * 4, src + (size_t) y * tex->width * 4, (size_t) cw * 4);
+		SDL_memcpy(dst + (size_t) y * w * 4, src + (size_t) y * tex->width * 4, (size_t) cw * 4);
 
 	SDL_UnmapGPUTransferBuffer(device, transfer);
 	SDL_ReleaseGPUTransferBuffer(device, transfer);
@@ -709,7 +677,6 @@ void GPURender::readPixels(const RenderTarget &rt, int w, int h, void *out){
 GeometryHandle GPURender::createGeometry(VertexLayout layout){
 	std::unique_ptr<GpuGeometry> geom(new GpuGeometry);
 	geom->layout = layout;
-
 	return GeometryHandle(geometries.add(std::move(geom)));
 }
 
@@ -719,48 +686,39 @@ void GPURender::destroyGeometry(GeometryHandle geom){
 
 static size_t layoutStride(VertexLayout layout){
 	switch (layout){
-	case VertexLayout::Simple : return sizeof(SVertex);
-	case VertexLayout::Color  : return sizeof(CVertex);
-	case VertexLayout::Full   : return sizeof(Vertex);
+		case VertexLayout::Simple : return sizeof(SVertex);
+		case VertexLayout::Color  : return sizeof(CVertex);
+		case VertexLayout::Full   : return sizeof(Vertex);
 	}
 
 	return sizeof(Vertex);
 }
 
-static void convertVertices(VertexLayout layout, const uint8_t *src, size_t count, GpuVertex *dst){
+static void convertVertices(VertexLayout layout, const Uint8 *src, size_t count, GpuVertex *dst){
 	const size_t stride = layoutStride(layout);
-
 	for (size_t i = 0; i < count; ++i){
 		GpuVertex &out = dst[i];
-		const uint8_t *p = src + i * stride;
+		const Uint8 *p = src + i * stride;
 
 		switch (layout){
-		case VertexLayout::Simple :
-			{
+			case VertexLayout::Simple :
 				SVertex v;
-				memcpy(&v, p, sizeof(v));
+				SDL_memcpy(&v, p, sizeof(v));
 				out.x = v.pos.x; out.y = v.pos.y; out.u = v.texPos.x; out.v = v.texPos.y;
 				out.r = 0; out.g = 0; out.b = 0; out.a = 1;
 				break;
-			}
-
-		case VertexLayout::Color :
-			{
+			case VertexLayout::Color :
 				CVertex v;
-				memcpy(&v, p, sizeof(v));
+				SDL_memcpy(&v, p, sizeof(v));
 				out.x = v.pos.x; out.y = v.pos.y; out.u = 0; out.v = 0;
 				out.r = v.color.x; out.g = v.color.y; out.b = v.color.z; out.a = v.color.w;
 				break;
-			}
-
-		case VertexLayout::Full :
-			{
+			case VertexLayout::Full :
 				Vertex v;
-				memcpy(&v, p, sizeof(v));
+				SDL_memcpy(&v, p, sizeof(v));
 				out.x = v.pos.x; out.y = v.pos.y; out.u = v.texPos.x; out.v = v.texPos.y;
 				out.r = v.color.x; out.g = v.color.y; out.b = v.color.z; out.a = v.color.w;
 				break;
-			}
 		}
 	}
 }
@@ -768,7 +726,7 @@ static void convertVertices(VertexLayout layout, const uint8_t *src, size_t coun
 void GPURender::allocGeometry(GeometryHandle geom, size_t bytes, GeometryUsage){
 	GpuGeometry &g = *geometries.get(geom.id);
 	GpuVertex zero;
-	memset(&zero, 0, sizeof(zero));
+	SDL_memset(&zero, 0, sizeof(zero));
 	zero.a = 1;
 	g.vertices.assign(bytes / layoutStride(g.layout), zero);
 }
@@ -777,7 +735,7 @@ void GPURender::uploadGeometry(GeometryHandle geom, size_t bytes, const void *da
 	GpuGeometry &g = *geometries.get(geom.id);
 	const size_t count = bytes / layoutStride(g.layout);
 	g.vertices.resize(count);
-	convertVertices(g.layout, static_cast<const uint8_t*>(data), count, g.vertices.data());
+	convertVertices(g.layout, static_cast<const Uint8*>(data), count, g.vertices.data());
 }
 
 void GPURender::uploadGeometryRange(GeometryHandle geom, size_t offset, size_t bytes, const void *data){
@@ -785,18 +743,17 @@ void GPURender::uploadGeometryRange(GeometryHandle geom, size_t offset, size_t b
 	const size_t stride = layoutStride(g.layout);
 	const size_t first = offset / stride;
 	const size_t count = bytes / stride;
-
 	if (count == 0)
 		return;
 
 	if (g.vertices.size() < first + count){
 		GpuVertex zero;
-		memset(&zero, 0, sizeof(zero));
+		SDL_memset(&zero, 0, sizeof(zero));
 		zero.a = 1;
 		g.vertices.resize(first + count, zero);
 	}
 
-	convertVertices(g.layout, static_cast<const uint8_t*>(data), count, &g.vertices[first]);
+	convertVertices(g.layout, static_cast<const Uint8*>(data), count, &g.vertices[first]);
 }
 
 void GPURender::ensureQuadIndices(size_t quadCount){
@@ -823,13 +780,13 @@ void GPURender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 		c.viewport = viewport.current;
 		c.scissorOn = scissorTest.current;
 		c.scissor = scissorBoxProp.current;
-		c.firstVertex = (uint32_t) vertexStream.size();
-		c.quadCount = (uint32_t) chunk;
+		c.firstVertex = (Uint32)vertexStream.size();
+		c.quadCount = (Uint32)chunk;
 		fillCommandState(c, u, effect);
 
 		if (effect == SHADER_dynamicLight){
 			GpuLightParams lp;
-			memset(&lp, 0, sizeof(lp));
+			SDL_memset(&lp, 0, sizeof(lp));
 			lp.texSizeInv[0] = c.fragParams.texSizeInv[0];
 			lp.texSizeInv[1] = c.fragParams.texSizeInv[1];
 			lp.cameraPos[0] = cameraPos.x;
@@ -919,7 +876,7 @@ void GPURender::blitRect(const IntRect &src, const IntRect &dst, bool smooth){
 		std::swap(v0, v1);
 
 	GpuVertex verts[4];
-	memset(verts, 0, sizeof(verts));
+	SDL_memset(verts, 0, sizeof(verts));
 	verts[0].x = left;         verts[0].y = top;          verts[0].u = src.x;         verts[0].v = v0;
 	verts[1].x = left + width; verts[1].y = top;          verts[1].u = src.x + src.w; verts[1].v = v0;
 	verts[2].x = left + width; verts[2].y = top + height; verts[2].u = src.x + src.w; verts[2].v = v1;
@@ -932,7 +889,6 @@ void GPURender::blitRect(const IntRect &src, const IntRect &dst, bool smooth){
 	srcTex->smooth = wasSmooth || smooth;
 
 	recordQuad(verts, SHADER_simple, GpuBlend::None, viewport.current, scissorTest.current, scissorBoxProp.current, targetId);
-
 	srcTex->smooth = wasSmooth;
 }
 
@@ -943,7 +899,7 @@ void GPURender::endBlit(){
 SDL_GPUSampler *GPURender::samplerFor(int flags){
 	if (!samplers[flags]){
 		SDL_GPUSamplerCreateInfo info;
-		memset(&info, 0, sizeof(info));
+		SDL_memset(&info, 0, sizeof(info));
 		const SDL_GPUFilter filter = (flags & 1) ? SDL_GPU_FILTER_LINEAR : SDL_GPU_FILTER_NEAREST;
 		const SDL_GPUSamplerAddressMode mode = (flags & 2) ? SDL_GPU_SAMPLERADDRESSMODE_REPEAT : SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
 		info.min_filter = filter;
@@ -969,24 +925,24 @@ SDL_GPUGraphicsPipeline *GPURender::pipelineFor(int kind, GpuBlend blendKind, SD
 		return found->second;
 
 	SDL_GPUVertexBufferDescription vbd;
-	memset(&vbd, 0, sizeof(vbd));
+	SDL_memset(&vbd, 0, sizeof(vbd));
 	vbd.slot = 0;
 	vbd.pitch = sizeof(GpuVertex);
 	vbd.input_rate = SDL_GPU_VERTEXINPUTRATE_VERTEX;
 
 	SDL_GPUVertexAttribute attrs[3];
-	memset(attrs, 0, sizeof(attrs));
+	SDL_memset(attrs, 0, sizeof(attrs));
 	attrs[0].location = 0; attrs[0].format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2; attrs[0].offset = offsetof(GpuVertex, x);
 	attrs[1].location = 1; attrs[1].format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2; attrs[1].offset = offsetof(GpuVertex, u);
 	attrs[2].location = 2; attrs[2].format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4; attrs[2].offset = offsetof(GpuVertex, r);
 
 	SDL_GPUColorTargetDescription ctd;
-	memset(&ctd, 0, sizeof(ctd));
+	SDL_memset(&ctd, 0, sizeof(ctd));
 	ctd.format = format;
 	ctd.blend_state = blendState(blendKind);
 
 	SDL_GPUGraphicsPipelineCreateInfo info;
-	memset(&info, 0, sizeof(info));
+	SDL_memset(&info, 0, sizeof(info));
 	info.vertex_shader = vertexShader;
 	info.fragment_shader = kind == PipelineLight ? lightShader : uberShader;
 	info.vertex_input_state.vertex_buffer_descriptions = &vbd;
@@ -1012,7 +968,7 @@ SDL_GPUGraphicsPipeline *GPURender::pipelineFor(int kind, GpuBlend blendKind, SD
 struct GPURender::FlushState{
 	SDL_GPUCommandBuffer *cmd;
 	SDL_GPURenderPass *pass;
-	uint32_t passTarget;
+	Uint32 passTarget;
 	SDL_GPUGraphicsPipeline *lastPipeline;
 	SDL_GPUTexture *swapTexture;
 	Uint32 swapW;
@@ -1030,12 +986,12 @@ struct GPURender::ResolvedTarget{
 
 SDL_GPUTransferBuffer *GPURender::createUploadBuffer(const void *data, size_t size){
 	SDL_GPUTransferBufferCreateInfo info;
-	memset(&info, 0, sizeof(info));
+	SDL_memset(&info, 0, sizeof(info));
 	info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
-	info.size = (Uint32) size;
+	info.size = (Uint32)size;
 
 	SDL_GPUTransferBuffer *transfer = SDL_CreateGPUTransferBuffer(device, &info);
-	memcpy(SDL_MapGPUTransferBuffer(device, transfer, false), data, size);
+	SDL_memcpy(SDL_MapGPUTransferBuffer(device, transfer, false), data, size);
 	SDL_UnmapGPUTransferBuffer(device, transfer);
 	return transfer;
 }
@@ -1052,7 +1008,7 @@ void GPURender::ensureVertexCapacity(size_t bytes){
 		SDL_ReleaseGPUBuffer(device, vertexBuffer);
 
 	SDL_GPUBufferCreateInfo info;
-	memset(&info, 0, sizeof(info));
+	SDL_memset(&info, 0, sizeof(info));
 	info.usage = SDL_GPU_BUFFERUSAGE_VERTEX;
 	info.size = (Uint32) capacity;
 	vertexBuffer = SDL_CreateGPUBuffer(device, &info);
@@ -1064,21 +1020,21 @@ void GPURender::ensureIndexBuffer(size_t quads){
 		return;
 
 	size_t count = std::max<size_t>(quads, 256);
-	std::vector<uint16_t> indices(count * 6);
+	std::vector<Uint16> indices(count * 6);
 
 	for (size_t i = 0; i < count; ++i){
-		static const uint16_t pattern[6] = { 0, 1, 2, 2, 3, 0 };
+		static const Uint16 pattern[6] = { 0, 1, 2, 2, 3, 0 };
 		for (int j = 0; j < 6; ++j)
-			indices[i * 6 + j] = (uint16_t) (i * 4 + pattern[j]);
+			indices[i * 6 + j] = (Uint32) (i * 4 + pattern[j]);
 	}
 
 	if (indexBuffer)
 		SDL_ReleaseGPUBuffer(device, indexBuffer);
 
-	const Uint32 bytes = (Uint32) (indices.size() * sizeof(uint16_t));
+	const Uint32 bytes = (Uint32) (indices.size() * sizeof(Uint16));
 
 	SDL_GPUBufferCreateInfo info;
-	memset(&info, 0, sizeof(info));
+	SDL_memset(&info, 0, sizeof(info));
 	info.usage = SDL_GPU_BUFFERUSAGE_INDEX;
 	info.size = bytes;
 	indexBuffer = SDL_CreateGPUBuffer(device, &info);
@@ -1099,7 +1055,6 @@ void GPURender::ensureIndexBuffer(size_t quads){
 bool GPURender::prepareTransfer(){
 	size_t total = vertexStream.size() * sizeof(GpuVertex);
 	uploadOffsets.resize(uploads.size());
-
 	for (size_t i = 0; i < uploads.size(); ++i){
 		total = (total + 511) & ~(size_t) 511;
 		uploadOffsets[i] = total;
@@ -1118,7 +1073,7 @@ bool GPURender::prepareTransfer(){
 			SDL_ReleaseGPUTransferBuffer(device, uploadTransfer);
 
 		SDL_GPUTransferBufferCreateInfo info;
-		memset(&info, 0, sizeof(info));
+		SDL_memset(&info, 0, sizeof(info));
 		info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
 		info.size = (Uint32) capacity;
 		uploadTransfer = SDL_CreateGPUTransferBuffer(device, &info);
@@ -1126,7 +1081,6 @@ bool GPURender::prepareTransfer(){
 	}
 
 	Uint8 *mapped = static_cast<Uint8*>(SDL_MapGPUTransferBuffer(device, uploadTransfer, true));
-
 	if (!vertexStream.empty())
 		memcpy(mapped, vertexStream.data(), vertexStream.size() * sizeof(GpuVertex));
 
@@ -1160,11 +1114,11 @@ void GPURender::endPass(FlushState &s){
 	s.lastPipeline = 0;
 }
 
-void GPURender::beginPass(FlushState &s, const ResolvedTarget &r, uint32_t id, SDL_GPULoadOp loadOp, const float *color){
+void GPURender::beginPass(FlushState &s, const ResolvedTarget &r, Uint32 id, SDL_GPULoadOp loadOp, const float *color){
 	endPass(s);
 
 	SDL_GPUColorTargetInfo info;
-	memset(&info, 0, sizeof(info));
+	SDL_memset(&info, 0, sizeof(info));
 	info.texture = r.tex;
 	info.load_op = loadOp;
 	info.store_op = SDL_GPU_STOREOP_STORE;
@@ -1180,7 +1134,7 @@ void GPURender::beginPass(FlushState &s, const ResolvedTarget &r, uint32_t id, S
 	s.passTarget = id;
 }
 
-bool GPURender::resolveTarget(FlushState &s, uint32_t id, ResolvedTarget &out){
+bool GPURender::resolveTarget(FlushState &s, Uint32 id, ResolvedTarget &out){
 	if (id == 0){
 		if (!s.swapTried){
 			s.swapTried = true;
@@ -1215,13 +1169,13 @@ void GPURender::executeUpload(FlushState &s, const GpuCommand &c){
 	if (!tex || !tex->texture)
 		return;
 
-	const std::vector<uint8_t> &data = uploads[c.payload];
+	const std::vector<Uint8> &data = uploads[c.payload];
 	renderStatsUpload(data.size());
 
 	SDL_GPUCopyPass *copy = SDL_BeginGPUCopyPass(s.cmd);
 	SDL_GPUTextureTransferInfo src = { uploadTransfer, (Uint32) uploadOffsets[c.payload], (Uint32) c.rect.w, (Uint32) c.rect.h };
 	SDL_GPUTextureRegion dst;
-	memset(&dst, 0, sizeof(dst));
+	SDL_memset(&dst, 0, sizeof(dst));
 	dst.texture = tex->texture;
 	dst.x = c.rect.x;
 	dst.y = c.rect.y;
@@ -1235,7 +1189,6 @@ void GPURender::executeUpload(FlushState &s, const GpuCommand &c){
 void GPURender::executeDraw(FlushState &s, const GpuCommand &c, const ResolvedTarget &r){
 	if (!s.pass || s.passTarget != c.target)
 		beginPass(s, r, c.target, SDL_GPU_LOADOP_LOAD, 0);
-
 	if (c.viewport.w <= 0 || c.viewport.h <= 0)
 		return;
 
@@ -1296,7 +1249,7 @@ void GPURender::flush(){
 	ensureIndexBuffer(neededQuads);
 
 	FlushState s;
-	memset(&s, 0, sizeof(s));
+	SDL_memset(&s, 0, sizeof(s));
 	s.cmd = SDL_AcquireGPUCommandBuffer(device);
 	s.swapFormat = SDL_GetGPUSwapchainTextureFormat(device, window);
 
@@ -1338,25 +1291,17 @@ void GPURender::swapWindow(SDL_Window *){
 	renderStatsEndSwap();
 }
 
-void GPURender::suspendContext(SDL_Window *){
-}
-
-void GPURender::resumeContext(SDL_Window *){
-}
-
+void GPURender::suspendContext(SDL_Window *){}
+void GPURender::resumeContext(SDL_Window *){}
 static SDL_GPUDevice *probedDevice = 0;
 
 class GPURenderContext : public IRenderContext{
 public:
-	GPURenderContext(SDL_Window *window)
-	    : window(window)
-	{
+	GPURenderContext(SDL_Window *window) : window(window){
 		device = probedDevice;
 		probedDevice = 0;
-
 		if (!device)
 			device = SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_SPIRV, false, 0);
-
 		if (!device)
 			throw Exception(Exception::MKXPError, "Failed to create GPU device: %s", SDL_GetError());
 
@@ -1382,18 +1327,16 @@ public:
 		SDL_ReleaseWindowFromGPUDevice(device, window);
 		SDL_DestroyGPUDevice(device);
 	}
-
 private:
 	SDL_GPUDevice *device;
 	SDL_Window *window;
 };
 
-uint64_t gpuWindowFlags(){
+Uint64 gpuWindowFlags(){
 	return 0;
 }
 
-void gpuSetupWindowAttributes(){
-}
+void gpuSetupWindowAttributes(){}
 
 bool gpuProbe(SDL_Window *window){
 #ifdef SUNSHINE_GPU_SHADERS
@@ -1410,7 +1353,6 @@ bool gpuProbe(SDL_Window *window){
 	}
 
 	SDL_ReleaseWindowFromGPUDevice(probe, window);
-
 	if (probedDevice)
 		SDL_DestroyGPUDevice(probedDevice);
 
@@ -1429,5 +1371,4 @@ IRenderContext *createGPURenderContext(SDL_Window *window){
 IRender *createGPURender(const Config &conf){
 	return new GPURender(conf, createdDevice, createdWindow);
 }
-
 #endif

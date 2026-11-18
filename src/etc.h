@@ -26,7 +26,7 @@
 
 struct SDL_Color;
 
-enum BlendType{
+enum BlendType : Sint8{
 	BlendKeepDestAlpha = -1,
 	BlendNormal = 0,
 	BlendAddition = 1,
@@ -84,9 +84,7 @@ struct Color : public Serializable{
 };
 
 struct Tone : public Serializable{
-	Tone()
-	    : red(0), green(0), blue(0), gray(0)
-	{}
+	Tone() : red(0), green(0), blue(0), gray(0) {}
 
 	Tone(double red, double green, double blue, double gray = 0);
 	Tone(const Tone &o);
@@ -181,10 +179,9 @@ struct Rect : public Serializable{
 	int y;
 	int width;
 	int height;
-
+	
 	Signal<void()> valueChanged;
 };
-
 
 struct LightSource {
     float x;

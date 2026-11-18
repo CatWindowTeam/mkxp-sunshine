@@ -26,15 +26,14 @@
 #include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_gamepad.h>
 #include <SDL3/SDL_stdinc.h>
-#include <assert.h>
 #include <vector>
 
-enum AxisDir{
+enum AxisDir : Uint8 {
 	Negative,
 	Positive
 };
 
-enum SourceType{
+enum SourceType : Uint8 {
 	Invalid,
 	Key,
 	CButton,
@@ -45,24 +44,23 @@ enum SourceType{
 };
 
 struct SourceDesc{
-	SourceType type;
-
+	SourceType type = Invalid;
 	union Data{
 		/* Keyboard scancode */
 		SDL_Scancode scan;
 		/* Joystick button index */
-		uint8_t jb;
+		Uint8 jb;
 		struct{
 			/* Joystick axis index */
-			uint8_t axis;
+			Uint8 axis;
 			/* Joystick axis direction */
 			AxisDir dir;
 		} ja;
 		struct{
 			/* Joystick axis index */
-			uint8_t hat;
+			Uint8 hat;
 			/* Joystick axis direction */
-			uint8_t pos;
+			Uint8 pos;
 		} jh;
 	} d;
 
@@ -71,21 +69,18 @@ struct SourceDesc{
 			return false;
 
 		switch (type){
-		case Invalid:
-			return true;
-		case Key:
-			return d.scan == o.d.scan;
-		case CButton:
-		case JButton:
-			return d.jb == o.d.jb;
-		case CAxis:
-		case JAxis:
-			return (d.ja.axis == o.d.ja.axis) && (d.ja.dir == o.d.ja.dir);
-		case JHat:
-			return (d.jh.hat == o.d.jh.hat) && (d.jh.pos == o.d.jh.pos);
-		default:
-			assert(!"unreachable");
-			return false;
+			case Invalid:
+				return true;
+			case Key:
+				return d.scan == o.d.scan;
+			case CButton:
+			case JButton:
+				return d.jb == o.d.jb;
+			case CAxis:
+			case JAxis:
+				return (d.ja.axis == o.d.ja.axis) && (d.ja.dir == o.d.ja.dir);
+			case JHat:
+				return (d.jh.hat == o.d.jh.hat) && (d.jh.pos == o.d.jh.pos);
 		}
 	}
 

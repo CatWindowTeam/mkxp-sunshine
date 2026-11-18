@@ -21,355 +21,305 @@
 
 #pragma once
 #ifdef RENDER_GL_MKXP
+	#include "etc-internal.h"
+	#include "render/irender.h"
+	#include "gl-util.h"
+	#include "glstate.h"
 
-#include "etc-internal.h"
-#include "render/irender.h"
-#include "gl-util.h"
-#include "glstate.h"
+	class Shader{
+	public:
+		void bind() const;
+		static void unbind();
+		enum Attribute : Uint8{
+			Position = 0,
+			TexCoord = 1,
+			Color = 2
+		};
 
-class Shader{
-public:
-	void bind() const;
-	static void unbind();
-
-	enum Attribute{
-		Position = 0,
-		TexCoord = 1,
-		Color = 2
+	protected:
+		Shader();
+		~Shader();
+		void init(const unsigned char *vert, int vertSize, const unsigned char *frag, int fragSize, const char *vertName, const char *fragName, const char *programName);
+		void initFromFile(const char *vertFile, const char *fragFile, const char *programName);
+		static void setVec4Uniform(GLint location, const Vec4 &vec);
+		static void setTexUniform(GLint location, unsigned unitIndex, TexHandle texture);
+		GLuint vertShader, fragShader;
+		GLuint program;
 	};
 
-protected:
-	Shader();
-	~Shader();
+	class ShaderBase : public Shader{
+	public:
+		struct GLProjMat : public GLProperty<Vec2i>{
+			bool perspective = false;
+		private:
+			void apply(const Vec2i &value);
+			GLint u_mat;
+			friend class ShaderBase;
+		};
 
-	void init(const unsigned char *vert, int vertSize, const unsigned char *frag, int fragSize, const char *vertName, const char *fragName, const char *programName);
-	void initFromFile(const char *vertFile, const char *fragFile, const char *programName);
+		/* Stack is not used (only 'set()') */
+		GLProjMat projMat;
 
-	static void setVec4Uniform(GLint location, const Vec4 &vec);
-	static void setTexUniform(GLint location, unsigned unitIndex, TexHandle texture);
-
-	GLuint vertShader, fragShader;
-	GLuint program;
-};
-
-class ShaderBase : public Shader{
-public:
-	struct GLProjMat : public GLProperty<Vec2i>{
-		bool perspective = false;
-
+		/* Retrieves the current glState.viewport size,
+		 * calculates the corresponding ortho projection matrix
+		 * and loads it into the shaders uniform */
+		void applyViewportProj();
+		void applyPerspectiveProj();
+		void setTexSize(const Vec2i &value);
+		void setTranslation(const Vec2 &value);
+		void setTime(const float value);
+	protected:
+		void init();
+		GLint u_texSizeInv, u_translation;
 	private:
-		void apply(const Vec2i &value);
-		GLint u_mat;
-
-		friend class ShaderBase;
+		GLint u_uTime;
 	};
 
-	/* Stack is not used (only 'set()') */
-	GLProjMat projMat;
-
-	/* Retrieves the current glState.viewport size,
-	 * calculates the corresponding ortho projection matrix
-	 * and loads it into the shaders uniform */
-	void applyViewportProj();
-	void applyPerspectiveProj();
-
-	void setTexSize(const Vec2i &value);
-	void setTranslation(const Vec2 &value);
-	void setTime(const float value);
-
-protected:
-	void init();
-
-	GLint u_texSizeInv, u_translation;
-
-private:
-	GLint u_uTime;
-};
-
-class FlatColorShader : public ShaderBase{
-public:
-	FlatColorShader();
-
-	void setColor(const Vec4 &value);
-
-private:
-	GLint u_color;
-};
-
-class SimpleShader : public ShaderBase{
-public:
-	SimpleShader();
-	void setTexOffsetX(const int value);
-
-private:
-	GLint u_texOffsetX;
-};
-
-
-class DynamicLightShader : public ShaderBase{
-public:
-	DynamicLightShader();
-
-	void setScale(const float value);
-	void setWallMapTexture(TexHandle texture);
-	void setWallMapResolution(const int x, const int y);
-	void setCameraPosition(const int x, const int y);
-	void setTileMapOffset(const int x, const int y);
-	void setLightSources(const std::vector<LightSource> &sources);
-	void setAmbient(const float power);
-
-private:
-	GLint u_scale, u_wallMapTexture, u_wallMapResolution, u_cameraPosition, u_tileMapOffset, u_lightSources, u_lightSourcesCount, u_lightSourcesColors, u_ambientLight;
-	Vec2i cameraPositionCache;
-};
-
-class SimpleColorShader : public ShaderBase{
-public:
-	SimpleColorShader();
-};
-
-class SimpleAlphaShader : public ShaderBase{
-public:
-	SimpleAlphaShader();
-};
-
-class SimpleSpriteShader : public ShaderBase{
-public:
-	SimpleSpriteShader();
-
-	void setSpriteMat(const float value[16]);
-
-private:
-	GLint u_spriteMat;
-};
-
-class AlphaSpriteShader : public ShaderBase{
-public:
-	AlphaSpriteShader();
-
-	void setSpriteMat(const float value[16]);
-	void setAlpha(const float value);
-
-private:
-	GLint u_spriteMat, u_alpha;
-};
-
-class TransShader : public ShaderBase{
-public:
-	TransShader();
-
-	void setCurrentScene(TexHandle tex);
-	void setFrozenScene(TexHandle tex);
-	void setTransMap(TexHandle tex);
-	void setProg(const float value);
-	void setVague(const float value);
-
-private:
-	GLint u_currentScene, u_frozenScene, u_transMap, u_prog, u_vague;
-};
-
-class SimpleTransShader : public ShaderBase{
-public:
-	SimpleTransShader();
-
-	void setCurrentScene(TexHandle tex);
-	void setFrozenScene(TexHandle tex);
-	void setProg(const float value);
-
-private:
-	GLint u_currentScene, u_frozenScene, u_prog;
-};
-
-class SpriteShaderBase : public ShaderBase{
-public:
-	void SpriteShaderInit();
-
-	void setSpriteMat(const float value[16]);
-	void setTone(const Vec4 &value);
-	void setColor(const Vec4 &value);
-	void setModulate(const Vec4 &value);
-	void setOpacity(const float value);
-	void setBushDepth(const float value);
-	void setBushOpacity(const float value);
-
-private:
-	GLint u_spriteMat, u_tone, u_opacity, u_color, u_modulate, u_bushDepth, u_bushOpacity;
-};
-
-class SpriteShader : public SpriteShaderBase{
-public:
-	SpriteShader();
-};
-
-class WMShader : public SpriteShaderBase{
-public:
-	WMShader();
-};
-
-class WaterShader : public SpriteShaderBase{
-public:
-	WaterShader();
-
-	void setNoiseTexture(TexHandle texture);
-
-private:
-	GLint u_noiseTexture;
-};
-
-class CRTShader : public SpriteShaderBase{
-public:
-	CRTShader();
-};
-
-class TilemapWaterShader : public ShaderBase{
-public:
-	TilemapWaterShader();
-
-	void setAniIndex(int value);
-	void setOffset(const Vec2i &value);
-	void setNoiseTexture(TexHandle texture);
-
-private:
-	GLint u_aniIndex, u_offset, u_noiseTexture;
-};
-
-class PlaneShader : public ShaderBase{
-public:
-	PlaneShader();
-
-	void setTone(const Vec4 &value);
-	void setColor(const Vec4 &value);
-	void setFlash(const Vec4 &value);
-	void setOpacity(const float value);
-
-private:
-	GLint u_tone, u_color, u_flash, u_opacity;
-};
-
-class GrayShader : public ShaderBase{
-public:
-	GrayShader();
-	void setGray(const float value);
-
-private:
-	GLint u_gray;
-};
-
-class TilemapShader : public ShaderBase{
-public:
-	TilemapShader();
-
-	void setAniIndex(const int value);
-
-private:
-	GLint u_aniIndex;
-};
-
-class FlashMapShader : public ShaderBase{
-public:
-	FlashMapShader();
-
-	void setAlpha(const float value);
-
-private:
-	GLint u_alpha;
-};
-
-class HueShader : public ShaderBase{
-public:
-	HueShader();
-
-	void setHueAdjust(const float value);
-
-private:
-	GLint u_hueAdjust;
-};
-
-class SimpleMatrixShader : public ShaderBase{
-public:
-	SimpleMatrixShader();
-
-	void setMatrix(const float value[16]);
-
-private:
-	GLint u_matrix;
-};
-
-/* Gaussian blur */
-struct BlurShader{
-	class HPass : public ShaderBase{
+	class FlatColorShader : public ShaderBase{
 	public:
-		HPass();
+		FlatColorShader();
+		void setColor(const Vec4 &value);
+	private:
+		GLint u_color;
 	};
 
-	class VPass : public ShaderBase{
+	class SimpleShader : public ShaderBase{
 	public:
-		VPass();
+		SimpleShader();
+		void setTexOffsetX(const int value);
+	private:
+		GLint u_texOffsetX;
 	};
 
-	HPass pass1;
-	VPass pass2;
-};
+	class DynamicLightShader : public ShaderBase{
+		public:
+			DynamicLightShader();
+			void setScale(const float value);
+			void setWallMapTexture(TexHandle texture);
+			void setWallMapResolution(const int x, const int y);
+			void setCameraPosition(const int x, const int y);
+			void setTileMapOffset(const int x, const int y);
+			void setLightSources(const std::vector<LightSource> &sources);
+			void setAmbient(const float power);
+		private:
+			GLint u_scale, u_wallMapTexture, u_wallMapResolution, u_cameraPosition, u_tileMapOffset, u_lightSources, u_lightSourcesCount, u_lightSourcesColors, u_ambientLight;
+			Vec2i cameraPositionCache;
+	};
 
-class TilemapVXShader : public ShaderBase{
-public:
-	TilemapVXShader();
+	class SimpleColorShader : public ShaderBase{
+		public:
+			SimpleColorShader();
+	};
 
-	void setAniOffset(const Vec2 &value);
+	class SimpleAlphaShader : public ShaderBase{
+		public:
+			SimpleAlphaShader();
+	};
 
-private:
-	GLint u_aniOffset;
-};
+	class SimpleSpriteShader : public ShaderBase{
+		public:
+			SimpleSpriteShader();
+			void setSpriteMat(const float value[16]);
+		private:
+			GLint u_spriteMat;
+	};
 
-/* Bitmap blit */
-class BltShader : public ShaderBase{
-public:
-	BltShader();
+	class AlphaSpriteShader : public ShaderBase{
+	public:
+		AlphaSpriteShader();
+		void setSpriteMat(const float value[16]);
+		void setAlpha(const float value);
+	private:
+		GLint u_spriteMat, u_alpha;
+	};
 
-	void setSource();
-	void setDestination(const TexHandle value);
-	void setDestCoorF(const Vec2 &value);
-	void setSubRect(const FloatRect &value);
-	void setOpacity(const float value);
+	class TransShader : public ShaderBase{
+		public:
+			TransShader();
+			void setCurrentScene(TexHandle tex);
+			void setFrozenScene(TexHandle tex);
+			void setTransMap(TexHandle tex);
+			void setProg(const float value);
+			void setVague(const float value);
+		private:
+			GLint u_currentScene, u_frozenScene, u_transMap, u_prog, u_vague;
+	};
 
-private:
-	GLint u_source, u_destination, u_subRect, u_opacity;
-};
+	class SimpleTransShader : public ShaderBase{
+		public:
+			SimpleTransShader();
+			void setCurrentScene(TexHandle tex);
+			void setFrozenScene(TexHandle tex);
+			void setProg(const float value);
+		private:
+			GLint u_currentScene, u_frozenScene, u_prog;
+	};
 
-/* Obscured graphic */
-class ObscuredShader : public ShaderBase{
-public:
-	ObscuredShader();
-	void setObscured(const TexHandle value);
+	class SpriteShaderBase : public ShaderBase{
+		public:
+			void SpriteShaderInit();
+			void setSpriteMat(const float value[16]);
+			void setTone(const Vec4 &value);
+			void setColor(const Vec4 &value);
+			void setModulate(const Vec4 &value);
+			void setOpacity(const float value);
+			void setBushDepth(const float value);
+			void setBushOpacity(const float value);
+		private:
+			GLint u_spriteMat, u_tone, u_opacity, u_color, u_modulate, u_bushDepth, u_bushOpacity;
+	};
 
-private:
-	GLint u_obscured;
-};
+	class SpriteShader : public SpriteShaderBase{
+		public:
+			SpriteShader();
+	};
 
-struct ShaderSet{
-	FlatColorShader flatColor;
-	SimpleShader simple;
-	SimpleColorShader simpleColor;
-	SimpleAlphaShader simpleAlpha;
-	SimpleSpriteShader simpleSprite;
-	AlphaSpriteShader alphaSprite;
-	SpriteShader sprite;
-	WMShader worldMachine;
-	WaterShader water;
-	CRTShader crt;
-	TilemapWaterShader tilemapWater;
-	PlaneShader plane;
-	GrayShader gray;
-	TilemapShader tilemap;
-	FlashMapShader flashMap;
-	TransShader trans;
-	SimpleTransShader simpleTrans;
-	HueShader hue;
-	BltShader blt;
-	SimpleMatrixShader simpleMatrix;
-	BlurShader blur;
-	ObscuredShader obscured;
-	DynamicLightShader dynamicLight;
-};
+	class WMShader : public SpriteShaderBase{
+		public:
+			WMShader();
+	};
 
+	class WaterShader : public SpriteShaderBase{
+		public:
+			WaterShader();
+			void setNoiseTexture(TexHandle texture);
+		private:
+			GLint u_noiseTexture;
+	};
+
+	class CRTShader : public SpriteShaderBase{
+		public:
+			CRTShader();
+	};
+
+	class TilemapWaterShader : public ShaderBase{
+		public:
+			TilemapWaterShader();
+			void setAniIndex(int value);
+			void setOffset(const Vec2i &value);
+			void setNoiseTexture(TexHandle texture);
+		private:
+			GLint u_aniIndex, u_offset, u_noiseTexture;
+	};
+
+	class PlaneShader : public ShaderBase{
+		public:
+			PlaneShader();
+			void setTone(const Vec4 &value);
+			void setColor(const Vec4 &value);
+			void setFlash(const Vec4 &value);
+			void setOpacity(const float value);
+		private:
+			GLint u_tone, u_color, u_flash, u_opacity;
+	};
+
+	class GrayShader : public ShaderBase{
+		public:
+			GrayShader();
+			void setGray(const float value);
+		private:
+			GLint u_gray;
+	};
+
+	class TilemapShader : public ShaderBase{
+		public:
+			TilemapShader();
+			void setAniIndex(const int value);
+		private:
+			GLint u_aniIndex;
+	};
+
+	class FlashMapShader : public ShaderBase{
+		public:
+			FlashMapShader();
+			void setAlpha(const float value);
+		private:
+			GLint u_alpha;
+	};
+
+	class HueShader : public ShaderBase{
+		public:
+			HueShader();
+			void setHueAdjust(const float value);
+		private:
+			GLint u_hueAdjust;
+	};
+
+	class SimpleMatrixShader : public ShaderBase{
+		public:
+			SimpleMatrixShader();
+			void setMatrix(const float value[16]);
+		private:
+			GLint u_matrix;
+	};
+
+	/* Gaussian blur */
+	struct BlurShader{
+		class HPass : public ShaderBase{
+			public:
+				HPass();
+		};
+		class VPass : public ShaderBase{
+			public:
+				VPass();
+		};
+		HPass pass1;
+		VPass pass2;
+	};
+
+	class TilemapVXShader : public ShaderBase{
+		public:
+			TilemapVXShader();
+			void setAniOffset(const Vec2 &value);
+		private:
+			GLint u_aniOffset;
+	};
+
+	/* Bitmap blit */
+	class BltShader : public ShaderBase{
+		public:
+			BltShader();
+			void setSource();
+			void setDestination(const TexHandle value);
+			void setDestCoorF(const Vec2 &value);
+			void setSubRect(const FloatRect &value);
+			void setOpacity(const float value);
+		private:
+			GLint u_source, u_destination, u_subRect, u_opacity;
+	};
+
+	/* Obscured graphic */
+	class ObscuredShader : public ShaderBase{
+		public:
+			ObscuredShader();
+			void setObscured(const TexHandle value);
+		private:
+			GLint u_obscured;
+	};
+
+	struct ShaderSet{
+		FlatColorShader flatColor;
+		SimpleShader simple;
+		SimpleColorShader simpleColor;
+		SimpleAlphaShader simpleAlpha;
+		SimpleSpriteShader simpleSprite;
+		AlphaSpriteShader alphaSprite;
+		SpriteShader sprite;
+		WMShader worldMachine;
+		WaterShader water;
+		CRTShader crt;
+		TilemapWaterShader tilemapWater;
+		PlaneShader plane;
+		GrayShader gray;
+		TilemapShader tilemap;
+		FlashMapShader flashMap;
+		TransShader trans;
+		SimpleTransShader simpleTrans;
+		HueShader hue;
+		BltShader blt;
+		SimpleMatrixShader simpleMatrix;
+		BlurShader blur;
+		ObscuredShader obscured;
+		DynamicLightShader dynamicLight;
+	};
 #endif

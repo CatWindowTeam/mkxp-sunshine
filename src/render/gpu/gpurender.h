@@ -1,6 +1,5 @@
 #pragma once
 #ifdef RENDER_GPU
-
 #include "render/statefulrender.h"
 #include <SDL3/SDL_gpu.h>
 #include <map>
@@ -79,26 +78,26 @@ enum class GpuBlend{
 };
 
 struct GpuCommand{
-	enum Type{
+	enum Type : Uint8{
 		Draw,
 		Clear,
 		Upload
 	};
 
 	Type type;
-	uint32_t target;
+	Uint32 target;
 	int pipeline;
 	GpuBlend blend;
 	SDL_Rect viewport;
 	SDL_Rect scissor;
 	bool scissorOn;
-	uint32_t firstVertex;
-	uint32_t quadCount;
+	Uint32 firstVertex;
+	Uint32 quadCount;
 	GpuVertexParams vertexParams;
 	GpuFragParams fragParams;
 	int payload;
-	uint32_t tex[4];
-	uint8_t sampler[4];
+	Uint32 tex[4];
+	Uint8 sampler[4];
 	float clearColor[4];
 	SDL_Rect rect;
 };
@@ -167,14 +166,14 @@ private:
 		bool operator<(const PipelineKey &o) const;
 	};
 
-	GpuTexture *texture(uint32_t id);
+	GpuTexture *texture(Uint32 id);
 	void createGpuTexture(GpuTexture &tex, int w, int h);
 	void pushDraw(const GpuCommand &c);
-	void recordUpload(uint32_t id, int x, int y, int w, int h, std::vector<uint8_t> &data);
-	void recordClear(uint32_t id, const Vec4 &color);
+	void recordUpload(Uint32 id, int x, int y, int w, int h, std::vector<Uint8> &data);
+	void recordClear(Uint32 id, const Vec4 &color);
 	GpuBlend currentBlend() const;
 	void fillCommandState(GpuCommand &cmd, const EffectUniforms &u, int effect);
-	void recordQuad(const GpuVertex verts[4], int effect, GpuBlend blend, const SDL_Rect &viewport, bool scissor, const SDL_Rect &scissorRect, uint32_t target);
+	void recordQuad(const GpuVertex verts[4], int effect, GpuBlend blend, const SDL_Rect &viewport, bool scissor, const SDL_Rect &scissorRect, Uint32 target);
 	void flush();
 	void ensureVertexCapacity(size_t bytes);
 	void ensureIndexBuffer(size_t quads);
@@ -187,8 +186,8 @@ private:
 	SDL_GPUTransferBuffer *createUploadBuffer(const void *data, size_t size);
 	void uploadVertexStream(SDL_GPUCommandBuffer *cmd);
 	void endPass(FlushState &s);
-	void beginPass(FlushState &s, const ResolvedTarget &r, uint32_t id, SDL_GPULoadOp loadOp, const float *color);
-	bool resolveTarget(FlushState &s, uint32_t id, ResolvedTarget &out);
+	void beginPass(FlushState &s, const ResolvedTarget &r, Uint32 id, SDL_GPULoadOp loadOp, const float *color);
+	bool resolveTarget(FlushState &s, Uint32 id, ResolvedTarget &out);
 	void executeUpload(FlushState &s, const GpuCommand &c);
 	void executeDraw(FlushState &s, const GpuCommand &c, const ResolvedTarget &r);
 
@@ -202,20 +201,19 @@ private:
 	SDL_GPUTexture *dummy;
 
 	HandlePool<GpuTexture> textures;
-	std::vector<uint32_t> quarantine;
+	std::vector<Uint32> quarantine;
 	HandlePool<GpuGeometry> geometries;
 
 	GpuTexture *target;
-	uint32_t targetId;
+	Uint32 targetId;
 	int maxTexSize;
 	std::string apiNameStr;
 
 	std::vector<GpuCommand> commands;
 	std::vector<GpuVertex> vertexStream;
-	std::vector<std::vector<uint8_t>> uploads;
+	std::vector<std::vector<Uint8>> uploads;
 	std::vector<size_t> uploadOffsets;
 	std::vector<GpuLightParams> lightPool;
-
 	SDL_GPUBuffer *vertexBuffer;
 	size_t vertexCapacity;
 	SDL_GPUBuffer *indexBuffer;

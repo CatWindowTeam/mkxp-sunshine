@@ -40,7 +40,7 @@
 #include "binding.h"
 #include <map>
 
-uint8_t EventThread::keyStates[];
+Uint8 EventThread::keyStates[];
 EventThread::ControllerState EventThread::gcState;
 EventThread::JoyState EventThread::joyState;
 EventThread::MouseState EventThread::mouseState;
@@ -49,7 +49,7 @@ bool EventThread::mouseEnabled = true;
 bool EventThread::gamepadEnabled = true;
 
 /* User event codes */
-enum{
+enum : Uint8 {
 	REQUEST_SETFULLSCREEN = 0,
 	REQUEST_WINRESIZE,
 	REQUEST_WINMOVETO,
@@ -61,7 +61,7 @@ enum{
 	EVENT_COUNT
 };
 
-static uint32_t usrIdStart;
+static Uint32 usrIdStart;
 SDL_Gamepad* gc = nullptr;
 
 bool EventThread::allocUserEvents(){
@@ -498,8 +498,8 @@ void EventThread::notifyFrame(){
 	if (!fps.sendUpdates)
 		return;
 		
-	uint64_t current = SDL_GetPerformanceCounter();
-	uint64_t diff = current - fps.lastFrame;
+	Uint64 current = SDL_GetPerformanceCounter();
+	Uint64 diff = current - fps.lastFrame;
 	if(diff == 0){
 	    return;
 	}

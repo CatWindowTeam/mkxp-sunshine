@@ -1,5 +1,4 @@
 #ifdef RENDER_SIMPLE
-
 #include "sdlrender.h"
 #include "render/backends.h"
 #include "config.h"
@@ -78,11 +77,11 @@ static void hsvToRgb(float h, float s, float v, float &r, float &g, float &b){
 	b = hsvChannel(h, s, v, 1.0f / 3.0f);
 }
 
-static uint8_t toByte(float v){
-	return (uint8_t) (clamp01(v) * 255.0f + 0.5f);
+static Uint8 toByte(float v){
+	return (Uint8)(clamp01(v) * 255.0f + 0.5f);
 }
 
-static void applyHue(std::vector<uint8_t> &px, float hueAdjust){
+static void applyHue(std::vector<Uint8> &px, float hueAdjust){
 	for (size_t i = 0; i < px.size(); i += 4){
 		float h, s, v, r, g, b;
 		rgbToHsv(px[i] / 255.0f, px[i+1] / 255.0f, px[i+2] / 255.0f, h, s, v);
@@ -93,7 +92,7 @@ static void applyHue(std::vector<uint8_t> &px, float hueAdjust){
 	}
 }
 
-static void applyGray(std::vector<uint8_t> &px, float amount){
+static void applyGray(std::vector<Uint8> &px, float amount){
 	for (size_t i = 0; i < px.size(); i += 4){
 		const float luma = 0.299f * px[i] + 0.587f * px[i+1] + 0.114f * px[i+2];
 
@@ -102,20 +101,20 @@ static void applyGray(std::vector<uint8_t> &px, float amount){
 	}
 }
 
-static void applyBlur(const std::vector<uint8_t> &src, std::vector<uint8_t> &dst, int w, int h, bool vertical){
+static void applyBlur(const std::vector<Uint8> &src, std::vector<Uint8> &dst, int w, int h, bool vertical){
 	for (int y = 0; y < h; ++y){
 		for (int x = 0; x < w; ++x){
 			const int xa = vertical ? x : std::max(x - 1, 0);
 			const int xb = vertical ? x : std::min(x + 1, w - 1);
 			const int ya = vertical ? std::max(y - 1, 0) : y;
 			const int yb = vertical ? std::min(y + 1, h - 1) : y;
-			const uint8_t *a = &src[((size_t) ya * w + xa) * 4];
-			const uint8_t *m = &src[((size_t) y * w + x) * 4];
-			const uint8_t *b = &src[((size_t) yb * w + xb) * 4];
-			uint8_t *out = &dst[((size_t) y * w + x) * 4];
+			const Uint8 *a = &src[((size_t) ya * w + xa) * 4];
+			const Uint8 *m = &src[((size_t) y * w + x) * 4];
+			const Uint8 *b = &src[((size_t) yb * w + xb) * 4];
+			Uint8 *out = &dst[((size_t) y * w + x) * 4];
 
 			for (int c = 0; c < 4; ++c)
-				out[c] = (uint8_t) ((a[c] + m[c] + b[c] + 1) / 3);
+				out[c] = (Uint8) ((a[c] + m[c] + b[c] + 1) / 3);
 		}
 	}
 }
@@ -160,7 +159,7 @@ bool SDLRender::repeatNpotSupported() const{
 	return true;
 }
 
-SdlTexture *SDLRender::texture(uint32_t id){
+SdlTexture *SDLRender::texture(Uint32 id){
 	return textures.get(id);
 }
 
@@ -254,8 +253,8 @@ void SDLRender::uploadTextureRect(TexHandle handle, int x, int y, int w, int h, 
 	renderStatsUpload((size_t) w * h * 4);
 	SDL_Rect rect = { x, y, w, h };
 	if (fmt == PixelFormat::Luminance){
-		const uint8_t *src = static_cast<const uint8_t*>(pixels);
-		std::vector<uint8_t> expanded((size_t) w * h * 4);
+		const Uint8 *src = static_cast<const Uint8*>(pixels);
+		std::vector<Uint8> expanded((size_t) w * h * 4);
 		for (size_t i = 0; i < (size_t) w * h; ++i){
 			expanded[i*4+0] = expanded[i*4+1] = expanded[i*4+2] = src[i];
 			expanded[i*4+3] = 255;
@@ -276,7 +275,7 @@ void SDLRender::uploadTextureRect(TexHandle handle, int dstX, int dstY, int w, i
 	flushIfUses(tex->texture);
 	renderStatsUpload((size_t) w * h * 4);
 	SDL_Rect rect = { dstX, dstY, w, h };
-	const uint8_t *base = static_cast<const uint8_t*>(src->pixels) + (size_t) srcY * src->pitch + (size_t) srcX * 4;
+	const Uint8 *base = static_cast<const Uint8*>(src->pixels) + (size_t) srcY * src->pitch + (size_t) srcX * 4;
 	SDL_UpdateTexture(tex->texture, &rect, base, src->pitch);
 }
 
@@ -377,7 +376,7 @@ void SDLRender::clear(){
 		SDL_RenderClear(renderer);
 }
 
-void SDLRender::readTexture(SdlTexture &tex, std::vector<uint8_t> &out){
+void SDLRender::readTexture(SdlTexture &tex, std::vector<Uint8> &out){
 	flush();
 	out.assign((size_t) tex.width * tex.height * 4, 0);
 	if (!tex.texture)
@@ -400,13 +399,13 @@ void SDLRender::readTexture(SdlTexture &tex, std::vector<uint8_t> &out){
 		return;
 
 	for (int y = 0; y < tex.height; ++y)
-		memcpy(&out[(size_t) y * tex.width * 4], static_cast<uint8_t*>(conv->pixels) + (size_t) y * conv->pitch, (size_t) tex.width * 4);
+		memcpy(&out[(size_t) y * tex.width * 4], static_cast<Uint8*>(conv->pixels) + (size_t) y * conv->pitch, (size_t) tex.width * 4);
 
 	SDL_DestroySurface(conv);
 }
 
 SDL_Texture *SDLRender::processTexture(SdlTexture &src, int effect, const EffectUniforms &u){
-	std::vector<uint8_t> px;
+	std::vector<Uint8> px;
 	readTexture(src, px);
 
 	if (effect == SHADER_hue){
@@ -416,7 +415,7 @@ SDL_Texture *SDLRender::processTexture(SdlTexture &src, int effect, const Effect
 	}else if (effect == SHADER_sprite || effect == SHADER_plane){
 		applyGray(px, u.tone.w);
 	}else if (effect == SHADER_blur){
-		std::vector<uint8_t> out(px.size());
+		std::vector<Uint8> out(px.size());
 		applyBlur(px, out, src.width, src.height, blurPass != 0);
 		px.swap(out);
 	}
@@ -434,10 +433,10 @@ void SDLRender::readPixels(const RenderTarget &rt, int w, int h, void *out){
 	if (!tex)
 		return;
 
-	std::vector<uint8_t> data;
+	std::vector<Uint8> data;
 	readTexture(*tex, data);
 
-	uint8_t *dst = static_cast<uint8_t*>(out);
+	Uint8 *dst = static_cast<Uint8*>(out);
 	int cw = std::min(w, tex->width);
 	int ch = std::min(h, tex->height);
 
@@ -461,7 +460,7 @@ void SDLRender::allocGeometry(GeometryHandle geom, size_t bytes, GeometryUsage){
 }
 
 void SDLRender::uploadGeometry(GeometryHandle geom, size_t bytes, const void *data, GeometryUsage){
-	const uint8_t *src = static_cast<const uint8_t*>(data);
+	const Uint8 *src = static_cast<const Uint8*>(data);
 	geometries.get(geom.id)->data.assign(src, src + bytes);
 }
 
@@ -469,7 +468,7 @@ void SDLRender::uploadGeometryRange(GeometryHandle geom, size_t offset, size_t b
 	if (bytes == 0)
 		return;
 
-	std::vector<uint8_t> &buf = geometries.get(geom.id)->data;
+	std::vector<Uint8> &buf = geometries.get(geom.id)->data;
 	if (buf.size() < offset + bytes)
 		buf.resize(offset + bytes);
 
@@ -721,7 +720,7 @@ void SDLRender::drawQuads(GeometryHandle geom, size_t firstQuad, size_t quadCoun
 			break;
 
 		for (int i = 0; i < 4; ++i){
-			const uint8_t *src = &g.data[(q * 4 + i) * stride];
+			const Uint8 *src = &g.data[(q * 4 + i) * stride];
 			Vec2 pos;
 			Vec2 texPos;
 			Vec4 vcolor(0, 0, 0, 1);
@@ -995,7 +994,7 @@ private:
 	SDL_Renderer *renderer;
 };
 
-uint64_t sdlWindowFlags(){
+Uint64 sdlWindowFlags(){
 	return 0;
 }
 
@@ -1018,5 +1017,4 @@ bool sdlProbe(SDL_Window *window){
 	SDL_DestroyRenderer(probe);
 	return true;
 }
-
 #endif

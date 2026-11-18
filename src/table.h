@@ -20,9 +20,9 @@
 */
 
 #pragma once
+#include <SDL3/SDL_stdinc.h>
 #include "signals/signal.h"
 #include "serializable.h"
-#include <stdint.h>
 #include <vector>
 
 class Table : public Serializable{
@@ -36,8 +36,8 @@ public:
 	int ySize() const { return ys; }
 	int zSize() const { return zs; }
 
-	int16_t get(int x, int y = 0, int z = 0) const;
-	void set(int16_t value, int x, int y = 0, int z = 0);
+	Uint16 get(int x, int y = 0, int z = 0) const;
+	void set(Uint16 value, int x, int y = 0, int z = 0);
 
 	void resize(int x, int y, int z);
 	void resize(int x, int y);
@@ -53,12 +53,12 @@ public:
     	if (pos >= 0 && pos < data.size()) {
     	    return data[pos];
     	}
-    	static int16_t dummy = 0;
+    	static Uint16 dummy = 0;
     	dummy = 0;
     	return dummy; 
 	}
 
-	inline const int16_t &at(int x, int y = 0, int z = 0) const{
+	inline const Uint16 &at(int x, int y = 0, int z = 0) const{
 		int pos = xs*ys*z + xs*y + x;
     	if (pos >= 0 && pos < data.size()) {
     	    return data[pos];
@@ -68,8 +68,7 @@ public:
 	}
 
 	Signal<void()> modified;
-
 private:
 	int xs, ys, zs;
-	std::vector<int16_t> data;
+	std::vector<Sint16> data;
 };

@@ -30,16 +30,16 @@
 #include <string.h>
 #include <tsl/robin_map.h>
 #include <tsl/robin_set.h>
-typedef std::pair<uint16_t, uint16_t> Size;
+typedef std::pair<Uint16, Uint16> Size;
 
-static uint32_t byteCount(Size &s){
+static Uint32 byteCount(Size &s){
 	return s.first * s.second * 4;
 }
 
 struct CacheNode{
 	RenderTarget obj;
 	std::list<RenderTarget>::iterator prioIter;
-
+	
 	bool operator==(const CacheNode &o) const{
 		return obj == o.obj;
 	}
@@ -53,23 +53,17 @@ struct TexPoolPrivate{
 	/* Contains all cached render targets, sorted by release time */
 	std::list<RenderTarget> priorityQueue;
 	/* Maximal allowed cache memory */
-	const uint32_t maxMemSize;
+	const Uint32 maxMemSize;
 	/* Current amound of memory consumed by the cache */
-	uint32_t memSize;
+	Uint32 memSize;
 	/* Current amount of render targets cached */
-	uint16_t objCount;
+	Uint16 objCount;
 	/* Has this pool been disabled? */
 	bool disabled;
-
-	TexPoolPrivate(uint32_t maxMemSize)
-	    : maxMemSize(maxMemSize),
-	      memSize(0),
-	      objCount(0),
-	      disabled(false)
-	{}
+	TexPoolPrivate(Uint32 maxMemSize) : maxMemSize(maxMemSize), memSize(0), objCount(0), disabled(false){}
 };
 
-TexPool::TexPool(uint32_t maxMemSize){
+TexPool::TexPool(Uint32 maxMemSize){
 	p = new TexPoolPrivate(maxMemSize);
 }
 
@@ -124,8 +118,7 @@ void TexPool::release(RenderTarget &obj){
 	}
 
 	Size size(obj.width, obj.height);
-
-	uint32_t newMemSize = p->memSize + byteCount(size);
+	Uint32 newMemSize = p->memSize + byteCount(size);
 
 	/* If caching this object would spill over the allowed memory budget,
 	 * delete least used objects until we're good again */
@@ -145,7 +138,6 @@ void TexPool::release(RenderTarget &obj){
 		bucket.erase(toRemove);
 
 		p->priorityQueue.pop_back();
-
 		shState->render().destroyRenderTarget(last.obj);
 
 		newMemSize -= byteCount(removedSize);

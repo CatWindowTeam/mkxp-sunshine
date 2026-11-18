@@ -114,7 +114,7 @@ static const GcBindingData defaultGcBindings[] ={
 
 static elementsN(defaultGcBindings);
 
-static void addGcAxisBinding(BDescVec &d, uint8_t axis, AxisDir dir, Input::ButtonCode target){
+static void addGcAxisBinding(BDescVec &d, Uint8 axis, AxisDir dir, Input::ButtonCode target){
 	SourceDesc src;
 	src.type = CAxis;
 	src.d.ja.axis = axis;
@@ -129,10 +129,8 @@ static void addGcAxisBinding(BDescVec &d, uint8_t axis, AxisDir dir, Input::Butt
 
 BDescVec genDefaultBindings(){
 	BDescVec d;
-
 	for (size_t i = 0; i < defaultKbBindingsN; ++i)
 		defaultKbBindings[i].add(d);
-
 	for (size_t i = 0; i < defaultGcBindingsN; ++i)
 		defaultGcBindings[i].add(d);
 
@@ -142,15 +140,14 @@ BDescVec genDefaultBindings(){
 	addGcAxisBinding(d, SDL_GAMEPAD_AXIS_LEFTY,        Positive, Input::Down      );
 	addGcAxisBinding(d, SDL_GAMEPAD_AXIS_LEFT_TRIGGER,  Positive, Input::Deactivate);
 	addGcAxisBinding(d, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER, Positive, Input::Run       );
-
 	return d;
 }
 
 #define FORMAT_VER 0
 
 struct Header{
-	uint32_t formVer;
-	uint32_t count;
+	Uint32 formVer;
+	Uint32 count;
 };
 
 static void buildPath(const std::string &dir, char *out, size_t outSize){
@@ -281,8 +278,7 @@ static bool readBindings(BDescVec &out, const std::string &dir){
 }
 
 BDescVec loadBindings(){
-	BDescVec d;
-	
+	BDescVec d;	
 	if (readBindings(d, conf.customDataPath))
 		return d;
 	if (readBindings(d, conf.commonDataPath))

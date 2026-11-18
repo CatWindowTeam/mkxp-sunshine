@@ -714,10 +714,10 @@ void Bitmap::clear(){
 	p->onModified();
 }
 
-static uint32_t &getPixelAt(SDL_Surface *surf, SDL_PixelFormatDetails *form, int x, int y){
+static Uint32 &getPixelAt(SDL_Surface *surf, SDL_PixelFormatDetails *form, int x, int y){
 	size_t offset = x * form->bytes_per_pixel + y * surf->pitch;
-	uint8_t *bytes = (uint8_t*) surf->pixels + offset;
-	return *((uint32_t*) bytes);
+	Uint8 *bytes = (Uint64*) surf->pixels + offset;
+	return *((Uint32*) bytes);
 }
 
 Color Bitmap::getPixel(int x, int y) const{
@@ -731,7 +731,7 @@ Color Bitmap::getPixel(int x, int y) const{
 		p->render.readPixels(p->target, width(), height(), p->surface->pixels);
 	}
 
-	uint32_t pixel = getPixelAt(p->surface, p->format, x, y);
+	Uint32 pixel = getPixelAt(p->surface, p->format, x, y);
 
 	return Color((pixel >> p->format->Rshift) & 0xFF,
 	             (pixel >> p->format->Gshift) & 0xFF,
@@ -747,11 +747,11 @@ void Bitmap::setPixel(int x, int y, const Color &color){
 		return;
 	}
 
-	uint8_t pixel[] = {
-		(uint8_t) clamp<double>(color.red,   0, 255),
-		(uint8_t) clamp<double>(color.green, 0, 255),
-		(uint8_t) clamp<double>(color.blue,  0, 255),
-		(uint8_t) clamp<double>(color.alpha, 0, 255)
+	Uint8 pixel[] = {
+		(Uint8)clamp<double>(color.red,   0, 255),
+		(Uint8)clamp<double>(color.green, 0, 255),
+		(Uint8)clamp<double>(color.blue,  0, 255),
+		(Uint8)clamp<double>(color.alpha, 0, 255)
 	};
 
 	p->render.uploadTextureRect(p->target.tex, x, y, 1, 1, &pixel);
@@ -761,7 +761,7 @@ void Bitmap::setPixel(int x, int y, const Color &color){
 	 * whole cached surface; we can just apply the same change */
 
 	if (p->surface){
-		uint32_t &surfPixel = getPixelAt(p->surface, p->format, x, y);
+		Uint32 &surfPixel = getPixelAt(p->surface, p->format, x, y);
 		surfPixel = SDL_MapSurfaceRGBA(p->surface, pixel[0], pixel[1], pixel[2], pixel[3]);
 	}
 
@@ -796,7 +796,7 @@ void Bitmap::hueChange(int hue){
 	p->onModified();
 }
 
-void Bitmap::drawText(int x, int y, int width, int height, const char *str, int align) {
+void Bitmap::drawText(int x, int y, int width, int height, const char *str, Uint8 align) {
 	drawText(IntRect(x, y, width, height), str, align);
 }
 
@@ -829,19 +829,19 @@ static void applyShadow(SDL_Surface *&in, const SDL_PixelFormatDetails* fm, cons
 	for (int y = 0; y < in->h+1; ++y)
 		for (int x = 0; x < in->w+1; ++x){
 			/* src: input pixel, shd: shadow pixel */
-			uint32_t src = 0, shd = 0;
+			Uint32 src = 0, shd = 0;
 
 			/* Output pixel location */
-			uint32_t *outP = ((uint32_t*) ((uint8_t*) out->pixels + y*out->pitch)) + x;
+			Uint32 *outP = ((Uint32*) ((Uint8*) out->pixels + y*out->pitch)) + x;
 
 			if (y < in->h && x < in->w)
-				src = ((uint32_t*) ((uint8_t*) in->pixels + y*in->pitch))[x];
+				src = ((Uint32*) ((Uint8*) in->pixels + y*in->pitch))[x];
 
 			if (y > 0 && x > 0)
-				shd = ((uint32_t*) ((uint8_t*) in->pixels + (y-1)*in->pitch))[x-1];
+				shd = ((Uint32*) ((Uint8*) in->pixels + (y-1)*in->pitch))[x-1];
 
 			/* Set shadow pixel RGB values to 0 (black) */
-			shd &= (uint32_t)fm->Amask;
+			shd &= (Uint32)fm->Amask;
 
 			if (x == 0 || y == 0){
 				*outP = src;
@@ -854,7 +854,7 @@ static void applyShadow(SDL_Surface *&in, const SDL_PixelFormatDetails* fm, cons
 			}
 
 			/* Input and shadow alpha values */
-			uint8_t srcA, shdA;
+			Uint8 srcA, shdA;
 			srcA = (src & fm->Amask) >> fm->Ashift;
 			shdA = (shd & fm->Amask) >> fm->Ashift;
 
@@ -879,7 +879,7 @@ static void applyShadow(SDL_Surface *&in, const SDL_PixelFormatDetails* fm, cons
 			float co3 = fSrcA / fa;
 
 			/* Result colors */
-			uint8_t r, g, b, a;
+			Uint8 r, g, b, a;
 
 			r = clamp<float>(fr * co3, 0, 1) * 255.0f;
 			g = clamp<float>(fg * co3, 0, 1) * 255.0f;
@@ -894,7 +894,7 @@ static void applyShadow(SDL_Surface *&in, const SDL_PixelFormatDetails* fm, cons
 	in = out;
 }
 
-void Bitmap::drawText(const IntRect &rect, const char *str, int align){
+void Bitmap::drawText(const IntRect &rect, const char *str, Uint8 align){
 	guardDisposed();
 	GUARD_MEGA;
 
@@ -946,16 +946,16 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 
 	int alignX = rect.x;
 
-	switch (align){
-	default:
-	case Left :
-		break;
-	case Center :
-		alignX += (rect.w - txtSurf->w) / 2;
-		break;
-	case Right :
-		alignX += rect.w - txtSurf->w;
-		break;
+	switch(align){
+		default:
+		case Left :
+			break;
+		case Center :
+			alignX += (rect.w - txtSurf->w) / 2;
+			break;
+		case Right :
+			alignX += rect.w - txtSurf->w;
+			break;
 	}
 
 	if (alignX < rect.x)
@@ -1062,7 +1062,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align){
 }
 
 /* http://www.lemoda.net/c/utf8-to-ucs2/index.html */
-static uint16_t utf8_to_ucs2(const char *_input, const char **end_ptr){
+static Uint16 utf8_to_ucs2(const char *_input, const char **end_ptr){
 	const unsigned char *input = reinterpret_cast<const unsigned char*>(_input);
 	*end_ptr = _input;
 	if (input[0] == 0)
@@ -1106,7 +1106,7 @@ IntRect Bitmap::textSize(const char *str){
 
 	/* If str is one character long, *endPtr == 0 */
 	const char *endPtr;
-	uint16_t ucs2 = utf8_to_ucs2(str, &endPtr);
+	Uint16 ucs2 = utf8_to_ucs2(str, &endPtr);
 
 	/* For cursive characters, returning the advance
 	 * as width yields better results */

@@ -38,7 +38,6 @@ struct SDL_Window;
 union SDL_Event;
 
 #define MAX_FINGERS 4
-
 extern SDL_Gamepad* gc;
 
 class EventThread{
@@ -50,7 +49,7 @@ public:
 
 	struct JoyState{
 		int axes[256];
-		uint8_t hats[256];
+		Uint8 hats[256];
 		bool buttons[256];
 	};
 
@@ -73,7 +72,7 @@ public:
 		FingerState fingers[MAX_FINGERS];
 	};
 
-	static uint8_t keyStates[SDL_SCANCODE_COUNT];
+	static Uint8 keyStates[SDL_SCANCODE_COUNT];
 	static ControllerState gcState;
 	static JoyState joyState;
 	static MouseState mouseState;
@@ -124,14 +123,14 @@ private:
 	bool showCursor;
 	AtomicFlag msgBoxDone;
 	struct{
-		uint64_t lastFrame;
-		uint64_t displayCounter;
+		Uint64 lastFrame;
+		Uint64 displayCounter;
 		AtomicFlag sendUpdates;
 		AtomicFlag immInitFlag;
 		AtomicFlag immFiniFlag;
 		double acc;
-		uint32_t accDiv;
-		uint64_t frequency;
+		Uint32 accDiv;
+		Uint64 frequency;
 	} fps;
 };
 
@@ -139,10 +138,7 @@ private:
  * about certain value changes */
 template<typename T>
 struct UnidirMessage{
-	UnidirMessage()
-	    : mutex(SDL_CreateMutex()),
-	      current(T())
-	{}
+	UnidirMessage() : mutex(SDL_CreateMutex()), current(T()){}
 
 	~UnidirMessage(){
 		SDL_DestroyMutex(mutex);
@@ -185,23 +181,18 @@ struct SyncPoint{
 	/* Used by eventFilter to control sleep/wakeup */
 	void haltThreads();
 	void resumeThreads();
-
 	/* Used by RGSS thread */
 	bool mainSyncLocked();
 	void waitMainSync();
-
 	/* Used by secondary (audio) threads */
 	void passSecondarySync();
-
 private:
 	struct Util{
 		Util();
 		~Util();
-
 		void lock();
 		void unlock(bool multi);
 		void waitForUnlock();
-
 		AtomicFlag locked;
 		SDL_Mutex *mut;
 		SDL_Condition *cond;
@@ -234,14 +225,11 @@ struct RGSSThreadData{
 	UnidirMessage<Vec2i> windowSizeMsg;
 	UnidirMessage<BDescVec> bindingUpdateMsg;
 	SyncPoint syncPoint;
-
 	SDL_Window *window;
 	MIX_Mixer *mixer;
-
 	Vec2 sizeResoRatio;
 	Vec2i screenOffset;
 	const int refreshRate;
-
 	std::string rgssErrorMsg;
 	std::string inputText;
 	int inputTextLimit;

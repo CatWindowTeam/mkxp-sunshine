@@ -49,7 +49,7 @@ struct OneshotPrivate{
 	// Alpha texture data for portions of window obscured by screen edges
 	int winX, winY, winW, winH;
 	SDL_Mutex *winMutex;
-	std::vector<uint8_t> obscuredMap;
+	std::vector<Uint8> obscuredMap;
 	bool obscuredNeedToUpdate;
 	bool obscuredCleared;
 
@@ -274,7 +274,7 @@ const std::string &Oneshot::journal() const{
 	return p->journal;
 }
 
-const std::vector<uint8_t> &Oneshot::obscuredMap() const{
+const std::vector<Uint8> &Oneshot::obscuredMap() const{
 	return p->obscuredMap;
 }
 
