@@ -2,42 +2,45 @@
 #include <mruby.h>
 #include <physfs.h>
 
-/* MiniFS::File.read(path) */
 static mrb_value file_read(mrb_state *mrb, mrb_value self){
-	const char* path;
-	mrb_get_args(mrb, "z", &path);
-	PHYSFS_File *file = PHYSFS_openRead(path);
-	if(!file){
-		return mrb_nil_value();
-	}
-  
-	PHYSFS_sint64 size = PHYSFS_fileLength(file);
-	if(size < 0 || (PHYSFS_uint64)size >= (PHYSFS_uint64)SIZE_MAX) {
-		PHYSFS_close(file);
-		return mrb_nil_value();
-	}
-  
-	void *buffer = SDL_malloc((size_t)size + 1);
-	if(!buffer) {
-		PHYSFS_close(file);
-		return mrb_nil_value();
-	}
+    const char *path;
+    mrb_get_args(mrb, "z", &path);
 
-	PHYSFS_sint64 total = 0;
+    PHYSFS_File *file = PHYSFS_openRead(path);
+    if(!file){
+        return mrb_nil_value();
+    }
+
+    PHYSFS_sint64 size = PHYSFS_fileLength(file);
+    if(size < 0 || (PHYSFS_uint64)size >= (PHYSFS_uint64)SIZE_MAX || (PHYSFS_uint64)size > (PHYSFS_uint64)MRB_INT_MAX){
+        PHYSFS_close(file);
+        return mrb_nil_value();
+    }
+
+    char *buffer = SDL_malloc((size_t)size + 1);
+    if(!buffer){
+        PHYSFS_close(file);
+        return mrb_nil_value();
+    }
+
+    PHYSFS_sint64 total = 0;
     while(total < size) {
-		PHYSFS_sint64 n = PHYSFS_readBytes(file, buffer, (PHYSFS_uint64)(size));
-        if(n <= 0){
-        	SDL_free(buffer);
-        	PHYSFS_close(file);
+        PHYSFS_uint64 remaining = (PHYSFS_uint64)(size - total);
+        PHYSFS_sint64 n = PHYSFS_readBytes(file, buffer + total, remaining);
+        if (n <= 0) {
+            SDL_free(buffer);
+            PHYSFS_close(file);
             return mrb_nil_value();
         }
+
         total += n;
     }
 
-    char* charbuffer = (char*)buffer;
-    charbuffer[size] = '\0';
+    buffer[total] = '\0';
     PHYSFS_close(file);
-	return mrb_nil_value();
+    mrb_value result = mrb_str_new(mrb, buffer, (mrb_int)total);
+    SDL_free(buffer);
+    return result;
 }
 
 /* MiniFS::File.write(path, data) */

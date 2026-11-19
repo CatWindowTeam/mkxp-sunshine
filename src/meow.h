@@ -25,3 +25,5 @@ void ErrorMsg(Exception::Type t, const char *fmt, ...);
 void WarnMsg(const char *fmt, ...);
 void crash_screen(SDL_Window* win);
 void set_crash_info(const char *fmt, ...);
+
+#define NULL_CHECK(var) if(var == nullptr){throw std::runtime_error("NULL/nullptr check trugered at: " + std::string(__FILE__) + ", " + std::to_string(__LINE__));}

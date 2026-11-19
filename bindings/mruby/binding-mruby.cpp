@@ -22,6 +22,7 @@
 #include <exception>
 #include <mruby.h>
 #include <zlib.h>
+#include <physfs.h>
 #include <SDL3/SDL_iostream.h>
 #include "SDL3/SDL_stdinc.h"
 #include "binding.h"
@@ -125,10 +126,17 @@ static void mrbBindingExecute() {
 		if(!shState->fileSystem().exists("Data/Scripts.mrb")){
 			throw std::runtime_error("Unable to open Scripts.mrb");
 		}else{
-			// TODO: replace with PhysFS code code
-			FILE* filepointer = fopen("Data/Scripts.mrb", "r");
-			mrb_load_irep_file_cxt(mrb, filepointer ,cxt);
-			fclose(filepointer);
+			PHYSFS_file* scripts_file = PHYSFS_openRead("Data/Scripts.mrb");
+			NULL_CHECK(scripts_file);
+
+			PHYSFS_sint64 scripts_size = PHYSFS_fileLength(scripts_file);
+
+			char* scripts = (char*)SDL_malloc(scripts_size);
+			NULL_CHECK(scripts);
+
+			int scripts_len = PHYSFS_read(scripts_file, scripts, 1, scripts_size);
+			mrb_load_irep_buf_cxt(mrb, scripts, scripts_len, cxt);
+			SDL_free(scripts);
 		}
 	}catch(const std::exception& e) {
 		set_crash_info(e.what());
@@ -140,7 +148,6 @@ static void mrbBindingExecute() {
 	}
 
 	mrb_ccontext_free(mrb, cxt);
-
 	shState->rtData().rqTermAck.set();
 	shState->setBindingData(nullptr);
 	mrb_close(mrb);
