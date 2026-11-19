@@ -5,6 +5,9 @@ class Voiceover
 		path = "Voiceover/#{lang}/index.txt"
 		if PhysFS.exist?(path)
 			load_voiceover(path)
+			$settings_content.enable_setting(1, 4)
+		else
+			$settings_content.disable_setting(1, 4)
 		end
     end
 
