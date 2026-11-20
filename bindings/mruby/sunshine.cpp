@@ -22,7 +22,7 @@ void SunshineBindingInit(mrb_state *mrb){
 	mrb_define_const(mrb, m, "RENDER_API", mrb_str_new_cstr(mrb, shState->render().apiName()));
 	mrb_define_module_function(mrb, m, "SetCrashScreenData", SetCrashScreenData, MRB_ARGS_REQ(1));
 
-	//detect unsupported enviroment/platform/OS	
+	//detect unsupported platform
 	#ifdef defined(vita) || \
 			defined(psp) || \
 			defined(haiku) || \

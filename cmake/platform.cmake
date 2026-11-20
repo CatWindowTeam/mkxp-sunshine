@@ -13,7 +13,7 @@ macro(detect_de_pkgs)
     	    message(STATUS "libxfconf-0 FOUND!")
     	    target_compile_definitions(${APP_TARGET} PRIVATE API_ONESHOT_EXTENSIONS_XFCE=1)
     	    target_link_libraries(${APP_TARGET} PRIVATE PkgConfig::XFCE)
-    	    set(API_ONESHOT_EXTENSIONS_XFCE_ENABLED ON PARENT_SCOPE)
+    	    set(API_ONESHOT_EXTENSIONS_XFCE_ENABLED ON)
     	else()
     	    message(WARNING "libxfconf-0 NOT FOUND!")
     	endif()
@@ -26,6 +26,12 @@ set(UNIX_SYSTEMS Linux FreeBSD OpenBSD NetBSD)
 
 if(VITA)
 	set(PLATFORM_LIBRARIES webp sharpyuv)
+elseif(TERMUX)
+    #https://github.com/termux/termux-packages/blob/master/x11-packages/sdl3/build.sh
+    set(PLATFORM_LIBRARIES android-shmem)
+    #patch SDL3 sources for Termux
+    execute_process(
+    COMMAND find external/SDL -type f -exec sed -i -e "s/\\([^A-Za-z0-9_]__ANDROID\\)\\(__[^A-Za-z0-9_]\\)/\\1_NO_TERMUX\\2/g" -e "s/\\([^A-Za-z0-9_]__ANDROID\\)__$/\\1_NO_TERMUX__/g" "{}" + WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_link_options(${APP_TARGET} PRIVATE -municode)
 	target_compile_definitions(${APP_TARGET} PRIVATE UNICODE)

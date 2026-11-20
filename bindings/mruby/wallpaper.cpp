@@ -2,6 +2,8 @@
 #include <mruby.h>
 #if SDL_PLATFORM_WINDOWS
 	#include "wallpaper/w_windows.h"
+#elif SDL_PLATFORM_ANDROID
+	#include "wallpaper/w_dummy.h"
 #elif SDL_PLATFORM_UNIX
 	#include "wallpaper/w_unix.h"
 #else

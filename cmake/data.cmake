@@ -10,12 +10,13 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 	    -fdelete-dead-exceptions
 	    -fmerge-all-constants
 	    # Graphite
-		-fgraphite
+            -fgraphite
 	    -floop-block
 	    -fgraphite-identity
 	    -floop-nest-optimize
 	    -floop-parallelize-all
 	    -floop-interchange
+	    ${EXTRA_COPT}
 	)
 
 	check_option(COPT_CXX

@@ -55,7 +55,7 @@ void steamBindingInit(mrb_state *mrb){
 		mrb_define_const(mrb, module, "LANG", mrb_nil_value());
 	#endif
 
-	/* Functions */	
+	/* Functions */
 	mrb_define_module_function(mrb, module, "enabled?", steamEnabled, MRB_ARGS_NONE());
 	mrb_define_module_function(mrb, module, "unlock", steamUnlock, MRB_ARGS_REQ(1));
 	mrb_define_module_function(mrb, module, "lock", steamLock, MRB_ARGS_REQ(1));
