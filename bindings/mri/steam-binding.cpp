@@ -5,7 +5,7 @@
 #include "sharedstate.h"
 #include "binding-util.h"
 #include "binding-types.h"
-#include "debugwriter.h"
+#include "logger.h"
 
 static VALUE steamEnabled(VALUE self){
 	#ifdef STEAM

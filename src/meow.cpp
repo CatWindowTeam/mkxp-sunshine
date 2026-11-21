@@ -13,7 +13,7 @@
 #include "util.h"
 #include "exception.h"
 #include "config.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "define.h"
 #include "binding.h"
 #include <physfs.h>
@@ -167,7 +167,7 @@ void ErrorMsg(const char *fmt, ...) {
     va_start(args, fmt);
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-    LOG_ERR << "[E] " << crash_message;
+    Log(crash_message);
     show_crash_screen = true;
 }
 
@@ -176,7 +176,7 @@ void ErrorMsg(Exception::Type t, const char *fmt, ...) {
     va_start(args, fmt);
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-    Debug() << "[E] " << crash_message;
+    Log(crash_message);
     show_crash_screen = true;
 }
 
@@ -194,7 +194,7 @@ void WarnMsg(const char *fmt, ...) {
 
     SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
     va_end(args);
-    Debug() << "[W] " << buf;
+    Log(buf);
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", buf, NULL);
     SDL_free(buf);
 }

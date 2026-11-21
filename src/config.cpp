@@ -9,7 +9,7 @@ Config conf;
 		#define CLI11_DISABLE_EXTRA_VALIDATORS 1
 	#endif
 	#include "meow.h"
-	#include "debugwriter.h"
+	#include "logger.h"
 	#include "CLI/CLI.hpp"
 	#include <SDL3/SDL_filesystem.h>
 	#include <SDL3/SDL_system.h>
@@ -71,7 +71,7 @@ Config conf;
 	       	a.parse(argc, argv);
 	    }catch (const CLI::ParseError &e) {
 	    	if(e.get_exit_code() == 0){
-	    		Debug() << a.help();
+	    		Log(a.help());
 	    	}else{
 	    		WarnMsg("Failed to parse config or command line arguments! Error: %s", e.what());
 	    		std::exit(e.get_exit_code());	

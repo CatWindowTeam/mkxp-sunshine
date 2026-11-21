@@ -2,7 +2,7 @@
 #include <ruby.h>
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_time.h>
-#include "debugwriter.h"
+#include "logger.h"
 static SDL_DateTime dt;
 static SDL_Time ticks;
 
@@ -60,12 +60,12 @@ void TimeBindingInit() {
     rb_define_singleton_method(m, "at", ctime_at, -1);
     rb_define_singleton_method(m, "hour", get_hours, 0);
     if (!SDL_GetCurrentTime(&ticks)) {
-        Debug() << "SDL_GetCurrentTime failed: " << SDL_GetError();
+        Log("SDL_GetCurrentTime failed: ", SDL_GetError());
         return;
     }
 
     if (!SDL_TimeToDateTime(ticks, &dt, true)) {
-        Debug() << "SDL_TimeToDateTime failed: " << SDL_GetError();
+        Log("SDL_TimeToDateTime failed: ", SDL_GetError());
         return;
     }
 }

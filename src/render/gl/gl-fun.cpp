@@ -23,9 +23,9 @@
 	#include "gl-fun.h"
 	#include "glrender.h"
 	#include "meow.h"
+	#include "logger.h"
 	#include <SDL3/SDL_video.h>
 	#include <string>
-	#include <debugwriter.h>
 
 	GLFunctions gl;
 
@@ -43,9 +43,9 @@
 		GL_20_FUN;
 
 		//https://github.com/elizagamedev/mkxp-oneshot/blob/master/src/main.cpp
-		Debug() << "GL Vendor: " << glGetStringInt(GL_VENDOR);
-		Debug() << "GL Renderer: " << glGetStringInt(GL_RENDERER);
-		Debug() << "GL Version: " << glGetStringInt(GL_VERSION);
+		Log("GL Vendor: ", glGetStringInt(GL_VENDOR));
+		Log("GL Renderer: ", glGetStringInt(GL_RENDERER));
+		Log("GL Version: ", glGetStringInt(GL_VERSION));
 		
 		/* Determine GL version */
 		const char *ver = (const char*) gl.GetString(GL_VERSION);

@@ -2,7 +2,7 @@
 #include "binding-types.h"
 #include "sharedstate.h"
 #include "eventthread.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "define.h"
 #include <SDL3/SDL.h>
 #include "config.h"
@@ -12,27 +12,27 @@ static char lang[4] = "en";
 NET_Address* addr = NULL;
 void SendRaw(const char *raw){
     if(NET_WaitUntilResolved(addr, -1) == NET_FAILURE){
-        Debug() << "NET_FAILURE " << conf.journal_address << " - " <<  SDL_GetError();
+        Log("NET_FAILURE ", conf.journal_address, " - ", SDL_GetError());
         return;
     }
 
     NET_StreamSocket *socket = NET_CreateClient(addr, conf.journal_port, 0);
-    if (!socket) {
-        Debug() << "Failed to create connection: " <<  SDL_GetError();
+    if(!socket) {
+        Log("Failed to create connection: ", SDL_GetError());
         return;
     }
 
     if (NET_WaitUntilConnected(socket, -1) == NET_FAILURE) {
-        Debug() << "Failed to connect to " <<  conf.journal_address << ":" <<  conf.journal_port << " " << SDL_GetError();
+        Log("Failed to connect to ", conf.journal_address, ":", conf.journal_port, " ", SDL_GetError());
         NET_DestroyStreamSocket(socket);
         return;
     }
 
     int length = (int)SDL_strlen(raw);
     if (!NET_WriteToStreamSocket(socket, raw, length)) {
-       Debug() << "Failed to send: " <<  SDL_GetError();
+       Log("Failed to send: ", SDL_GetError());
     } else if (NET_WaitUntilStreamSocketDrained(socket, -1) < 0) {
-        Debug() << "Error: " <<  SDL_GetError();
+        Log("Error: ", SDL_GetError());
     }
     NET_DestroyStreamSocket(socket);
 }
@@ -95,17 +95,10 @@ static VALUE journalActive(VALUE self) {
     return SDL_strcmp(response, expectedPong) == 0 ? Qtrue : Qfalse;
 }
 
-
-//#else
-//	static VALUE journalSet(int argc, VALUE *argv, VALUE self){ return Qnil; }
-//	static VALUE journalLangSet(int argc, VALUE *argv, VALUE self){ return Qnil; }
-//	static VALUE journalActive(VALUE self){ return Qtrue; }
-//#endif
-
 void journalBindingInit(){
 	#ifdef JOURNAL_ENABLED
 		if (!NET_Init()) {
-			Debug() << "NET_Init() failed: " << SDL_GetError();
+			Log("NET_Init() failed: ", SDL_GetError());
 		}else{
 			addr = NET_ResolveHostname(conf.journal_address.c_str());
 			NET_WaitUntilResolved(addr, 1000);

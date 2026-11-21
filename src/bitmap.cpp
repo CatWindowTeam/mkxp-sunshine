@@ -743,7 +743,7 @@ void Bitmap::setPixel(int x, int y, const Color &color){
 	guardDisposed();
 	GUARD_MEGA;
 	if (x < 0 || y < 0 || x >= width() || y >= height()) {
-		Debug() << "Invalid pixel position " << x << " " << y << " in bitmap " << width() << "x" << height();
+		Log("Invalid pixel position ", x, " ", y, " in bitmap ", width(), "x", height());
 		return;
 	}
 

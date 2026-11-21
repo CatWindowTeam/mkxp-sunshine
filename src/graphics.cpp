@@ -36,7 +36,7 @@
 #include "disposable.h"
 #include "intrulist.h"
 #include "binding.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "oneshot.h"
 #include "define.h"
 #include "signals/rubydispatcher.h"
@@ -362,7 +362,7 @@ private:
 			if (err == EINTR)
 				continue;
 
-			LOG_DEBUG << "nanosleep failed. errno:" << err;
+			Log("nanosleep failed. errno: ", err);
 			SDL_Delay(ticks / tickFreqMS);
 			break;
 		}

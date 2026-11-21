@@ -1,9 +1,18 @@
 #pragma once
 #include <iostream>
-#include <SDL3/SDL_stdinc.h>
-#ifdef SUNSHINE_LOG_COLORED
-	#include "rang.hpp"
-#endif
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
+#include "meow.h"
 
-void LogC(const char *fmt, ...);
-void LogCXX(Args&&... args);
+template<typename... Args>
+void Log(Args&&... args){
+	std::ostringstream buf;
+
+    (buf << ... << args) << '\n';
+    const std::string message = buf.str();
+
+    logs.push_back(message);
+    std::cout << message;
+}

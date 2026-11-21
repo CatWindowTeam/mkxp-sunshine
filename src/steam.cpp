@@ -1,6 +1,6 @@
 #ifdef STEAM
 #include "steam.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include <map>
 #include <SDL3/SDL.h>
 #include "steamshim/steamshim_child.h"

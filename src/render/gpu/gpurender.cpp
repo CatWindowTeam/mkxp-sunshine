@@ -4,7 +4,7 @@
 	#include "config.h"
 	#include "render/renderstats.h"
 	#include "exception.h"
-	#include "debugwriter.h"
+	#include "logger.h"
 	#include "sharedstate.h"
 	#include "graphics.h"
 	#include "vertex.h"
@@ -304,7 +304,7 @@ void GPURender::createGpuTexture(GpuTexture &tex, int w, int h){
 
 	tex.texture = SDL_CreateGPUTexture(device, &info);
 	if (!tex.texture)
-		Debug() << "[GPURender] cannot create texture" << w << h << SDL_GetError();
+		Log("cannot create texture ", w, " ", h, " - ", SDL_GetError());
 }
 
 void GPURender::recordClear(Uint32 id, const Vec4 &color){
@@ -983,7 +983,7 @@ SDL_GPUGraphicsPipeline *GPURender::pipelineFor(int kind, GpuBlend blendKind, SD
 
 	SDL_GPUGraphicsPipeline *pipeline = SDL_CreateGPUGraphicsPipeline(device, &info);
 	if (!pipeline)
-		Debug() << "[GPURender] cannot create pipeline" << SDL_GetError();
+		Log("cannot create pipeline ", SDL_GetError());
 
 	pipelines[key] = pipeline;
 	return pipeline;
@@ -1340,7 +1340,7 @@ public:
 
 		SDL_SetGPUSwapchainParameters(device, window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR, mode);
 
-		Debug() << "[GPURender] driver:" << SDL_GetGPUDeviceDriver(device);
+		Log("driver: ", SDL_GetGPUDeviceDriver(device));
 		createdDevice = device;
 		createdWindow = window;
 	}

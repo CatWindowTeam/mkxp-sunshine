@@ -4,7 +4,7 @@
 #include "config.h"
 #include "render/renderstats.h"
 #include "exception.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "vertex.h"
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_surface.h>
@@ -169,7 +169,7 @@ void SDLRender::createSdlTexture(SdlTexture &tex, int w, int h){
 	tex.texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, w, h);
 
 	if (!tex.texture){
-		Debug() << "[SDLRender] cannot create texture" << w << h << SDL_GetError();
+		Log("cannot create texture ", w, " ", h, " - ", SDL_GetError());
 		return;
 	}
 
@@ -981,7 +981,7 @@ public:
 		if(!renderer)
 			throw Exception(Exception::MKXPError, "Failed to create SDL renderer: %s", SDL_GetError());
 
-		Debug() << "[SDLRender] driver:" << SDL_GetRendererName(renderer);
+		Log("Driver: ", SDL_GetRendererName(renderer));
 		createdRenderer = renderer;
 	}
 

@@ -21,7 +21,7 @@
 
 #include "binding-util.h"
 #include "filesystem.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "util.h"
 #include "define.h"
 #include <ruby.h>

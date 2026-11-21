@@ -25,7 +25,7 @@
 #include "exception.h"
 #include "sharedstate.h"
 #include "define.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "meow.h"
 #include <physfs.h>
 #include <SDL3/SDL_stdinc.h>
@@ -101,7 +101,7 @@ static PHYSFS_Io *createSDLRWIo(const char *filename){
 	try{
 		ctx = new SDLRWIoContext(filename);
 	}catch (const Exception &e){
-		LOG_WARN << "Failed mounting: " << filename;
+		Log("Failed mounting: ", filename);
 		return 0;
 	}
 
@@ -241,7 +241,7 @@ FileSystem::FileSystem(){
 FileSystem::~FileSystem(){
 	delete p;
 	if(PHYSFS_deinit() == 0){
-		LOG_WARN << "PhyFS failed to deinit.";
+		Log("PhyFS failed to deinit.");
 	}
 }
 
@@ -464,7 +464,7 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 	}
 
 	if (data.physfsError){
-		LOG_ERR << "PhysFS error: " << data.physfsError;
+		Log("PhysFS error: ", data.physfsError);
 		throw Exception(Exception::PHYSFSError, "PhysFS: %s", data.physfsError);
 	}
 

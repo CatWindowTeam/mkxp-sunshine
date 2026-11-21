@@ -1,6 +1,6 @@
 //https://silverhammermba.github.io/emberb/c/
 //https://docs.ruby-lang.org/capi/en/master/d8/d68/include_2ruby_2internal_2intern_2string_8h.html
-#include "debugwriter.h"
+#include "logger.h"
 #include "modloader.h"
 #include <ruby.h>
 #include <physfs.h>
@@ -65,7 +65,7 @@ static VALUE hooks(int argc, VALUE *argv, VALUE self){
             continue;
         }
 
-        Debug() << "[MODLOADER] Executing hook: " << full_path;
+        Log("Executing hook: ", full_path);
         files.push_back(full_path);
     }
     PHYSFS_freeList(list);

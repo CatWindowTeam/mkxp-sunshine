@@ -1,4 +1,4 @@
-#include "debugwriter.h"
+#include "logger.h"
 #include <ruby.h>
 #include <ruby/debug.h>
 #include <inttypes.h>
@@ -38,8 +38,7 @@ static void tp_cb(VALUE tpval, void *) {
         long line = FIX2LONG(rb_tracearg_lineno(trace_arg));
         const char *method = rb_id2name(rb_sym2id(rb_tracearg_method_id(trace_arg)));
 
-        Debug() << "[PROFILER] " << method << " " << path << ":" << line
-                << " class=" << class_name << " dur_ns=" << dur_ns << "\n";
+        Log("[PROFILER] ", method, " ", path, ":", line, " class=", class_name, " dur_ns=", dur_ns);
     }
 }
 

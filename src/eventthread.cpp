@@ -19,7 +19,6 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "eventthread.h"
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_joystick.h>
@@ -31,9 +30,10 @@
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_video.h>
+#include "eventthread.h"
 #include "sharedstate.h"
 #include "graphics.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "oneshot.h"
 #include "meow.h"
 #include "config.h"
@@ -112,7 +112,7 @@ void EventThread::process(RGSSThreadData &rtData){
       		jId = ids[i];
 		}
 
-		LOG_INFO << "Gamepad connected: " << SDL_GetGamepadName(gc);
+		Log("Gamepad connected: ", SDL_GetGamepadName(gc));
     	if(i > 0) {
       		SDL_CloseGamepad(gamepd);
     	}
@@ -130,7 +130,7 @@ void EventThread::process(RGSSThreadData &rtData){
 	SDL_GetWindowPosition(win, &rtData.ethread->winX, &rtData.ethread->winY);
 	while (true) {
 		if (!SDL_WaitEvent(&event)) {
-			LOG_ERROR << "Event error: " << SDL_GetError();
+			Log("Event error: ", SDL_GetError());
 			break;
 		}
 
@@ -251,7 +251,7 @@ void EventThread::process(RGSSThreadData &rtData){
 			case SDL_EVENT_WINDOW_DESTROYED:
 				if (rtData.allowExit) {
 					terminate = true;
-					LOG_INFO << "Termination requested";
+					Log("Termination requested");
 				}else{
 					rtData.triedExit.set();
 				}

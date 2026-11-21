@@ -23,7 +23,7 @@
 #include "disposable.h"
 #include "etc-internal.h"
 #include "etc.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "signals/signal.h"
 
 class Font;

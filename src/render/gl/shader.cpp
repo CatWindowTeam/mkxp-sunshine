@@ -24,7 +24,7 @@
 	#include "sharedstate.h"
 	#include "render/gl/glrender.h"
 	#include "exception.h"
-	#include "debugwriter.h"
+	#include "logger.h"
 	#include <assert.h>
 	#include <string.h>
 	#include "common.h.xxd"
@@ -73,7 +73,7 @@
 		std::string SDL_log(logLength, '\0');
 		gl.GetShaderInfoLog(shader, SDL_log.size(), 0, &SDL_log[0]);
 	
-		Debug() << "GL Shader: " << SDL_log;
+		Log("GL Shader: ", SDL_log);
 	}
 
 	static void printProgramLog(GLuint program){
@@ -83,7 +83,7 @@
 		std::string SDL_log(logLength, '\0');
 		gl.GetProgramInfoLog(program, SDL_log.size(), 0, &SDL_log[0]);
 	
-		Debug() << "GL Program: " << SDL_log;
+		Log("GL Program: ", SDL_log);
 	}
 
 	Shader::Shader(){
@@ -358,7 +358,7 @@
 				);
 				count++;
 			}else{
-				Debug() << "The limit of light sources has been reached! (" << sources.size() << "/ 64, clamped" << sources.size() - count << ")";
+				Log("The limit of light sources has been reached! (", sources.size(), "/ 64, clamped", sources.size() - count, ")");
 				break;
 			}
 		}

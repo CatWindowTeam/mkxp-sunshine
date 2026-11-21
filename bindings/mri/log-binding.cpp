@@ -1,7 +1,7 @@
 #include <ruby.h>
 #include <ruby/debug.h>
 #include "meow.h"
-#include "debugwriter.h"
+#include "logger.h"
 
 static VALUE loggerSetLogLevel(VALUE, VALUE v) {
 	loglevel = FIX2INT(v);
@@ -11,7 +11,7 @@ static VALUE loggerSetLogLevel(VALUE, VALUE v) {
 static VALUE loggerDebug(VALUE, VALUE v) {
 	if(loglevel >= 4){
 		VALUE inspected = rb_obj_as_string(v);
-		Debug() << "[DEBUG " << rb_sourcefile() << ":" << rb_sourceline() << "] " << StringValueCStr(inspected);
+		Log("[DEBUG ", rb_sourcefile(), ":", rb_sourceline(), "] ", StringValueCStr(inspected));
 	}
 	return v;
 }
@@ -19,7 +19,7 @@ static VALUE loggerDebug(VALUE, VALUE v) {
 static VALUE loggerInfo(VALUE, VALUE v) {
 	if(loglevel >= 3){
 		VALUE inspected = rb_obj_as_string(v);
-		Debug() << "[INFO " << rb_sourcefile() << ":" << rb_sourceline() << "] " << StringValueCStr(inspected);
+		Log("[INFO ", rb_sourcefile(), ":", rb_sourceline(), "] ", StringValueCStr(inspected));
 	}
 	return v;
 }
@@ -27,7 +27,7 @@ static VALUE loggerInfo(VALUE, VALUE v) {
 static VALUE loggerWarn(VALUE, VALUE v) {
 	if(loglevel >= 2){
 		VALUE inspected = rb_obj_as_string(v);
-		Debug() << "[WARN " << rb_sourcefile() << ":" << rb_sourceline() << "] " << StringValueCStr(inspected);
+		Log("[WARN ", rb_sourcefile(), ":", rb_sourceline(), "] ", StringValueCStr(inspected));
 	}
 	return v;
 }
@@ -35,7 +35,7 @@ static VALUE loggerWarn(VALUE, VALUE v) {
 static VALUE loggerError(VALUE, VALUE v) {
 	if(loglevel >= 1){
 		VALUE inspected = rb_obj_as_string(v);
-		Debug() << "[ERROR " << rb_sourcefile() << ":" << rb_sourceline() << "] " << StringValueCStr(inspected);
+		Log("[ERROR ", rb_sourcefile(), ":", rb_sourceline(), "] ", StringValueCStr(inspected));
 	}
 	return v;
 }

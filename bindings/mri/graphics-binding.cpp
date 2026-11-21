@@ -26,7 +26,7 @@
 #include "binding-types.h"
 #include "exception.h"
 #include "config.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "signals/rubydispatcher.h"
 #include "signalconnection-binding.h"
 #include "define.h"
@@ -259,7 +259,7 @@ static VALUE graphicsWindowMoved(VALUE self){
 	conn->connection = shState->windowSignals.moved.Connect([conn](int x, int y){
 		shState->rubyDispatcher().invoke([conn, x, y]{
 			if (NIL_P(conn->proc)){
-				Debug() << "Unable to call non-existent proc! (Graphics.window_moved connection, disconnecting)";
+				Log("Unable to call non-existent proc! (Graphics.window_moved connection, disconnecting)");
 				conn->connection.Disconnect();
 				return;
 			}
@@ -274,7 +274,7 @@ static VALUE graphicsWindowResized(VALUE self){
 	conn->connection = shState->windowSignals.resized.Connect([conn](int w, int h){
 		shState->rubyDispatcher().invoke([conn, w, h]{
 			if (NIL_P(conn->proc)){
-				Debug() << "Unable to call non-existent proc! (Graphics.window_resized connection, disconnecting)";
+				Log("Unable to call non-existent proc! (Graphics.window_resized connection, disconnecting)");
 				conn->connection.Disconnect();
 				return;
 			}
@@ -288,7 +288,7 @@ static VALUE graphicsViewportResized(VALUE self){
 	RUBY_CONNECTION
 	conn->connection = shState->graphicsSignals.resized.Connect([conn](int w, int h){
 		if (!conn || NIL_P(conn->proc)){
-			Debug() << "Unable to call non-existent proc! (Graphics.viewport_resized connection, disconnecting)";
+			Log("Unable to call non-existent proc! (Graphics.viewport_resized connection, disconnecting)");
 			conn->connection.Disconnect();
 			return;
 		}

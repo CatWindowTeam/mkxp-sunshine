@@ -35,7 +35,7 @@
 	#include <windows.h>
 #endif
 #include "binding.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "eventthread.h"
 #include "exception.h"
 #include "i18n.h"
@@ -209,16 +209,16 @@ int main(int argc, char *argv[]) {
     	SDL_Window *candidate = SDL_CreateWindow(conf.windowTitle, conf.defScreenW, conf.defScreenH, winFlags);
     	if(!candidate){
 			windowError = SDL_GetError();
-		    LOG_ERR << "cannot create window for backend" << backends[i] << windowError;
+		    Log("cannot create window for backend ", backends[i], " - ", windowError);
       		continue;
     	}
 
     	if(probeRenderBackend(candidate)){
       		win = candidate;
-      		LOG_INFO << "Render backend:" << backends[i];
+      		Log("Render backend: ", backends[i]);
     	}else{
 			windowError = SDL_GetError();
-			LOG_WARN << "Render backend unavailable:" << backends[i] << windowError;
+			Log("Render backend unavailable: ", backends[i], " - ", windowError);
 			SDL_DestroyWindow(candidate);
 			SDL_FlushEvents(SDL_EventType::SDL_EVENT_FIRST, SDL_EventType::SDL_EVENT_LAST);
     	}
@@ -301,7 +301,7 @@ int main(int argc, char *argv[]) {
   	for (int i = 0; i < 1000; ++i) {
     	/* We can stop waiting when the request was ack'd */
     	if (rtData.rqTermAck) {
-      		LOG_DEBUG << "RGSS thread ack'd request after " << i * 10 << "ms";
+      		Log("RGSS thread ack'd request after ", i * 10, "ms");
       		break;
     	}
     	/* Give RGSS thread some time to respond */

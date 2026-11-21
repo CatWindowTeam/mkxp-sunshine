@@ -21,7 +21,7 @@
 
 #ifdef RENDER_GL_MKXP
 	#include "gl-debug.h"
-	#include "debugwriter.h"
+	#include "logger.h"
 	#include "gl-fun.h"
 
 	struct GLDebugLoggerPrivate{
@@ -32,7 +32,7 @@
 		GLDebugLoggerPrivate *p = static_cast<GLDebugLoggerPrivate*>(const_cast<void*>(userParam));
 		if(severity != GL_DEBUG_SEVERITY_HIGH_ARB)
 			return;
-		Debug() << message;
+		Log(message);
 	}
 
 	GLDebugLogger::GLDebugLogger(const char *filename){
@@ -40,7 +40,7 @@
 		if(gl.DebugMessageCallback){
 			gl.DebugMessageCallback(arbDebugFunc, p);
 		}else{
-			Debug() << "No OpenGL debug extensions found";
+			Log("No OpenGL debug extensions found");
 		}
 	}
 

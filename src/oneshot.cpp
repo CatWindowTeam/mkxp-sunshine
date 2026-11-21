@@ -1,6 +1,6 @@
 #include "oneshot.h"
 #include "eventthread.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "bitmap.h"
 #include "font.h"
 #include "config.h"
@@ -106,7 +106,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	//locale
 	SDL_Locale** Locale = SDL_GetPreferredLocales(NULL);
 	if(Locale == nullptr){
-		LOG_INFO << "Failed to detect prefered Locale, using english";
+		Log("Failed to detect prefered Locale, using english");
 		p->lang = "en";
 	}else{
 		p->lang = Locale[0]->language;
@@ -202,8 +202,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 	#else
 		p->gamePath = path;
 	#endif
-	LOG_INFO << "Game path: " << p->gamePath;
-	LOG_INFO << "Docs path: " << p->docsPath;
+	Log("Game path: ", p->gamePath);
+	Log("Docs path: ", p->docsPath);
 
 	#ifdef unix_like
 		char const *xdg_current_desktop = SDL_getenv("XDG_CURRENT_DESKTOP");
@@ -237,7 +237,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData){
 				desktopEnv = "sway";
 			}
 		}
-		LOG_INFO << "Desktop env: " << desktopEnv;
+		Log("Desktop env: ", desktopEnv);
 	#endif
 
 }
@@ -455,13 +455,13 @@ void Oneshot::updateObscured(int winX, int winY){
 	int num_displays;
 	SDL_DisplayID *displays = SDL_GetDisplays(&num_displays);
 	if (!displays){
-		LOG_ERR << "SDL_GetDisplays failed";
+		Log("SDL_GetDisplays failed");
 	}
 	// Update obscured map and texture for window portion offscreen
 	for (int i = 0, max = num_displays; i < max; ++i){
 		SDL_Rect bounds;
 		if (!SDL_GetDisplayBounds(displays[i], &bounds)){
-			LOG_ERR << "SDL_GetDisplayBounds failed";
+			Log("SDL_GetDisplayBounds failed");
 		}
 
 		// Get intersection of window and the screen

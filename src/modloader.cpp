@@ -1,5 +1,5 @@
 #include "modloader.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "meow.h"
 #include "config.h"
 #include <filesystem>
@@ -71,14 +71,14 @@ void ModLoader(SDL_Window* win){
 
             if (ext == ".zip"){
                 if(PHYSFS_mount(full.c_str(), "", 0)){
-                	Debug() << "Failed to load " << full << ", error: " << PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
+                	Log("Failed to load ", full, ", error: ", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
                 }else{
-                	Debug() << "Loaded mod " << full;
+                	Log("Loaded mod ", full);
                 	mods_count++;
                 }
             }else if (ext == ".rb"){
                 preloadScripts.insert(full);
-                Debug() << "Added preload script " << full;
+                Log("Added preload script ", full);
                 preloaded_script_count++;
             }
         }

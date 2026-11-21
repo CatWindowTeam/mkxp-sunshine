@@ -26,11 +26,9 @@
 #include "filesystem.h"
 #include "util.h"
 #include "sdl-util.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "graphics.h"
 #include "sound/audio.h"
-#include <tsl/robin_map.h>
-#include <tsl/robin_set.h>
 #include "meow.h"
 #include "config.h"
 #include "modloader.h"
@@ -42,6 +40,8 @@
 #include <ruby/version.h>
 #include "ruby/internal/eval.h"
 #include "ruby/internal/memory.h"
+#include <tsl/robin_map.h>
+#include <tsl/robin_set.h>
 #include <SDL3/SDL_platform_defines.h>
 #include <string>
 #include <zlib.h>
@@ -178,12 +178,12 @@ static void mriBindingInit(){
 	    VALUE exc = rb_errinfo();
 	    if (!NIL_P(exc)) {
 	        VALUE msg = rb_funcall(exc, rb_intern("message"), 0);
-	        Debug() << "Ruby init exception: " << StringValueCStr(msg);
+	        Log("Ruby init exception: ", StringValueCStr(msg));
 	        VALUE bt = rb_funcall(exc, rb_intern("backtrace"), 0);
 	        if (RB_TYPE_P(bt, RUBY_T_ARRAY)) {
 	            for (long i = 0; i < RARRAY_LEN(bt); ++i) {
 	                VALUE line = rb_ary_entry(bt, i);
-	                Debug() << "\t" << StringValueCStr(line);
+	                Log("\t", StringValueCStr(line));
 	            }
 	        }
 	    }
@@ -217,7 +217,7 @@ static VALUE rbPuts(int argc, VALUE *argv, VALUE self){
 		result.append(StringValueCStr(str));
 	}
 
-	Debug() << result;
+	Log(result);
 	return Qnil;
 }
 
@@ -388,7 +388,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	/* omit "useless" last entry (from ruby:1:in `eval') */
 	for (long i = 1, btlen = RARRAY_LEN(bt) - 1; i < btlen; ++i)
 		rb_str_catf(ds, "\n\tfrom %" PRIsVALUE, rb_ary_entry(bt, i));
-	Debug() << StringValueCStr(ds);
+	Log(StringValueCStr(ds));
 
 	char *s = RSTRING_PTR(bt0);
 	char line[16];

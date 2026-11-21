@@ -25,11 +25,11 @@
 #include "util.h"
 #include "eventthread.h"
 #include "keybindings-binding.h"
+#include "logger.h"
+#include <vector>
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_gamepad.h>
-#include "debugwriter.h"
-#include <vector>
 
 extern void initGamepadBinding(VALUE inputModule);
 
@@ -242,7 +242,7 @@ static VALUE setBinding(VALUE, VALUE rb_arr, VALUE rb_target){
 static VALUE setLED(VALUE, VALUE r, VALUE g, VALUE b) {
     if (gc != nullptr)
         if (!SDL_SetGamepadLED(gc, NUM2INT(r), NUM2INT(g), NUM2INT(b)))
-			Debug() << "failed to set gamepad led for gamepad " << SDL_GetGamepadName(gc) << ": " << SDL_GetError();
+			Log("failed to set gamepad led for gamepad ", SDL_GetGamepadName(gc), ": ", SDL_GetError());
 
     return Qnil;
 }
@@ -252,7 +252,7 @@ static VALUE rumble(VALUE, VALUE low_frequency_rumble, VALUE high_frequency_rumb
     Uint16 high_freq = NUM2DBL(high_frequency_rumble) * 65535;
     if (gc != nullptr)
         if (!SDL_RumbleGamepad(gc, low_freq, high_freq, NUM2INT(duration_ms)))
-			Debug() << "failed to rumble gamepad " << SDL_GetGamepadName(gc) << ": " << SDL_GetError();
+			Log("failed to rumble gamepad ", SDL_GetGamepadName(gc), ": ", SDL_GetError());
 
     return Qnil;
 }

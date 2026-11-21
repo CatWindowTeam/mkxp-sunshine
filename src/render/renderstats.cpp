@@ -1,6 +1,6 @@
 #include "renderstats.h"
 #include "config.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "render/irender.h"
 #include <SDL3/SDL_timer.h>
 #include <SDL3/SDL_stdinc.h>
@@ -55,7 +55,7 @@ void renderStatsEndSwap(){
 	         (int) (totalDraws / f), (int) (totalVertices / f),
 	         totalUploads / f, (int) (totalUploadBytes / f / 1024),
 	         workNs / f / 1e6, swapNs / f / 1e6);
-	Debug() << line;
+	Log(line);
 
 	windowStart = now;
 	frames = 0;

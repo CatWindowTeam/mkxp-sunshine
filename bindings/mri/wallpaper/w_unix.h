@@ -14,7 +14,7 @@
 	#include "../binding-types.h"
 	#include "config.h"
 	#include "oneshot.h"
-	#include "debugwriter.h"
+	#include "logger.h"
 	#include <gio/gio.h>
 	#ifdef API_ONESHOT_EXTENSIONS_XFCE
 		#include <xfconf/xfconf.h>
@@ -70,10 +70,10 @@
 	}
 
 	static void execCommand(const std::string& c){
-		Debug() << c;
+		Log(c);
 		int status = std::system(c.c_str());
 		if(status != 0) {
-			Debug() << "Failed to exec " << c;
+			Log("Failed to exec ", c);
 		}
 	}
 
@@ -102,7 +102,7 @@
 			std::string path = home + "/.config/pcmanfm/LXDE/desktop-items-0.conf";
 			std::ifstream infile(path);
 			if (!infile) {
-			   Debug() << "Can't open LXDE settings";
+			   Log("Can't open LXDE settings");
 			   return;
 			}
 
@@ -127,8 +127,8 @@
 			    	}
 			    }
 			    if(first_found && second_found){
-			    	Debug() << originalBgPath;
-			    	Debug() << originalBgMode;
+			    	Log(originalBgPath);
+			    	Log(originalBgMode);
 			    	break;
 			    }
 			}
@@ -143,7 +143,7 @@
 			std::string path = home + "/.config/pcmanfm-qt/lxqt/settings.conf";
 			std::ifstream infile(path);
 			if (!infile) {
-			   Debug() << "Can't open LXDE settings";
+			   Log("Can't open LXDE settings");
 			   return;
 			}
 			std::string line;
@@ -167,8 +167,8 @@
 			    	}
 			    }
 			    if(first_found && second_found){
-			    	Debug() << originalBgPath;
-			    	Debug() << originalBgMode;
+			    	Log(originalBgPath);
+			    	Log(originalBgMode);
 			    	break;
 			    }
 			}
@@ -246,12 +246,12 @@
 					}
 				} else {
 					// Configuration failed to initialize, we won't set the wallpaper
-					Debug() << "Configuration failed to initialize, we won't set the wallpaper";
+					Log("Configuration failed to initialize, we won't set the wallpaper");
 					desktop = "xfce_error";
 					g_error_free(xferror);
 				}
 			#else
-				Debug() << "XFCE4 support disabled in this build!";
+				Log("XFCE4 support disabled in this build!");
 			#endif
 		} else if (desktop == "kde") {
 			std::ifstream configFile;
@@ -318,7 +318,7 @@
 			} else if (desktop == "sway") {
 				//placeholder, anyway compiler remove it like deadcode(maybe)
 			} else {
-				Debug() << "FATAL: Cannot find desktop configuration!";
+				Log("FATAL: Cannot find desktop configuration!");
 				desktop = "kde_error";
 			}
 		} else {
@@ -368,7 +368,7 @@
 		}
 		std::string path = "/Wallpaper/" + nameFix + ".png";
 		#ifndef NDEBUG
-			Debug() << "Setting wallpaper to " << path;
+			Log("Setting wallpaper to ", path);
 		#endif
 		char gameDir[PATH_MAX];
 
@@ -424,7 +424,7 @@
 					g_ptr_array_add(colorArr, vb);
 					g_ptr_array_add(colorArr, va);
 					if(!xfconf_channel_set_arrayv(bgchannel, optionColor.c_str(), colorArr)) {
-						Debug() << "WALLPAPER ERROR: xfconf_channel_set_arrayv failed for" << optionColor;
+						Log("xfconf_channel_set_arrayv failed for ", optionColor);
 					}
 					g_value_unset(vr);
 					g_value_unset(vg);
@@ -438,7 +438,7 @@
 				}
 				execCommand("xfdesktop --reload &");
 			#else
-				Debug() << "XFCE support disabled in this build";
+				Log("XFCE support disabled in this build");
 			#endif
 		} else if (desktop == "kde") {
 			replaceAll(concatPath, "\\", "\\\\");
@@ -530,7 +530,7 @@
 					}
 					execCommand("xfdesktop --reload &");
 				#else
-					Debug() << "XFCE support disabled in this build";
+					Log("XFCE support disabled in this build");
 				#endif
 			} else if (desktop == "kde") {
 				std::stringstream command;

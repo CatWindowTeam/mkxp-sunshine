@@ -321,7 +321,7 @@ struct TilemapPrivate {
 		viewpUpdateConnection = shState->graphicsSignals.resized.Connect([&](int w, int h){
 			shState->rubyDispatcher().invoke([&, w, h]{
 				if(this->viewport->isDisposed()){
-					Debug() << "Warning: resize updating of disposed tilemap, disconnecting";
+					Log("Warning: resize updating of disposed tilemap, disconnecting");
 					this->viewpUpdateConnection.Disconnect();
 					return;
 				}
