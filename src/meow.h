@@ -3,6 +3,7 @@
 #include <SDL3/SDL_video.h>
 #include <vector>
 #include <string>
+#include <stdexcept>
 inline std::vector<std::string> logs = {};
 
 // bcz vs code dropping fake errors

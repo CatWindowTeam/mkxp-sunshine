@@ -167,7 +167,7 @@ void ErrorMsg(const char *fmt, ...) {
     va_start(args, fmt);
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-    Debug() << "[E] " << crash_message;
+    LOG_ERR << "[E] " << crash_message;
     show_crash_screen = true;
 }
 

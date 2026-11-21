@@ -1,6 +1,8 @@
 #include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_iostream.h>
 #include <mruby.h>
 #include <physfs.h>
+#include "meow.h"
 
 static mrb_value file_read(mrb_state *mrb, mrb_value self){
     const char *path;
@@ -17,7 +19,7 @@ static mrb_value file_read(mrb_state *mrb, mrb_value self){
         return mrb_nil_value();
     }
 
-    char *buffer = SDL_malloc((size_t)size + 1);
+    char *buffer = (char*)SDL_malloc((size_t)size + 1);
     if(!buffer){
         PHYSFS_close(file);
         return mrb_nil_value();
@@ -43,13 +45,18 @@ static mrb_value file_read(mrb_state *mrb, mrb_value self){
     return result;
 }
 
-/* MiniFS::File.write(path, data) */
 static mrb_value file_write(mrb_state *mrb, mrb_value self){
-  mrb_value path, data;
-  mrb_get_args(mrb, "SS", &path, &data);
-
-  /* TODO: реализовать */
-  return mrb_nil_value();
+	const char* path;
+	mrb_value data;
+	mrb_get_args(mrb, "zS", &path, &data);
+	SDL_IOStream *file = SDL_IOFromFile(path, "wb");
+	if(file == nullptr){
+		return mrb_false_value();	
+	}else{
+		SDL_WriteIO(file, (void*)RSTRING_PTR(data), RSTRING_LEN(data));
+		SDL_CloseIO(file);
+		return mrb_true_value();
+	}
 }
 
 /* MiniFS::File.copy(source, destination) */

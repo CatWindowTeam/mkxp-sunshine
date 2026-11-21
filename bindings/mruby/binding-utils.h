@@ -1,3 +1,4 @@
+#pragma once
 #include <mruby.h>
 #include <stdbool.h>
 #include "data.h"
@@ -29,7 +30,7 @@ inline mrb_value wrapProperty(mrb_state *mrb, mrb_value self, void *prop, const 
     return propObj;
 }
 
-bool klass_initialize_copy(mrb_state *mrb, mrb_value self){
+inline bool klass_initialize_copy(mrb_state *mrb, mrb_value self){
     mrb_value orig;
     mrb_get_args(mrb, "o", &orig);
 	return true;

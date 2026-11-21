@@ -112,7 +112,7 @@ void EventThread::process(RGSSThreadData &rtData){
       		jId = ids[i];
 		}
 
-		Debug() << "Gamepad connected: " << SDL_GetGamepadName(gc);
+		LOG_INFO << "Gamepad connected: " << SDL_GetGamepadName(gc);
     	if(i > 0) {
       		SDL_CloseGamepad(gamepd);
     	}
@@ -130,7 +130,7 @@ void EventThread::process(RGSSThreadData &rtData){
 	SDL_GetWindowPosition(win, &rtData.ethread->winX, &rtData.ethread->winY);
 	while (true) {
 		if (!SDL_WaitEvent(&event)) {
-			Debug() << "Event error: " << SDL_GetError();
+			LOG_ERROR << "Event error: " << SDL_GetError();
 			break;
 		}
 
@@ -251,7 +251,7 @@ void EventThread::process(RGSSThreadData &rtData){
 			case SDL_EVENT_WINDOW_DESTROYED:
 				if (rtData.allowExit) {
 					terminate = true;
-					Debug() << "Termination requested";
+					LOG_INFO << "Termination requested";
 				}else{
 					rtData.triedExit.set();
 				}

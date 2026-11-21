@@ -73,7 +73,6 @@ static struct PHYSFS_Io *SDLRWIoDuplicate(struct PHYSFS_Io *io){
 	SDLRWIoContext *ctx = static_cast<SDLRWIoContext*>(io->opaque);
 	int64_t offset = io->tell(io);
 	PHYSFS_Io *dup = createSDLRWIo(ctx->filename.c_str());
-
 	if (dup)
 		SDLRWIoSeek(dup, offset);
 
@@ -102,7 +101,7 @@ static PHYSFS_Io *createSDLRWIo(const char *filename){
 	try{
 		ctx = new SDLRWIoContext(filename);
 	}catch (const Exception &e){
-		Debug() << "Failed mounting: " << filename;
+		LOG_WARN << "Failed mounting: " << filename;
 		return 0;
 	}
 
@@ -241,8 +240,9 @@ FileSystem::FileSystem(){
 
 FileSystem::~FileSystem(){
 	delete p;
-	if (PHYSFS_deinit() == 0)
-		Debug() << "PhyFS failed to deinit.";
+	if(PHYSFS_deinit() == 0){
+		LOG_WARN << "PhyFS failed to deinit.";
+	}
 }
 
 void FileSystem::addPath(const char *path){
@@ -464,7 +464,7 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename){
 	}
 
 	if (data.physfsError){
-		Debug() << "PhysFS error: " << data.physfsError;
+		LOG_ERR << "PhysFS error: " << data.physfsError;
 		throw Exception(Exception::PHYSFSError, "PhysFS: %s", data.physfsError);
 	}
 

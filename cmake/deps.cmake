@@ -9,6 +9,7 @@ target_include_directories(${APP_TARGET}
 							${CMAKE_SOURCE_DIR}/src
 							${CMAKE_SOURCE_DIR}/external/robin-map/include
 							${CMAKE_SOURCE_DIR}/external/CLI11/include
+							${CMAKE_SOURCE_DIR}/external/rang/include
 							${CMAKE_SOURCE_DIR}/external/sigc
 							${CMAKE_BINARY_DIR}/external/sigc
 							${BINDING_INCLUDE}

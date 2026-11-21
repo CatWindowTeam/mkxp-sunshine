@@ -362,7 +362,7 @@ private:
 			if (err == EINTR)
 				continue;
 
-			Debug() << "nanosleep failed. errno:" << err;
+			LOG_DEBUG << "nanosleep failed. errno:" << err;
 			SDL_Delay(ticks / tickFreqMS);
 			break;
 		}
@@ -380,15 +380,12 @@ struct GraphicsPrivate{
 	 * Can only be changed from within RGSS */
 	Vec2i scPos;
 	Vec2i scRes;
-
 	/* Screen size, to which the rendered frames are scaled up.
 	 * This can be smaller than the window size when fixed aspect
 	 * ratio is enforced */
 	Vec2i scSize;
-
 	/* Actual physical size of the game window */
 	Vec2i winSize;
-
 	/* Offset in the game window at which the scaled game screen
 	 * is blitted inside the game window */
 	Vec2i scOffset;

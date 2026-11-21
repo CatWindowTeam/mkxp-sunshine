@@ -58,7 +58,7 @@ class Window_Message < Window_Selectable
     @blipsound = nil
     # доступна ли озвучка сука я ебал английский как тут написать "доступнен"
     @voiceover = false
-    @voiceover_file = nil
+    $game_temp.message_text_voiceover = nil
   end
   #--------------------------------------------------------------------------
   # * Dispose
@@ -112,8 +112,9 @@ class Window_Message < Window_Selectable
     # Pre-process text
     if $game_temp.message_text != nil && !$game_temp.message_text.empty?
       text = $game_temp.message_text
-	  @voiceover_file = Voiceover.get_file($game_temp.message_text_unmodifed)
-	  if @voiceover_file.nil? || !Settings[:voiceover]
+	  $game_temp.message_text_voiceover = Voiceover.get_file($game_temp.message_text_unmodifed)
+	  $game_temp.message_text_voiceover = Voiceover.get_file($game_temp.message_text_unmodifed)
+	  if $game_temp.message_text_voiceover.nil? || !Settings[:voiceover]
 		# Determine blip sound
 		@blipsound = text.start_with?('[') ? 'text_robot' : 'text'
 	  else
@@ -227,7 +228,7 @@ class Window_Message < Window_Selectable
     end
 
 	if @voiceover and Settings[:voiceover]
-		Voiceover.play_voiceover(@voiceover_file)
+		Voiceover.play_voiceover($game_temp.message_text_voiceover)
     end
   end
   #--------------------------------------------------------------------------

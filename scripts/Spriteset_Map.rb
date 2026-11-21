@@ -103,6 +103,8 @@ class Spriteset_Map
     end
     # Make timer sprite
     @timer_sprite = Sprite_Timer.new
+    # debug hud
+    @debug_sprite = Sprite_Debug.new
     # Make dynamic light
     @dynamic_light = DynamicLight.new(@viewport_lights)
     # Panorama animation timer
@@ -153,6 +155,8 @@ class Spriteset_Map
     @particles.dispose if @particles
     # Dispose of timer sprite
     @timer_sprite.dispose
+    #debug hud
+    @debug_sprite.dispose
     # Dispose of viewports
     @viewport.dispose
     @viewport_pics.dispose
@@ -422,6 +426,8 @@ class Spriteset_Map
     @particles.update if @particles
     # Update timer sprite
     @timer_sprite.update
+    # Update debug sprite
+    @debug_sprite.update
     # Set screen color tone and shake position
     @viewport.tone = $game_screen.tone + $game_map.ambient
     @viewport.origin_x = $game_screen.shake
