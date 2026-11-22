@@ -34,7 +34,7 @@ enum ShaderType : Uint8 {
 	SHADER_COUNT
 };
 
-enum class EffectTexture {
+enum class EffectTexture : Uint8{
 	Noise,
 	Obscured,
 	Current,

@@ -1,5 +1,6 @@
 #!/usr/bin/ruby
 require 'zlib'
+require 'FileUtils'
 
 def usage
   STDERR.puts "Tool for building and extracting xScripts.rxdata"

@@ -1,6 +1,7 @@
 #pragma once
 #include <mruby.h>
-enum CommonSymbol{
+#include <SDL3/SDL_stdinc.h>
+enum CommonSymbol : Uint8{
 	CSfont = 0,
 	CSviewport,
 	CSbitmap,

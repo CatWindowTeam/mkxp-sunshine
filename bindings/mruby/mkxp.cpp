@@ -1,4 +1,4 @@
-#include "debugwriter.h"
+#include "logger.h"
 #include <mruby.h>
 
 namespace {
