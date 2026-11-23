@@ -39,34 +39,24 @@ public:
 		Deactivate = 16,
 		L = 17, R = 18,
 		F5 = 25, F6 = 26, F7 = 27, F8 = 28, F9 = 29,
-		
 		/* Non-standard extensions */
 		MouseLeft = 38, MouseMiddle = 39, MouseRight = 40,
 		DebugAction = 41
 	};
 
 	void update();
-
 	bool isPressed(int button);
 	bool isTriggered(int button);
 	bool isRepeated(int button);
-
 	int dir4Value();
 	int dir8Value();
-
-	/* Non-standard extensions */
 	int mouseX();
 	int mouseY();
-
 	void setBinding(const std::vector<SourceDesc> &descs, Input::ButtonCode target);
-				
-	// more non-standard extensions
 	float wheelX();
 	float wheelY();
 	bool wheelFlipped();
-	
 	bool hasQuit();
-
 private:
 	Input(const RGSSThreadData &rtData);
 	~Input();

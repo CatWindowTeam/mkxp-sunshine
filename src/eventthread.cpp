@@ -118,7 +118,7 @@ void EventThread::process(RGSSThreadData &rtData){
     	}
   	}
   	SDL_free(ids);
-  	
+
 	char buffer[128];
 	char pendingTitle[128];
 	bool resetting = false;
@@ -194,7 +194,7 @@ void EventThread::process(RGSSThreadData &rtData){
 				if(!EventThread::mouseEnabled || event.button.windowID != WindowID)
 					break;
 				mouseState.buttons[event.button.button] = false;
-				break;			
+				break;
 			case SDL_EVENT_MOUSE_MOTION:
 				#ifndef mkxp_android
 				    if (event.motion.which == SDL_TOUCH_MOUSEID)
@@ -202,10 +202,10 @@ void EventThread::process(RGSSThreadData &rtData){
 				#endif
 				if(!EventThread::mouseEnabled || event.motion.windowID != WindowID)
 					break;
-					
+
 				mouseState.x = event.motion.x;
 				mouseState.y = event.motion.y;
-				updateCursorState(cursorInWindow, gameScreen);	
+				updateCursorState(cursorInWindow, gameScreen);
 				break;
 			case SDL_EVENT_FINGER_DOWN:
 				if (event.tfinger.fingerID >= MAX_FINGERS)
@@ -394,7 +394,7 @@ void EventThread::cleanup(){
 	SDL_Event event;
 	while (SDL_PollEvent(&event)){
 		if ((event.type - usrIdStart) == REQUEST_MESSAGEBOX){
-			SDL_free(event.user.data1);	
+			SDL_free(event.user.data1);
 		}
 	}
 }
@@ -497,13 +497,13 @@ bool EventThread::getShowCursor() const{
 void EventThread::notifyFrame(){
 	if (!fps.sendUpdates)
 		return;
-		
+
 	Uint64 current = SDL_GetPerformanceCounter();
 	Uint64 diff = current - fps.lastFrame;
 	if(diff == 0){
 	    return;
 	}
-	    
+
 	fps.lastFrame = current;
 	if(fps.immInitFlag){
 		fps.immInitFlag.clear();
@@ -523,7 +523,7 @@ void EventThread::notifyFrame(){
 
 	SDL_Event event;
 	event.user.code = fps.accDiv;
-	
+
 	fps.acc = fps.accDiv = 0;
 	event.user.type = usrIdStart + UPDATE_FPS;
 	SDL_PushEvent(&event);
