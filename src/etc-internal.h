@@ -27,7 +27,6 @@ constexpr float PI = 3.14159265358979323846f;
 
 struct Vec2{
 	float x, y;
-
 	Vec2() : x(0), y(0){}
 	Vec2(float x, float y) : x(x), y(y){}
 
@@ -80,7 +79,6 @@ struct Vec2{
 
 struct Vec3{
 	float x, y, z;
-
 	Vec3() : x(0), y(0), z(0){}
 	Vec3(float x, float y, float z) : x(x), y(y), z(z){}
 
@@ -103,7 +101,6 @@ struct Vec3{
 
 struct Vec4{
 	float x, y, z, w;
-
 	Vec4() : x(0), y(0), z(0), w(0){}
 	Vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
@@ -118,7 +115,6 @@ struct Vec4{
 
 struct Vec4i{
 	int x, y, z, w;
-
 	Vec4i() : x(0), y(0), z(0), w(0){}
 	Vec4i(int x, int y, int z, int w) : x(x), y(y), z(z), w(w){}
 
@@ -129,7 +125,6 @@ struct Vec4i{
 
 struct Vec2i{
 	int x, y;
-
 	Vec2i() : x(0), y(0){}
 	Vec2i(int x, int y) : x(x), y(y){}
 	explicit Vec2i(int xy) : x(xy), y(xy){}
@@ -197,7 +192,6 @@ struct Vec2i{
 
 struct Vec3i{
 	int x, y, z;
-
 	Vec3i() : x(0), y(0), z(0){}
 	Vec3i(int x, int y, int z) : x(x), y(y), z(z){}
 	Vec3i(const Vec3 &other) : x(other.x), y(other.y), z(other.z){}
@@ -322,7 +316,6 @@ struct StaticRect { float x, y, w, h; };
 
 struct FloatRect{
 	float x, y, w, h;
-
 	FloatRect() : x(0), y(0), w(0), h(0){}
 	FloatRect(float x, float y, float w, float h) : x(x), y(y), w(w), h(h){}
 	FloatRect(const StaticRect &d) : x(d.x), y(d.y), w(d.w), h(d.h){}
@@ -351,7 +344,6 @@ struct FloatRect{
 struct NormValue{
 	float unNorm;
 	float norm;
-
 	NormValue() : unNorm(0), norm(0){}
 	NormValue(float unNorm) : unNorm(unNorm), norm(unNorm / 255.0f){}
 

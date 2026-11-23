@@ -40,11 +40,8 @@ public:
 	 * 'ops' is an opened handle to a possible font file,
 	 * 'filename' is the corresponding path */
 	void initFontSetCB(SDL_IOStream* &ops, const std::string &filename);
-
 	TTF_Font *getFont(std::string family, unsigned int size);
-
 	bool fontPresent(std::string family) const;
-
 private:
 	SharedFontStatePrivate *p;
 };
@@ -54,12 +51,10 @@ struct FontPrivate;
 class Font{
 public:
 	static bool doesExist(const char *name);
-
 	Font(const std::vector<std::string> *names = 0, unsigned int size = 0);
 
 	/* Clone constructor */
 	Font(const Font &other);
-
 	~Font();
 
 	const Font &operator=(const Font &o);
@@ -88,7 +83,6 @@ public:
 	 * passed array and stores it internally (same for default). */
 	void setName(const std::vector<std::string> &names);
 	static void setDefaultName(const std::vector<std::string> &names, const SharedFontState &sfs);
-
 	static const std::vector<std::string> &getInitialDefaultNames();
 
 	/* Assigns heap allocated objects to object properties;
@@ -96,12 +90,10 @@ public:
 	 * (ie. only to be used in GCed language bindings) */
 	void initDynAttribs();
 	static void initDefaultDynAttribs();
-
 	static void initDefaults(const SharedFontState &sfs);
 
 	/* internal */
 	TTF_Font *getSdlFont();
-
 private:
 	FontPrivate *p;
 };

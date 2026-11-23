@@ -80,22 +80,17 @@ public:
 	/* Sets initial reference without copying by value,
 	 * use at construction */
 	void setInitFont(Font *value);
-
 	/* <internal> */
 	RenderTarget &getRenderTarget();
 	SDL_Surface *megaSurface() const;
 	void ensureNonMega() const;
 	void callModified();
-
 	/* Binds the backing texture and sets the correct
 	 * texture size uniform in shader */
 	void bindTex();
-
 	/* Adds 'rect' to tainted area */
 	void taintArea(const IntRect &rect);
-
 	Signal<void()> modified;
-	
 private:
 	void releaseResources();
 	const char *klassName() const { return "bitmap"; }

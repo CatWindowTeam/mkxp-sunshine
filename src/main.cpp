@@ -113,20 +113,20 @@ int main(int argc, char *argv[]) {
 	#endif
 
 	/* initialize SDL first */
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) == false)[[unlikely]]{
     	WarnMsg("Error initializing SDL: %s", SDL_GetError());
     	return 1;
   	}
 
 	#ifdef STEAM
-  		if(!STEAMSHIM_init()) {
+  		if(!STEAMSHIM_init())[[unlikely]]{
     		WarnMsg("Could not initialize Steamworks API");
     		SDL_Quit();
     		return 1;
   		}
 	#endif
 
-  	if (!EventThread::allocUserEvents()) {
+  	if (!EventThread::allocUserEvents())[[unlikely]]{
     	WarnMsg("Error allocating SDL user events");
     	return 1;
   	}
@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
 
 	#ifndef dos
   		if(!conf.gameFolder.empty()){
-    		if(chdir(conf.gameFolder.c_str()) != 0) {
+    		if(chdir(conf.gameFolder.c_str()) != 0)[[unlikely]]{
       			WarnMsg("Unable to switch into gameFolder %s", conf.gameFolder.c_str());
       			return 0;
     		}
@@ -184,13 +184,13 @@ int main(int argc, char *argv[]) {
   		}
 	#endif
 
-  	if(TTF_Init() == false) {
+  	if(TTF_Init() == false)[[unlikely]]{
 		WarnMsg("Error initializing SDL_ttf: %s", SDL_GetError());
     	SDL_Quit();
     	return 1;
   	}
 
-  	if(MIX_Init() == false) {
+  	if(MIX_Init() == false)[[unlikely]]{
     	WarnMsg("Error initializing SDL_mixer: %s", SDL_GetError());
     	TTF_Quit();
     	SDL_Quit();
@@ -250,7 +250,7 @@ int main(int argc, char *argv[]) {
   	spec.channels = 2;
   	spec.freq = 44100;
   	MIX_Mixer *mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
-  	if(!mixer) {
+  	if(!mixer)[[unlikely]]{
     	WarnMsg("Error creating Mixer Device, check your system audio configuration");
     	SDL_DestroyWindow(win);
     	MIX_Quit();
@@ -293,7 +293,6 @@ int main(int argc, char *argv[]) {
   	SDL_Thread *rgssThread = SDL_CreateThread(rgssThreadFun, "rgss", &rtData);
   	/* Start event processing */
   	eventThread.process(rtData);
-
   	/* Request RGSS thread to stop */
   	rtData.rqTerm.set();
 
@@ -310,7 +309,7 @@ int main(int argc, char *argv[]) {
 
   	/* If RGSS thread ack'd request, wait for it to shutdown,
   	 * otherwise abandon hope and just end the process as is. */
-  	if (rtData.rqTermAck) {
+  	if (rtData.rqTermAck){
    		SDL_WaitThread(rgssThread, 0);
   	}else{
     	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle, "The RGSS script seems to be stuck and Sunshine will now force quit", win);

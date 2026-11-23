@@ -71,16 +71,13 @@ public:
 	 * if "checkReset" */
 	void repaintWait(const AtomicFlag &exitCond, bool checkReset = true);
 	TexHandle obscuredTex() const;
-
 private:
 	Graphics(RGSSThreadData *data, IRender &render);
 	~Graphics();
 
 	void addDisposable(Disposable *);
 	void remDisposable(Disposable *);
-
 	friend struct SharedStatePrivate;
 	friend class Disposable;
-
 	GraphicsPrivate *p;
 };

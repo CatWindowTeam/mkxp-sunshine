@@ -110,7 +110,6 @@ struct PingPong{
 
 		render.popClearColor();
 	}
-
 private:
 	void bind(){
 		render.bindRenderTarget(rt[dstInd]);
@@ -311,7 +310,6 @@ struct FPSLimiter{
 		/* Compensate for the last delta
 		 * to the ideal timestep */
 		toDelay -= adj.idealDiff;
-
 		if (toDelay < 0)
 			toDelay = 0;
 
@@ -453,7 +451,6 @@ struct GraphicsPrivate{
 		Vec2 &ratio = rtData->sizeResoRatio;
 		ratio.x = (float) scRes.x / scSize.x;
 		ratio.y = (float) scRes.y / scSize.y;
-
 		rtData->screenOffset = scOffset;
 	}
 

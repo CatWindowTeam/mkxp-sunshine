@@ -129,7 +129,6 @@ static Sint64 SDL_RWopsSeek(void *userdata, Sint64 offset, SDL_IOWhence whence){
 		return -1;
 
 	int64_t base;
-
 	switch (whence){
 		default:
 			case SDL_IOWhence::SDL_IO_SEEK_SET:
@@ -354,25 +353,22 @@ void FileSystem::initFontSets(SharedFontState &sfs){
 struct OpenReadEnumData{
 	FileSystem::OpenHandler &handler;
 	SDL_IOStream* ops;
-
 	/* The filename (without directory) we're looking for */
 	const char *filename;
 	size_t filenameN;
-
 	/* Optional hash to translate full filepaths
 	 * (used with path cache) */
 	tsl::robin_map<std::string, std::string> *pathTrans;
-
 	/* Number of files we've attempted to read and parse */
 	size_t matchCount;
 	bool stopSearching;
-
 	/* In case of a PhysFS error, save it here so it
 	 * doesn't get changed before we get back into our code */
 	const char *physfsError;
 	OpenReadEnumData(FileSystem::OpenHandler &handler, const char *filename, size_t filenameN, tsl::robin_map<std::string, std::string> *pathTrans) :
 		handler(handler), filename(filename), filenameN(filenameN), pathTrans(pathTrans),
-		matchCount(0), stopSearching(false), physfsError(0) {}
+		matchCount(0), stopSearching(false), physfsError(0)
+	{}
 };
 
 static PHYSFS_EnumerateCallbackResult openReadEnumCB(void *d, const char *dirpath, const char *filename){

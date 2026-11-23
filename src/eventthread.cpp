@@ -129,7 +129,7 @@ void EventThread::process(RGSSThreadData &rtData){
 	SDL_GetWindowSize(win, &winW, &winH);
 	SDL_GetWindowPosition(win, &rtData.ethread->winX, &rtData.ethread->winY);
 	while (true) {
-		if (!SDL_WaitEvent(&event)) {
+		if(!SDL_WaitEvent(&event))[[unlikely]]{
 			Log("Event error: ", SDL_GetError());
 			break;
 		}
@@ -249,7 +249,7 @@ void EventThread::process(RGSSThreadData &rtData){
 				break;
 			case SDL_EVENT_QUIT:
 			case SDL_EVENT_WINDOW_DESTROYED:
-				if (rtData.allowExit) {
+				if(rtData.allowExit){
 					terminate = true;
 					Log("Termination requested");
 				}else{

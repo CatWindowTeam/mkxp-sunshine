@@ -41,7 +41,7 @@
 
 #define GUARD_MEGA \
 	{ \
-		if(p->megaSurface) \
+		if(p->megaSurface)[[unlikely]]\
 			ErrorMsg(Exception::MKXPError, "Operation not supported for mega surfaces"); \
 	}
 
@@ -266,7 +266,7 @@ Bitmap::Bitmap(const char *filename){
 	BitmapOpenHandler handler;
 	shState->fileSystem().openRead(handler, filename);
 	SDL_Surface *imgSurf = handler.surf;
-	if (!imgSurf)
+	if(!imgSurf) [[unlikely]]
 		ErrorMsg(Exception::SDLError, "Error loading image '%s': %s", filename, SDL_GetError());
 
 	p->ensureFormat(imgSurf, SDL_PIXELFORMAT_ABGR8888);
@@ -322,7 +322,7 @@ Bitmap::Bitmap(SDL_IOStream *src){
 }
 
 Bitmap::Bitmap(int width, int height){
-	if (width <= 0 || height <= 0)
+	if(width <= 0 || height <= 0)[[unlikely]]
 		ErrorMsg(Exception::RGSSError, "failed to create bitmap"); 
 
 	RenderTarget tex = shState->texPool().request(width, height);
@@ -598,10 +598,8 @@ void Bitmap::blur(){
 
 	p->render.pushBlend(false);
 	p->render.pushViewport(IntRect(0, 0, width(), height()));
-
 	p->render.bindTexture(p->target.tex);
 	p->render.bindRenderTarget(auxTex);
-
 	p->render.useBlurPass(0);
 	p->render.setTexSize(Vec2i(width(), height()));
 	p->render.applyViewportProj();

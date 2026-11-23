@@ -33,11 +33,11 @@
 #include <SDL3_mixer/SDL_mixer.h>
 #include <string>
 
+#define MAX_FINGERS 4
+
 struct RGSSThreadData;
 struct SDL_Window;
 union SDL_Event;
-
-#define MAX_FINGERS 4
 extern SDL_Gamepad* gc;
 
 class EventThread{
@@ -57,8 +57,6 @@ public:
 		int x, y;
 		bool inWindow;
 		bool buttons[32];
-
-		// mouse wheel support for sunshine
 		bool wheelFlipped;
 		float wheelX, wheelY;
 	};
@@ -89,10 +87,8 @@ public:
 	#endif
 
 	EventThread();
-
 	void process(RGSSThreadData &rtData);
 	void cleanup();
-
 	/* Called from RGSS thread */
 	void requestFullscreenMode(bool mode);
 	void requestWindowMove(int x, int y);
@@ -104,20 +100,16 @@ public:
 	bool getFullscreen() const;
 	bool getShowCursor() const;
 	void showMessageBox(const char *body, int flags = 0);
-
 	/* RGSS thread calls this once per frame */
 	void notifyFrame();
-
 	/* Called on game screen (size / offset) changes */
 	void notifyGameScreenChange(const SDL_Rect &screen);
-
 private:
 	static bool eventFilter(void *, SDL_Event*);
 	void resetInputStates();
 	void setFullscreen(SDL_Window *, bool mode);
 	void updateCursorState(bool inWindow, const SDL_Rect &screen);
 	void updateWindowPosition(int x, int y);  
-
 	int winX, winY;
 	bool fullscreen;
 	bool showCursor;
@@ -170,7 +162,6 @@ struct UnidirMessage{
 		out = current;
 		SDL_UnlockMutex(mutex);
 	}
-
 private:
 	SDL_Mutex *mutex;
 	mutable AtomicFlag changed;
@@ -197,7 +188,7 @@ private:
 		SDL_Mutex *mut;
 		SDL_Condition *cond;
 	};
-
+	
 	Util mainSync;
 	Util reply;
 	Util secondSync;
@@ -241,5 +232,5 @@ struct RGSSThreadData{
 	      mixer(mixer),
 	      sizeResoRatio(1, 1),
 	      refreshRate(refreshRate)
-		{}
+	{}
 };

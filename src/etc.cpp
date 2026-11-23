@@ -33,8 +33,7 @@ Color::Color(const Vec4 &norm) : norm(norm){
 	updateExternal();
 }
 
-Color::Color(const Color &o) : red(o.red), green(o.green), blue(o.blue), alpha(o.alpha), norm(o.norm)
-{}
+Color::Color(const Color &o) : red(o.red), green(o.green), blue(o.blue), alpha(o.alpha), norm(o.norm){}
 
 bool Color::operator==(const Color &o) const{
 	return red   == o.red   &&
@@ -49,7 +48,6 @@ const Color &Color::operator=(const Color &o){
 	blue  = o.blue;
 	alpha = o.alpha;
 	norm  = o.norm;
-
 	return o;
 }
 
@@ -58,7 +56,6 @@ void Color::set(double red, double green, double blue, double alpha){
 	this->green = green;
 	this->blue  = blue;
 	this->alpha = alpha;
-
 	updateInternal();
 }
 
@@ -95,7 +92,7 @@ void Color::serialize(char *buffer) const{
 }
 
 Color *Color::deserialize(const char *data, int len){
-	if (len != 32)
+	if(len != 32)[[unlikely]]
 		crash(Exception::ArgumentError, "Color: Serialized data invalid");
 
 	Color *c = new Color();
@@ -104,7 +101,6 @@ Color *Color::deserialize(const char *data, int len){
 	c->blue  = readDouble(&data);
 	c->alpha = readDouble(&data);
 	c->updateInternal();
-
 	return c;
 }
 
@@ -128,7 +124,6 @@ SDL_Color Color::toSDLColor() const{
 	c.g = clamp<double>(green, 0, 255);
 	c.b = clamp<double>(blue, 0, 255);
 	c.a = clamp<double>(alpha, 0, 255);
-
 	return c;
 }
 
@@ -137,8 +132,7 @@ Tone::Tone(double red, double green, double blue, double gray) : red(red), green
 	updateInternal();
 }
 
-Tone::Tone(const Tone &o) : red(o.red), green(o.green), blue(o.blue), gray(o.gray), norm(o.norm)
-{}
+Tone::Tone(const Tone &o) : red(o.red), green(o.green), blue(o.blue), gray(o.gray), norm(o.norm){}
 
 bool Tone::operator==(const Tone &o) const{
 	return red   == o.red   &&
@@ -152,7 +146,6 @@ void Tone::set(double red, double green, double blue, double gray){
 	this->green = green;
 	this->blue  = blue;
 	this->gray  = gray;
-
 	updateInternal();
 	valueChanged();
 }
@@ -163,7 +156,6 @@ const Tone& Tone::operator=(const Tone &o){
 	blue  = o.blue;
 	gray  = o.gray;
 	norm  = o.norm;
-
 	valueChanged();
 	return o;
 }
@@ -171,28 +163,24 @@ const Tone& Tone::operator=(const Tone &o){
 void Tone::setRed(double value){
 	red = value;
 	norm.x = (float) clamp<double>(value, -255, 255) / 255;
-
 	valueChanged();
 }
 
 void Tone::setGreen(double value){
 	green = value;
 	norm.y = (float) clamp<double>(value, -255, 255) / 255;
-
 	valueChanged();
 }
 
 void Tone::setBlue(double value){
 	blue = value;
 	norm.z = (float) clamp<double>(value, -255, 255) / 255;
-
 	valueChanged();
 }
 
 void Tone::setGray(double value){
 	gray = value;
 	norm.w = (float) clamp<double>(value, 0, 255) / 255;
-
 	valueChanged();
 }
 
@@ -209,7 +197,7 @@ void Tone::serialize(char *buffer) const{
 }
 
 Tone *Tone::deserialize(const char *data, int len){
-	if (len != 32)
+	if (len != 32)[[unlikely]]
 		crash(Exception::ArgumentError, "Tone: Serialized data invalid");
 
 	Tone *t = new Tone();
@@ -218,7 +206,6 @@ Tone *Tone::deserialize(const char *data, int len){
 	t->blue  = readDouble(&data);
 	t->gray  = readDouble(&data);
 	t->updateInternal();
-
 	return t;
 }
 
@@ -269,7 +256,6 @@ const Rect &Rect::operator=(const Rect &o){
 	width  = o.width;
 	height = o.height;
 	valueChanged();
-
 	return o;
 }
 
@@ -329,15 +315,13 @@ void Rect::serialize(char *buffer) const{
 }
 
 Rect *Rect::deserialize(const char *data, int len){
-	if (len != 16)
+	if (len != 16)[[unlikely]]
 		crash(Exception::ArgumentError, "Rect: Serialized data invalid");
 
 	Rect *r = new Rect();
-
 	r->x      = readInt32(&data);
 	r->y      = readInt32(&data);
 	r->width  = readInt32(&data);
 	r->height = readInt32(&data);
-
 	return r;
 }

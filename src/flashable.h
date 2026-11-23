@@ -65,7 +65,6 @@ public:
 		float prog = (float) counter / duration;
 		flashColor.w = flashAlpha * (1 - prog);
 	}
-
 protected:
 	Vec4 flashColor;
 	bool flashing;

@@ -56,7 +56,6 @@ protected:
 		if (isDisposed())
 			ErrorMsg(Exception::RGSSError, "disposed %s", klassName());
 	}
-
 private:
 	virtual void releaseResources() = 0;
 	virtual const char *klassName() const = 0;

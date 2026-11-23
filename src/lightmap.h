@@ -15,7 +15,6 @@ public:
 	~LightMap();
 
 	bool smooth = true;
-
 	void update();
 
 	DECL_ATTR( WallMap,        Bitmap* )
@@ -35,11 +34,9 @@ public:
 	void initDynAttribs();
 private:
 	LightMapPrivate *p;
-
 	void draw();
 	void onGeometryChange(const Scene::Geometry &);
 	void releaseResources();
 	const char *klassName() const { return "lightmap"; }
-
 	ABOUT_TO_ACCESS_DISP
 };

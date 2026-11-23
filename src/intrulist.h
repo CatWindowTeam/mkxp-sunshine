@@ -28,7 +28,6 @@ struct IntruListLink{
 	T *data;
 
 	IntruListLink(T *data) : prev(0), next(0), data(data){}
-
 	~IntruListLink(){
 		if (prev && next){
 			next->prev = prev;
@@ -53,7 +52,6 @@ public:
 		node.prev = &root;
 		node.next = root.next;
 		root.next = &node;
-
 		size++;
 	}
 
@@ -62,7 +60,6 @@ public:
 		node.next = &root;
 		node.prev = root.prev;
 		root.prev = &node;
-
 		size++;
 	}
 
@@ -71,7 +68,6 @@ public:
 		node.prev = prev.prev;
 		prev.prev->next = &node;
 		prev.prev = &node;
-
 		size++;
 	}
 
@@ -81,10 +77,8 @@ public:
 
 		node.prev->next = node.next;
 		node.next->prev = node.prev;
-
 		node.prev = 0;
 		node.next = 0;
-
 		size--;
 	}
 
