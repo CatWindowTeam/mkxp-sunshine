@@ -1,6 +1,6 @@
 #include "audioplayback.h"
 #include "binding-utils.h"
-#include "debugwriter.h"
+#include "logger.h"
 
 void audioplayback_free(mrb_state *mrb, void* ptr){
     AudioPlayback* pb = (AudioPlayback*)ptr;

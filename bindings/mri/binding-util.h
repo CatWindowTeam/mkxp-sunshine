@@ -28,7 +28,7 @@
 #include <ruby.h>
 #include <ruby/version.h>
 
-enum RbException {
+enum RbException : Uint8 {
     RGSS = 0,
     Reset,
     PHYSFS,

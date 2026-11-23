@@ -11,8 +11,8 @@ void Log(Args&&... args){
 	std::ostringstream buf;
 
     (buf << ... << args) << '\n';
-    const std::string message = buf.str();
+    auto message = buf.str();
 
-    logs.push_back(message);
     std::cout << message;
+    logs.push_back(std::move(message));
 }

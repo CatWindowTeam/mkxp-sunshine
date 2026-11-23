@@ -68,7 +68,6 @@ struct SpritePrivate{
 		int length;
 		int speed;
 		float phase;
-
 		/* Wave effect is active (amp != 0) */
 		bool active;
 		/* qArray needs updating */
@@ -77,7 +76,6 @@ struct SpritePrivate{
 	} wave;
 
 	EtcTemps tmp;
-
 	SignalConnection prepareCon;
 
 	SpritePrivate()
@@ -129,7 +127,6 @@ struct SpritePrivate{
 	void onSrcRectChange(){
 		FloatRect rect = srcRect->toFloatRect();
 		Vec2i bmSize;
-
 		if (!nullOrDisposed(bitmap))
 			bmSize = Vec2i(bitmap->width(), bitmap->height());
 
@@ -155,10 +152,8 @@ struct SpritePrivate{
 
 	void updateVisibility(){
 		isVisible = false;
-
 		if (nullOrDisposed(bitmap))
 			return;
-
 		if (!opacity)
 			return;
 
@@ -218,7 +213,6 @@ struct SpritePrivate{
 		if (wave.amp < -(width / 2)){
 			wave.qArray.resize(0);
 			wave.qArray.commit();
-
 			return;
 		}
 
@@ -273,8 +267,7 @@ struct SpritePrivate{
 	}
 };
 
-Sprite::Sprite(Viewport *viewport)
-    : ViewportElement(viewport){
+Sprite::Sprite(Viewport *viewport) : ViewportElement(viewport){
 	p = new SpritePrivate;
 	onGeometryChange(scene->getGeometry());
 }
@@ -514,7 +507,6 @@ void Sprite::update(){
 void Sprite::draw(){
 	if (!p->isVisible)
 		return;
-
 	if (emptyFlashFlag)
 		return;
 
@@ -573,7 +565,6 @@ void Sprite::draw(){
 
 	render.pushBlendMode(p->blendType);
 	p->bitmap->bindTex();
-	
 	if (smooth)
 		render.setTextureSmooth(p->bitmap->getRenderTarget().tex, true);
 

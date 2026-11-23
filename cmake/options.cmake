@@ -25,9 +25,6 @@ option_with_define(RENDER_GL_MKXP "Build with gl-mkxp render backend" ON)
 option_with_define(UNSAFE_OPTIMIZATIONS "Allow unsafe optimizations" OFF)
 option_with_define(SUNSHINE_MODLOADER "Enable support for Modloader" ON)
 
-option_with_define(SUNSHINE_LOG_DEBUG "Enable debug log messages" OFF)
-option_with_define(SUNSHINE_LOG_COLORED "Enable warn log messages" ON)
-
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)

@@ -1,5 +1,5 @@
 #include "eventthread.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "config.h"
 #include <SDL3/SDL.h>
 #include <SDL3_net/SDL_net.h>

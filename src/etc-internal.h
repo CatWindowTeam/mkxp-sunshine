@@ -340,7 +340,7 @@ struct FloatRect{
 	FloatRect wFlipped() const{
 		return FloatRect(x+w, y, -w, h);
 	}
-	
+
 	FloatRect hFlipped() const{
 		return FloatRect(x, y+h, w, -h);
 	}

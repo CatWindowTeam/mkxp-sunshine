@@ -138,7 +138,6 @@ bool SceneElement::operator<(const SceneElement &o) const{
 
 		return true;
 	}
-	
 	return false;
 }
 
