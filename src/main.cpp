@@ -209,7 +209,7 @@ int main(int argc, char *argv[]) {
     	SDL_Window *candidate = SDL_CreateWindow(conf.windowTitle, conf.defScreenW, conf.defScreenH, winFlags);
     	if(!candidate){
 			windowError = SDL_GetError();
-		    Log("cannot create window for backend ", backends[i], " - ", windowError);
+		    Warn_Log("cannot create window for backend ", backends[i], " - ", windowError);
       		continue;
     	}
 
@@ -218,7 +218,7 @@ int main(int argc, char *argv[]) {
       		Log("Render backend: ", backends[i]);
     	}else{
 			windowError = SDL_GetError();
-			Log("Render backend unavailable: ", backends[i], " - ", windowError);
+			Warn_Log("Render backend unavailable: ", backends[i], " - ", windowError);
 			SDL_DestroyWindow(candidate);
 			SDL_FlushEvents(SDL_EventType::SDL_EVENT_FIRST, SDL_EventType::SDL_EVENT_LAST);
     	}

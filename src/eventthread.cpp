@@ -130,7 +130,7 @@ void EventThread::process(RGSSThreadData &rtData){
 	SDL_GetWindowPosition(win, &rtData.ethread->winX, &rtData.ethread->winY);
 	while (true) {
 		if(!SDL_WaitEvent(&event))[[unlikely]]{
-			Log("Event error: ", SDL_GetError());
+			Error_Log("Event error: ", SDL_GetError());
 			break;
 		}
 

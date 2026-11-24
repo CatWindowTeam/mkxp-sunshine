@@ -167,7 +167,7 @@ void ErrorMsg(const char *fmt, ...) {
     va_start(args, fmt);
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-    Log(crash_message);
+    Error_Log(crash_message);
     show_crash_screen = true;
 }
 
@@ -176,7 +176,7 @@ void ErrorMsg(Exception::Type t, const char *fmt, ...) {
     va_start(args, fmt);
     SDL_vsnprintf(crash_message, sizeof(crash_message), fmt, args);
     va_end(args);
-    Log(crash_message);
+    Error_Log(crash_message);
     show_crash_screen = true;
 }
 
@@ -194,7 +194,7 @@ void WarnMsg(const char *fmt, ...) {
 
     SDL_vsnprintf(buf, (size_t)len + 1, fmt, args);
     va_end(args);
-    Log(buf);
+    Warn_Log(buf);
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", buf, NULL);
     SDL_free(buf);
 }

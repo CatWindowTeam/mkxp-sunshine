@@ -101,7 +101,7 @@ static PHYSFS_Io *createSDLRWIo(const char *filename){
 	try{
 		ctx = new SDLRWIoContext(filename);
 	}catch (const Exception &e){
-		Log("Failed mounting: ", filename);
+		Error_Log("Failed mounting: ", filename);
 		return 0;
 	}
 

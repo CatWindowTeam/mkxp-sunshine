@@ -40,11 +40,9 @@ public:
 	/* Clone constructor */
 	Bitmap(const Bitmap &other);
 	~Bitmap();
-
 	int width()  const;
 	int height() const;
 	IntRect rect() const;
-
 	void blt(int x, int y, const Bitmap &source, IntRect rect, int opacity = 255);
 	void stretchBlt(const IntRect &destRect, const Bitmap &source, const IntRect &sourceRect, int opacity = 255);
 	void fillRect(int x, int y, int width, int height, const Vec4 &color);
@@ -58,10 +56,8 @@ public:
 	void blur();
 	void radialBlur(int angle, int divisions);
 	void clear();
-
 	Color getPixel(int x, int y) const;
 	void setPixel(int x, int y, const Color &color);
-
 	void hueChange(int hue);
 
 	enum TextAlign : Uint8 {

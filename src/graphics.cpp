@@ -360,7 +360,7 @@ private:
 			if (err == EINTR)
 				continue;
 
-			Log("nanosleep failed. errno: ", err);
+			Error_Log("nanosleep failed. errno: ", err);
 			SDL_Delay(ticks / tickFreqMS);
 			break;
 		}
