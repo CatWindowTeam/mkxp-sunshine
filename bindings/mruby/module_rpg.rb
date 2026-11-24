@@ -1,1 +1,2 @@
-MKXP.puts File.read("Makefile")
+while true
+end

@@ -28,7 +28,7 @@ void SunshineBindingInit(mrb_state *mrb){
 			defined(haiku) || \
 			defined(web) || \
 			defined(unix_like) || \
-			defined(android) || \
+			defined(mkxp_android) || \
 			defined(TERMUX)
 		mrb_define_const(mrb, m, "UNSUPPORTED_ENVIROMENT", mrb_true_value());
 	#else
