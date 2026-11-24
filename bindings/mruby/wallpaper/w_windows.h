@@ -9,7 +9,7 @@
 	#include "sharedstate.h"
 	#include "config.h"
 	#include "oneshot.h"
-	#include "debugwriter.h"
+	#include "logger.h"
 	
 	static WCHAR szStyle[8] = {0};
 	static WCHAR szTile[8] = {0};
@@ -28,7 +28,7 @@
 		std::string path;
 		path = conf.gameFolder + "\\Wallpaper\\" + name + ".bmp";
 		#ifndef NDEBUG
-			Debug() << "Setting wallpaper to " << path;
+			Log("Setting wallpaper to ", path);
 		#endif
 		// Crapify the slashes
 		size_t index = 0;

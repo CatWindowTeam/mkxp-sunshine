@@ -23,7 +23,6 @@
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "config.h"
-#include "debugwriter.h"
 #include "define.h"
 #include <mruby.h>
 

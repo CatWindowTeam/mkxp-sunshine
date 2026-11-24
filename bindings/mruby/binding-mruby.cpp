@@ -26,7 +26,6 @@
 #include <SDL3/SDL_iostream.h>
 #include "SDL3/SDL_stdinc.h"
 #include "binding.h"
-#include "logger.h"
 #include "graphics.h"
 #include "meow.h"
 #include "sharedstate.h"

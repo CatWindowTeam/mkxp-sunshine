@@ -5,7 +5,7 @@ namespace {
   static mrb_value mrb_puts(mrb_state* mrb, mrb_value) {
     const char* str;
     mrb_get_args(mrb, "z", &str);
-    Debug() << str;
+    Log(str);
     return mrb_nil_value();
   }
 
