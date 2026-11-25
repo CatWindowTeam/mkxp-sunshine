@@ -1,10 +1,11 @@
 #include "binding.h"
-#include "debugwriter.h"
+#include "logger.h"
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "graphics.h"
+#include "meow.h"
+#include "bitmap.h"
 #include <chrono>
-#include <stdio.h>
 static void mriBindingExecute();
 static void mriBindingTerminate();
 static void mriBindingReset();
@@ -28,15 +29,21 @@ ScriptBinding *scriptBinding = &scriptBindingImpl;
 		for (int i = 0; i < 30; i++){ code } \
 		auto stop = high_resolution_clock::now(); \
 		auto duration = duration_cast<microseconds>(stop - start); \
-		Debug() << #code << " took: " << duration.count() << " ms"; \
+		Log(#code, " took: ", duration.count(), " ms"); \
     }catch (const char* msg) { \
-        printf(msg); \
+        Log(msg); \
     } \
 } \
 
 
 static void mriBindingExecute(){
-	BENCHMARK( Debug() << "TEST"; )
+	Bitmap *testbitmap = new Bitmap(640, 480);
+	BENCHMARK( Debug_Log("TEST"); )
+	BENCHMARK( Warn_Log("TEST"); )
+	BENCHMARK( Error_Log("TEST"); )
+	BENCHMARK( Log("TEST"); )
+	BENCHMARK( set_crash_info("%i", loglevel); )
+	BENCHMARK( testbitmap->drawText(0, 0, 640, 480, "TEST", 1); )
 	BENCHMARK( shState->checkReset(); )
 	BENCHMARK( shState->checkShutdown(); )
 	shState->rtData().rqTermAck.set();
