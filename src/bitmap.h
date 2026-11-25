@@ -68,7 +68,7 @@ public:
 
 	void drawText(int x, int y, int width, int height, const char *str, Uint8 align = Left);
 	void drawText(const IntRect &rect, const char *str, Uint8 align = Left);
-	
+
 	IntRect textSize(const char *str);
 
 	DECL_ATTR(Font, Font&)

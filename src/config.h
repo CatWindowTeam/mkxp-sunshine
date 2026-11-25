@@ -44,8 +44,8 @@ struct Config {
     struct {
         std::string scripts = "Data/xScripts.rxdata";
     } game;
-    
-	#ifdef vita
+
+    #ifdef vita
     	std::string customDataPath;
     	std::string commonDataPath = "ux0:/data/Sunshine";
     	std::string gameFolder = "ux0:/data/Sunshine";
