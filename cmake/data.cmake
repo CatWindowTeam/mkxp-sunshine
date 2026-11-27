@@ -10,7 +10,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 	    -fdelete-dead-exceptions
 	    -fmerge-all-constants
 	    # Graphite
-            -fgraphite
+        -fgraphite
 	    -floop-block
 	    -fgraphite-identity
 	    -floop-nest-optimize
@@ -21,8 +21,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 
 	check_option(COPT_CXX
 	    -fno-rtti
-	    -fwhole-program-vtables
-	    -fvirtual-function-elimination
 	)
 
 	check_linker_option(LOPT_BASE
@@ -74,6 +72,6 @@ if(LTO)
 	  check_option(COPT_LTO
 	    -fdevirtualize-at-ltrans
 	    -fwhole-program-vtables
+	    -fvirtual-function-elimination
 	  )
 endif()
- 

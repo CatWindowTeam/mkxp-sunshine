@@ -14,7 +14,8 @@ target_include_directories(${APP_TARGET}
 							${CMAKE_BINARY_DIR}/external/sigc
 							${BINDING_INCLUDE}
 							${CMAKE_SOURCE_DIR}
-							${CMAKE_BINARY_DIR})
+							${CMAKE_BINARY_DIR}
+)
 
 target_link_libraries(${APP_TARGET}
 						PRIVATE
@@ -27,4 +28,5 @@ target_link_libraries(${APP_TARGET}
 						${BINDING_LIBRARY}
 						ZLIB::ZLIBSTATIC
 						PhysFS::PhysFS
-						sigc-3.0)
+						sigc-3.0
+)

@@ -91,9 +91,9 @@
     		return;
 
 		desktop = shState->oneshot().desktopEnv;
-		if (desktop == "nope") {
+		if(desktop == "nope"){
     			return;
-		}if (desktop == "lxde"){
+		}else if(desktop == "lxde"){
 			const char* homeC = SDL_getenv("HOME");
 			if (!homeC) return;
 			std::string home(homeC);
@@ -135,15 +135,18 @@
 		//just reuse code :3
 		if (desktop == "lxqt"){
 			DBUS_SESSION_BUS_ADDRESS = SDL_getenv("DBUS_SESSION_BUS_ADDRESS");
+
 			const char* homeC = SDL_getenv("HOME");
-			if (!homeC) return;
+			if(!homeC) return;
+
 			std::string home(homeC);
 			std::string path = home + "/.config/pcmanfm-qt/lxqt/settings.conf";
 			std::ifstream infile(path);
-			if (!infile) {
+			if(!infile){
 			   Log("Can't open LXDE settings");
 			   return;
 			}
+			
 			std::string line;
 			unsigned int lineNumber = 0;
 			static bool first_found = false;
@@ -243,7 +246,6 @@
 						defXfceColor[prefix] = colorVal;
 					}
 				} else {
-					// Configuration failed to initialize, we won't set the wallpaper
 					Log("Configuration failed to initialize, we won't set the wallpaper");
 					desktop = "xfce_error";
 					g_error_free(xferror);
