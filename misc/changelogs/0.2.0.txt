@@ -8,4 +8,13 @@
 * MP3 support disabled by default
 * Journal fixes
 * WME like movement system
-*  
+* Flac support enabled
+* GCC Graphite enables by default
+* Voiceover system
+* new debug tools
+* RAM usage reduced
+* Termux support patches(WIP)
+* OpenBSD support patches
+* TexPool memory limit command line option added
+* Journal App fixes and optimizations
+* Basic GNU/Hurd support(WIP)
