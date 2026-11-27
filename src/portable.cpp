@@ -8,5 +8,9 @@ void mount_assets_archive(){
 		if(!PHYSFS_mount("app0:assets.zip", nullptr, 0)) {
 		    WarnMsg("Failed to mount assets archive: %s", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		}
-	#endif	
+	#elif mkxp_android
+	        if(!PHYSFS_mount("assets://assets.zip", nullptr, 0)) {
+                    WarnMsg("Failed to mount assets archive: %s", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+                }
+	#endif
 }
