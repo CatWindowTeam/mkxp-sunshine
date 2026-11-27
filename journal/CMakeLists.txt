@@ -1,16 +1,12 @@
 cmake_minimum_required(VERSION 3.20)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
-    message(FATAL_ERROR "In-source builds are disabled. Use: cmake -S . -B build")
-endif()
 
 project(_______ C)
 include(CheckIPOSupported)
 include(${CMAKE_SOURCE_DIR}/cmake/check.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/xxd.cmake)
 include(${CMAKE_SOURCE_DIR}/deps_config.cmake)
-
 set(EMBEDDED_INPUT assets/icon.png assets/default.png)
 
 # LTO shit
@@ -33,7 +29,6 @@ endforeach()
 
 
 add_executable(${PROJECT_NAME} ${EMBEDDED_SOURCE} main.c)
-
 check_linker_option_c(LOPT_BASE
 	LINKER:-O3
 	LINKER:--gc-sections
@@ -47,13 +42,13 @@ check_linker_option_c(LOPT_BASE
 	LINKER:-z,start-stop-gc
 	LINKER:--no-eh-frame-hdr
 )
+
 target_link_options(${PROJECT_NAME} PRIVATE ${LOPT_BASE}) 
 set(EXTERNAL_DIR "${CMAKE_CURRENT_LIST_DIR}/../external")
 set(EXTERNAL_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/external")
 add_subdirectory("${EXTERNAL_DIR}/SDL" "${EXTERNAL_BUILD_DIR}/SDL" EXCLUDE_FROM_ALL)
 add_subdirectory("${EXTERNAL_DIR}/SDL_image" "${EXTERNAL_BUILD_DIR}/SDL_image" EXCLUDE_FROM_ALL)
 add_subdirectory("${EXTERNAL_DIR}/SDL_net" "${EXTERNAL_BUILD_DIR}/SDL_net" EXCLUDE_FROM_ALL)
-
 check_option_c(OPTIONS_RELEASE
 	-O3
 	-fno-ident

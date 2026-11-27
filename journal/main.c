@@ -116,19 +116,19 @@ static int network_thread(void*){
                 buffer[br] = '\0';
                 trim_crlf_inplace(buffer);
                 if (buffer[0] != '\0'){
-		    		if(SDL_strcmp(buffer, "PING") == 0){
-		    		    if(!NET_WriteToStreamSocket(streamsocket, "PONG", 4)){
-		    		        SDL_Log("Failed to send PONG, error: %s", SDL_GetError());
-		    		    }else if(NET_WaitUntilStreamSocketDrained(streamsocket, 5000) < 0){
+			if(SDL_strcmp(buffer, "PING") == 0){
+		   		if(!NET_WriteToStreamSocket(streamsocket, "PONG", 4)){
+		    			SDL_Log("Failed to send PONG, error: %s", SDL_GetError());
+		    		}else if(NET_WaitUntilStreamSocketDrained(streamsocket, 5000) < 0){
 		    		        SDL_Log("Failed to send PONG completely, error: %s", SDL_GetError());
-		    		    }
-		    		}else{
-                    	if(SDL_snprintf(image, sizeof(image), "%s", buffer) >= 0){
-                        	is_changed = true;
-                    	}else{
-                        	SDL_Log("SDL_snprintf error");
-                    	}
 		    		}
+		    	}else{
+                    if(SDL_snprintf(image, sizeof(image), "%s", buffer) >= 0){
+                        is_changed = true;
+                    }else{
+                        SDL_Log("SDL_snprintf error");
+                    }
+		 }
                 }
                 kill_socket = true;
             }
@@ -163,18 +163,18 @@ int main(int argc, char* argv[]) {
     #ifndef SDL_PLATFORM_VITA
     	load_game_directory(gamedir_path, sizeof(gamedir_path));
 	    for(int i = 1; i < argc; i++){
-			const char* arg = argv[i];
-			if((SDL_strcmp(arg, "--port") == 0) && (i < (argc - 1))) {
-				server_port = (Uint16)SDL_atoi(argv[++i]);
-			}
-			if((SDL_strcmp(arg, "--addr") == 0) && (i < (argc - 1))) {
+		const char* arg = argv[i];
+		if((SDL_strcmp(arg, "--port") == 0) && (i < (argc - 1))) {
+			server_port = (Uint16)SDL_atoi(argv[++i]);
+		}
+		if((SDL_strcmp(arg, "--addr") == 0) && (i < (argc - 1))) {
 	        	SDL_strlcpy(address, argv[++i], sizeof(address) - 1);
 	        	address[sizeof(address) - 1] = '\0';
-			}
-			if((SDL_strcmp(arg, "--game-path") == 0) && (i < (argc - 1))) {
+		}
+		if((SDL_strcmp(arg, "--game-path") == 0) && (i < (argc - 1))) {
 	        	SDL_strlcpy(gamedir_path, argv[++i], sizeof(gamedir_path) - 1);
 	        	gamedir_path[sizeof(gamedir_path) - 1] = '\0';
-			}
+		}
     	}
     #endif
 

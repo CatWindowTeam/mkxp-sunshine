@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -euo pipefail
 shopt -u dotglob
 rm -rf build journal/build libs

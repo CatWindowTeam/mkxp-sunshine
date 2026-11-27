@@ -32,11 +32,7 @@ module Wallpaper
     if Graphics.fullscreen
       Graphics.fullscreen = false
       $console = false
-      if Oneshot::OS == "macos"
-        sleep 0.65
-      else
-        sleep 0.2
-      end
+      sleep 0.2
       Graphics.update
     end
 	
