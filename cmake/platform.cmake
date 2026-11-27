@@ -24,14 +24,22 @@ endmacro()
 
 set(UNIX_SYSTEMS Linux FreeBSD OpenBSD NetBSD)
 
-if(VITA)
+if(EMSCRIPTEN)
+    set_target_properties(${APP_TARGET} PROPERTIES SUFFIX ".html")
+elseif(VITA)
 	set(PLATFORM_LIBRARIES webp sharpyuv)
+elseif(PSP)
+	message(ERROR "PSP support is WIP")
+elseif(PS2)
+	message(ERROR "PS2 support is WIP")
+elseif(PS3)
+	message(ERROR "PS2 support is WIP")
 elseif(TERMUX)
+	# Termux support still broken.
     #https://github.com/termux/termux-packages/blob/master/x11-packages/sdl3/build.sh
     set(PLATFORM_LIBRARIES android-shmem)
     #patch SDL3 sources for Termux
-    execute_process(
-    COMMAND find external/SDL -type f -exec sed -i -e "s/\\([^A-Za-z0-9_]__ANDROID\\)\\(__[^A-Za-z0-9_]\\)/\\1_NO_TERMUX\\2/g" -e "s/\\([^A-Za-z0-9_]__ANDROID\\)__$/\\1_NO_TERMUX__/g" "{}" + WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+    execute_process(COMMAND find external/SDL -type f -exec sed -i -e "s/\\([^A-Za-z0-9_]__ANDROID\\)\\(__[^A-Za-z0-9_]\\)/\\1_NO_TERMUX\\2/g" -e "s/\\([^A-Za-z0-9_]__ANDROID\\)__$/\\1_NO_TERMUX__/g" "{}" + WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_link_options(${APP_TARGET} PRIVATE -municode)
 	target_compile_definitions(${APP_TARGET} PRIVATE UNICODE)
